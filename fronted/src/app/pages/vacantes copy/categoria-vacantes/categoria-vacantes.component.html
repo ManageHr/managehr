@@ -1,0 +1,97 @@
+<app-menu *ngIf="authService.isAuthenticated()"></app-menu>
+
+<div class="layout">
+  <div class="contenido-principal">
+    <div class="header-horas d-flex justify-content-between align-items-center">
+      <h3>Categoría de Vacantes</h3>
+      <button class="btn btn-light btn-sm agregar-btn" data-bs-toggle="modal" data-bs-target="#agregarCategoriaModal" *ngIf="[1, 4].includes(usuario?.rol)" (click)="abrirModalAgregarCategoria()">
+        <i class="fas fa-plus-circle"></i> Agregar Categoría
+      </button>
+    </div>
+
+    <div class="mb-3">
+      <input type="text" class="form-control" placeholder="Buscar por Nombre..." [(ngModel)]="filtroNombre">
+    </div>
+
+    <div *ngIf="[1, 4].includes(usuario?.rol); else sinPermiso">
+
+      <table class="table table-striped table-bordered table-hover">
+        <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let categoria of categorias | filterCategoria : filtroNombre; let i = index">
+            <td data-label="ID">{{ categoria.idCatVac }}</td>
+            <td data-label="Nombre">{{ categoria.nomCategoria }}</td>
+            <td data-label="Acciones">
+              <button class="btn btn-link btn-acciones editar" data-bs-toggle="modal" data-bs-target="#editarCategoriaModal" title="Editar" (click)="editarCategoria(categoria)">
+                <i class="fas fa-edit"></i>
+              </button>
+
+              <button class="btn btn-link btn-acciones eliminar" (click)="confirmDeleteCategoria(categoria)">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+       <div *ngIf="categorias.length === 0 && !filtroNombre" class="alert alert-info mt-3">
+             No hay categorías de vacantes disponibles.
+        </div>
+
+
+    </div>
+    <ng-template #sinPermiso>
+      <div class="alert alert-warning">
+        No tienes permiso para ver esta información.
+      </div>
+    </ng-template>
+
+    <div class="modal fade" id="agregarCategoriaModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Agregar Categoría</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <form (ngSubmit)="guardarCategoria()">
+              <ng-container *ngTemplateOutlet="formularioCategoria"></ng-container>
+              <button type="submit" class="btn btn-primary">Agregar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="editarCategoriaModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Editar Categoría</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <form (ngSubmit)="guardarCategoria()">
+              <ng-container *ngTemplateOutlet="formularioCategoria"></ng-container>
+              <button type="submit" class="btn btn-primary">Guardar cambios</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #formularioCategoria>
+      <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <input class="form-control" [(ngModel)]="categoriaSeleccionada.nomCategoria" name="nomCategoria" required />
+      </div>
+    </ng-template>
+
+  </div>
+</div>

@@ -1,0 +1,132 @@
+<app-menu *ngIf="authService.isAuthenticated()"></app-menu>
+
+<div class="layout">
+  <div class="contenido-principal">
+    <div class="header-horas d-flex justify-content-between align-items-center">
+      <h3>Postulaciones</h3>
+    </div>
+
+    <!-- Barra de búsqueda -->
+    <div class="mb-3">
+      <input type="text"
+             class="form-control"
+             placeholder="Buscar por Vacante ID..."
+             [(ngModel)]="searchQuery"
+             (input)="onSearchInput()">
+    </div>
+
+    <!-- Validación de rol -->
+    <div *ngIf="[1, 3].includes(usuario['rol']); else sinPermiso">
+      <!-- Este es el contenido visible si el rol está permitido -->
+      <table class="table table-striped table-bordered table-hover">
+        <thead class="table-dark">
+          <tr>
+            <th>Id Postulación</th>
+            <th>Fecha de postulación</th>
+            <th>Estado</th>
+            <th>Vacante ID</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let postulacion of postulaciones | filterMisPostulaciones:searchQuery; let i = index">
+            <td data-label="Id Postulación">{{ postulacion.idPostulaciones }}</td>
+            <td data-label="Fecha de postulación">{{ postulacion.fechaPostulacion }}</td>
+            <td data-label="Estado">
+              <span [class.bg-success]="postulacion.estado === 'Aceptado'"
+                    [class.bg-danger]="postulacion.estado === 'Rechazado'"
+                    [class.bg-warning]="postulacion.estado === 'Pendiente'"
+                    class="badge">
+                {{ postulacion.estado }}
+              </span>
+            </td>
+            <td data-label="Vacante ID">{{ postulacion.vacantesId }}</td>
+            <td data-label="Acciones">
+              <button class="btn btn-link btn-acciones editar"
+                      data-bs-toggle="modal" data-bs-target="#editarEstadoModal"
+                      title="Editar Estado"
+                      (click)="editarPostulacion(postulacion)">
+                <i class="fas fa-edit"></i>
+              </button>
+
+              <button class="btn btn-link btn-acciones"
+                      data-bs-toggle="modal" data-bs-target="#verDetallesModal"
+                      title="Ver Detalles"
+                      (click)="verDetalles(postulacion)">
+                <i class="fas fa-eye"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div *ngIf="postulaciones.length === 0" class="alert alert-info mt-3">
+        No se encontraron postulaciones.
+      </div>
+    </div>
+
+    <!-- Template para sin permisos -->
+    <ng-template #sinPermiso>
+      <div class="alert alert-warning">
+        No tienes permiso para ver esta información.
+      </div>
+    </ng-template>
+
+    <!-- Modal: Editar Estado -->
+    <div class="modal fade" id="editarEstadoModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Editar Estado de Postulación</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <form *ngIf="postulacionSeleccionada" (ngSubmit)="guardarEstadoPostulacion()">
+              <div class="mb-3">
+                <label class="form-label">Estado</label>
+                <select class="form-control" [(ngModel)]="postulacionSeleccionada.estado" name="estado" required>
+                  <option value="Pendiente">Pendiente</option>
+                  <option value="Aceptado">Aceptado</option>
+                  <option value="Rechazado">Rechazado</option>
+                </select>
+              </div>
+              <p *ngIf="postulacionSeleccionada.idPostulaciones !== undefined">
+                <strong>ID de Postulación:</strong> {{ postulacionSeleccionada.idPostulaciones }}
+              </p>
+              <p><strong>Fecha de postulación:</strong> {{ postulacionSeleccionada.fechaPostulacion }}</p>
+              <p><strong>ID de Vacante:</strong> {{ postulacionSeleccionada.vacantesId }}</p>
+
+              <button type="submit" class="btn btn-primary">Guardar Estado</button>
+            </form>
+            <div *ngIf="!postulacionSeleccionada">
+              <p>No se ha seleccionado ninguna postulación para editar el estado.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Ver Detalles -->
+    <div class="modal fade" id="verDetallesModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Detalles de Postulación</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div *ngIf="postulacionSeleccionada">
+              <p><strong>ID de Postulación:</strong> {{ postulacionSeleccionada.idPostulaciones }}</p>
+              <p><strong>Fecha de postulación:</strong> {{ postulacionSeleccionada.fechaPostulacion }}</p>
+              <p><strong>Estado:</strong> {{ postulacionSeleccionada.estado }}</p>
+              <p><strong>ID de Vacante:</strong> {{ postulacionSeleccionada.vacantesId }}</p>
+            </div>
+            <div *ngIf="!postulacionSeleccionada">
+              <p>No se ha seleccionado ninguna postulación para mostrar detalles.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

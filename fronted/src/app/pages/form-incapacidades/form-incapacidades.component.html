@@ -1,0 +1,71 @@
+<app-menu></app-menu>
+
+<div class="layout">
+  <div class="contenido-principal">
+    <div class="header-horas d-flex justify-content-between align-items-center">
+      <h3>Solicitud de Incapacidad</h3>
+    </div>
+
+    <div class="main-content">
+      <div class="purple-container">
+        <div class="formulario-incapacidades">
+          <h2>Formulario de Solicitud de Incapacidad</h2>
+          <form class="incapacidades-form" (ngSubmit)="enviarSolicitud()" #incapacidadesForm="ngForm">
+
+            <div class="form-group">
+              <label for="descrip">Descripción / Motivo:</label>
+              <textarea id="descrip" name="descrip" [(ngModel)]="descrip" required rows="4"
+                        class="form-control-match"></textarea>
+              <div *ngIf="incapacidadesForm.controls['descrip']?.errors?.['required'] && incapacidadesForm.controls['descrip']?.touched" class="text-danger">
+                La descripción es obligatoria.
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="archivo">Certificado / Archivo Adjunto:</label>
+              <input type="file" id="archivo" name="archivo" (change)="onFileSelected($event)">
+              <div *ngIf="archivo" class="selected-file-name">
+                Archivo seleccionado: {{ archivo.name }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="fechaInicio">Fecha de Inicio:</label>
+              <input type="date" id="fechaInicio" name="fechaInicio" [(ngModel)]="fechaInicio" required
+                     class="form-control-match">
+              <div *ngIf="incapacidadesForm.controls['fechaInicio']?.errors?.['required'] && incapacidadesForm.controls['fechaInicio']?.touched" class="text-danger">
+                La fecha de inicio es obligatoria.
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="fechaFinal">Fecha de Fin:</label>
+              <input type="date" id="fechaFinal" name="fechaFinal" [(ngModel)]="fechaFinal" required
+                     class="form-control-match">
+              <div *ngIf="incapacidadesForm.controls['fechaFinal']?.errors?.['required'] && incapacidadesForm.controls['fechaFinal']?.touched" class="text-danger">
+                La fecha de fin es obligatoria.
+              </div>
+            </div>
+
+            <button type="submit" class="btn-submit" [disabled]="!incapacidadesForm.form.valid">Enviar Solicitud</button>
+          </form>
+        </div>
+
+        <div class="lista-solicitudes">
+          <h2>Solicitudes Enviadas (Simulación Local)</h2>
+          <ul class="solicitudes-lista">
+            <li *ngFor="let solicitud of solicitudesIncapacidades">
+              <strong>Descripción:</strong> {{ solicitud.descrip }}<br>
+              <strong>Archivo:</strong> {{ solicitud.archivo ? solicitud.archivo.name : 'N/A' }}<br>
+              <strong>Inicio:</strong> {{ solicitud.fechaInicio }} | <strong>Fin:</strong> {{ solicitud.fechaFinal }}<br>
+              <strong>Estado:</strong> <span [ngClass]="{'Aprobada': solicitud.estado === 'Aprobada', 'Pendiente': solicitud.estado === 'Pendiente', 'Rechazada': solicitud.estado === 'Rechazada' }">{{ solicitud.estado }}</span>
+            </li>
+            <li *ngIf="solicitudesIncapacidades.length === 0">
+              No hay solicitudes enviadas localmente aún.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
