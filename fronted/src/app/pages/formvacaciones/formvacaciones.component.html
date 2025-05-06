@@ -13,49 +13,56 @@
           <form class="vacaciones-form" (ngSubmit)="enviarSolicitud()" #vacacionesForm="ngForm">
 
             <div class="form-group">
-              <label for="descrip">Descripción / Motivo:</label>
-              <textarea id="descrip" name="descrip" [(ngModel)]="descrip" required rows="4"
-                        class="form-control-match"></textarea> <div *ngIf="vacacionesForm.controls['descrip']?.errors?.['required'] && vacacionesForm.controls['descrip']?.touched" class="text-danger">
+              <label for="motivo">Descripción / Motivo:</label>
+              <textarea id="motivo" name="motivo" [(ngModel)]="motivo" required rows="4"
+                        class="form-control-match"></textarea> 
+              <div *ngIf="vacacionesForm.controls['motivo']?.errors?.['required'] && vacacionesForm.controls['motivo']?.touched" class="text-danger">
                 La descripción es obligatoria.
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="archivo">Archivo Adjunto:</label>
-              <input type="file" id="archivo" name="archivo" (change)="onFileSelected($event)">
-              <div *ngIf="archivo" class="selected-file-name">
-                Archivo seleccionado: {{ archivo.name }}
               </div>
             </div>
 
             <div class="form-group">
               <label for="fechaInicio">Fecha Inicio:</label>
               <input type="date" id="fechaInicio" name="fechaInicio" [(ngModel)]="fechaInicio" required
-                     class="form-control-match"> <div *ngIf="vacacionesForm.controls['fechaInicio']?.errors?.['required'] && vacacionesForm.controls['fechaInicio']?.touched" class="text-danger">
+                     class="form-control-match"> 
+              <div *ngIf="vacacionesForm.controls['fechaInicio']?.errors?.['required'] && vacacionesForm.controls['fechaInicio']?.touched" class="text-danger">
                 La fecha de inicio es obligatoria.
               </div>
             </div>
 
             <div class="form-group">
               <label for="fechaFinal">Fecha Fin:</label>
-               <input type="date" id="fechaFinal" name="fechaFinal" [(ngModel)]="fechaFinal" required
-                     class="form-control-match"> <div *ngIf="vacacionesForm.controls['fechaFinal']?.errors?.['required'] && vacacionesForm.controls['fechaFinal']?.touched" class="text-danger">
+              <input type="date" id="fechaFinal" name="fechaFinal" [(ngModel)]="fechaFinal" required
+                     class="form-control-match"> 
+              <div *ngIf="vacacionesForm.controls['fechaFinal']?.errors?.['required'] && vacacionesForm.controls['fechaFinal']?.touched" class="text-danger">
                 La fecha de fin es obligatoria.
               </div>
             </div>
+
+            <div class="form-group">
+              <label for="dias">Días de Vacaciones:</label>
+              <input type="number" id="dias" name="dias" [(ngModel)]="dias" required class="form-control-match">
+              <div *ngIf="vacacionesForm.controls['dias']?.errors?.['required'] && vacacionesForm.controls['dias']?.touched" class="text-danger">
+                La cantidad de días es obligatoria.
+              </div>
+            </div>
+
+            <!-- Campo oculto para el estado por defecto "Pendiente" -->
+            <input type="hidden" name="estado" [(ngModel)]="estado" value="Pendiente">
+
+            <!-- Campo oculto para el contrato -->
+            <input type="hidden" name="contratoId" [(ngModel)]="contratoId">
 
             <button type="submit" class="btn-submit" [disabled]="!vacacionesForm.form.valid">Enviar Solicitud</button>
           </form>
         </div>
 
         <div class="lista-solicitudes">
-          <h2>Solicitudes Enviadas </h2>
+          <h2>Solicitudes Enviadas</h2>
           <ul class="solicitudes-lista">
             <li *ngFor="let solicitud of solicitudesVacaciones">
-              <strong>Descripción:</strong> {{ solicitud.descrip }}<br>
-              <strong>Archivo:</strong> {{ solicitud.archivo ? solicitud.archivo.name : 'N/A' }}<br>
+              <strong>Motivo:</strong> {{ solicitud.motivo }}<br>
               <strong>Inicio:</strong> {{ solicitud.fechaInicio }} | <strong>Fin:</strong> {{ solicitud.fechaFinal }}<br>
-              <strong>Estado:</strong> <span [ngClass]="{'Pendiente': solicitud.estado === 'pendiente', 'rechazado': solicitud.estado === 'rechazado', 'aprobado': solicitud.estado === 'aprobado' }">{{ solicitud.estado }}</span>
             </li>
             <li *ngIf="solicitudesVacaciones.length === 0">
               No hay solicitudes enviadas aún.
