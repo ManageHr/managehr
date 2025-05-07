@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { MenuComponent } from "../menu/menu.component";
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { UserService } from '../../services/user.service';
+import { User } from '../../models/user';
 
 @Component({
   selector: 'app-home',
@@ -12,56 +14,45 @@ import { CommonModule } from '@angular/common';
 })
 export class HomeComponent implements OnInit {
   isModalVisible: boolean = false;
+  user: User = {
+    primerNombre: '',
+    segundoNombre: '',
+    primerApellido: '',
+    segundoApellido: '',
+    usuario: '',
+    tipoDocumento: '',
+    numeroDocumento: '',
+    fechaNacimiento: '',
+    numeroHijos: undefined,
+    contactoEmergencia: '',
+    numeroContactoEmergencia: '',
+    email: '',
+    direccion: '',
+    telefono: '',
+    nacionalidad: '',
+    eps: '',
+    genero: '',
+    estadoCivil: '',
+    pensiones: ''
+  };
 
-  // Propiedades para los campos del formulario
-  tipoDocumento: string = '';
-  numeroDocumento: string = '';
-  primerNombre: string = '';
-  segundoNombre: string = '';
-  primerApellido: string = '';
-  segundoApellido: string = '';
-  fechaNacimiento: string = '';
-  numeroHijos: number | null = null;
-  contactoEmergencia: string = '';
-  numeroContactoEmergencia: string = '';
-  email: string = '';
-  direccion: string = '';
-  telefono: string = '';
-  nacionalidad: string = '';
-  eps: string = '';
-  genero: string = '';
-  estadoCivil: string = '';
-  pensiones: string = '';
-
-  constructor() { }
+  constructor(private userService: UserService) {}
 
   ngOnInit(): void {
-    // Aquí podrías cargar los datos del usuario para prellenar las propiedades
-    // Ejemplo:
-    this.tipoDocumento = 'Cédula de Ciudadanía';
-    this.numeroDocumento = '987654321';
-    this.primerNombre = 'Ana';
-    this.segundoNombre = 'Sofía';
-    this.primerApellido = 'Pérez';
-    this.segundoApellido = 'Gómez';
-    this.fechaNacimiento = '1988-07-20';
-    this.numeroHijos = 1;
-    this.contactoEmergencia = 'Juan Rodríguez';
-    this.numeroContactoEmergencia = '+57 310 987 6543';
-    this.email = 'ana.perez@correo.com';
-    this.direccion = 'Avenida Siempreviva 742';
-    this.telefono = '+57 315 112 2334';
-    this.nacionalidad = 'Colombiana';
-    this.eps = 'Salud Total';
-    this.genero = 'Femenino';
-    this.estadoCivil = 'Casada';
-    this.pensiones = 'Colpensiones';
+    this.loadUserData();
+  }
+
+  loadUserData(): void {
+    this.userService.getUserProfile().subscribe(userData => {
+      console.log('Datos recibidos:', userData);
+      this.user = userData;
+    }, error => {
+      console.error('Error al obtener el perfil del usuario', error);
+    });
   }
 
   openModal(): void {
     this.isModalVisible = true;
-    // Aquí podrías cargar los datos actuales en las propiedades del formulario si es necesario
-    // Por ejemplo, si quieres que al abrir el modal los campos ya tengan la información actual
   }
 
   closeModal(): void {
@@ -69,30 +60,11 @@ export class HomeComponent implements OnInit {
   }
 
   updateInfo(): void {
-    // Aquí puedes acceder a los valores de las propiedades (this.tipoDocumento, this.numeroDocumento, etc.)
-    // y realizar la lógica para actualizar la información (enviar al backend, etc.)
-    console.log('Datos a actualizar:', {
-      tipoDocumento: this.tipoDocumento,
-      numeroDocumento: this.numeroDocumento,
-      primerNombre: this.primerNombre,
-      segundoNombre: this.segundoNombre,
-      primerApellido: this.primerApellido,
-      segundoApellido: this.segundoApellido,
-      fechaNacimiento: this.fechaNacimiento,
-      numeroHijos: this.numeroHijos,
-      contactoEmergencia: this.contactoEmergencia,
-      numeroContactoEmergencia: this.numeroContactoEmergencia,
-      email: this.email,
-      direccion: this.direccion,
-      telefono: this.telefono,
-      nacionalidad: this.nacionalidad,
-      eps: this.eps,
-      genero: this.genero,
-      estadoCivil: this.estadoCivil,
-      pensiones: this.pensiones
+    this.userService.updateUserProfile(this.user).subscribe(response => {
+      console.log('Perfil actualizado:', response);
+      this.closeModal();
+    }, error => {
+      console.error('Error al actualizar el perfil', error);
     });
-
-    this.closeModal(); // Cierra el modal después de intentar actualizar
-  }
+  }  
 }
-

@@ -37,6 +37,7 @@ use App\Http\Controllers\api\vacantesHasPostulacionesController;
 
 use App\Http\Controllers\Api\formvacationController;
 use App\Http\Controllers\Api\FormHorasController;
+use App\Http\Controllers\Api\HomeController;
 
 Route::middleware('auth:api')->post('/rols/{rol}/permisos', [RolPermisoController::class, 'asignarPermisos']);
 
@@ -281,5 +282,12 @@ Route::post('/solicitudes-vacaciones-con-archivo', [formvacationController::clas
 Route::post('/solicitudes-incapacidades', 'App\Http\Controllers\Api\formincapacidadController@store');
 Route::get('/tipos-horas', [tipohorasController::class, 'index']);
 //Route::post('/solicitudes-horas-extra', [FormHorasController::class, 'store']);
+
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/profile', [HomeController::class, 'getProfile']);
+    Route::put('/profile/update', [HomeController::class, 'updateProfile']);
+});
 
 

@@ -4,135 +4,129 @@
   <div class="contenido-principal">
     <div class="header-horas d-flex justify-content-between align-items-center">
       <h3>Perfil de Usuario</h3>
-      </div>
+    </div>
 
-    <div class="profile-container">
+    <div class="profile-container" *ngIf="user">
       <div class="profile-info">
         <div class="profile-header">
-          <div class="profile-image-placeholder">
-          </div>
+          <div class="profile-image-placeholder"></div>
           <div class="user-details">
-            <h1 class="user-name">Nombre Completo Inventado</h1>
-            <p class="user-handle">usuarioinventado</p>
+            <h1 class="user-name">{{ user.primerNombre }} {{ user.primerApellido }}</h1>
+            <p class="user-handle">{{ user.usuario }}</p>
           </div>
         </div>
-
 
         <div class="user-data">
           <h4 class="data-title">Información Personal</h4>
           <div class="data-grid">
             <div class="grid-item">
               <span class="label"><i class="fas fa-id-card"></i> Tipo de Documento:</span>
-              <span class="value">{{ tipoDocumento }}</span>
+              <span class="value">{{ user.tipoDocumento }}</span>
             </div>
             <div class="grid-item">
               <span class="label"><i class="fas fa-passport"></i> Número de Documento:</span>
-              <span class="value">{{ numeroDocumento }}</span>
+              <span class="value">{{ user.numeroDocumento }}</span>
             </div>
             <div class="grid-item">
               <span class="label"><i class="fas fa-calendar-alt"></i> Fecha de Nacimiento:</span>
-              <span class="value">{{ fechaNacimiento | date:'yyyy-MM-dd' }}</span>
+              <span class="value">{{ user.fechaNacimiento | date:'yyyy-MM-dd' }}</span>
             </div>
             <div class="grid-item">
               <span class="label"><i class="fas fa-envelope"></i> Email:</span>
-              <span class="value">{{ email }}</span>
+              <span class="value">{{ user.email }}</span>
             </div>
             <div class="grid-item">
               <span class="label"><i class="fas fa-map-marker-alt"></i> Dirección:</span>
-              <span class="value">{{ direccion }}</span>
+              <span class="value">{{ user.direccion }}</span>
             </div>
             <div class="grid-item">
               <span class="label"><i class="fas fa-phone"></i> Teléfono:</span>
-              <span class="value">{{ telefono }}</span>
+              <span class="value">{{ user.telefono }}</span>
             </div>
             <div class="grid-item">
               <span class="label"><i class="fas fa-venus-mars"></i> Género:</span>
-              <span class="value">{{ genero }}</span>
+              <span class="value">{{ user.genero }}</span>
             </div>
-            </div>
+          </div>
           <button class="btn btn-primary" (click)="openModal()">Actualizar Información</button>
         </div>
-
       </div>
     </div>
 
     <div class="modal-overlay" *ngIf="isModalVisible">
       <div class="modal-content">
         <button type="button" class="close-modal-button" (click)="closeModal()">
-            <i class="fas fa-times"></i> </button>
+          <i class="fas fa-times"></i>
+        </button>
         <h2 class="modal-title">Actualizar Información Personal</h2>
         <form (ngSubmit)="updateInfo()">
           <div class="form-group">
-            <label for="tipoDocumento">Tipo de Documento:</label>
-            <input type="text" id="tipoDocumento" name="tipoDocumento" [(ngModel)]="tipoDocumento">
-          </div>
-          <div class="form-group">
-            <label for="numeroDocumento">Número de Documento:</label>
-            <input type="text" id="numeroDocumento" name="numeroDocumento" [(ngModel)]="numeroDocumento">
-          </div>
-          <div class="form-group">
             <label for="primerNombre">Primer Nombre:</label>
-            <input type="text" id="primerNombre" name="primerNombre" [(ngModel)]="primerNombre">
+            <input type="text" id="primerNombre" [(ngModel)]="user.primerNombre">
           </div>
           <div class="form-group">
             <label for="segundoNombre">Segundo Nombre:</label>
-            <input type="text" id="segundoNombre" name="segundoNombre" [(ngModel)]="segundoNombre">
+            <input type="text" id="segundoNombre" [(ngModel)]="user.segundoNombre">
           </div>
           <div class="form-group">
             <label for="primerApellido">Primer Apellido:</label>
-            <input type="text" id="primerApellido" name="primerApellido" [(ngModel)]="primerApellido">
+            <input type="text" id="primerApellido" [(ngModel)]="user.primerApellido">
           </div>
           <div class="form-group">
             <label for="segundoApellido">Segundo Apellido:</label>
-            <input type="text" id="segundoApellido" name="segundoApellido" [(ngModel)]="segundoApellido">
+            <input type="text" id="segundoApellido" [(ngModel)]="user.segundoApellido">
+          </div>
+          <div class="form-group">
+            <label for="tipoDocumento">Tipo de Documento:</label>
+            <input type="text" id="tipoDocumento" [(ngModel)]="user.tipoDocumento">
+          </div>
+          <div class="form-group">
+            <label for="numeroDocumento">Número de Documento:</label>
+            <input type="text" id="numeroDocumento" [(ngModel)]="user.numeroDocumento">
           </div>
           <div class="form-group">
             <label for="fechaNacimiento">Fecha de Nacimiento:</label>
-            <input type="date" id="fechaNacimiento" name="fechaNacimiento" [(ngModel)]="fechaNacimiento">
-          </div>
-          <div class="form-group">
-            <label for="numeroHijos">Número de Hijos:</label>
-            <input type="number" id="numeroHijos" name="numeroHijos" [(ngModel)]="numeroHijos">
-          </div>
-          <div class="form-group">
-            <label for="contactoEmergencia">Contacto de Emergencia:</label>
-            <input type="text" id="contactoEmergencia" name="contactoEmergencia" [(ngModel)]="contactoEmergencia">
-          </div>
-          <div class="form-group">
-            <label for="numeroContactoEmergencia">Número de Contacto Emergencia:</label>
-            <input type="text" id="numeroContactoEmergencia" name="numeroContactoEmergencia" [(ngModel)]="numeroContactoEmergencia">
+            <input type="date" id="fechaNacimiento" [(ngModel)]="user.fechaNacimiento">
           </div>
           <div class="form-group">
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" [(ngModel)]="email">
+            <input type="email" id="email" [(ngModel)]="user.email">
           </div>
           <div class="form-group">
             <label for="direccion">Dirección:</label>
-            <input type="text" id="direccion" name="direccion" [(ngModel)]="direccion">
+            <input type="text" id="direccion" [(ngModel)]="user.direccion">
           </div>
           <div class="form-group">
             <label for="telefono">Teléfono:</label>
-            <input type="text" id="telefono" name="telefono" [(ngModel)]="telefono">
+            <input type="text" id="telefono" [(ngModel)]="user.telefono">
+          </div>
+          <div class="form-group">
+            <label for="numeroHijos">Número de Hijos:</label>
+            <input type="number" id="numeroHijos" [(ngModel)]="user.numeroHijos">
+          </div>
+          <div class="form-group">
+            <label for="contactoEmergencia">Contacto de Emergencia:</label>
+            <input type="text" id="contactoEmergencia" [(ngModel)]="user.contactoEmergencia">
+          </div>
+          <div class="form-group">
+            <label for="numeroContactoEmergencia">Número de Contacto Emergencia:</label>
+            <input type="text" id="numeroContactoEmergencia" [(ngModel)]="user.numeroContactoEmergencia">
           </div>
           <div class="form-group">
             <label for="nacionalidad">Nacionalidad:</label>
-            <input type="text" id="nacionalidad" name="nacionalidad" [(ngModel)]="nacionalidad">
+            <input type="text" id="nacionalidad" [(ngModel)]="user.nacionalidad">
           </div>
           <div class="form-group">
             <label for="eps">EPS:</label>
-            <input type="text" id="eps" name="eps" [(ngModel)]="eps">
-          </div>
-          <div class="form-group">
-            <label for="genero">Género:</label>
-            <input type="text" id="genero" name="genero" [(ngModel)]="genero">
+            <input type="text" id="eps" [(ngModel)]="user.eps">
           </div>
           <div class="form-group">
             <label for="estadoCivil">Estado Civil:</label>
-            <input type="text" id="estadoCivil" name="estadoCivil" [(ngModel)]="estadoCivil">
+            <input type="text" id="estadoCivil" [(ngModel)]="user.estadoCivil">
           </div>
           <div class="form-group">
             <label for="pensiones">Pensiones:</label>
-            <input type="text" id="pensiones" name="pensiones" [(ngModel)]="pensiones">
+            <input type="text" id="pensiones" [(ngModel)]="user.pensiones">
           </div>
           <div class="modal-buttons">
             <button type="submit" class="btn btn-primary">Guardar Cambios</button>
