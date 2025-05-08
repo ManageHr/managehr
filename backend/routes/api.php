@@ -286,4 +286,5 @@ Route::get('/tipos-horas', [tipohorasController::class, 'index']);
 
 
 Route::middleware('auth:api')->get('/profile', [HomeController::class, 'getProfile']);
+Route::middleware('auth:api')->put('/profile/update', [HomeController::class, 'updateProfile']);
 
