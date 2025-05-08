@@ -7,8 +7,9 @@ import { User } from '../models/user';
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'https://tu-api.com/api/profile'; // Endpoint para obtener el perfil
-  private updateUrl = 'https://tu-api.com/api/profile/update'; // Endpoint para actualizar el perfil
+  private apiUrl = 'http://127.0.0.1:8000/api/profile';
+  private updateUrl = 'http://127.0.0.1:8000/api/profile/update';
+
 
   constructor(private http: HttpClient) {}
 

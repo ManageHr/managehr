@@ -54,4 +54,10 @@ class User extends Authenticatable implements JWTSubject
         // Solo hashear la contraseña si no está ya hasheada
         $this->attributes['password'] = Hash::needsRehash($value) ? Hash::make($value) : $value;
     }
+
+    public function perfil()
+{
+    return $this->hasOne(Usuarios::class, 'usersId', 'id');
+}
+
 }

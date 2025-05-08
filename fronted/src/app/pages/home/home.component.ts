@@ -23,7 +23,7 @@ export class HomeComponent implements OnInit {
     tipoDocumento: '',
     numeroDocumento: '',
     fechaNacimiento: '',
-    numeroHijos: undefined,
+    numeroHijos: null,
     contactoEmergencia: '',
     numeroContactoEmergencia: '',
     email: '',
@@ -43,9 +43,29 @@ export class HomeComponent implements OnInit {
   }
 
   loadUserData(): void {
-    this.userService.getUserProfile().subscribe(userData => {
+    this.userService.getUserProfile().subscribe((userData: any) => {
       console.log('Datos recibidos:', userData);
-      this.user = userData;
+      this.user = {
+        primerNombre: userData.primerNombre,
+        segundoNombre: userData.segundoNombre,
+        primerApellido: userData.primerApellido,
+        segundoApellido: userData.segundoApellido,
+        usuario: '', // si no lo manejas, déjalo vacío o elimina del modelo
+        tipoDocumento: userData.tipo_documento?.nombreTipoDocumento || '',
+        numeroDocumento: userData.numDocumento,
+        fechaNacimiento: userData.fechaNac,
+        numeroHijos: userData.numHijos,
+        contactoEmergencia: userData.contactoEmergencia,
+        numeroContactoEmergencia: userData.numContactoEmergencia,
+        email: userData.email,
+        direccion: userData.direccion,
+        telefono: userData.telefono,
+        nacionalidad: userData.nacionalidadId,
+        eps: userData.epsCodigo,
+        genero: userData.genero?.nombreGenero || '',
+        estadoCivil: userData.estadoCivilId,
+        pensiones: userData.pensionesCodigo
+      };
     }, error => {
       console.error('Error al obtener el perfil del usuario', error);
     });
@@ -66,5 +86,5 @@ export class HomeComponent implements OnInit {
     }, error => {
       console.error('Error al actualizar el perfil', error);
     });
-  }  
+  }
 }

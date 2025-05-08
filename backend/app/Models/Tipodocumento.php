@@ -8,10 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Tipodocumento extends Model
 {
     use HasFactory;
-    protected  $table = 'tipodocumento';
+
+    protected $table = 'tipodocumento';
     public $timestamps = false;
-    protected $primaryKey = 'idTipDocumento';
+    protected $primaryKey = 'idTipoDocumento'; // corregido
+
     protected $fillable = [
-        'nombreTipoDocumento'
+        'nombreTipoDocumento',
+        'abreviacionTipoDocumento' // agregado
     ];
 }
