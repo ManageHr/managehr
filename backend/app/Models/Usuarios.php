@@ -8,9 +8,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Usuarios extends Model
 {
     use HasFactory;
-    protected  $table = 'usuarios';
+
+    protected $table = 'usuarios';
     public $timestamps = false;
     protected $primaryKey = 'numDocumento';
+
     protected $fillable = [
         'numDocumento',
         'primerNombre',
@@ -33,4 +35,15 @@ class Usuarios extends Model
         'pensionesCodigo',
         'usersId'
     ];
+
+    // ✅ Relaciones con otras tablas
+    public function tipoDocumento()
+    {
+        return $this->belongsTo(TipoDocumento::class, 'tipoDocumentoId', 'idTipoDocumento');
+    }
+
+    public function genero()
+    {
+        return $this->belongsTo(Genero::class, 'generoId', 'idGenero');
+    }
 }

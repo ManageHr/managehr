@@ -5,22 +5,27 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Usuarios;
 
 class HomeController extends Controller
 {
     /**
      * Obtener el perfil del usuario autenticado desde la tabla 'usuarios'
+     * con las relaciones tipoDocumento y genero.
      */
     public function getProfile()
     {
-        $user = Auth::user(); // Obtener el usuario autenticado
+        $user = Auth::user();
 
         if (!$user) {
             return response()->json(['message' => 'Usuario no autenticado'], 401);
         }
 
-        $perfil = Usuarios::where('numDocumento', $user->numDocumento)->first();
+        // Cargar perfil con relaciones
+        $perfil = $user->perfil()->with('tipoDocumento', 'genero')->first();
+
+        if (!$perfil) {
+            return response()->json(['message' => 'Perfil no encontrado'], 404);
+        }
 
         return response()->json($perfil);
     }
@@ -36,14 +41,12 @@ class HomeController extends Controller
             return response()->json(['message' => 'Usuario no autenticado'], 401);
         }
 
-        // Buscar el usuario en la tabla 'usuarios'
-        $perfil = Usuarios::where('numDocumento', $user->numDocumento)->first();
+        $perfil = $user->perfil;
 
         if (!$perfil) {
             return response()->json(['message' => 'Perfil no encontrado'], 404);
         }
 
-        // Validaciones antes de actualizar
         $request->validate([
             'primerNombre' => 'required|string|max:255',
             'primerApellido' => 'required|string|max:255',
@@ -63,9 +66,11 @@ class HomeController extends Controller
             'pensionesCodigo' => 'nullable|integer'
         ]);
 
-        // Actualizar el perfil del usuario
         $perfil->update($request->all());
 
-        return response()->json(['message' => 'Perfil actualizado con éxito', 'user' => $perfil]);
+        return response()->json([
+            'message' => 'Perfil actualizado con éxito',
+            'user' => $perfil
+        ]);
     }
 }

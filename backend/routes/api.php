@@ -285,9 +285,5 @@ Route::get('/tipos-horas', [tipohorasController::class, 'index']);
 
 
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/profile', [HomeController::class, 'getProfile']);
-    Route::put('/profile/update', [HomeController::class, 'updateProfile']);
-});
-
+Route::middleware('auth:api')->get('/profile', [HomeController::class, 'getProfile']);
 
