@@ -47,26 +47,18 @@ class HomeController extends Controller
             return response()->json(['message' => 'Perfil no encontrado'], 404);
         }
 
-        $request->validate([
-            'primerNombre' => 'required|string|max:255',
-            'primerApellido' => 'required|string|max:255',
-            'tipoDocumentoId' => 'required|integer',
-            'numDocumento' => 'required|string|max:50',
-            'fechaNac' => 'nullable|date',
-            'email' => 'required|email|max:255|unique:usuarios,email,' . $perfil->numDocumento,
+        // Validar únicamente los campos que realmente se pueden actualizar desde el frontend
+        $validated = $request->validate([
+            'email' => 'required|email|max:255',
             'direccion' => 'nullable|string|max:255',
             'telefono' => 'nullable|string|max:20',
-            'generoId' => 'nullable|integer',
             'numHijos' => 'nullable|integer',
             'contactoEmergencia' => 'nullable|string|max:255',
             'numContactoEmergencia' => 'nullable|string|max:20',
-            'nacionalidadId' => 'nullable|integer',
-            'epsCodigo' => 'nullable|integer',
-            'estadoCivilId' => 'nullable|integer',
-            'pensionesCodigo' => 'nullable|integer'
+            'estadoCivilId' => 'nullable|integer'
         ]);
 
-        $perfil->update($request->all());
+        $perfil->update($validated);
 
         return response()->json([
             'message' => 'Perfil actualizado con éxito',
