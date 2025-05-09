@@ -62,71 +62,73 @@
         <form (ngSubmit)="updateInfo()">
           <div class="form-group">
             <label for="primerNombre">Primer Nombre:</label>
-            <input type="text" id="primerNombre" name="primerNombre" [(ngModel)]="user.primerNombre">
+            <input type="text" id="primerNombre" name="primerNombre" class="form-control" [(ngModel)]="user.primerNombre" readonly>
           </div>
           <div class="form-group">
             <label for="segundoNombre">Segundo Nombre:</label>
-            <input type="text" id="segundoNombre" name="segundoNombre" [(ngModel)]="user.segundoNombre">
+            <input type="text" id="segundoNombre" name="segundoNombre" class="form-control" [(ngModel)]="user.segundoNombre" readonly>
           </div>
           <div class="form-group">
             <label for="primerApellido">Primer Apellido:</label>
-            <input type="text" id="primerApellido" name="primerApellido" [(ngModel)]="user.primerApellido">
+            <input type="text" id="primerApellido" name="primerApellido" class="form-control" [(ngModel)]="user.primerApellido" readonly>
           </div>
           <div class="form-group">
             <label for="segundoApellido">Segundo Apellido:</label>
-            <input type="text" id="segundoApellido" name="segundoApellido" [(ngModel)]="user.segundoApellido">
+            <input type="text" id="segundoApellido" name="segundoApellido" class="form-control" [(ngModel)]="user.segundoApellido" readonly>
           </div>
           <div class="form-group">
             <label for="tipoDocumento">Tipo de Documento:</label>
-            <input type="text" id="tipoDocumento" name="tipoDocumento" [(ngModel)]="user.tipoDocumento">
+            <input type="text" id="tipoDocumento" name="tipoDocumento" class="form-control" [(ngModel)]="user.tipoDocumento" readonly>
           </div>
           <div class="form-group">
             <label for="numeroDocumento">Número de Documento:</label>
-            <input type="text" id="numeroDocumento" name="numeroDocumento" [(ngModel)]="user.numeroDocumento">
+            <input type="text" id="numeroDocumento" name="numeroDocumento" class="form-control" [(ngModel)]="user.numeroDocumento" readonly>
           </div>
           <div class="form-group">
             <label for="fechaNacimiento">Fecha de Nacimiento:</label>
-            <input type="date" id="fechaNacimiento" name="fechaNacimiento" [(ngModel)]="user.fechaNacimiento">
+            <input type="date" id="fechaNacimiento" name="fechaNacimiento" class="form-control" [(ngModel)]="user.fechaNacimiento" readonly>
           </div>
           <div class="form-group">
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" [(ngModel)]="user.email">
+            <input type="email" id="email" name="email" class="form-control" [(ngModel)]="user.email">
           </div>
           <div class="form-group">
             <label for="direccion">Dirección:</label>
-            <input type="text" id="direccion" name="direccion" [(ngModel)]="user.direccion">
+            <input type="text" id="direccion" name="direccion" class="form-control" [(ngModel)]="user.direccion">
           </div>
           <div class="form-group">
             <label for="telefono">Teléfono:</label>
-            <input type="text" id="telefono" name="telefono" [(ngModel)]="user.telefono">
+            <input type="text" id="telefono" name="telefono" class="form-control" [(ngModel)]="user.telefono">
           </div>
           <div class="form-group">
             <label for="numeroHijos">Número de Hijos:</label>
-            <input type="number" id="numeroHijos" name="numeroHijos" [(ngModel)]="user.numeroHijos">
+            <input type="number" id="numeroHijos" name="numeroHijos" class="form-control" [(ngModel)]="user.numeroHijos">
           </div>
           <div class="form-group">
             <label for="contactoEmergencia">Contacto de Emergencia:</label>
-            <input type="text" id="contactoEmergencia" name="contactoEmergencia" [(ngModel)]="user.contactoEmergencia">
+            <input type="text" id="contactoEmergencia" name="contactoEmergencia" class="form-control" [(ngModel)]="user.contactoEmergencia">
           </div>
           <div class="form-group">
             <label for="numeroContactoEmergencia">Número de Contacto Emergencia:</label>
-            <input type="text" id="numeroContactoEmergencia" name="numeroContactoEmergencia" [(ngModel)]="user.numeroContactoEmergencia">
-          </div>
-          <div class="form-group">
-            <label for="nacionalidad">Nacionalidad:</label>
-            <input type="text" id="nacionalidad" name="nacionalidad" [(ngModel)]="user.nacionalidad">
+            <input type="text" id="numeroContactoEmergencia" name="numeroContactoEmergencia" class="form-control" [(ngModel)]="user.numeroContactoEmergencia">
           </div>
           <div class="form-group">
             <label for="eps">EPS:</label>
-            <input type="text" id="eps" name="eps" [(ngModel)]="user.eps">
+            <select id="eps" name="eps" class="form-control" [(ngModel)]="user.eps" disabled>
+              <option *ngFor="let e of epsLista" [value]="e.codigo">{{ e.nombre }}</option>
+            </select>
           </div>
           <div class="form-group">
             <label for="estadoCivil">Estado Civil:</label>
-            <input type="text" id="estadoCivil" name="estadoCivil" [(ngModel)]="user.estadoCivil">
+            <select id="estadoCivil" name="estadoCivil" class="form-control" [(ngModel)]="user.estadoCivil">
+              <option *ngFor="let e of estadoCivilLista" [value]="e.id">{{ e.nombre }}</option>
+            </select>
           </div>
           <div class="form-group">
             <label for="pensiones">Pensiones:</label>
-            <input type="text" id="pensiones" name="pensiones" [(ngModel)]="user.pensiones">
+            <select id="pensiones" name="pensiones" class="form-control" [(ngModel)]="user.pensiones" disabled>
+              <option *ngFor="let p of pensionesLista" [value]="p.codigo">{{ p.nombre }}</option>
+            </select>
           </div>
           <div class="modal-buttons">
             <button type="submit" class="btn btn-primary">Guardar Cambios</button>
