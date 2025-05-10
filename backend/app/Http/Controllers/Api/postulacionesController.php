@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Postulaciones; // Asegúrate de que el nombre del modelo sea correcto (Postulaciones en plural)
+use App\Models\Postulaciones;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon; // Importar Carbon para las fechas
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class PostulacionesController extends Controller
 {
@@ -27,7 +28,7 @@ class PostulacionesController extends Controller
                 'data' => $postulaciones
             ], 200);
         } catch (\Exception $e) {
-            Log::error('Error al obtener lista de postulaciones (Api\PostulacionesController::index): ' . $e->getMessage());
+            Log::error('Error al obtener lista de postulaciones (PostulacionesController::index): ' . $e->getMessage());
             return response()->json([
                 'message' => 'Ocurrió un error al obtener las postulaciones.',
                 'error' => $e->getMessage()
@@ -48,7 +49,7 @@ class PostulacionesController extends Controller
                 'data' => $postulacion
             ], 200);
         } catch (\Exception $e) {
-            Log::error('Error al obtener postulación con ID ' . $idPostulaciones . ' (Api\PostulacionesController::show): ' . $e->getMessage());
+            Log::error('Error al obtener postulación con ID ' . $idPostulaciones . ' (PostulacionesController::show): ' . $e->getMessage());
             return response()->json([
                 'message' => 'Ocurrió un error al obtener la postulación.',
                 'error' => $e->getMessage()
@@ -56,7 +57,6 @@ class PostulacionesController extends Controller
         }
     }
 
-    // === MÉTODO searchByVacantesId (NO MODIFICADO) ===
     public function searchByVacantesId($vacantesId)
     {
         try {
@@ -74,7 +74,7 @@ class PostulacionesController extends Controller
                 'results' => $postulaciones
             ], 200);
         } catch (\Exception $e) {
-            Log::error('Error al buscar postulaciones por Vacante ID (Api\PostulacionesController::searchByVacantesId): ' . $e->getMessage());
+            Log::error('Error al buscar postulaciones por Vacante ID (PostulacionesController::searchByVacantesId): ' . $e->getMessage());
             return response()->json([
                 'message' => 'Ocurrió un error al realizar la búsqueda.',
                 'error' => $e->getMessage()
@@ -82,7 +82,6 @@ class PostulacionesController extends Controller
         }
     }
 
-    // === MÉTODO updateStatus (NO MODIFICADO) ===
     public function updateStatus(Request $request, $idPostulaciones)
     {
         try {
@@ -114,7 +113,7 @@ class PostulacionesController extends Controller
                 'postulacion' => $postulacion
             ], 200);
         } catch (\Exception $e) {
-            Log::error('Error al actualizar estado de postulación con ID ' . $idPostulaciones . ' (Api\PostulacionesController::updateStatus): ' . $e->getMessage());
+            Log::error('Error al actualizar estado de postulación con ID ' . $idPostulaciones . ' (PostulacionesController::updateStatus): ' . $e->getMessage());
             return response()->json([
                 'message' => 'Ocurrió un error al actualizar el estado de la postulación.',
                 'error' => $e->getMessage()
@@ -122,7 +121,6 @@ class PostulacionesController extends Controller
         }
     }
 
-    // === MÉTODO mapEstadoToTinyint (NO MODIFICADO) ===
     private function mapEstadoToTinyint(string $estadoString): int
     {
         switch ($estadoString) {
@@ -133,19 +131,21 @@ class PostulacionesController extends Controller
         }
     }
 
-    /**
-     * Store a newly created postulation from the public user.
-     * Almacena una nueva postulación enviada por el usuario público.
-     */
     public function store(Request $request)
     {
         try {
-            // <<<< MODIFICADO: Reglas de validación >>>>
-            // Solo validar vacantesId, ya que estado y fecha son automáticos.
+            // Obtener usuario autenticado
+            $usuario = Auth::user();
+
+            if (!$usuario || !isset($usuario->numdocumento)) {
+                return response()->json([
+                    'message' => 'Usuario no autenticado o sin número de documento.'
+                ], 401);
+            }
+
+            // Validar vacantesId
             $validator = Validator::make($request->all(), [
                 'vacantesId' => 'required|integer|exists:vacantes,idVacantes',
-                // Si envías userId del frontend, valida también:
-                // 'userId' => 'required|integer|exists:users,id',
             ]);
 
             if ($validator->fails()) {
@@ -155,26 +155,20 @@ class PostulacionesController extends Controller
                 ], 422);
             }
 
-            // Obtén los datos validados (principalmente vacantesId)
             $validatedData = $validator->validated();
 
-            // <<<< MODIFICADO: Creación de la postulación asignando valores automáticos >>>>
-            $postulacion = new Postulaciones(); // Crea una nueva instancia del modelo
+            // Crear nueva postulación
+            $postulacion = new Postulaciones();
+            $postulacion->vacantesId = $validatedData['vacantesId'];
+            $postulacion->fechaPostulacion = Carbon::now()->toDateString();
+            $postulacion->estado = $this->mapEstadoToTinyint('Pendiente');
+            $postulacion->numdocumento = $usuario->numdocumento;
 
-            $postulacion->vacantesId = $validatedData['vacantesId']; // Asigna el ID de la vacante recibido
-            $postulacion->fechaPostulacion = Carbon::now()->toDateString(); // Asigna la fecha actual usando Carbon
-            $postulacion->estado = $this->mapEstadoToTinyint('Pendiente'); // Asigna el estado 'Pendiente' (mapeado a Tinyint)
+            $postulacion->save();
 
-            // Si manejas userId y lo validaste:
-            // $postulacion->userId = $validatedData['userId'];
-
-            $postulacion->save(); // Guarda el registro en la base de datos
-
-
-            // Retorna una respuesta de éxito
             return response()->json([
                 'message' => 'Postulación creada exitosamente',
-                'data' => $postulacion, // Opcional: devuelve la postulación creada
+                'data' => $postulacion,
             ], 201);
 
         } catch (\Exception $e) {

@@ -25,11 +25,10 @@
             <th>Fecha de postulación</th>
             <th>Estado</th>
             <th>Vacante ID</th>
-            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let postulacion of postulaciones | filterMisPostulaciones:searchQuery; let i = index">
+          <tr *ngFor="let postulacion of postulaciones; let i = index">
             <td data-label="Id Postulación">{{ postulacion.idPostulaciones }}</td>
             <td data-label="Fecha de postulación">{{ postulacion.fechaPostulacion }}</td>
             <td data-label="Estado">
@@ -41,21 +40,6 @@
               </span>
             </td>
             <td data-label="Vacante ID">{{ postulacion.vacantesId }}</td>
-            <td data-label="Acciones">
-              <button class="btn btn-link btn-acciones editar"
-                      data-bs-toggle="modal" data-bs-target="#editarEstadoModal"
-                      title="Editar Estado"
-                      (click)="editarPostulacion(postulacion)">
-                <i class="fas fa-edit"></i>
-              </button>
-
-              <button class="btn btn-link btn-acciones"
-                      data-bs-toggle="modal" data-bs-target="#verDetallesModal"
-                      title="Ver Detalles"
-                      (click)="verDetalles(postulacion)">
-                <i class="fas fa-eye"></i>
-              </button>
-            </td>
           </tr>
         </tbody>
       </table>
