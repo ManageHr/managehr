@@ -1,0 +1,663 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1a2035;
+    display: flex;
+    height: 100vh; /* Asegura que el body ocupe toda la altura de la ventana */
+    overflow: hidden; /* Evita el desplazamiento en el body, ya que el contenido se desplazará en la sidebar y main-content */
+}
+
+.container {
+    display: flex;
+    height: 100%;
+    width: 100%;
+  }
+  
+  .sidebar {
+    width: 15%;
+    background-color: #1F293F;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    position: fixed; /* Mantiene la sidebar fija */
+    padding-top: 20px;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    overflow-y: auto; /* Permite el desplazamiento dentro de la sidebar si el contenido es largo */
+  }
+  
+  .logito{
+    background-color: #10d42a00;
+    padding-top: 15px;
+    width: 100%;
+    display: flex;
+  }
+  
+  
+  .menu {
+    display: flex;
+    flex-direction: column;
+    list-style-type: none; /* Elimina los puntos de lista */
+    padding-top: 200px;
+    background-color: #dfcc2300; /* Color de fondo del menú */
+    width: 100%;
+  
+  }
+  
+  .menu > li {
+    position: relative; /* Necesario para el posicionamiento absoluto del sub-menú */
+  }
+  
+  .menu > li > a {
+    margin-top: 20px;
+    display: flex; /* Usa flexbox para alinear el icono y el texto */
+    align-items: center; /* Alinea el icono y el texto verticalmente */
+    padding: 8px 20px; /* Espaciado interno */
+    color: rgb(255, 255, 255); /* Color del texto */
+    text-decoration: none; /* Elimina el subrayado */
+    background-color: #72d84a00; /* Color de fondo del ítem del menú */
+    border-radius: 40px;
+    font-size: 18px;
+  }
+  
+  .menu > li > a img {
+    width: 20px; /* Ajusta el tamaño del icono */
+    height: auto; /* Mantiene la proporción del icono */
+    margin-right: 15px; /* Espacio entre el icono y el texto */
+  }
+  
+  .menu > li > a:hover {
+    border-radius: 10px;
+    background: linear-gradient(90deg, #007bff, #42a5f5);color: #fff;
+    box-shadow: 0px 4px 10px rgba(12, 65, 180, 0.5);
+  }
+  
+  .sub-menu {
+    display: none; /* Oculta el sub-menú por defecto */
+    position: absolute; /* Posiciona el sub-menú relativo al ítem del menú */
+    top: 100%; /* Coloca el sub-menú justo debajo del ítem del menú */
+    left: 0;
+    list-style-type: none; 
+    padding: 10px;
+    margin: 3px;
+    background-color: #6e6cfa00; 
+    z-index: 1000; /* Asegura que el sub-menú esté por encima de otros elementos */
+    width: 100%;
+    font-size: 18px;
+    border-radius: 20px;
+  }
+  
+  .sub-menu a {
+    display: flex; /* Usa flexbox para alinear el icono y el texto */
+    align-items: center; /* Alinea el icono y el texto verticalmente */
+    padding: 10px 20px; /* Espaciado interno */
+    color: white; /* Color del texto */
+    text-decoration: none; /* Elimina el subrayado */
+    
+  }
+  
+  .sub-menu a img {
+    width: 20px; /* Ajusta el tamaño del icono */
+    height: auto; /* Mantiene la proporción del icono */
+    margin-right: 15px; /* Espacio entre el icono y el texto */
+  }
+  
+  .sub-menu a:hover {
+    border-radius: 10px;
+    background: linear-gradient(90deg, #007bff, #42a5f5);color: #fff;
+    box-shadow: 0px 4px 10px rgba(12, 65, 180, 0.5);
+  }
+  
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: #1f293f00;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px #28375800;
+}
+
+.search-bar input {
+    background-color: #ffffff00;
+    border: 1px solid #f8f8f8;
+    width: 400px;
+    padding: 10px;
+    border-radius: 10px;
+    outline: none;
+    font-size: 16px;    
+    color: white;
+}
+  
+  .user-info {
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .icons img, td img {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+  }
+  
+  .user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .user-profile .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+  
+  .user-details {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .user-name {
+    font-weight: bold;
+  }
+  
+  .user-email {
+    font-size: 12px;
+    color: #6b7280;
+  }
+  
+  
+  /* Muestra el sub-menú al pasar el ratón sobre el ítem del menú principal */
+  .menu > li:hover .sub-menu {
+    display: block;
+  }
+  
+  .main-content {
+    position: relative;
+    margin-left: 15%; /* Deja espacio para la sidebar fija */
+    flex: 1;
+    background-color: #1c2538;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Asegura que el main-content ocupe toda la altura disponible */
+    overflow-y: auto; /* Permite el desplazamiento del contenido en el main-content */
+  }
+  .logout{
+    display: flex;
+    height: 100vh;
+    justify-content: left;
+    align-items: end;
+    background-color: #ff000000;
+  }
+  
+  .logout-button {
+    background: linear-gradient(90deg, #007bff, #42a5f5);color: #fff;
+    box-shadow: 0px 4px 10px rgba(12, 65, 180, 0.5);
+    border: none; 
+    padding: 10px 20px; 
+    text-align: center; 
+    text-decoration: none; 
+    margin-left: 0px;
+    font-size: 16px; 
+    margin: 10px; 
+    cursor: pointer;
+    border-radius: 8px; 
+    transition: background-color 0.3s; 
+    
+  }
+  .sidebar img {
+    background-color: #3498db00;
+    width: 100%;
+  }
+  .dashboard {
+    position: relative;
+    background-color: #202940;
+    padding: 40px 20px 20px 20px;
+    border-radius: 8px;
+    margin: 20px /* Permite el desplazamiento dentro de dashboard si es necesario */
+}
+
+.product-table {
+    margin-top: 40px;
+    width: 100%;
+    background-color: #16213e00;
+    border-radius: 10px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.61);
+    margin-bottom: 20px;
+}
+.table-title {
+    position: absolute;
+    top: -25px;
+    left: 2%;
+    background: linear-gradient(90deg, #007bff, #42a5f5);
+    padding: 1% 87% 1% 1%;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(82, 230, 205, 0.5);
+    color: white;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.product-table th {
+    text-align: start;
+    padding: 30px;
+    border-bottom: 1px solid #ffffff;
+    color: white;
+    font-size: 20px;
+}
+.product-table td {
+    padding: 30px;
+    color: white;
+    font-size: 20px;
+}
+
+
+.status {
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 20px;
+}
+
+.status.pending {
+    background-color: #fbbf24;
+}
+
+.status.active {
+    background-color: #22c55e;
+}
+
+.status.inactive {
+    background-color: #ef4444;
+}
+* /FORMULARIOS/ */
+.formulario1,.formulario2 {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10%;
+    z-index: 15;
+    border-radius: 10px;
+    position: absolute;
+    width: 30%;
+    height: 60%;
+    margin-left:35%;
+    background: linear-gradient(90deg, #007bff, #42a5f5);
+  }
+  .formulario1 a,.formulario2 a {
+    display: flex;
+    position: absolute;
+    width: 100%;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: flex-end;
+    margin-top: 20px;
+  }
+  
+  .formulario1 #header,.formulario2 #header {
+    width: 60%;
+    margin-top: 3%;
+    padding-left: 2%;
+    padding-right: 2%;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+    z-index: 10;
+    border-radius: 10px;
+    color: white;
+    box-shadow: none;
+    border: none;
+    background-color: rgb(46, 68, 227);
+  }
+  .formulario1 h1,.formulario2 h1{
+    color: white;
+    padding-left: 30px;
+  }
+  .formulario1 img,.formulario2 img {
+    margin-right: 2%;
+    width: 40px;
+    height: 40px;
+  }
+  
+  .formulario1 form,
+  .formulario2 form,
+  .formulario3 form {
+    width: 90%;
+    height: 750px;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+  }
+  .formulario1 font,
+  .formulario2 font,
+  .formulario3 font {
+    margin-top: 20px;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 20px;
+    color: white;
+  }
+  .formulario1 input[type="date"],
+  .formulario1 input[type="time"],
+  .formulario1 input[type="email"],
+  .formulario1 input[type="text"],
+  .formulario1 select {
+    width: 90%;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 15px;
+    height: 50px;
+    padding: 10px;
+    border: none;
+    background-color: transparent;
+    border-bottom: 2px solid #ccc;
+    color: white;
+  }
+  .formulario1 input[type="date"]::placeholder,
+  .formulario1 input[type="time"]::placeholder,
+  .formulario1 input[type="email"]::placeholder,
+  .formulario1 input[type="text"]::placeholder {
+   
+    color: white;
+  }
+  .formulario2 input[type="date"],
+  .formulario2 input[type="time"],
+  .formulario2 input[type="email"],
+  .formulario2 input[type="text"],
+  .formulario2 select {
+    width: 90%;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 15px;
+    height: 50px;
+    padding: 10px;
+    border: none;
+    background-color: transparent;
+    border-bottom: 2px solid #ccc;
+    color: white;
+  }
+  .formulario2 input[type="date"]::placeholder,
+  .formulario2 input[type="time"]::placeholder,
+  .formulario2 input[type="email"]::placeholder,
+  .formulario2 input[type="text"]::placeholder {
+   
+    color: white;
+  }
+  .formulario1 textarea,.formulario2 textarea {
+    width: 90%;
+    height: 80px;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 15px;
+    height: 80px;
+    padding: 10px;
+    border: none;
+    background-color: transparent;
+    border-bottom: 2px solid #ccc;
+    color: white;
+  }
+  .formulario1 textarea::placeholder,.formulario2 textarea::placeholder {
+    color: white;
+  }
+  
+  .formulario1 #botones,.formulario2 #botones{
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-end;
+    align-items: end;
+    width: 100%;
+    padding: 20px;
+
+  }
+  
+  .formulario1 #botones #labelChec,.formulario2 #botones #labelChec {
+    display: flex;
+    width: 25%;
+    background-color: #09388f;
+    color: wheat;
+    border-radius: 10px;
+    padding: 3%;
+    font-size: 20px;
+    height: 30px;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+  }
+  .alerta1,.alerta2,.alerta3,.alerta4 {
+    margin-top: 15%;
+    margin-left: 35%;
+    width: 600px;
+    height: 350px;
+    z-index: 15;
+    display: flex;
+    position: absolute;
+    flex-flow: column wrap;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(90deg, #007bff, #42a5f5);
+    border-radius: 20px;
+    box-shadow: 2px 2px 2px #172134;
+}
+.alerta1 img,
+.alerta2 img,.alerta3 img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+}
+.alerta1 h1,
+.alerta2 h1,.alerta3 h1 {
+  color: white;
+  padding: 5%;
+  font-size: 25px;
+  text-align: center;
+}
+.alerta3 h2 {
+  color: white;
+
+  font-size: 25px;
+}
+.alerta1 a,
+.alerta2 a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 20px;
+  margin-top: 50px;
+  padding: 10px;
+  background: #09388f;
+  width: 100px;
+  height: 30px;
+  border-radius: 10px;
+  text-decoration: none;
+  margin-left: 75%;
+}
+.alerta3 .col{
+  display: flex;
+  flex-flow:row wrap;
+  justify-content: space-between;
+  align-items: center;
+  height: 30px;
+  width: 100%;
+  margin-top: -15px;
+ 
+}
+.alerta3 label,.alerta3 a{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30px;
+  padding: 20px;
+  margin-left: 10%;
+  margin-right: 50px;
+  color: white;
+  border-radius: 10px;
+  text-decoration: none;
+  text-align: center;
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+.alerta3 label{
+  background-color: #ef1212;
+  
+}
+.alerta3 a{
+  background-color: #09388f;
+  
+}
+.alerta4 img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+}
+.alerta4 h1 {
+  color: white;
+  padding: 5%;
+  font-size: 25px;
+  text-align: center;
+}
+.alerta4 h2 {
+  color: white;
+
+  font-size: 25px;
+}
+.alerta4 a{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 20px;
+  margin-top: 50px;
+  padding: 10px;
+  background: #09388f;
+  width: 100px;
+  height: 30px;
+  border-radius: 10px;
+  text-decoration: none;
+  margin-left: 75%;
+}
+  #chec1,.formulario1,#chec2,.alerta1,#chec3,
+  .formulario2,#chec4,.alerta2,.alerta3,#chec5,#chec6,.alerta4,.alerta5{
+    display: none;
+  }
+  #chec1:checked ~ .formulario1 {
+    display: flex;
+  }
+  #chec2:checked ~ .formulario1 {
+    display: none;
+  }
+  #chec2:checked ~ .alerta1{
+    display:flex;
+  }
+  #chec3:checked ~ .formulario2{
+    display:flex;
+  }
+  #chec4:checked ~ .formulario2{
+    display:none;
+  }
+  #chec4:checked ~ .alerta2{
+    display:flex;
+  }
+  #chec5:checked ~ .alerta3{
+    display:flex;
+  }
+  #chec6:checked ~ .alerta4{
+    display:flex;
+  }
+  #chec6:checked ~ .alerta3{
+    display:none;
+  }
+  #chec1:checked ~ .container,
+  #chec2:checked ~ .container,
+  #chec3:checked ~ .container,
+  #chec4:checked ~ .container,
+  #chec5:checked ~ .container,
+  #chec6:checked ~ .container {
+      
+    opacity: 0.2;
+  }
+  /*
+  .formulario1,
+  .formulario2,
+  .formulario3,
+  .alerta {
+    display: none;
+  }*/
+  .custom-file-upload {
+    display: inline-block;
+    width: 30%;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 15px;
+    height: 50px;
+    padding: 10px;
+    border: 2px solid #2b42c0;
+    border-radius: 5px;
+    background-color: #123d88;
+    color: #ffffff;
+    text-align: center;
+    cursor: pointer;
+    line-height: 30px;
+  }
+  .custom-file-upload input {
+    display: none;
+  }
+  .custom-file-upload:hover {
+    background-color: #2b42c0;
+    border-color: #123d88;
+  }
+  
+  .custom-file-upload:active {
+    background-color: #123d88;
+    color: #ffffff;
+  }
+
+.circle {
+    margin-left: 650px;
+    margin-top: 15px;
+    width: 50px;
+    height: 50px;
+}
+.agregar{
+    display: flex;
+    justify-content: center;
+    padding: 6px;
+    margin-left: 92%;
+    margin-top: -20px;
+    margin-bottom: 30px;
+    gap: 15px;
+    width: 6%;
+    background-color: #1866db;
+    display: flex;
+    border-radius: 5px;
+    cursor: pointer;
+
+}
+
+.agregar h6{
+    margin-top: 2px;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    background-color: #1eff0000;
+    font-size: 12px;
+    margin-left: -10px;
+}
+
+.agregar img{
+    width: 15px;
+    background-color: #ff730000;
+    display: flex;
+    
+}

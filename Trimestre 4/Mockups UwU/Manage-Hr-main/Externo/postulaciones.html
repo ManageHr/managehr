@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Postulaciones</title>
+    <link rel="stylesheet" href="../Resources/css/Externo/postulaciones.css">
+</head>
+<body>
+    <input type="checkbox" id="chec1">
+    <input type="checkbox" id="chec2">
+    <input type="checkbox" id="chec3">
+    <input type="checkbox" id="chec4">
+    <input type="checkbox" id="chec5">
+    <input type="checkbox" id="chec6">
+    
+    <div class="formulario1">
+        <a href="vacaciones.html"><img src="../Resources/Images/Icons/circle.svg" alt=""></a>
+        <header id="header">
+            <h1>Crear Vacaciones</h1>
+        </header>
+        <form action="">
+            <font>Empleado </font>
+            <input type="text" placeholder="Nobre del empleado" id="empleado">
+            <font>Fecha de Inicio </font>
+            <input type="date" placeholder="fecha inicial" id="fecha1">
+            <font>Fecha de Fin </font>
+            
+            <input type="time" placeholder="Hora final" id="horaFin">
+            <div id="botones">
+                <label id="labelChec" for="chec2">Crear</label>
+            </div>
+        </form>
+    </div>
+    <div class="formulario2">
+        <a href="vacaciones.html"><img src="../Resources/Images/Icons/circle.svg" alt=""></a>
+        <header id="header">
+            <h1>Actualizar horas extras</h1>
+        </header>
+        <form action="">
+            <font>Fecha de Inicio </font>
+            <input type="date" value="2024-09-15" id="fecha1">
+            <font>Fecha de Fin </font>
+            
+            <input type="date" placeholder="Hora final" value="2024-10-15" id="horaFin">
+            <div id="botones">
+
+                <label id="labelChec" for="chec4">Modificar</label>
+            </div>
+        </form>
+    </div>
+
+    <div class="alerta1">
+        <img src="../Resources/Images/Icons/check-white.svg" alt="" />
+        <h1>Se Creo con exito !</h1>
+        <a href="vacaciones.html">Ok</a>
+    </div>
+    <div class="alerta2">
+        <img src="../Resources/Images/Icons/check-white.svg" alt="" />
+        <h1>Se actualizo con exito!</h1>
+        <a href="vacaciones.html">Ok</a>
+    </div>
+    <div class="alerta3">
+
+        <img src="../Resources/Images/Icons/bell-solid.svg" alt="" />
+        <h1>Seguro que quiere eliminar la postulacion </h1>
+        <div class="col">
+            
+            <a href="vacaciones.html">Cancelar</a>
+            <label for="chec6">Eliminar</label>
+        </div>
+    </div>
+    <div class="alerta4">
+        <img src="../Resources/Images/Icons/check-white.svg" alt="" />
+        <h1>Se elimino con exito!</h1>
+        <a href="postulaciones.html">Ok</a>
+    </div>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logito">
+                <img src="../Resources/Images/logo.png" alt="">
+            </div>
+            <ul class="menu">
+                <li><a href="./perfil.html"><img src="../Resources/Images/Icons/user-solid.svg" alt="Icono Directorio"> Perfil</a></li>
+                <li><a href="./vacantes.html"><img src="../Resources/Images/Icons/briefcase-solid.svg" alt="Icono Vacantes"> Vacantes</a></li>
+                <li><a href="postulaciones.html"><img src="../Resources/Images/Icons/list-check-solid.svg" alt="Icono Vacantes"> Postulaciones</a></li>
+            </ul>
+            <div class="logout">
+                <a href="../index.html"><button class="logout-button">Cerrar Sesión</button></a>
+            </div>
+        </aside>
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search">
+                </div>
+                <div class="user-info">
+                    <div class="icons">
+                        <img src="../Resources/Images/Icons/notificaciones.png" alt="Notification Icon">
+                    </div>
+                    <div class="user-profile">
+                        <img src="../Resources/Images/4.jpg" alt="User Avatar" class="avatar">
+                        <div class="user-details">
+                            <span class="user-name">Sofia Hernanadez</span>
+                            <span class="user-email">Administradora De Empresas</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <section class="dashboard">
+                <div class="table-title">Postulaciones</div>
+                <table class="product-table">
+                    <thead>
+                        <tr>
+                            <th>Vacante</th>
+                            <th>Sueldo</th>
+                            <th>Cargo</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Gerente Administrativo</td>
+                            <td>4.500.000</td>
+                            <td>Administradora de Empresas</td>
+                            <td><span class="status active">Postulado</span></td>
+                            <td>
+                                <div class="icons-2">
+                                    <label for="chec5"><img
+                                        src="../Resources/Images/Icons/delete.svg"
+                                        alt="Eliminar"
+                                        title="Cancelar postulación"
+                                    /></label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Coordinador de Recursos Humanos</td>
+                            <td>3.800.000</td>
+                            <td>Administradora de Empresas</td>
+                            <td><span class="status active">Postulado</span></td>
+                            <td>
+                                <div class="icons-2">
+                                    <label for="chec5"><img
+                                        src="../Resources/Images/Icons/delete.svg"
+                                        alt="Eliminar"
+                                        title="Cancelar postulación"
+                                    /></label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Analista Financiero</td>
+                            <td>4.200.000</td>
+                            <td>Administradora de Empresas</td>
+                            <td><span class="status pending">Proceso</span></td>
+                            <td>
+                                <div class="icons-2">
+                                    <label for="chec5"><img
+                                        src="../Resources/Images/Icons/delete.svg"
+                                        alt="Eliminar"
+                                        title="Cancelar postulación"
+                                    /></label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Consultor de Negocios</td>
+                            <td>5.000.000</td>
+                            <td>Administradora de Empresas</td>
+                            <td><span class="status pending">Proceso</span></td>
+                            <td>
+                                <div class="icons-2">
+                                    <label for="chec5"><img
+                                        src="../Resources/Images/Icons/delete.svg"
+                                        alt="Eliminar"
+                                        title="Cancelar postulación"
+                                    /></label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Gerente de Operaciones</td>
+                            <td>4.800.000</td>
+                            <td>Administradora de Empresas</td>
+                            <td><span class="status inactive">Rechazado</span></td>
+                            <td>
+                                <div class="icons-2">
+                                    <img
+                                        src="../Resources/Images/Icons/delete.svg"
+                                        alt="Eliminar"
+                                        title="Cancelar postulación"
+                                    />
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Jefe de Logística</td>
+                            <td>4.000.000</td>
+                            <td>Administradora de Empresas</td>
+                            <td><span class="status inactive">Rechazado</span></td>
+                            <td>
+                                <div class="icons-2">
+                                    <img
+                                        src="../Resources/Images/Icons/delete.svg"
+                                        alt="Eliminar"
+                                        title="Cancelar postulación"
+                                    />
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Director Comercial</td>
+                            <td>5.200.000</td>
+                            <td>Administradora de Empresas</td>
+                            <td><span class="status active">Postulado</span></td>
+                            <td>
+                                <div class="icons-2">
+                                    <label for="chec5"><img
+                                        src="../Resources/Images/Icons/delete.svg"
+                                        alt="Eliminar"
+                                        title="Cancelar postulación"
+                                    /></label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Analista de Proyectos</td>
+                            <td>3.900.000</td>
+                            <td>Administradora de Empresas</td>
+                            <td><span class="status pending">Proceso</span></td>
+                            <td>
+                                <div class="icons-2">
+                                    <label for="chec5"><img
+                                        src="../Resources/Images/Icons/delete.svg"
+                                        alt="Eliminar"
+                                        title="Cancelar postulación"
+                                    /></label>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

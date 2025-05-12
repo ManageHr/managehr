@@ -1,0 +1,76 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incapacidades</title>
+    <link rel="stylesheet" href="Incapacidades.css">
+
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo">¡Bienvenido!</div>
+            <img src="logo2.png" alt="">
+            <ul class="menu">
+                <li><a href="#"><img src="Icons/directorio.png" alt="Icono Directorio"> Directorio</a></li>
+                <li>
+                    <a href="#"><img src="icons/solicitudes.png" alt="Icono Solicitudes"> Solicitudes</a>
+                    <ul class="sub-menu">
+                        <li><a href="#"><img src="icons/vacaciones.png" alt="Icono Vacaciones"> Vacaciones</a></li>
+                        <li><a href="#"><img src="icons/incapacidades.png" alt="Icono Incapacidades"> Incapacidades</a></li>
+                        <li><a href="#"><img src="icons/extra.png" alt="Icono Horas Extra"> Horas extra</a></li>
+                        <li><a href="#"><img src="icons/pazysalvo.png" alt="Icono Paz y Salvos"> Paz y Salvos</a></li>
+                    </ul>
+                </li>
+                <li><a href="#"><img src="icons/vacante.png" alt="Icono Vacantes"> Vacantes</a></li>
+                <li><a href="#"><img src="icons/hojadevida.png" alt="Icono Hojas de Vida"> Hojas de vida</a></li>
+                <li><a href="#"><img src="icons/notificaciones.png" alt="Icono Notificaciones"> Notificaciones</a></li>
+            </ul>
+            <button class="logout-button">Cerrar Sesión</button>
+        </aside>
+        <main class="main-content">
+            <section class="dashboard">
+                <h1>Incapacidades</h1>
+                    <div class="vacaciones">
+
+                            <div class="foto">
+                            <h2>Formulario<p> Solicitud de Incapacidad</h2>
+                            <img src="salud.png"Icono Vacantes>
+                            </div>
+
+                            <div class="form">
+                                <form action="#" method="post">
+                                    <label for="nombre">Nombre Completo:</label>
+                                    <input type="text" id="nombre" name="nombre" required>
+                        
+                                    <label for="dni">Número de Identificación:</label>
+                                    <input type="text" id="dni" name="dni" required>
+                        
+                                    <label for="fechaInicio">Fecha de Inicio de Incapacidad:</label>
+                                    <input type="date" id="fechaInicio" name="fechaInicio" required>
+                        
+                                    <label for="fechaFin">Fecha de Fin de Incapacidad:</label>
+                                    <input type="date" id="fechaFin" name="fechaFin" required>
+                        
+                                    <label for="motivo">Motivo de Incapacidad:</label>
+                                    <textarea id="motivo" name="motivo" rows="4" required></textarea>
+                        
+                                    <label for="documentoMedico">Subir Documento Médico (PDF):</label>
+                                    <input type="file" id="documentoMedico" name="documentoMedico" accept=".pdf" required>
+                        
+                                    <label for="comentarios">Comentarios Adicionales:</label>
+                                    <textarea id="comentarios" name="comentarios" rows="3"></textarea>
+                                    
+                                    <div class="boton">
+                                    <button type="submit">Enviar</button>
+                                    </div>
+                                </form>
+                        
+            
+                            </div>
+                    </div>
+             </section>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<html lang="en"></html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incapacidades</title>
+    <link rel="stylesheet" href="../Resources/css/Jefe-Personal/horasextra.css">
+
+</head>
+<body>
+   
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logito">
+            <img src="../Resources/Images/logo.png" alt="">
+            </div>
+            <ul class="menu">
+                <li><a href="./perfil.html"><img src="../Resources/Images/Icons/user-solid.svg" alt="Icono Directorio"> Perfil</a></li>
+                <li><a href="./vacantes.html"><img src="../Resources/Images/Icons/briefcase-solid.svg" alt="Icono Vacantes"> Vacantes</a></li>
+                <li><a href="./vacaciones.html"><img src="../Resources/Images/Icons/suitcase-solid.svg" alt="Icono Vacaciones"> Vacaciones</a></li>
+                <li><a href="./Incapacidades.html"><img src="../Resources/Images/Icons/book-medical-solid.svg" alt="Icono Incapacidades"> Incapacidades</a></li>
+                <li><a href="./horasextra.html"><img src="../Resources/Images/Icons/calendar-plus-solid.svg" alt="Icono Horas Extra"> Horas extra</a></li>
+                <li><a href="./notificaciones.html"><img src="../Resources/Images/Icons/bell-solid.svg" alt="Icono Notificaciones"> Notificaciones</a></li>
+
+            </ul>
+            <div class="logout">
+            <a href="../index.html"><button class="logout-button">Cerrar Sesión</button></a>
+            </div>
+        </aside>
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search">
+                </div>
+                <div class="user-info">
+                    <div class="noti">
+                        <input type="checkbox" id="toggle-menu" class="toggle-menu">
+                        <label for="toggle-menu" class="noti-icon">
+                            <img src="../Resources/Images/Icons/notificaciones.png">
+                        </label>
+                        <ul class="sub-noti">
+                            <div class="mini">
+                                Carlos Hernandez ha enviado una solicitud de Vacaciones
+                            </div>
+                            <div class="mini">
+                                Marcela Reyes ha enviado una solicitud de Horas extra
+                            </div>
+                            <div class="mini">
+                                Carolina Carrillo ha enviado una solicitud de Horas extra
+                            </div>
+                            <div class="mini">
+                                Julian Rozo ha enviado una solicitud de Horas extra
+                            </div>
+                            
+                        </ul>
+                    </div>
+                    
+                    <div class="user-profile">
+                        <img src="../Resources/Images/3.jpg" alt="User Avatar" class="avatar">
+                        <div class="user-details">
+                            <span class="user-name">Yon Piter Ruiz</span>
+                            <span class="user-email">Jefe De Personal</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="checkbox" id="chequed1">
+            <div class="cuadro-blanco1">
+                <img src="../Resources/Images/Icons/check-white.svg">
+                <p>Tu solicitud ha sido enviada correctamente</p>
+                <a href="horasextra.html">Ok</a>
+            </div>
+            
+            <section class="dashboard">
+                <div class="titulo">
+                    <h1 class="letra">Horas Extra</h1>
+                </div>
+
+                <div class="formulario">
+                    <h1>¡Queremos que disfrutes tu tiempo con nosotros! <br> Completa tu solicitud de Horas extra</h1>
+                    <form class="cuadro" action="/enviar-solicitud" method="post">
+                        <div class="parte1">
+                        <div class="form-row">
+                            <label for="nombre">Fecha de Horas extra</label>
+                            <input type="date" id="nombre" name="nombre" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="posicion">Hora Inicio</label>
+                            <input type="time" id="posicion" name="posicion" required>
+                        </div>
+                        
+                        <div class="form-row full-width">
+                            <label for="fecha-fin">Hora Final</label>
+                            <input type="time" id="fecha-fin" name="fecha_fin" required>
+                        </div>
+                        <label for="chequed1" class="button">Enviar Solicitud</label>
+                    </form>
+                </div>
+             </section>
+        </main>
+        
+    </div>
+</body>
+</html>

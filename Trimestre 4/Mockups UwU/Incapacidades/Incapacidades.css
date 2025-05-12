@@ -1,0 +1,281 @@
+/* Reseteo básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7fa;
+    display: flex;
+    height: 100vh; /* Asegura que el body ocupe toda la altura de la ventana */
+    overflow: hidden; /* Evita el desplazamiento en el body, ya que el contenido se desplazará en la sidebar y main-content */
+}
+
+.container {
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+.sidebar {
+    width: 15%;
+    background-color: #7e7cff;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 40px;
+    position: fixed; /* Mantiene la sidebar fija */
+    top: 0;
+    bottom: 0;
+    left: 0;
+    overflow-y: auto; /* Permite el desplazamiento dentro de la sidebar si el contenido es largo */
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    list-style-type: none; /* Elimina los puntos de lista */
+    margin: 0;
+    padding: 0;
+    background-color: #72d84a00; /* Color de fondo del menú */
+    width: 100%;
+}
+
+.menu > li {
+    position: relative; /* Necesario para el posicionamiento absoluto del sub-menú */
+}
+
+.menu > li > a {
+    display: flex; /* Usa flexbox para alinear el icono y el texto */
+    align-items: center; /* Alinea el icono y el texto verticalmente */
+    padding: 15px 20px; /* Espaciado interno */
+    color: white; /* Color del texto */
+    text-decoration: none; /* Elimina el subrayado */
+    background-color: #756bf8ea; /* Color de fondo del ítem del menú */
+    border-radius: 40px;
+}
+
+.menu > li > a img {
+    width: 20px; /* Ajusta el tamaño del icono */
+    height: auto; /* Mantiene la proporción del icono */
+    margin-right: 15px; /* Espacio entre el icono y el texto */
+}
+
+.menu > li > a:hover {
+    border-radius: 40px;
+    border: 1px solid #ddd;
+    background-color: #fdfbfb00;
+}
+
+.sub-menu {
+    display: none; /* Oculta el sub-menú por defecto */
+    position: absolute; /* Posiciona el sub-menú relativo al ítem del menú */
+    top: 100%; /* Coloca el sub-menú justo debajo del ítem del menú */
+    left: 0;
+    list-style-type: none; 
+    padding: 10px;
+    margin: 3px;
+    background-color: #6e6cfa; 
+    z-index: 1000; /* Asegura que el sub-menú esté por encima de otros elementos */
+    width: 100%;
+    border: 2px solid rgb(248, 248, 248);
+    border-radius: 20px;
+}
+
+.sub-menu a {
+    display: flex; /* Usa flexbox para alinear el icono y el texto */
+    align-items: center; /* Alinea el icono y el texto verticalmente */
+    padding: 10px 20px; /* Espaciado interno */
+    color: white; /* Color del texto */
+    text-decoration: none; /* Elimina el subrayado */
+}
+
+.sub-menu a img {
+    width: 20px; /* Ajusta el tamaño del icono */
+    height: auto; /* Mantiene la proporción del icono */
+    margin-right: 15px; /* Espacio entre el icono y el texto */
+}
+
+.sub-menu a:hover {
+    border: 1px solid #ffffff; /* Línea divisoria entre ítems */
+    border-radius: 50px;
+    color: #6e6cfa; 
+    background-color: white;
+}
+
+/* Muestra el sub-menú al pasar el ratón sobre el ítem del menú principal */
+.menu > li:hover .sub-menu {
+    display: block;
+}
+
+.main-content {
+    margin-left: 15%; /* Deja espacio para la sidebar fija */
+    flex: 1;
+    background-color: #7e7cff;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Asegura que el main-content ocupe toda la altura disponible */
+    overflow-y: auto; /* Permite el desplazamiento del contenido en el main-content */
+}
+
+.dashboard {
+    background-color: #f4f7fa;
+    flex: 1;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    padding: 20px;
+    overflow: auto; /* Permite el desplazamiento dentro de dashboard si es necesario */
+}
+
+.logout-button {
+    background-color: #ffffff; 
+    color: #6f6df8; 
+    border: none; 
+    padding: 10px 20px; 
+    text-align: center; 
+    text-decoration: none; 
+    display: inline-block;
+    font-size: 16px; 
+    margin: 10px; 
+    cursor: pointer;
+    border-radius: 40px; 
+    transition: background-color 0.3s; 
+}
+
+.logout-button:hover {
+    transition: background-color 0.6s; 
+    background-color: #6f6df8; 
+    color: rgb(255, 254, 254); 
+    border: 1px solid rgb(255, 255, 255);
+}
+
+.sidebar img {
+    background-color: #3498db00;
+    width: 100%;
+}
+
+.dashboard h1 {
+    background-color: #796bfce0;
+    color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    border: 4px solid #8376f5;
+    font-size: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+
+
+.vacaciones{
+    display: grid;
+    grid-template-columns: 50% 50%; 
+    margin-top: 20px;
+    height: 75%;
+    border-radius: 15px;
+    padding-left: 50px;
+}
+
+.foto{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    background-color: #6f6df800;
+    padding-top: 30px;
+
+
+}
+
+.foto img{
+    width: 70%; 
+    margin: 50px;
+    height: auto; 
+
+}
+
+.foto h2{
+    background-color: rgba(0, 0, 0, 0);
+    font-size: 50px;
+    color:#5957c5;
+}
+
+
+
+.form {
+    background-color: #55555500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+    font-size: 17px;
+    font-weight:bold;
+   
+    
+}
+
+label {
+    margin-bottom: 5px;
+    color: #555;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="file"],
+textarea {
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+}
+
+textarea {
+    resize: vertical;
+    
+}
+
+
+button {
+    align-items: center;
+    background-color: #7779ff;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 40px;
+    cursor: pointer;
+    font-size: 16px;
+    border: 2px solid rgb(145, 145, 241);
+    width: 50%;
+}
+button:hover {
+    background-color: #ffffff;
+    color: #7779ff;
+    border: 2px solid rgb(145, 145, 241);
+}
+
+.boton{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #55555500;
+}

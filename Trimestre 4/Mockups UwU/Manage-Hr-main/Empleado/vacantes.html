@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vacantes</title>
+    <link rel="stylesheet" href="../Resources/css/Empleado/vacantes.css">
+</head>
+<body>
+    <input type="checkbox" id="chequed1">
+    <div class="alerta2">
+        <img src="../Resources/Images/Icons/check.svg" alt="">
+        <h1>Postulación Exitosa!</h1>
+        <a href="./vacantes.html">Ok</a>
+    </div>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logito">
+                <img src="/Resources/Images/logo.png" alt="">
+            </div>
+            <ul class="menu">
+                <li><a href="./perfil.html"><img src="../Resources/Images/Icons/user-solid.svg" alt="Icono Directorio"> Perfil</a></li>
+                <li><a href="./vacantes.html"><img src="../Resources/Images/Icons/briefcase-solid.svg" alt="Icono Vacantes"> Vacantes</a></li>
+                <li><a href="./vacaciones.html"><img src="../Resources/Images/Icons/suitcase-solid.svg" alt="Icono Vacaciones"> Vacaciones</a></li>
+                <li><a href="./Incapacidades.html"><img src="../Resources/Images/Icons/book-medical-solid.svg" alt="Icono Incapacidades"> Incapacidades</a></li>
+                <li><a href="./horasextra.html"><img src="../Resources/Images/Icons/calendar-plus-solid.svg" alt="Icono Horas Extra"> Horas extra</a></li>
+                <li><a href="./notificaciones.html"><img src="../Resources/Images/Icons/bell-solid.svg" alt="Icono Notificaciones"> Notificaciones</a></li>
+            </ul>
+            <div class="logout">
+                <a href="../index.html"><button class="logout-button">Cerrar Sesión</button></a>
+            </div>
+        </aside>
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search">
+                </div>
+                <div class="user-info">
+                    <div class="noti">
+                        <input type="checkbox" id="toggle-menu" class="toggle-menu">
+                        <label for="toggle-menu" class="noti-icon">
+                            <img src="../Resources/Images/Icons/notificaciones.png">
+                        </label>
+                        <ul class="sub-noti">
+                            <div class="mini">
+                                Carlos Hernandez ha denegado tu solicitud de Vacaciones
+                            </div>
+                            <div class="mini">
+                                Marcela Reyes ha aprobado tu solicitud de Horas extra
+                            </div>
+                            <div class="mini">
+                                Carolina Carrillo ha aprobado tu solicitud de Horas extra
+                            </div>
+                            <div class="mini">
+                                Julian Rozo ha denegado tu solicitud de Horas extra
+                            </div>
+                            
+                        </ul>
+                    </div>
+                   
+                    <div class="user-profile">
+                        <img src="../Resources/Images/2.jpg" alt="User Avatar" class="avatar">
+                        <div class="user-details">
+                            <span class="user-name">Sharon Nicolle Lopez</span>
+                            <span class="user-email">Diseñadora UX/UI</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <section class="dashboard">
+                <input type="checkbox" id="chequed1">
+                <div class="contenedor">
+                    <section class="left">
+                        <article class="article-busqueda">
+                            <input type="text" placeholder="Buscar vacante" />
+                            <input type="submit" value="Buscar" />
+                            </article>
+                            <article class="article-categorias">
+                            <select class="select" name="categoria" id="categoria">
+                                <option value="0">Seleccione una Vacante</option>
+                                <option value="1">Ingenierias</option>
+                                <option value="2">Call Center</option>
+                                <option value="3">Software</option>
+                                <option value="4">Recursos Humanos</option>
+                                <option value="5">Tecnicos</option>
+                            </select>
+                            <select name="especialidad" id="especialidad">
+                                <option value="0">Seleccione una Especialidad</option>
+                                <option value="1">Industrial</option>
+                                <option value="2">Mecanica</option>
+                                <option value="3">Sisatemas</option>
+                                <option value="4">Civil</option>
+                                <option value="5">Petroleos</option>
+                            </select>
+                            <select name="salario" id="salario">
+                                <option value="0">Seleccione una Salario</option>
+                                <option value="1">$ 1.600.000</option>
+                                <option value="2">$ 1.800.000</option>
+                                <option value="3">$ 1.900.000</option>
+                                <option value="4">$ 2.000.000</option>
+                                <option value="5">$ 2.100.000</option>
+                                <option value="6">$ 2.200.000</option>
+                                <option value="7">$ 2.300.000</option>
+                                <option value="8">$ 2.400.000</option>
+                                <option value="9">$ 2.500.000</option>
+                                <option value="10">$ 2.600.000</option>
+                                <option value="11">$ 3.000.000</option>
+                            </select>
+                            </article>
+                        <article class="article-vacantes">
+                            <aside class="vacante">
+                                <h3>Diseñador UX/UI Junior</h3>
+                                <h4>Creative Minds S.A.S.</h4>
+                                <h5>Bogotá, D.C.</h5>
+                                <h6>$ 3.000.000,00 (Mensual)</h6>
+                            </aside>
+                            <aside class="vacante">
+                                <h3>Diseñador UX/UI Senior</h3>
+                                <h4>UX Design Studio</h4>
+                                <h5>Bogotá, D.C.</h5>
+                                <h6>$ 5.000.000,00 (Mensual)</h6>
+                            </aside>
+                            <aside class="vacante">
+                                <h3>Especialista en Interfaz de Usuario</h3>
+                                <h4>Digital Artworks</h4>
+                                <h5>Bogotá, D.C.</h5>
+                                <h6>$ 4.500.000,00 (Mensual)</h6>
+                            </aside>
+                            <aside class="vacante">
+                                <h3>Arquitecto de Experiencia de Usuario</h3>
+                                <h4>Tech Innovations</h4>
+                                <h5>Bogotá, D.C.</h5>
+                                <h6>$ 6.200.000,00 (Mensual)</h6>
+                            </aside>
+                            <aside class="vacante">
+                                <h3>Investigador UX</h3>
+                                <h4>User Research Labs</h4>
+                                <h5>Bogotá, D.C.</h5>
+                                <h6>$ 4.000.000,00 (Mensual)</h6>
+                            </aside>
+                        </article>
+                    </section>
+                    <section class="right">
+                        <header>
+                            <h4>Diseñador UX/UI Junior</h4>
+                        </header>
+                            <article>
+                                <aside id="aside-header"> 
+                                <h1>Diseñador UX/UI Junior</h1>
+                                <h4>Creative Minds S.A.S.</h4>
+                                <h5>Bogotá, D.C.</h5>
+                                <h6>$ 3.000.000,00 (Mensual)</h6>
+                                </aside>
+                                <aside>
+                                    <h3>$ 3.000.000,00 (Mensual)</h3>
+                                    <h3>Contrato a término indefinido</h3>
+                                    <h3>Tiempo Completo</h3>
+                                    <h3>Presencial</h3>
+                                    <h4><p>Responsable de diseñar y mejorar las experiencias de usuario en diversos proyectos digitales, enfocado en optimizar la usabilidad y la accesibilidad.</p></h4>
+                                    <h4><p>Requisitos: Dominio de Figma, Sketch, y herramientas de prototipado, con capacidad de trabajar en un entorno ágil y multidisciplinario.</p></h4>
+                                    <h4><p>Experiencia deseable en investigación de usuarios y pruebas de usabilidad.</p></h4>
+                                    <h3><div class="titulo-requerimientos">Requerimientos</div></h3>
+                                    <h4><p><ul>
+                                        <li>Educación mínima: Profesional en Diseño Gráfico o afines</li>
+                                        <li>Experiencia en creación de wireframes, storyboards, user flows, y prototipos.</li>
+                                        <li>Comprensión de los principios de diseño centrado en el usuario.</li>
+                                    </ul></p></h4>
+                                    <div class="botones">
+                                        <label for="chequed1">Postularme</label>
+                                    </div>
+                                </aside>
+                            </article>
+                    </section>
+                </div>
+            </section> 
+        </main>
+    </div>
+</body>
+</html>
