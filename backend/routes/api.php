@@ -27,6 +27,7 @@ use App\Http\Controllers\Api\pensionesController;
 use App\Http\Controllers\Api\tipohorasController;
 use App\Http\Controllers\Api\horasextraController;
 use App\Http\Controllers\Api\VacantesUserController;
+use App\Http\Controllers\Api\MisPostulacionesController;
 
 use App\Http\Controllers\Api\RolPermisoController;
 use App\Http\Controllers\api\tipoContratoController;
@@ -281,10 +282,6 @@ Route::delete('/trazabilidad/{id}', [trazabilidadController::class, 'destroy']);
 Route::post('/solicitudes-vacaciones-con-archivo', [formvacationController::class, 'store']);
 Route::post('/solicitudes-incapacidades', 'App\Http\Controllers\Api\formincapacidadController@store');
 Route::get('/tipos-horas', [tipohorasController::class, 'index']);
-//Route::post('/solicitudes-horas-extra', [FormHorasController::class, 'store']);
-
-
-
 Route::middleware('auth:api')->get('/profile', [HomeController::class, 'getProfile']);
 Route::middleware('auth:api')->put('/profile/update', [HomeController::class, 'updateProfile']);
-
+Route::middleware('auth:sanctum')->get('/mis-postulaciones', [MisPostulacionesController::class, 'index']);
