@@ -37,8 +37,10 @@ Manage HR es una solución integral diseñada para cubrir un amplio espectro de 
 ## 📦 Instalación
 
 ```bash
-git clone https://github.com/tuusuario/tu-repositorio.git
-cd tu-repositorio
-composer install
-php artisan migrate
+git clone https://github.com/ManageHr/managehr.git
+cd managehr
+
+php composer install
 php artisan serve
+angular mpm install
+angular ng serve 
