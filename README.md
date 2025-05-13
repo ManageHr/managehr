@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./fronted/" alt="Logo del Proyecto" width="200"/>
+  <img src="./fronted/src/assets/logoMHR.png" alt="Logo del Proyecto" width="200"/>
 </p>
 
 # ManageHR
