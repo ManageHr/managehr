@@ -6,7 +6,7 @@
 ## Integrantes
 - Juan David Joven
 - Sharon Nicolle Lopez
-- Oscar Andres Muños
+- Oscar Andres Muñoz
 - Yon Piter Ruiz
 
 Breve descripción del sistema o aplicación.
