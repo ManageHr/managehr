@@ -1,8 +1,13 @@
 <p align="center">
-  <img src="ruta/del/logo.png" alt="Logo del Proyecto" width="200"/>
+  <img src="./fronted/src/assets/logoMHR.png" alt="Logo del Proyecto" width="200"/>
 </p>
 
 # ManageHR
+## Integrantes
+- Juan David Joven
+- Sharon Nicolle Lopez
+- Oscar Andres Muños
+- Yon Piter Ruiz
 
 Breve descripción del sistema o aplicación.
 
@@ -29,10 +34,8 @@ Breve descripción del sistema o aplicación.
 ## 📦 Instalación
 
 ```bash
-git clone https://github.com/ManageHr/managehr.git
-cd managehr git
+git clone https://github.com/tuusuario/tu-repositorio.git
+cd tu-repositorio
 composer install
 php artisan migrate
 php artisan serve
-angular npm install
-angular npm serve

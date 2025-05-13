@@ -83,6 +83,9 @@ export class UsuariosComponent implements OnInit {
       error: (err) => console.error('Error al cargar usuarios', err)
     });
 
+
+    
+
     this.cargarForaneas();
 
   }
@@ -228,7 +231,7 @@ export class UsuariosComponent implements OnInit {
 
 
   confirmDelete(index: number): void {
-    const usuario = this.usuarios[index];
+    const usuario = this.usuariosPaginados[index];
     const nombre = `${usuario.primerNombre} ${usuario.primerApellido}`;
 
     Swal.fire({
