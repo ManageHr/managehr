@@ -9,7 +9,8 @@
 - Oscar Andres Muñoz
 - Yon Piter Ruiz
 
-Breve descripción del sistema o aplicación.
+**Manage HR** es un software integral para optimizar la gestión de recursos humanos en las empresas. Ofrece una interfaz intuitiva que facilita el manejo de datos, agiliza la selección y contratación de personal, incluye chat interno para mejorar la comunicación y permite gestionar permisos y horas extra de forma sencilla, mejorando así los procesos internos.
+
 
 ## 🎯 Objetivos
 
