@@ -19,12 +19,14 @@ class Postulaciones extends Model
         'estado',
         'vacantesId',
         'usuarioId',
+        'numdocumento', // <- agregado aquí
     ];
 
     protected $casts = [
         'estado' => 'integer',
         'vacantesId' => 'integer',
         'usuarioId' => 'integer',
+        'numdocumento' => 'string', // <- agregado y asumido como texto por seguridad
     ];
 
     // Esto hace que el atributo aparezca en el JSON

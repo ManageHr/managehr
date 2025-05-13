@@ -13,10 +13,15 @@ class User extends Authenticatable implements JWTSubject
     use HasFactory, Notifiable;
 
     /**
+     * Cargar automáticamente la relación con la tabla 'usuarios' al acceder al usuario.
+     */
+    protected $with = ['perfil'];
+
+    /**
      * Campos que pueden ser asignados masivamente.
      */
     protected $fillable = [
-        'name', 'email', 'password', 'rol',
+        'name', 'email', 'password', 'rol', 'numdocumento',
     ];
 
     /**
@@ -55,9 +60,11 @@ class User extends Authenticatable implements JWTSubject
         $this->attributes['password'] = Hash::needsRehash($value) ? Hash::make($value) : $value;
     }
 
+    /**
+     * Relación con el modelo Usuarios (perfil del usuario).
+     */
     public function perfil()
-{
-    return $this->hasOne(Usuarios::class, 'usersId', 'id');
-}
-
+    {
+        return $this->hasOne(Usuarios::class, 'usersId', 'id');
+    }
 }

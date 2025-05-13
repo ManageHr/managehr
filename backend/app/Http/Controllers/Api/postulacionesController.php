@@ -91,90 +91,47 @@ class PostulacionesController extends Controller
                 return response()->json(['message' => 'Postulación no encontrada'], 404);
             }
 
-            $validator = Validator::make($request->all(), [
-                'estado' => ['required', 'string', Rule::in(['Pendiente', 'Aceptado', 'Rechazado'])],
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'message' => 'Error de validación del estado',
-                    'errors' => $validator->errors()
-                ], 400);
-            }
-
-            $nuevoEstadoString = $request->input('estado');
-            $nuevoEstadoTinyint = $this->mapEstadoToTinyint($nuevoEstadoString);
-
-            $postulacion->estado = $nuevoEstadoTinyint;
+            $postulacion->estado = $request->input('estado');
             $postulacion->save();
 
             return response()->json([
-                'message' => 'Estado de postulación actualizado con éxito',
-                'postulacion' => $postulacion
+                'message' => 'Estado actualizado correctamente.',
+                'data' => $postulacion
             ], 200);
         } catch (\Exception $e) {
-            Log::error('Error al actualizar estado de postulación con ID ' . $idPostulaciones . ' (PostulacionesController::updateStatus): ' . $e->getMessage());
+            Log::error('Error al actualizar estado de postulación (PostulacionesController::updateStatus): ' . $e->getMessage());
             return response()->json([
-                'message' => 'Ocurrió un error al actualizar el estado de la postulación.',
+                'message' => 'Ocurrió un error al actualizar el estado.',
                 'error' => $e->getMessage()
             ], 500);
-        }
-    }
-
-    private function mapEstadoToTinyint(string $estadoString): int
-    {
-        switch ($estadoString) {
-            case 'Aceptado': return 1;
-            case 'Rechazado': return 2;
-            case 'Pendiente':
-            default: return 0;
         }
     }
 
     public function store(Request $request)
     {
         try {
-            // Obtener usuario autenticado
-            $usuario = Auth::user();
+            $user = Auth::user()->load('perfil');
 
-            if (!$usuario || !isset($usuario->numdocumento)) {
-                return response()->json([
-                    'message' => 'Usuario no autenticado o sin número de documento.'
-                ], 401);
+            if (!$user || !$user->perfil || !$user->perfil->numdocumento) {
+                return response()->json(['message' => 'Usuario no autenticado o sin número de documento.'], 401);
             }
 
-            // Validar vacantesId
-            $validator = Validator::make($request->all(), [
-                'vacantesId' => 'required|integer|exists:vacantes,idVacantes',
+            $postulacion = Postulaciones::create([
+                'fechaPostulacion' => now(),
+                'estado' => 1,
+                'vacantesId' => $request->input('vacantesId'),
+                'numdocumento' => $user->perfil->numdocumento,
             ]);
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'message' => 'Errores de validación',
-                    'errors' => $validator->errors(),
-                ], 422);
-            }
-
-            $validatedData = $validator->validated();
-
-            // Crear nueva postulación
-            $postulacion = new Postulaciones();
-            $postulacion->vacantesId = $validatedData['vacantesId'];
-            $postulacion->fechaPostulacion = Carbon::now()->toDateString();
-            $postulacion->estado = $this->mapEstadoToTinyint('Pendiente');
-            $postulacion->numdocumento = $usuario->numdocumento;
-
-            $postulacion->save();
-
             return response()->json([
-                'message' => 'Postulación creada exitosamente',
-                'data' => $postulacion,
+                'message' => 'Postulación registrada exitosamente.',
+                'data' => $postulacion
             ], 201);
 
         } catch (\Exception $e) {
-            Log::error('Error al crear postulación (PostulacionesController::store): ' . $e->getMessage());
+            \Log::error("Error al registrar postulación: " . $e->getMessage());
             return response()->json([
-                'message' => 'Ocurrió un error al crear la postulación.',
+                'message' => 'Error al registrar la postulación',
                 'error' => $e->getMessage()
             ], 500);
         }
