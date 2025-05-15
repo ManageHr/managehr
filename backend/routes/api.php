@@ -289,3 +289,4 @@ Route::get('/tipos-horas', [tipohorasController::class, 'index']);
 Route::middleware('auth:api')->get('/profile', [HomeController::class, 'getProfile']);
 Route::middleware('auth:api')->put('/profile/update', [HomeController::class, 'updateProfile']);
 Route::middleware('auth:sanctum')->get('/mis-postulaciones', [MisPostulacionesController::class, 'index']);
+Route::middleware('auth:api')->post('/postulaciones', [PostulacionesController::class, 'store']);
