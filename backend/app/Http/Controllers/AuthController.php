@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
-   
+
     public function register(Request $request)
     {
         // Validar campos, incluyendo confirmación de email y contraseña
@@ -189,13 +189,23 @@ class AuthController extends Controller
         if ($request->has("rol")) {
             $usuario->rol = $request->rol;
         }
-        
+
         $usuario->save();
         $data = [
             "rol" => $usuario,
             "status" => 200
         ];
         return response()->json($data, 200);
+    }
+
+    public function rolcinco()
+    {
+        $usuarios = User::where('rol', 5)->get();
+
+        return response()->json([
+            'status' => 200,
+            'usuarios' => $usuarios
+        ]);
     }
 
 

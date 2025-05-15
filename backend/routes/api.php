@@ -43,6 +43,10 @@ use App\Http\Controllers\Api\HomeController;
 Route::middleware('auth:api')->post('/rols/{rol}/permisos', [RolPermisoController::class, 'asignarPermisos']);
 
 
+Route::get('/auth/rolcinco', [AuthController::class, 'rolcinco']);
+
+
+
 Route::post('/rols/{rolId}/permisos', [RolPermisoController::class, 'asignarPermisos']);
 Route::get('/rols/{rolId}/permisos', [RolPermisoController::class, 'obtenerPermisos']);
 
