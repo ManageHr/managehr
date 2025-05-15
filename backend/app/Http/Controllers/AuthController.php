@@ -98,15 +98,16 @@ class AuthController extends Controller
 
         ], 200);
     }
-    public function show($id)
+    public function show()
     {
-        $user = User::find($id);
-        $data = [
-            "usuario" => $user,
+        $usuarios = User::whereBetween('rol', [1, 4])->get();
+
+        return response()->json([
+            "usuarios" => $usuarios,
             "status" => 200
-        ];
-        return response()->json($data, 200);
+        ], 200);
     }
+
     /**
      * Retornar los datos del usuario autenticado.
      */
