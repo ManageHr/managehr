@@ -288,5 +288,6 @@ Route::post('/solicitudes-incapacidades', 'App\Http\Controllers\Api\formincapaci
 Route::get('/tipos-horas', [tipohorasController::class, 'index']);
 Route::middleware('auth:api')->get('/profile', [HomeController::class, 'getProfile']);
 Route::middleware('auth:api')->put('/profile/update', [HomeController::class, 'updateProfile']);
-Route::middleware('auth:sanctum')->get('/mis-postulaciones', [MisPostulacionesController::class, 'index']);
+Route::middleware('auth:api')->get('/mis-postulaciones', [MisPostulacionesController::class, 'index']);
 Route::middleware('auth:api')->post('/postulaciones', [PostulacionesController::class, 'store']);
+Route::put('/postulaciones/estado/{id}', [App\Http\Controllers\Api\PostulacionesController::class, 'updateStatus']);

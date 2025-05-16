@@ -113,6 +113,10 @@
           <span>Notificaciones</span>
         </a>
       </a>
+      <a class="nav-link" *ngIf="[3].includes(usuario?.rol)" (click)="navigateTo('/mis-postulaciones')" [class.active]="isActive('/mis-postulaciones')">
+        <i class="fas fa-clipboard-list"></i>
+        <span>Mis postulaciones</span>
+      </a>
       <a class="nav-link" *ngIf="[2, 3].includes(usuario?.rol)" (click)="navigateTo('/notificaciones')" [class.active]="isActive('/vacaciones')">
         <i class="fas fa-bell"></i>
         <span>Notificaciones</span>
@@ -121,10 +125,7 @@
         <i class="fas fa-bell"></i>
         <span>Notificaciones</span>
       </a>
-      <a class="nav-link" *ngIf="[3].includes(usuario?.rol)" (click)="navigateTo('/mis-postulaciones')" [class.active]="isActive('/mis-postulaciones')">
-        <i class="fas fa-clipboard-list"></i>
-        <span>Mis postulaciones</span>
-      </a>
+      
       
       
 

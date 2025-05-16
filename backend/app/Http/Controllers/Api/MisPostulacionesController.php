@@ -10,9 +10,6 @@ use Illuminate\Support\Facades\Auth;
 
 class MisPostulacionesController extends Controller
 {
-    /**
-     * Mostrar todas las postulaciones del usuario autenticado.
-     */
     public function index()
     {
         try {
@@ -22,7 +19,10 @@ class MisPostulacionesController extends Controller
                 return response()->json(['message' => 'Usuario no autenticado o sin número de documento.'], 401);
             }
 
-            $postulaciones = Postulaciones::where('numdocumento', $usuario->numdocumento)->get();
+            // Carga la relación con la vacante
+            $postulaciones = Postulaciones::with('vacante')
+                ->where('numdocumento', $usuario->numdocumento)
+                ->get();
 
             return response()->json([
                 'data' => $postulaciones

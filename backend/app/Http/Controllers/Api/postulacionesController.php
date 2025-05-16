@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Postulaciones;
 use App\Models\Usuarios;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -112,7 +111,7 @@ class PostulacionesController extends Controller
         try {
             $user = Auth::user();
 
-            // Buscar el perfil del usuario autenticado usando el correo
+            // Buscar el perfil del usuario autenticado usando su correo
             $usuario = Usuarios::where('email', $user->email)->first();
 
             if (!$usuario || !$usuario->numDocumento) {
@@ -121,10 +120,24 @@ class PostulacionesController extends Controller
                 ], 401);
             }
 
+            $vacanteId = $request->input('vacantesId');
+
+            // Validar si ya se postuló a esta vacante
+            $yaPostulado = Postulaciones::where('numdocumento', $usuario->numDocumento)
+                ->where('vacantesId', $vacanteId)
+                ->exists();
+
+            if ($yaPostulado) {
+                return response()->json([
+                    'message' => 'No puedes postularte nuevamente a esta vacante.'
+                ], 409); // 409 Conflict
+            }
+
+            // Crear nueva postulación
             $postulacion = Postulaciones::create([
                 'fechaPostulacion' => Carbon::now(),
                 'estado' => 1,
-                'vacantesId' => $request->input('vacantesId'),
+                'vacantesId' => $vacanteId,
                 'numdocumento' => $usuario->numDocumento,
             ]);
 

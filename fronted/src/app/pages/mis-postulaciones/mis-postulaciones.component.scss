@@ -31,10 +31,7 @@
     background-color: rgba(0, 0, 0, 0);
   }
   
-  body, html {
-    overflow: hidden;
-  }
-  
+
   
 .header-horas {
   background: linear-gradient(90deg, var(--color-principal), var(--active-color));
@@ -511,3 +508,19 @@
       padding: 10px;
     }
   }
+
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+}
+
+table {
+  min-width: 600px; // Ajustable según tus columnas
+  width: 100%;
+}
+
+.contenido-principal {
+  overflow-x: auto !important;
+  width: 100%;
+}

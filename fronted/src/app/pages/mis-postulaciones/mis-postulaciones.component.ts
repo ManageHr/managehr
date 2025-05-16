@@ -9,6 +9,17 @@ import Swal from 'sweetalert2';
 import { Subject, Subscription, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 
+interface Usuario {
+  id: number;
+  name: string;
+  email: string;
+  rol: number;
+  perfil: {
+    numDocumento: number;
+    [key: string]: any;
+  };
+}
+
 @Component({
   selector: 'app-mis-postulaciones',
   standalone: true,
@@ -23,7 +34,8 @@ import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/
 })
 export class MisPostulacionesComponent implements OnInit, OnDestroy {
   postulaciones: any[] = [];
-  usuario: Record<string, any> = {};
+  usuario: Usuario = {} as Usuario;
+  usuarioCargado = false;
   postulacionSeleccionada: any | null = null;
   searchQuery: string = '';
 
@@ -39,6 +51,7 @@ export class MisPostulacionesComponent implements OnInit, OnDestroy {
     const userFromLocal = localStorage.getItem('usuario');
     if (userFromLocal) {
       this.usuario = JSON.parse(userFromLocal);
+      this.usuarioCargado = true;
     }
 
     this.searchSubscription = this.searchTerms.pipe(
@@ -48,7 +61,6 @@ export class MisPostulacionesComponent implements OnInit, OnDestroy {
         if (!term || isNaN(+term)) {
           return this.misPostulacionesService.getPostulaciones().pipe(
             catchError(error => {
-              console.error('Error al cargar todas las postulaciones:', error);
               Swal.fire('Error', 'No se pudieron cargar las postulaciones.', 'error');
               return of([]);
             })
@@ -57,7 +69,6 @@ export class MisPostulacionesComponent implements OnInit, OnDestroy {
           const vacanteId = +term;
           return this.misPostulacionesService.searchPostulacionesByVacantesId(vacanteId).pipe(
             catchError(error => {
-              console.error(`Error al buscar postulaciones para Vacante ID ${vacanteId}:`, error);
               Swal.fire('Error', `Error al buscar postulaciones para Vacante ID ${vacanteId}.`, 'error');
               return of([]);
             })
@@ -65,12 +76,8 @@ export class MisPostulacionesComponent implements OnInit, OnDestroy {
         }
       })
     ).subscribe({
-      next: (results: any[]) => {
-        this.postulaciones = results;
-        console.log('Lista de postulaciones actualizada:', results);
-      },
-      error: (error) => {
-        console.error('Error en la suscripción de búsqueda:', error);
+      next: (resultados: any[]) => {
+        this.postulaciones = this.filtrarPostulacionesPorUsuario(resultados);
       }
     });
 
@@ -89,14 +96,19 @@ export class MisPostulacionesComponent implements OnInit, OnDestroy {
     this.searchTerms.next('');
   }
 
+  private filtrarPostulacionesPorUsuario(postulaciones: any[]): any[] {
+    if (this.usuario.rol === 1) {
+      return postulaciones;
+    }
+    return postulaciones.filter(p => p.numDocumento === this.usuario.perfil.numDocumento);
+  }
+
   editarPostulacion(postulacion: any): void {
     this.postulacionSeleccionada = { ...postulacion };
-    console.log('Editando postulación:', postulacion);
   }
 
   verDetalles(postulacion: any): void {
     this.postulacionSeleccionada = postulacion;
-    console.log('Detalles de postulación:', postulacion);
   }
 
   guardarEstadoPostulacion(): void {
@@ -105,11 +117,36 @@ export class MisPostulacionesComponent implements OnInit, OnDestroy {
       return;
     }
 
-    Swal.fire('¡Actualizado!', 'Estado de postulación guardado correctamente', 'success');
-    this.postulacionSeleccionada = null;
+    this.misPostulacionesService.actualizarEstadoPostulacion(
+      this.postulacionSeleccionada.idPostulaciones,
+      this.postulacionSeleccionada.estado
+    ).subscribe({
+      next: () => {
+        Swal.fire('¡Actualizado!', 'Estado actualizado correctamente.', 'success');
+        this.postulacionSeleccionada = null;
+        this.cargarPostulaciones();
+      },
+      error: () => {
+        Swal.fire('Error', 'No se pudo actualizar el estado.', 'error');
+      }
+    });
   }
 
   confirmDeletePostulacion(postulacion: any): void {
-    console.warn("confirmDeletePostulacion: método placeholder sin implementación actual.");
+    console.warn("Método no implementado aún.");
   }
+
+  trackById(index: number, item: any): number {
+  return item.idPostulaciones;
+}
+
+getNombreEstado(estado: number): string {
+  switch (estado) {
+    case 1: return 'Pendiente';
+    case 2: return 'Aceptado';
+    case 3: return 'Rechazado';
+    default: return 'Desconocido';
+  }
+}
+
 }
