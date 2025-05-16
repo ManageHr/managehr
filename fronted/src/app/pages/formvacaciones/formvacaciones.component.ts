@@ -3,16 +3,16 @@ import { MenuComponent } from "../menu/menu.component";
 import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { SolicitudesVacacionesService } from '../../services/solicitudes-vacaciones.service'; // Importamos el nuevo servicio
+import { SolicitudesVacacionesService } from '../../services/solicitudes-vacaciones.service';
 
 interface SolicitudVacacionesDisplay {
     idVacaciones?: number;
-    motivo: string;  // 🔹 Se cambió `descrip` por `motivo`
+    motivo: string;
     fechaInicio: string;
     fechaFinal: string;
     dias: number;
-    estado: 'pendiente' | 'rechazado' | 'aprobado';  // 🔹 Eliminamos `"desconocido"`
-    contratoId?: number;
+    estado: 'pendiente' | 'rechazado' | 'aprobado';
+    contratoId: number;
 }
 
 @Component({
@@ -23,20 +23,19 @@ interface SolicitudVacacionesDisplay {
   styleUrls: ['./formvacaciones.component.scss'] 
 })
 export class FormvacacionesComponent implements OnInit {
-  motivo: string = ''; // 🔹 Se cambió `descrip` por `motivo`
+  motivo: string = '';
   fechaInicio: string = '';
   fechaFinal: string = '';
   dias: number = 0;
   estado: 'pendiente' = 'pendiente';
-  contratoId: number | null = 1; // Simulación, modificar según lógica real
+  contratoId: number = 1; // 🔹 Se eliminó `null`
 
   solicitudesVacaciones: SolicitudVacacionesDisplay[] = [];
 
-  constructor(private solicitudesVacacionesService: SolicitudesVacacionesService) {} // 🔹 Cambio de servicio
+  constructor(private solicitudesVacacionesService: SolicitudesVacacionesService) {}
 
   ngOnInit(): void {}
 
-  // Método para calcular días entre fechas
   calcularDias(): void {
     if (this.fechaInicio && this.fechaFinal) {
       const inicio = new Date(this.fechaInicio);
@@ -48,13 +47,18 @@ export class FormvacacionesComponent implements OnInit {
   }
 
   enviarSolicitud(): void {
-    if (!this.contratoId) {
-        alert("Error: No se pudo obtener la información del contrato.");
+    // Validación básica antes de enviar
+    if (!this.motivo || !this.fechaInicio || !this.fechaFinal || this.dias <= 0 || !this.contratoId) {
+        alert("Error: Todos los campos deben estar completos.");
         return;
     }
 
+    // Formateo de fechas en `YYYY-MM-DD`
+    this.fechaInicio = new Date(this.fechaInicio).toISOString().split('T')[0];
+    this.fechaFinal = new Date(this.fechaFinal).toISOString().split('T')[0];
+
     const solicitud: SolicitudVacacionesDisplay = {
-      motivo: this.motivo,  // 🔹 Se cambió `descrip` por `motivo`
+      motivo: this.motivo,
       fechaInicio: this.fechaInicio,
       fechaFinal: this.fechaFinal,
       dias: this.dias,
@@ -63,13 +67,13 @@ export class FormvacacionesComponent implements OnInit {
     };
 
     this.solicitudesVacacionesService.enviarSolicitud(solicitud).subscribe(
-      (response: SolicitudVacacionesDisplay) => {  // 🔹 Se define el tipo explícitamente
+      (response: SolicitudVacacionesDisplay) => {
         console.log('Solicitud enviada con éxito:', response);
         this.solicitudesVacaciones.push(response);
         alert('Solicitud de vacaciones enviada.');
         this.limpiarFormulario();
       },
-      (error: any) => {  // 🔹 Se tipifica correctamente `error`
+      (error: any) => {
         console.error('Error al enviar la solicitud:', error);
         alert('Hubo un error al enviar la solicitud.');
       }
@@ -77,7 +81,7 @@ export class FormvacacionesComponent implements OnInit {
   }
 
   limpiarFormulario(): void {
-    this.motivo = ''; // 🔹 Se cambió `descrip` por `motivo`
+    this.motivo = '';
     this.fechaInicio = '';
     this.fechaFinal = '';
     this.dias = 0;

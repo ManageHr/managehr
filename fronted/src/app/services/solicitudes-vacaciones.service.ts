@@ -9,14 +9,15 @@ export interface SolicitudVacaciones {
   fechaFinal: string;
   dias: number;
   estado: 'pendiente' | 'aprobado' | 'rechazado';
-  contratoId?: number;
+  contratoId: number;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class SolicitudesVacacionesService {
-  private apiUrl = 'http://localhost:8000/api/solicitudes-vacaciones-con-archivo';
+  private apiUrl = 'http://127.0.0.1:8000/api/solicitudes-vacaciones-con-archivo'; // Usa `127.0.0.1` si hay problemas con `localhost`
+
 
 
 
