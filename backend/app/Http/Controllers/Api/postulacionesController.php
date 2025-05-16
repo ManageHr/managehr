@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Postulaciones;
+use App\Models\Usuarios;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -110,17 +110,22 @@ class PostulacionesController extends Controller
     public function store(Request $request)
     {
         try {
-            $user = Auth::user()->load('perfil');
+            $user = Auth::user();
 
-            if (!$user || !$user->perfil || !$user->perfil->numdocumento) {
-                return response()->json(['message' => 'Usuario no autenticado o sin número de documento.'], 401);
+            // Buscar el perfil del usuario autenticado usando el correo
+            $usuario = Usuarios::where('email', $user->email)->first();
+
+            if (!$usuario || !$usuario->numDocumento) {
+                return response()->json([
+                    'message' => 'No se encontró un perfil válido para este usuario.'
+                ], 401);
             }
 
             $postulacion = Postulaciones::create([
-                'fechaPostulacion' => now(),
+                'fechaPostulacion' => Carbon::now(),
                 'estado' => 1,
                 'vacantesId' => $request->input('vacantesId'),
-                'numdocumento' => $user->perfil->numdocumento,
+                'numdocumento' => $usuario->numDocumento,
             ]);
 
             return response()->json([
@@ -129,7 +134,7 @@ class PostulacionesController extends Controller
             ], 201);
 
         } catch (\Exception $e) {
-            \Log::error("Error al registrar postulación: " . $e->getMessage());
+            Log::error("Error al registrar postulación: " . $e->getMessage());
             return response()->json([
                 'message' => 'Error al registrar la postulación',
                 'error' => $e->getMessage()
