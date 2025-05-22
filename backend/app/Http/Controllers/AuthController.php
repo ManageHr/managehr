@@ -66,47 +66,35 @@ class AuthController extends Controller
      * Iniciar sesión y devolver token JWT.
      */
     public function login(Request $request)
-    {
-        // Extraer las credenciales del request
-        $credentials = $request->only('email', 'password');
+{
+    // Extraer las credenciales del request
+    $credentials = $request->only('email', 'password');
 
-        // Registrar logs para depuración
-        Log::info('Intento de login', ['email' => $request->email ?? 'Correo no proporcionado']);
+    // Registrar logs para depuración
+    Log::info('Intento de login', ['email' => $request->email ?? 'Correo no proporcionado']);
 
-        // Intentar autenticar al usuario
-        if (!$token = JWTAuth::attempt($credentials)) {
-            Log::error('Error en login: credenciales incorrectas', ['email' => $request->email ?? 'Correo no proporcionado']);
-            return response()->json(['error' => 'Correo o contraseña incorrectos'], 401);
-        }
-
-        // Obtener el usuario autenticado
-        $user = JWTAuth::user();
-
-        // Responder con token y datos de usuario
-        return response()->json([
-            'user' => $user,
-            'token' => $token,
-            'redirect' => '/directorio' // Ruta de redirección
-        ]);
+    // Intentar autenticar al usuario
+    if (!$token = JWTAuth::attempt($credentials)) {
+        Log::error('Error en login: credenciales incorrectas', ['email' => $request->email ?? 'Correo no proporcionado']);
+        return response()->json(['error' => 'Correo o contraseña incorrectos'], 401);
     }
-    public function index()
-    {
-        $users = User::all();
-        return response()->json([
-            'user' => $users,
 
+    // Obtener el usuario autenticado
+    $user = JWTAuth::user();
 
-        ], 200);
+    // Si por alguna razón no se genera token, forzar la creación (fallback)
+    if (!$token) {
+        $token = JWTAuth::fromUser($user);
     }
-    public function show()
-    {
-        $usuarios = User::whereBetween('rol', [1, 4])->get();
 
-        return response()->json([
-            "usuarios" => $usuarios,
-            "status" => 200
-        ], 200);
-    }
+    // Responder con token y datos de usuario
+    return response()->json([
+        'user' => $user,
+        'token' => $token,
+        'redirect' => '/directorio'
+    ]);
+}
+
 
     /**
      * Retornar los datos del usuario autenticado.

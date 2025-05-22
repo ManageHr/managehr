@@ -10,59 +10,115 @@
       <div class="purple-container">
         <div class="formulario-vacaciones">
           <h2>Formulario de Petición de Vacaciones</h2>
-          <form class="vacaciones-form" (ngSubmit)="enviarSolicitud()" #vacacionesForm="ngForm">
+          <form
+            class="vacaciones-form"
+            (ngSubmit)="enviarSolicitud()"
+            #vacacionesForm="ngForm"
+          >
 
+            <!-- Motivo -->
             <div class="form-group">
               <label for="motivo">Descripción / Motivo:</label>
-              <textarea id="motivo" name="motivo" [(ngModel)]="motivo" required rows="4"
-                        class="form-control-match"></textarea> 
-              <div *ngIf="vacacionesForm.controls['motivo']?.errors?.['required'] && vacacionesForm.controls['motivo']?.touched" class="text-danger">
+              <textarea
+                id="motivo"
+                name="motivo"
+                [(ngModel)]="motivo"
+                required
+                rows="4"
+                class="form-control-match"
+              ></textarea>
+              <div
+                *ngIf="
+                  vacacionesForm.controls['motivo']?.errors?.['required'] &&
+                  vacacionesForm.controls['motivo']?.touched
+                "
+                class="text-danger"
+              >
                 La descripción es obligatoria.
               </div>
             </div>
 
+            <!-- Fecha Inicio -->
             <div class="form-group">
               <label for="fechaInicio">Fecha Inicio:</label>
-              <input type="date" id="fechaInicio" name="fechaInicio" [(ngModel)]="fechaInicio" required
-                     class="form-control-match"> 
-              <div *ngIf="vacacionesForm.controls['fechaInicio']?.errors?.['required'] && vacacionesForm.controls['fechaInicio']?.touched" class="text-danger">
+              <input
+                type="date"
+                id="fechaInicio"
+                name="fechaInicio"
+                [(ngModel)]="fechaInicio"
+                required
+                class="form-control-match"
+              />
+              <div
+                *ngIf="
+                  vacacionesForm.controls['fechaInicio']?.errors?.['required'] &&
+                  vacacionesForm.controls['fechaInicio']?.touched
+                "
+                class="text-danger"
+              >
                 La fecha de inicio es obligatoria.
               </div>
             </div>
 
+            <!-- Fecha Fin (no puede ser anterior a inicio) -->
             <div class="form-group">
               <label for="fechaFinal">Fecha Fin:</label>
-              <input type="date" id="fechaFinal" name="fechaFinal" [(ngModel)]="fechaFinal" required
-                     class="form-control-match"> 
-              <div *ngIf="vacacionesForm.controls['fechaFinal']?.errors?.['required'] && vacacionesForm.controls['fechaFinal']?.touched" class="text-danger">
+              <input
+                type="date"
+                id="fechaFinal"
+                name="fechaFinal"
+                [(ngModel)]="fechaFinal"
+                required
+                [min]="fechaInicio"
+                class="form-control-match"
+              />
+              <div
+                *ngIf="
+                  vacacionesForm.controls['fechaFinal']?.errors?.['required'] &&
+                  vacacionesForm.controls['fechaFinal']?.touched
+                "
+                class="text-danger"
+              >
                 La fecha de fin es obligatoria.
               </div>
-            </div>
-
-            <div class="form-group">
-              <label for="dias">Días de Vacaciones:</label>
-              <input type="number" id="dias" name="dias" [(ngModel)]="dias" required class="form-control-match">
-              <div *ngIf="vacacionesForm.controls['dias']?.errors?.['required'] && vacacionesForm.controls['dias']?.touched" class="text-danger">
-                La cantidad de días es obligatoria.
+              <div
+                *ngIf="
+                  vacacionesForm.controls['fechaFinal']?.errors?.['min'] &&
+                  vacacionesForm.controls['fechaFinal']?.touched
+                "
+                class="text-danger"
+              >
+                La fecha final no puede ser anterior a la de inicio.
               </div>
             </div>
 
-            <!-- Campo oculto para el estado por defecto "Pendiente" -->
-            <input type="hidden" name="estado" [(ngModel)]="estado" value="Pendiente">
+            <!-- Contrato (oculto) -->
+            <input
+              type="hidden"
+              name="contratoId"
+              [(ngModel)]="contratoId"
+              #contratoIdModel="ngModel"
+              required
+            />
 
-            <!-- Campo oculto para el contrato -->
-            <input type="hidden" name="contratoId" [(ngModel)]="contratoId">
-
-            <button type="submit" class="btn-submit" [disabled]="!vacacionesForm.form.valid">Enviar Solicitud</button>
+            <!-- Botón -->
+            <button
+              type="submit"
+              class="btn-submit"
+              [disabled]="vacacionesForm.invalid"
+            >
+              Enviar Solicitud
+            </button>
           </form>
         </div>
 
         <div class="lista-solicitudes">
           <h2>Solicitudes Enviadas</h2>
           <ul class="solicitudes-lista">
-            <li *ngFor="let solicitud of solicitudesVacaciones">
-              <strong>Motivo:</strong> {{ solicitud.motivo }}<br>
-              <strong>Inicio:</strong> {{ solicitud.fechaInicio }} | <strong>Fin:</strong> {{ solicitud.fechaFinal }}<br>
+            <li *ngFor="let sol of solicitudesVacaciones">
+              <strong>Motivo:</strong> {{ sol.motivo }}<br />
+              <strong>Inicio:</strong> {{ sol.fechaInicio }} |
+              <strong>Fin:</strong> {{ sol.fechaFinal }}<br />
             </li>
             <li *ngIf="solicitudesVacaciones.length === 0">
               No hay solicitudes enviadas aún.
