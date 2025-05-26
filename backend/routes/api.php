@@ -131,6 +131,8 @@ Route::get('/usuarios/{id}', [usuarioController::class, 'show']);
 Route::patch('/usuarios/{id}', [usuarioController::class, 'updatePartial']);
 Route::delete('/usuarios/{id}', [usuarioController::class, 'destroy']);
 Route::get('/verificar-usuario', [usuarioController::class, 'verificarExistencia']);
+Route::get('/usuarios-con-relaciones', [usuarioController::class, 'obtenerUsuariosConRelaciones']);
+Route::get('/usuarios/documento/{numDocumento}', [UsuarioController::class, 'obtenerUsuarioPorDocumento']);
 
 Route::get('/incapacidad', [incapacidadController::class, 'index']);
 Route::post('/incapacidad', [incapacidadController::class, 'store']);
@@ -159,6 +161,7 @@ Route::put('/usuarioshasrol/{id}', [usuarioshasrolController::class, 'update']);
 Route::get('/usuarioshasrol/{id}', [usuarioshasrolController::class, 'show']);
 Route::patch('/usuarioshasrol/{id}', [usuarioshasrolController::class, 'updatePartial']);
 Route::delete('/usuarioshasrol/{id}', [usuarioshasrolController::class, 'destroy']);
+
 
 Route::get('/tipopermisos', [tipopermisosController::class, 'index']);
 Route::post('/tipopermisos', [tipopermisosController::class, 'store']);

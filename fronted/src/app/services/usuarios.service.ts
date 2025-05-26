@@ -3,25 +3,42 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
 export interface Usuarios {
-  numDocumento: number;
-  primerNombre: string;
-  segundoNombre: string;
-  primerApellido: string;
-  segundoApellido: string;
-  telefono: string;
-  email: string;
-  email_confirmation: string;
-  direccion: string;
-  password:string;
-  password_confirmation: string,
-  nacionalidadId?: number;
-  epsCodigo?: string;
-  generoId?: number;
-  tipoDocumentoId?: number;
-  estadoCivilId?: number ;
-  pensionesCodigo?: string;
-  rol: number;
-  usersId: number;
+    id:number;
+    numDocumento: number;
+    primerNombre: string;
+    segundoNombre: string;
+    primerApellido: string;
+    segundoApellido: string;
+    telefono: string;
+    email: string;
+    email_confirmation: string;
+    direccion: string;
+    password: string;
+    password_confirmation: string;
+    nacionalidadId?: number;
+    epsCodigo?: string;
+    generoId?: number;
+    tipoDocumentoId?: number;
+    estadoCivilId?: number;
+    pensionesCodigo?: string;
+    rol: number;
+    usersId: number;
+
+
+    user?: {
+      id: number;
+      name: string;
+      email: string;
+      rol: number;
+    };
+    nombreRol?: string;
+
+    tipoDocumento?: { nombreTipoDocumento: string };
+    genero?: { abreviacionGenero: string };
+    estadoCivil?: { nombreEstado: string };
+    eps?: { nombreEps: string };
+    pensiones?: { nombrePensiones: string };
+    nacionalidad?: { nombre: string };
 
 }
 
@@ -57,6 +74,10 @@ export class UsuariosService {
       map(res => res.Nacionalidad) 
     );
   }
+  obtenerUsuarioPorDocumento(numDocumento: string) {
+    return this.http.get<any>(`http://localhost:8000/api/usuarios/documento/${numDocumento}`);
+  }
+
   actualizarUsuarioParcial(id: number, datos: Partial<Usuarios>): Observable<any> {
     return this.http.patch<any>(`http://localhost:8000/api/usuarios/${id}`, datos);
   }
@@ -77,6 +98,13 @@ export class UsuariosService {
       map(res => res.genero) 
     );
   }
+  obtenerUsuariosConRelaciones(): Observable<any[]> {
+    return this.http.get<any>('http://localhost:8000/api/usuarios-con-relaciones').pipe(
+      map(res => res.usuarios)
+    );
+  }
+
+
   
   obtenerTiposDocumento(): Observable<any[]> {
     return this.http.get<any>('http://localhost:8000/api/tipodocumento').pipe(

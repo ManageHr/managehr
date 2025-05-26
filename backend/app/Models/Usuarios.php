@@ -12,7 +12,8 @@ class Usuarios extends Model
     protected $table = 'usuarios';
     public $timestamps = false;
     protected $primaryKey = 'numDocumento';
-
+    public $incrementing = false; 
+    protected $keyType = 'integer';
     protected $fillable = [
         'numDocumento',
         'primerNombre',
@@ -36,7 +37,7 @@ class Usuarios extends Model
         'usersId'
     ];
 
-    // ✅ Relaciones con otras tablas
+    
     public function tipoDocumento()
     {
         return $this->belongsTo(TipoDocumento::class, 'tipoDocumentoId', 'idTipoDocumento');
@@ -45,5 +46,29 @@ class Usuarios extends Model
     public function genero()
     {
         return $this->belongsTo(Genero::class, 'generoId', 'idGenero');
+    }
+    public function estadoCivil()
+    {
+        return $this->belongsTo(EstadoCivil::class, 'estadoCivilId', 'idEstadoCivil');
+    }
+
+    public function eps()
+    {
+        return $this->belongsTo(Eps::class, 'epsCodigo', 'codigoEps');
+    }
+
+    public function pensiones()
+    {
+        return $this->belongsTo(Pensiones::class, 'pensionesCodigo', 'codigoPensiones');
+    }
+
+    public function nacionalidad()
+    {
+        return $this->belongsTo(Nacionalidad::class, 'nacionalidadId', 'idnacionalidad');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'usersId', 'id');
     }
 }

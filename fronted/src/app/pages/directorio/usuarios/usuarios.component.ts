@@ -40,8 +40,11 @@ export class UsuariosComponent implements OnInit {
     { idRol: 7, nombreRol: 'Para borrar nuevo MODEL' }
   ];
 
+  mostrarModal: boolean = false;
+  rolNombreSeleccionado: string = '';
 
   usuarioSeleccionado: Usuarios = {
+    id: 0,
     primerNombre: '',
     segundoNombre: '',
     primerApellido: '',
@@ -89,28 +92,53 @@ export class UsuariosComponent implements OnInit {
     this.cargarForaneas();
 
   }
-
-  mostrarInfoUsuario(id: number): void {
-    if (!id) return;
-    console.log("DESDE COMPONENTE = " + id);
-    this.usuariosService.obtenerUsersId(id).subscribe({
+  mostrarInfoPorDocumento(numDocumento: string): void {
+    this.usuariosService.obtenerUsuarioPorDocumento(numDocumento).subscribe({
       next: (res) => {
-        this.userBase = res.usuario;
-
-
-        // Esperar a que Angular renderice y luego mostrar el modal
-        setTimeout(() => {
-          const modal = new bootstrap.Modal(document.getElementById('modalUsersId'));
-          modal.show();
-        }, 0);
+        this.usuarioSeleccionado = res.usuario;
+        this.rolNombreSeleccionado = res.usuario.user?.rol?.nombreRol || 'Sin rol asignado';
+        this.mostrarModal = true;
       },
       error: (err) => {
-        console.error('Error al cargar user base:', err);
-        this.userBase = null;
-        Swal.fire('Error', 'No se pudo cargar la información del usuario.', 'error');
+        console.error('Error al cargar usuario por documento', err);
       }
     });
   }
+
+
+  mostrarInfoUsuario(usuarioId: any): void {
+    const usuarioCompleto = this.usuarios.find(u => u.usersId === usuarioId);
+
+    if (usuarioCompleto) {
+      this.usuarioSeleccionado = usuarioCompleto;
+
+      this.usuariosService.obtenerUsersId(usuarioCompleto.usersId).subscribe({
+        next: (user) => {
+          console.log('Roles cargados:', this.roles);
+          console.log('Rol ID recibido:', user.rol);
+
+          const rolId = typeof user.rol === 'object' ? user.rol.idRol : user.rol;
+          const rol = this.roles.find(r => r.idRol === rolId);
+          this.rolNombreSeleccionado = rol ? rol.nombreRol : 'Sin rol asignado';
+
+          this.mostrarModal = true;
+        },
+        error: () => {
+          console.error('Error al obtener los datos del usuario');
+        }
+      });
+    } else {
+      console.log('Usuario no encontrado:', usuarioId);
+    }
+  }
+
+
+  cerrarModal(): void {
+    this.mostrarModal = false;
+    this.rolNombreSeleccionado = '';
+    
+  }
+
   actualizarRolUserBase(): void {
     if (!this.userBase?.id || !this.userBase?.rol) {
       Swal.fire('Error', 'Faltan datos para actualizar el rol.', 'error');

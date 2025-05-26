@@ -329,7 +329,7 @@ class usuarioController extends Controller
         $usuario->save();
         if ($request->has('userBase')) {
             $user = User::find($request->input('userBase.id'));
-    
+
             if ($user) {
                 $user->email = $request->input('userBase.email');
                 $user->rol = $request->input('userBase.rol');
@@ -342,5 +342,67 @@ class usuarioController extends Controller
             "status" => 200
         ];
         return response()->json([$data], 200);
+    }
+    public function obtenerUsuarioPorDocumento($numDocumento)
+    {
+        try {
+            $usuario = Usuarios::with([
+                'tipoDocumento',
+                'genero',
+                'estadoCivil',
+                'eps',
+                'pensiones',
+                'nacionalidad',
+                'user.rol'
+            ])->where('numDocumento', $numDocumento)->first();
+
+            if (!$usuario) {
+                return response()->json([
+                    'message' => 'Usuario no encontrado',
+                    'status' => 404
+                ], 404);
+            }
+
+            return response()->json([
+                'usuario' => $usuario,
+                'status' => 200,
+                'message' => 'Usuario obtenido correctamente'
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'status' => 500,
+                'message' => 'Error al obtener el usuario'
+            ], 500);
+        }
+    }
+
+   public function obtenerUsuariosConRelaciones()
+    {
+        try {
+            $usuarios = Usuarios::with([
+                'tipoDocumento',
+                'genero',
+                'estadoCivil',
+                'eps',
+                'pensiones',
+                'nacionalidad',
+                'user.rol'
+            ])->get();
+
+            return response()->json([
+                'usuarios' => $usuarios,
+                'status' => 200,
+                'message' => 'Usuarios obtenidos correctamente'
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'status' => 500,
+                'message' => 'Error al obtener usuarios'
+            ], 500);
+        }
     }
 }

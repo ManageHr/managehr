@@ -67,4 +67,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasOne(Usuarios::class, 'usersId', 'id');
     }
+    public function rol()
+    {
+        return $this->belongsTo(Rol::class, 'rol'); // si el campo se llama 'rol' en la tabla users
+    }
+
 }
