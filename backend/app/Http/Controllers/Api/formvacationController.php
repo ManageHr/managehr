@@ -14,6 +14,41 @@ use Carbon\Carbon;
 class formvacationController extends Controller
 {
     /**
+     * Display a listing of the authenticated user's vacation requests.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function index()
+    {
+        if (! $usuario = Auth::user()) {
+            return response()->json(['message' => 'Usuario no autenticado.'], 401);
+        }
+
+        $numDocumento = $usuario->perfil->usuarioNumDocumento
+                      ?? $usuario->perfil->numDocumento
+                      ?? $usuario->numdocumento
+                      ?? null;
+
+        if (! $numDocumento) {
+            return response()->json(['message' => 'No se pudo identificar al usuario.'], 404);
+        }
+
+        $contrato = Contrato::whereHas('hojaDeVida', function ($q) use ($numDocumento) {
+            $q->where('usuarioNumDocumento', $numDocumento);
+        })->first();
+
+        if (! $contrato) {
+            return response()->json(['message' => 'No se encontró contrato para el usuario.'], 404);
+        }
+
+        $solicitudes = Vacaciones::where('contratoId', $contrato->idContrato)
+                                 ->orderBy('idVacaciones', 'desc')
+                                 ->get();
+
+        return response()->json($solicitudes, 200);
+    }
+
+    /**
      * Store a newly created vacation request.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -23,7 +58,6 @@ class formvacationController extends Controller
     {
         Log::info('Solicitud recibida:', $request->all());
 
-        // Validación (sin 'dias')
         $validator = Validator::make($request->all(), [
             'motivo'       => 'required|string|max:500',
             'fechaInicio'  => 'required|date_format:Y-m-d',
@@ -40,31 +74,33 @@ class formvacationController extends Controller
         }
 
         try {
-            // Verificar autenticación
             if (! $usuario = Auth::user()) {
                 return response()->json(['message' => 'Usuario no autenticado.'], 401);
             }
 
-            // Verificar existencia del contrato
+            // Asegúrate de que exista un contrato con ese ID
             $contrato = Contrato::find($request->input('contratoId'));
             if (! $contrato) {
                 return response()->json(['message' => 'Contrato inválido o no encontrado.'], 404);
             }
 
-            // Calcular automáticamente 'dias' (incluye ambos extremos)
+            // Calcular días (inclusive)
             $inicio = Carbon::parse($request->input('fechaInicio'));
             $fin    = Carbon::parse($request->input('fechaFinal'));
             $dias   = $inicio->diffInDays($fin) + 1;
 
-            // Crear la solicitud de vacaciones
-            $vacacion = Vacaciones::create([
-                'motivo'      => $request->input('motivo'),
-                'fechaInicio'=> $request->input('fechaInicio'),
-                'fechaFinal' => $request->input('fechaFinal'),
-                'dias'        => $dias,
-                'estado'      => 'pendiente',
-                'contratoId'  => $contrato->idContrato,
-            ]);
+            // Crear instancia y asignar atributos MANUALMENTE
+            $vacacion = new Vacaciones();
+            $vacacion->motivo      = $request->input('motivo');
+            $vacacion->fechaInicio = $request->input('fechaInicio');
+            $vacacion->fechaFinal  = $request->input('fechaFinal');
+            // Ojo: asegúrate de que tu columna en BD **se llame** exactamente 'contratoId'.
+            // Si tu columna se llama distinto (p.ej. 'contratold'), cámbialo aquí:
+            $vacacion->contratoId  = $contrato->idContrato;
+            $vacacion->dias         = $dias;
+            $vacacion->estado      = 'pendiente';
+
+            $vacacion->save();
 
             Log::info('Solicitud de vacaciones guardada con éxito', [
                 'idVacaciones' => $vacacion->idVacaciones

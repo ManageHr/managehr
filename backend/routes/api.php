@@ -286,12 +286,36 @@ Route::delete('/trazabilidad/{id}', [trazabilidadController::class, 'destroy']);
 
 //USUARIOS SHARON
 
-Route::middleware('auth:api')->post('/solicitudes-vacaciones-con-archivo', [formvacationController::class, 'store']);
-Route::middleware('auth:api')->get('/contrato-usuario/{numDocumento}', [ContratoController::class, 'buscarPorDocumento']);
+Route::middleware('auth:api')->group(function () {
+    // Crear solicitud
+    Route::post(
+      '/solicitudes-vacaciones-con-archivo',
+      [formvacationController::class, 'store']
+    );
+
+    // —————> TRAER SOLO MIS SOLICITUDES <—————
+    Route::get(
+      '/solicitudes-vacaciones-con-archivo',
+      [formvacationController::class, 'index']
+    );
+
+    // Obtener contrato por documento
+    Route::get(
+      '/contrato-usuario/{numDocumento}',
+      [ContratoController::class, 'buscarPorDocumento']
+    );
+
+    // … tus otras rutas protegidas …
+});
+
+
 Route::post('/solicitudes-incapacidades', 'App\Http\Controllers\Api\formincapacidadController@store');
+
 Route::get('/tipos-horas', [tipohorasController::class, 'index']);
+
 Route::middleware('auth:api')->get('/profile', [HomeController::class, 'getProfile']);
 Route::middleware('auth:api')->put('/profile/update', [HomeController::class, 'updateProfile']);
+
 Route::middleware('auth:api')->get('/mis-postulaciones', [MisPostulacionesController::class, 'index']);
 Route::middleware('auth:api')->post('/postulaciones', [PostulacionesController::class, 'store']);
 Route::put('/postulaciones/estado/{id}', [App\Http\Controllers\Api\PostulacionesController::class, 'updateStatus']);

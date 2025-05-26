@@ -29,6 +29,7 @@ export class FormvacacionesComponent implements OnInit {
   dias         = 0;
   contratoId: number | null = null;
 
+  // Aquí se almacenarán solo las solicitudes de este usuario
   solicitudesVacaciones: SolicitudVacaciones[] = [];
 
   constructor(
@@ -37,7 +38,10 @@ export class FormvacacionesComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Primero cargamos el contrato
     this.obtenerContratoId();
+    // Luego cargamos las solicitudes que ya existan
+    this.cargarMisSolicitudes();
   }
 
   obtenerContratoId(): void {
@@ -80,6 +84,21 @@ export class FormvacacionesComponent implements OnInit {
       });
   }
 
+  /** Trae solo las solicitudes previamente enviadas por este usuario */
+  cargarMisSolicitudes(): void {
+    this.solicitudesVacacionesService.obtenerSolicitudesUsuario()
+      .subscribe({
+        next: (data) => {
+          console.log('Solicitudes recibidas:', data);
+          this.solicitudesVacaciones = data;
+        },
+        error: (err) => {
+          console.error('Error al cargar solicitudes de usuario:', err);
+          // No interrumpimos el flujo si falla; solo mostramos en consola.
+        }
+      });
+  }
+
   /** Calcula los días incluyendo ambos extremos */
   calcularDias(): void {
     if (this.fechaInicio && this.fechaFinal) {
@@ -95,7 +114,6 @@ export class FormvacacionesComponent implements OnInit {
   enviarSolicitud(): void {
     this.calcularDias();
 
-    // Validamos manualmente en lugar de confiar en `vacacionesForm.invalid`
     if (
       !this.motivo.trim() ||
       !this.fechaInicio ||
@@ -119,17 +137,20 @@ export class FormvacacionesComponent implements OnInit {
 
     this.solicitudesVacacionesService.enviarSolicitud(solicitud).subscribe({
       next: (response) => {
-        this.solicitudesVacaciones.push(response);
+        // Añadimos la nueva solicitud al listado que ya teníamos
+        this.solicitudesVacaciones.unshift(response);
         Swal.fire('Éxito', 'Solicitud de vacaciones enviada correctamente.', 'success');
         this.limpiarFormulario();
       },
       error: (error) => {
         console.error('Error al enviar solicitud:', error);
-        if (error.status === 422) {
-          Swal.fire('Error', 'Verifica los campos del formulario.', 'error');
-        } else {
-          Swal.fire('Error', 'Ocurrió un error al enviar la solicitud.', 'error');
-        }
+        Swal.fire(
+          'Error',
+          error.status === 422
+            ? 'Verifica los campos del formulario.'
+            : 'Ocurrió un error al enviar la solicitud.',
+          'error'
+        );
       }
     });
   }
@@ -141,7 +162,7 @@ export class FormvacacionesComponent implements OnInit {
     this.dias        = 0;
   }
 
-  /** Para el botón en el template */
+  /** Determina si el botón debe estar habilitado */
   get puedeEnviar(): boolean {
     return (
       this.motivo.trim().length > 0 &&
