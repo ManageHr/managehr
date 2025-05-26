@@ -286,7 +286,8 @@ Route::delete('/trazabilidad/{id}', [trazabilidadController::class, 'destroy']);
 
 //USUARIOS SHARON
 
-Route::post('/solicitudes-vacaciones-con-archivo', [formvacationController::class, 'store']);
+Route::middleware('auth:api')->post('/solicitudes-vacaciones-con-archivo', [formvacationController::class, 'store']);
+Route::middleware('auth:api')->get('/contrato-usuario/{numDocumento}', [ContratoController::class, 'buscarPorDocumento']);
 Route::post('/solicitudes-incapacidades', 'App\Http\Controllers\Api\formincapacidadController@store');
 Route::get('/tipos-horas', [tipohorasController::class, 'index']);
 Route::middleware('auth:api')->get('/profile', [HomeController::class, 'getProfile']);
