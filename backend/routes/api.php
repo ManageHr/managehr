@@ -287,29 +287,36 @@ Route::delete('/trazabilidad/{id}', [trazabilidadController::class, 'destroy']);
 //USUARIOS SHARON
 
 Route::middleware('auth:api')->group(function () {
-    // Crear solicitud
+
+    // Vacaciones
     Route::post(
-      '/solicitudes-vacaciones-con-archivo',
-      [formvacationController::class, 'store']
+        '/solicitudes-vacaciones-con-archivo',
+        [formvacationController::class, 'store']
     );
-
-    // —————> TRAER SOLO MIS SOLICITUDES <—————
     Route::get(
-      '/solicitudes-vacaciones-con-archivo',
-      [formvacationController::class, 'index']
+        '/solicitudes-vacaciones-con-archivo',
+        [formvacationController::class, 'index']
     );
 
-    // Obtener contrato por documento
+    // Incapacidades (muda estas dos dentro del mismo grupo)
+    Route::post(
+        '/solicitudes-incapacidades',
+        'App\Http\Controllers\Api\formincapacidadController@store'
+    );
     Route::get(
-      '/contrato-usuario/{numDocumento}',
-      [ContratoController::class, 'buscarPorDocumento']
+        '/solicitudes-incapacidades',
+        'App\Http\Controllers\Api\formincapacidadController@index'
     );
 
-    // … tus otras rutas protegidas …
+    // Contrato por documento
+    Route::get(
+        '/contrato-usuario/{numDocumento}',
+        [ContratoController::class, 'buscarPorDocumento']
+    );
+
+    
 });
 
-
-Route::post('/solicitudes-incapacidades', 'App\Http\Controllers\Api\formincapacidadController@store');
 
 Route::get('/tipos-horas', [tipohorasController::class, 'index']);
 

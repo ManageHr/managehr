@@ -12,15 +12,7 @@
           <h2>Formulario de Solicitud de Incapacidad</h2>
           <form class="incapacidades-form" (ngSubmit)="enviarSolicitud()" #incapacidadesForm="ngForm">
 
-            <div class="form-group">
-              <label for="descrip">Descripción / Motivo:</label>
-              <textarea id="descrip" name="descrip" [(ngModel)]="descrip" required rows="4"
-                        class="form-control-match"></textarea>
-              <div *ngIf="incapacidadesForm.controls['descrip']?.errors?.['required'] && incapacidadesForm.controls['descrip']?.touched" class="text-danger">
-                La descripción es obligatoria.
-              </div>
-            </div>
-
+    
             <div class="form-group">
               <label for="archivo">Certificado / Archivo Adjunto:</label>
               <input type="file" id="archivo" name="archivo" (change)="onFileSelected($event)">
@@ -55,10 +47,8 @@
           <h2>Solicitudes Enviadas (Simulación Local)</h2>
           <ul class="solicitudes-lista">
             <li *ngFor="let solicitud of solicitudesIncapacidades">
-              <strong>Descripción:</strong> {{ solicitud.descrip }}<br>
               <strong>Archivo:</strong> {{ solicitud.archivo ? solicitud.archivo.name : 'N/A' }}<br>
               <strong>Inicio:</strong> {{ solicitud.fechaInicio }} | <strong>Fin:</strong> {{ solicitud.fechaFinal }}<br>
-              <strong>Estado:</strong> <span [ngClass]="{'Aprobada': solicitud.estado === 'Aprobada', 'Pendiente': solicitud.estado === 'Pendiente', 'Rechazada': solicitud.estado === 'Rechazada' }">{{ solicitud.estado }}</span>
             </li>
             <li *ngIf="solicitudesIncapacidades.length === 0">
               No hay solicitudes enviadas localmente aún.

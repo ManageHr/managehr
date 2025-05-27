@@ -33,6 +33,18 @@ export class ContratosService {
     );
   }
 
+ obtenerContratoPorDocumento(numDocumento: number): Observable<any> {
+  const token = localStorage.getItem('token');
+  const headers = {
+    'Authorization': `Bearer ${token}`
+  };
+  return this.http.get<any>(
+    `http://localhost:8000/api/contrato-usuario/${numDocumento}`,
+    { headers }
+  );
+}
+
+
   agregarContrato(contrato: any) {
     return this.http.post<Contratos>('http://localhost:8000/api/contrato', contrato);
   }

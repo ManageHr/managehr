@@ -17,15 +17,15 @@
     padding: 20px;
     margin-right: 5%;
     margin-bottom: 20px;
-    margin-left: 20%; /* Para dejar espacio al menú fijo */
+    margin-left: 20%; 
     margin-top: 10px;
     display: flex;
     flex-direction: column;
-    background-color: transparent; /* Fondo transparente */
+    background-color: transparent; 
     justify-content: flex-start;
     align-items: stretch;
     overflow-y: hidden;
-    height: 100%; /* Aseguramos que el contenido principal ocupe toda la altura */
+    height: 100%; 
   }
   
   body, html {
@@ -69,7 +69,7 @@
     gap: 20px;
     margin-top: 20px;
     flex: 1;
-    overflow: auto; /* Permitimos el scroll dentro del contenido principal */
+    overflow: auto; 
   }
   
   .purple-container {
@@ -80,14 +80,14 @@
     width: 100%;
     align-items: stretch;
     flex: 1;
-    overflow: hidden; /* Ocultamos el scroll interno del contenedor morado */
+    overflow: hidden; 
   }
   
   .formulario-vacaciones {
     width: 70%;
     display: flex;
     flex-direction: column;
-    background-color: #202940; /* Fondo oscuro similar al header */
+    background-color: #202940; 
     border-radius: 8px;
     padding: 20px;
   }
@@ -95,12 +95,12 @@
   .formulario-vacaciones h2 {
     position: sticky;
     top: 0;
-    background-color: #3b83f615; /* Fondo transparente */
+    background-color: #3b83f615; 
     margin-top: -10px;
     margin-bottom: 15px;
     z-index: 1;
-    font-size: 25px; /* Tamaño de fuente del último ejemplo */
-    color: #3b82f6; /* Color del título del último ejemplo */
+    font-size: 25px; 
+    color: #3b82f6; 
     border-radius: 10px;
     padding: 10px;
   }
@@ -110,7 +110,7 @@
     max-width: none;
     padding: 20px;
     border-radius: 8px;
-    background-color: #1e2131; /* Fondo ligeramente más claro */
+    background-color: #1e2131; 
     flex: 1;
   }
   
@@ -118,7 +118,7 @@
     width: 30%;
     padding: 20px;
     border-radius: 8px;
-    background-color: #1e2131; /* Fondo ligeramente más claro que el principal */
+    background-color: #1e2131; 
     display: flex;
     flex-direction: column;
   }
@@ -139,24 +139,29 @@
     list-style-type: none;
     padding: 0;
     flex: 1;
-    overflow-y: auto; /* Permitimos el scroll dentro de la lista si es necesario */
-    display: flex; /* Añadimos flex para el espaciado entre elementos */
-    flex-direction: column; /* Aseguramos que los elementos se apilen verticalmente */
-    gap: 10px; /* Espacio entre los recuadros de solicitud */
+    overflow-y: auto; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px; 
   }
   
   .solicitudes-lista li {
-    padding: 15px; /* Añadimos padding interno al recuadro */
-    margin-bottom: 0; /* Eliminamos el margen inferior por defecto */
-    border-bottom: none; /* Eliminamos el border inferior */
-    background-color: #43455057; /* Fondo oscuro para el recuadro */
-    border-radius: 6px; /* Bordes redondeados para el recuadro */
-    color: white; /* Texto blanco dentro del recuadro */
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Sutil sombra para dar relieve */
-  }
+    padding: 15px; 
+    margin-bottom: 0; 
+    border-bottom: none; 
+    background-color: #43455057; 
+    border-radius: 6px; 
+    color: white; 
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); 
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-wrap: break-word;       
+    word-break: break-word;     
+}
+  
   
   .solicitudes-lista li:last-child {
-    border-bottom: none; /* Aseguramos que el último elemento no tenga borde inferior */
+    border-bottom: none; 
   }
   
   .form-group {

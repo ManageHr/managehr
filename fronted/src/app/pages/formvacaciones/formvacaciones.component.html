@@ -119,6 +119,7 @@
               <strong>Motivo:</strong> {{ sol.motivo }}<br />
               <strong>Inicio:</strong> {{ sol.fechaInicio }} |
               <strong>Fin:</strong> {{ sol.fechaFinal }}<br />
+              <strong>Estado:</strong> {{ sol.estado | titlecase }}
             </li>
             <li *ngIf="solicitudesVacaciones.length === 0">
               No hay solicitudes enviadas aún.

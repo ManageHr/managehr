@@ -15,7 +15,6 @@ class formincapacidadController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'descrip' => 'required|string',
             'archivo' => 'nullable|file|max:5000|mimes:pdf,doc,docx,jpg,png,jpeg',
             'fechaInicio' => 'required|date_format:Y-m-d',
             'fechaFinal' => 'required|date_format:Y-m-d|after_or_equal:fechaInicio',
@@ -64,7 +63,6 @@ class formincapacidadController extends Controller
 
         try {
             $incapacidad = Incapacidad::create([
-                'descrip' => $request->input('descrip'),
                 'archivo' => $filePath,
                 'fechaInicio' => $request->input('fechaInicio'),
                 'fechaFinal' => $request->input('fechaFinal'),
