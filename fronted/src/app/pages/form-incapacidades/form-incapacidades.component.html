@@ -12,7 +12,6 @@
           <h2>Formulario de Solicitud de Incapacidad</h2>
           <form class="incapacidades-form" (ngSubmit)="enviarSolicitud()" #incapacidadesForm="ngForm">
 
-    
             <div class="form-group">
               <label for="archivo">Certificado / Archivo Adjunto:</label>
               <input type="file" id="archivo" name="archivo" (change)="onFileSelected($event)">
@@ -44,17 +43,27 @@
         </div>
 
         <div class="lista-solicitudes">
-          <h2>Solicitudes Enviadas (Simulación Local)</h2>
-          <ul class="solicitudes-lista">
-            <li *ngFor="let solicitud of solicitudesIncapacidades">
-              <strong>Archivo:</strong> {{ solicitud.archivo ? solicitud.archivo.name : 'N/A' }}<br>
-              <strong>Inicio:</strong> {{ solicitud.fechaInicio }} | <strong>Fin:</strong> {{ solicitud.fechaFinal }}<br>
-            </li>
-            <li *ngIf="solicitudesIncapacidades.length === 0">
-              No hay solicitudes enviadas localmente aún.
-            </li>
-          </ul>
-        </div>
+  <h2>Solicitudes Enviadas</h2>
+
+  <div class="solicitudes-scroll-fijo">
+    <div *ngIf="solicitudesIncapacidades.length === 0" class="text-center">
+      No hay solicitudes enviadas aún.
+    </div>
+
+    <div *ngFor="let solicitud of solicitudesIncapacidades" class="card-solicitud">
+      <p><strong>Inicio:</strong> {{ solicitud.fechaInicio | date: 'yyyy-MM-dd' }}</p>
+      <p><strong>Fin:</strong> {{ solicitud.fechaFinal | date: 'yyyy-MM-dd' }}</p>
+      <p *ngIf="solicitud.archivo">
+        <strong>Archivo:</strong>
+        <a [href]="'http://localhost:8000/storage/' + solicitud.archivo" target="_blank">Ver archivo</a>
+      </p>
+      <p *ngIf="!solicitud.archivo"><strong>Archivo:</strong> No adjunto</p>
+    </div>
+  </div>
+</div>
+
+
+
       </div>
     </div>
   </div>

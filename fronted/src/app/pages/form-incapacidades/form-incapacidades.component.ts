@@ -57,15 +57,27 @@ export class FormIncapacidadesComponent implements OnInit {
     }
 
     this.contratosService.obtenerContratoPorDocumento(numDocumento).subscribe({
-      next: (res) => {
-        if (res && res.contrato) {
-          this.contratoId = res.contrato.idContrato; // Ajusta aquí el campo si es diferente
+      next: (contrato) => {
+        if (contrato) {
+          this.contratoId = contrato.idContrato;
+          this.obtenerSolicitudesIncapacidades();
         } else {
           Swal.fire('Error', 'No se encontró contrato para el usuario.', 'error');
         }
       },
       error: () => {
         Swal.fire('Error', 'No se pudo obtener el contrato del usuario.', 'error');
+      }
+    });
+  }
+
+  obtenerSolicitudesIncapacidades(): void {
+    this.solicitudesIncapacidadService.obtenerSolicitudesIncapacidadUsuario().subscribe({
+      next: (solicitudes) => {
+        this.solicitudesIncapacidades = solicitudes;
+      },
+      error: () => {
+        this.solicitudesIncapacidades = [];
       }
     });
   }
@@ -94,11 +106,12 @@ export class FormIncapacidadesComponent implements OnInit {
     }
 
     this.solicitudesIncapacidadService.enviarSolicitudIncapacidad(formData).subscribe({
-      next: (response) => {
+      next: () => {
         Swal.fire('Éxito', 'Solicitud de incapacidad enviada con éxito.', 'success');
         this.limpiarFormulario();
+        this.obtenerSolicitudesIncapacidades();
       },
-      error: (error) => {
+      error: () => {
         Swal.fire('Error', 'Error al enviar la solicitud de incapacidad.', 'error');
       }
     });

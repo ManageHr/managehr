@@ -38,10 +38,11 @@ export class ContratosService {
   const headers = {
     'Authorization': `Bearer ${token}`
   };
-  return this.http.get<any>(
-    `http://localhost:8000/api/contrato-usuario/${numDocumento}`,
-    { headers }
-  );
+
+  return this.http.get<any>(`http://localhost:8000/api/contrato-usuario/${numDocumento}`, { headers })
+    .pipe(
+      map(res => res.contrato) // 
+    );
 }
 
 

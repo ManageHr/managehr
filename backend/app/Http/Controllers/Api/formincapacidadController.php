@@ -107,4 +107,53 @@ class formincapacidadController extends Controller
             'data' => $incapacidad
         ], 201);
     }
+
+    public function index(Request $request)
+{
+    try {
+        $usuario = auth()->user();
+        \Log::info('Usuario autenticado', ['usuario' => $usuario]);
+
+        $documento = $usuario->perfil['numDocumento'] ?? null;
+
+        if (!$documento) {
+            \Log::warning('El usuario no tiene numDocumento en el perfil');
+            return response()->json([], 200);
+        }
+
+        $hoja = \App\Models\HojasVida::where('usuarioNumDocumento', $documento)->first();
+        \Log::info('Hoja de vida encontrada', ['hoja' => $hoja]);
+
+        if (!$hoja) {
+            \Log::warning('No se encontró hoja de vida');
+            return response()->json([], 200);
+        }
+
+        // 🔽 Este log te dirá con exactitud qué valor se está buscando
+        \Log::debug('Buscando contrato con hojaDeVida = ' . $hoja->idHojaDeVida);
+
+        $contrato = \App\Models\Contrato::where('hojaDeVida', $hoja->idHojaDeVida)->first();
+        \Log::info('Contrato encontrado', ['contrato' => $contrato]);
+
+        if (!$contrato) {
+            \Log::warning('No se encontró contrato asociado a la hoja de vida');
+            return response()->json([], 200);
+        }
+
+        $incapacidades = \App\Models\Incapacidad::where('contratoId', $contrato->idContrato)
+            ->orderByDesc('fechaInicio')
+            ->get();
+
+        \Log::info('Incapacidades encontradas', ['incapacidades' => $incapacidades]);
+
+        return response()->json($incapacidades, 200);
+    } catch (\Exception $e) {
+        \Log::error('Error al obtener solicitudes de incapacidad', ['error' => $e->getMessage()]);
+        return response()->json([
+            'message' => 'Error al obtener las solicitudes',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
 }

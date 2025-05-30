@@ -36,6 +36,7 @@ use App\Http\Controllers\Api\trazabilidadController;
 use App\Http\Controllers\api\vacantesController;
 use App\Http\Controllers\api\vacantesHasPostulacionesController;
 
+use App\Http\Controllers\Api\formincapacidadController;
 use App\Http\Controllers\Api\formvacationController;
 use App\Http\Controllers\Api\FormHorasController;
 use App\Http\Controllers\Api\HomeController;
@@ -284,38 +285,22 @@ Route::patch('/trazabilidad/{id}', [trazabilidadController::class, 'updatePartia
 Route::delete('/trazabilidad/{id}', [trazabilidadController::class, 'destroy']);
 
 
-//USUARIOS SHARON
+//USUARIOS SHARON--------------------------------------------------------------------------------------------------
 
 Route::middleware('auth:api')->group(function () {
 
     // Vacaciones
-    Route::post(
-        '/solicitudes-vacaciones-con-archivo',
-        [formvacationController::class, 'store']
-    );
-    Route::get(
-        '/solicitudes-vacaciones-con-archivo',
-        [formvacationController::class, 'index']
-    );
+    Route::post('/solicitudes-vacaciones-con-archivo', [formvacationController::class, 'store']);
+    Route::get('/solicitudes-vacaciones-con-archivo', [formvacationController::class, 'index']);
 
-    // Incapacidades (muda estas dos dentro del mismo grupo)
-    Route::post(
-        '/solicitudes-incapacidades',
-        'App\Http\Controllers\Api\formincapacidadController@store'
-    );
-    Route::get(
-        '/solicitudes-incapacidades',
-        'App\Http\Controllers\Api\formincapacidadController@index'
-    );
+    // Incapacidad
+    Route::post('/solicitudes-incapacidades', 'App\Http\Controllers\Api\formincapacidadController@store');
+    Route::get('/solicitudes-incapacidades', 'App\Http\Controllers\Api\formincapacidadController@index');
 
-    // Contrato por documento
-    Route::get(
-        '/contrato-usuario/{numDocumento}',
-        [ContratoController::class, 'buscarPorDocumento']
-    );
 
-    
+    Route::get('/contrato-usuario/{numDocumento}', [ContratoController::class, 'buscarPorDocumento']);
 });
+
 
 
 Route::get('/tipos-horas', [tipohorasController::class, 'index']);
