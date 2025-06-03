@@ -332,4 +332,39 @@ select.form-control-match {
     color: #000; /* Letras negras en el select */
     background-color: #fff; /* Fondo blanco para todo */
   }
+
+
   
+  
+  .card-horas {
+  background-color: #333645;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+
+  transition: transform 0.2s ease;
+}
+
+.card-horas:hover {
+  transform: translateY(-2px);
+}
+
+.card-horas h5 {
+  margin-top: 0;
+  font-size: 18px;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.card-horas p {
+  margin: 4px 0;
+  color: #d8c9c9;
+  font-size: 14px;
+}
+
+.card-horas .fecha {
+  font-style: italic;
+  color: #d8c7c7;
+  font-size: 13px;
+}

@@ -289,15 +289,19 @@ Route::delete('/trazabilidad/{id}', [trazabilidadController::class, 'destroy']);
 
 Route::middleware('auth:api')->group(function () {
 
-    // Vacaciones
-    Route::post('/solicitudes-vacaciones-con-archivo', [formvacationController::class, 'store']);
+    // Solicitudes de Vacaciones
     Route::get('/solicitudes-vacaciones-con-archivo', [formvacationController::class, 'index']);
+    Route::post('/solicitudes-vacaciones-con-archivo', [formvacationController::class, 'store']);
 
-    // Incapacidad
-    Route::post('/solicitudes-incapacidades', 'App\Http\Controllers\Api\formincapacidadController@store');
-    Route::get('/solicitudes-incapacidades', 'App\Http\Controllers\Api\formincapacidadController@index');
+    // Solicitudes de Incapacidades
+    Route::get('/solicitudes-incapacidades', [formincapacidadController::class, 'index']);
+    Route::post('/solicitudes-incapacidades', [formincapacidadController::class, 'store']);
 
+    // Solicitudes de Horas Extra
+    Route::get('/horas-extra', [FormHorasController::class, 'index']);
+    Route::post('/horas-extra', [FormHorasController::class, 'store']);
 
+    // Obtener contrato del usuario
     Route::get('/contrato-usuario/{numDocumento}', [ContratoController::class, 'buscarPorDocumento']);
 });
 

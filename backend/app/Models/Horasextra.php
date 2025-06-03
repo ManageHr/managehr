@@ -2,22 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Horasextra extends Model
+class HorasExtra extends Model
 {
-    use HasFactory;
-
     protected $table = 'horasextra';
     protected $primaryKey = 'idHorasExtra';
     public $timestamps = false;
 
     protected $fillable = [
-        'descrip',
+        'descripcion',
         'fecha',
+        'tipoHorasId',   
         'nHorasExtra',
-        'tipoHorasid',
-        'contratoId'
+        'contratoId',
     ];
 }
