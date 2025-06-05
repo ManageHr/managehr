@@ -105,7 +105,7 @@ export class UsuariosComponent implements OnInit {
     });
   }
 
-
+ 
   mostrarInfoUsuario(usuarioId: any): void {
     const usuarioCompleto = this.usuarios.find(u => u.usersId === usuarioId);
 
@@ -256,7 +256,7 @@ export class UsuariosComponent implements OnInit {
     });
   }
 
-
+ 
 
   confirmDelete(index: number): void {
     const usuario = this.usuariosPaginados[index];

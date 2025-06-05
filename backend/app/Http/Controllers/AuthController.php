@@ -14,6 +14,15 @@ use Illuminate\Support\Facades\Log;
 class AuthController extends Controller
 {
 
+    public function index()
+    {
+        $user = User::all();
+        $data = [
+            "usuario" => $user,
+            "status" => 200
+        ];
+        return response()->json($data, 200);
+    }
     public function register(Request $request)
     {
         // Validar campos, incluyendo confirmación de email y contraseña
@@ -62,9 +71,7 @@ class AuthController extends Controller
         ], 201);
     }
 
-    /**
-     * Iniciar sesión y devolver token JWT.
-     */
+  
     public function login(Request $request)
 {
     // Extraer las credenciales del request
@@ -96,9 +103,7 @@ class AuthController extends Controller
 }
 
 
-    /**
-     * Retornar los datos del usuario autenticado.
-     */
+    
     public function me()
     {
         return response()->json([
@@ -123,7 +128,7 @@ class AuthController extends Controller
         ];
         return response()->json([$data], 200);
     }
-    // app/Http/Controllers/AuthController.php
+   
     public function verificarExistencia(Request $request)
     {
         $email = $request->query('email');
@@ -196,6 +201,14 @@ class AuthController extends Controller
             'usuarios' => $usuarios
         ]);
     }
-
+    public function show($id)
+    {
+        $user = User::find($id);
+        $data = [
+            "usuario" => $user,
+            "status" => 200
+        ];
+        return response()->json($data, 200);
+    }
 
 }

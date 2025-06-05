@@ -46,8 +46,6 @@ Route::middleware('auth:api')->post('/rols/{rol}/permisos', [RolPermisoControlle
 
 Route::get('/auth/rolcinco', [AuthController::class, 'rolcinco']);
 
-
-
 Route::post('/rols/{rolId}/permisos', [RolPermisoController::class, 'asignarPermisos']);
 Route::get('/rols/{rolId}/permisos', [RolPermisoController::class, 'obtenerPermisos']);
 
