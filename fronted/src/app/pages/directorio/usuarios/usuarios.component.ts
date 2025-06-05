@@ -87,7 +87,7 @@ export class UsuariosComponent implements OnInit {
     });
 
 
-    
+
 
     this.cargarForaneas();
 
@@ -105,7 +105,7 @@ export class UsuariosComponent implements OnInit {
     });
   }
 
- 
+
   mostrarInfoUsuario(usuarioId: any): void {
     const usuarioCompleto = this.usuarios.find(u => u.usersId === usuarioId);
 
@@ -136,7 +136,7 @@ export class UsuariosComponent implements OnInit {
   cerrarModal(): void {
     this.mostrarModal = false;
     this.rolNombreSeleccionado = '';
-    
+
   }
 
   actualizarRolUserBase(): void {
@@ -256,7 +256,7 @@ export class UsuariosComponent implements OnInit {
     });
   }
 
- 
+
 
   confirmDelete(index: number): void {
     const usuario = this.usuariosPaginados[index];
@@ -468,6 +468,7 @@ export class UsuariosComponent implements OnInit {
     return rol ? rol.nombreRol : 'Sin rol';
   }
 
+  currentPageExternos: number = 1;
 
 
 }
