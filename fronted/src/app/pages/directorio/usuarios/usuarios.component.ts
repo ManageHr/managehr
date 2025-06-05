@@ -87,7 +87,7 @@ export class UsuariosComponent implements OnInit {
     });
 
 
-    
+
 
     this.cargarForaneas();
 
@@ -105,17 +105,20 @@ export class UsuariosComponent implements OnInit {
     });
   }
 
- 
+
   mostrarInfoUsuario(usuarioId: any): void {
     const usuarioCompleto = this.usuarios.find(u => u.usersId === usuarioId);
-
+    console.log('Usuario encontrado:', usuarioCompleto);
     if (usuarioCompleto) {
       this.usuarioSeleccionado = usuarioCompleto;
 
       this.usuariosService.obtenerUsersId(usuarioCompleto.usersId).subscribe({
-        next: (user) => {
+        next: (response) => {
+          const user = response[0]?.usuario; 
+          this.usuarioSeleccionado.user = user; 
+          console.log('Usuario recibido:', user);
           console.log('Roles cargados:', this.roles);
-          console.log('Rol ID recibido:', user.rol);
+          console.log('Rol ID recibido:', user.rol?.idRol);
 
           const rolId = typeof user.rol === 'object' ? user.rol.idRol : user.rol;
           const rol = this.roles.find(r => r.idRol === rolId);
@@ -127,6 +130,7 @@ export class UsuariosComponent implements OnInit {
           console.error('Error al obtener los datos del usuario');
         }
       });
+
     } else {
       console.log('Usuario no encontrado:', usuarioId);
     }
@@ -136,7 +140,7 @@ export class UsuariosComponent implements OnInit {
   cerrarModal(): void {
     this.mostrarModal = false;
     this.rolNombreSeleccionado = '';
-    
+
   }
 
   actualizarRolUserBase(): void {
@@ -256,7 +260,7 @@ export class UsuariosComponent implements OnInit {
     });
   }
 
- 
+
 
   confirmDelete(index: number): void {
     const usuario = this.usuariosPaginados[index];
