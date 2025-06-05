@@ -472,6 +472,7 @@ export class UsuariosComponent implements OnInit {
     return rol ? rol.nombreRol : 'Sin rol';
   }
 
+  currentPageExternos: number = 1;
 
 
 }
