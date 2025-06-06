@@ -40,6 +40,7 @@ use App\Http\Controllers\Api\formincapacidadController;
 use App\Http\Controllers\Api\formvacationController;
 use App\Http\Controllers\Api\FormHorasController;
 use App\Http\Controllers\Api\HomeController;
+use App\Http\Controllers\Api\notificacionesController;
 
 Route::middleware('auth:api')->post('/rols/{rol}/permisos', [RolPermisoController::class, 'asignarPermisos']);
 
@@ -313,3 +314,12 @@ Route::middleware('auth:api')->put('/profile/update', [HomeController::class, 'u
 Route::middleware('auth:api')->get('/mis-postulaciones', [MisPostulacionesController::class, 'index']);
 Route::middleware('auth:api')->post('/postulaciones', [PostulacionesController::class, 'store']);
 Route::put('/postulaciones/estado/{id}', [App\Http\Controllers\Api\PostulacionesController::class, 'updateStatus']);
+
+
+Route::prefix('notificaciones')->group(function () {
+    Route::get('/', [NotificacionesController::class, 'index']);
+    Route::post('/', [NotificacionesController::class, 'store']);
+    Route::get('/{id}', [NotificacionesController::class, 'show']);
+    Route::put('/{id}', [NotificacionesController::class, 'update']);
+    Route::delete('/{id}', [NotificacionesController::class, 'destroy']);
+});

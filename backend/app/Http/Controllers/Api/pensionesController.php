@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Pensiones;
 use Illuminate\Support\Facades\Validator;
-
+ 
 class pensionesController extends Controller
 {
     public function index()
@@ -19,7 +19,7 @@ class pensionesController extends Controller
             "status" => 200
         ];
         return response()->json($data, 200);
-        //return "Obteniendo lista de epss del contepsador";
+        
 
     }
 
