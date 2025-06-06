@@ -31,7 +31,7 @@ class AuthController extends Controller
             'email' => 'required|string|email|confirmed|unique:users,email',
             'email_confirmation' => 'required|string|email',
             'password' => 'required|string|min:6|confirmed',
-            'rol'=>'required',
+            'rol' => 'required',
             'password_confirmation' => 'required|string|min:6',
         ]);
 
@@ -57,7 +57,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password), // Usar bcrypt para hashear la contraseña
-            'rol'=> $request->rol
+            'rol' => $request->rol
         ]);
 
         // Generar token JWT
@@ -71,39 +71,39 @@ class AuthController extends Controller
         ], 201);
     }
 
-  
+
     public function login(Request $request)
-{
-    // Extraer las credenciales del request
-    $credentials = $request->only('email', 'password');
+    {
+        // Extraer las credenciales del request
+        $credentials = $request->only('email', 'password');
 
-    // Registrar logs para depuración
-    Log::info('Intento de login', ['email' => $request->email ?? 'Correo no proporcionado']);
+        // Registrar logs para depuración
+        Log::info('Intento de login', ['email' => $request->email ?? 'Correo no proporcionado']);
 
-    // Intentar autenticar al usuario
-    if (!$token = JWTAuth::attempt($credentials)) {
-        Log::error('Error en login: credenciales incorrectas', ['email' => $request->email ?? 'Correo no proporcionado']);
-        return response()->json(['error' => 'Correo o contraseña incorrectos'], 401);
+        // Intentar autenticar al usuario
+        if (!$token = JWTAuth::attempt($credentials)) {
+            Log::error('Error en login: credenciales incorrectas', ['email' => $request->email ?? 'Correo no proporcionado']);
+            return response()->json(['error' => 'Correo o contraseña incorrectos'], 401);
+        }
+
+        // Obtener el usuario autenticado
+        $user = JWTAuth::user();
+
+        // Si por alguna razón no se genera token, forzar la creación (fallback)
+        if (!$token) {
+            $token = JWTAuth::fromUser($user);
+        }
+
+        // Responder con token y datos de usuario
+        return response()->json([
+            'user' => $user,
+            'token' => $token,
+            'redirect' => '/directorio'
+        ]);
     }
 
-    // Obtener el usuario autenticado
-    $user = JWTAuth::user();
-
-    // Si por alguna razón no se genera token, forzar la creación (fallback)
-    if (!$token) {
-        $token = JWTAuth::fromUser($user);
-    }
-
-    // Responder con token y datos de usuario
-    return response()->json([
-        'user' => $user,
-        'token' => $token,
-        'redirect' => '/directorio'
-    ]);
-}
 
 
-    
     public function me()
     {
         return response()->json([
@@ -128,7 +128,7 @@ class AuthController extends Controller
         ];
         return response()->json([$data], 200);
     }
-   
+
     public function verificarExistencia(Request $request)
     {
         $email = $request->query('email');
@@ -203,12 +203,15 @@ class AuthController extends Controller
     }
     public function show($id)
     {
-        $user = User::find($id);
+        $user = User::with('rol')->find($id);
+        if (!$user) {
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
+        }
         $data = [
             "usuario" => $user,
             "status" => 200
         ];
-        return response()->json($data, 200);
+        return response()->json([$data], 200);
     }
 
 }

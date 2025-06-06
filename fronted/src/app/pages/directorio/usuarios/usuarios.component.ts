@@ -126,14 +126,17 @@ ngOnInit(): void {
 
   mostrarInfoUsuario(usuarioId: any): void {
     const usuarioCompleto = this.usuarios.find(u => u.usersId === usuarioId);
-
+    console.log('Usuario encontrado:', usuarioCompleto);
     if (usuarioCompleto) {
       this.usuarioSeleccionado = usuarioCompleto;
 
       this.usuariosService.obtenerUsersId(usuarioCompleto.usersId).subscribe({
-        next: (user) => {
+        next: (response) => {
+          const user = response[0]?.usuario; 
+          this.usuarioSeleccionado.user = user; 
+          console.log('Usuario recibido:', user);
           console.log('Roles cargados:', this.roles);
-          console.log('Rol ID recibido:', user.rol);
+          console.log('Rol ID recibido:', user.rol?.idRol);
 
           const rolId = typeof user.rol === 'object' ? user.rol.idRol : user.rol;
           const rol = this.roles.find(r => r.idRol === rolId);
@@ -145,6 +148,7 @@ ngOnInit(): void {
           console.error('Error al obtener los datos del usuario');
         }
       });
+
     } else {
       console.log('Usuario no encontrado:', usuarioId);
     }
