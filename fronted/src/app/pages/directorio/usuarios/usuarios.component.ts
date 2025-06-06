@@ -21,6 +21,9 @@ export class UsuariosComponent implements OnInit {
   usuarios: Usuarios[] = [];
   userBase: any = null;
 
+  usuariosRolCinco: Usuarios[] = [];
+
+
   filtroNombre: string = "";
   currentPage = 1;
   itemsPerPage = 5;
@@ -70,21 +73,36 @@ export class UsuariosComponent implements OnInit {
   nuevoUsuario: any = {};
   constructor(private usuariosService: UsuariosService, private authService: AuthService) { }
 
-  ngOnInit(): void {
-    const userFromLocal = localStorage.getItem('usuario');
-    if (userFromLocal) {
-      this.usuario = JSON.parse(userFromLocal);
-      console.log('Usuario logueado:', this.usuario);
-    }
+  totalPagesExternos: number = 1;
 
-    this.usuariosService.obtenerUsuarios().subscribe({
-      next: (data) => {
-        this.usuarios = data;
-        this.totalPages = Math.ceil(this.usuarios.length / this.itemsPerPage);
-        console.log('Usuarios cargados:', this.usuarios);
-      },
-      error: (err) => console.error('Error al cargar usuarios', err)
-    });
+ngOnInit(): void {
+  const userFromLocal = localStorage.getItem('usuario');
+  if (userFromLocal) {
+    this.usuario = JSON.parse(userFromLocal);
+    console.log('Usuario logueado:', this.usuario);
+  }
+
+  // Esta parte es solo para cargar todos los usuarios si aún la usas
+  this.usuariosService.obtenerUsuarios().subscribe({
+    next: (data) => {
+      this.usuarios = data;
+      this.totalPages = Math.ceil(this.usuarios.length / this.itemsPerPage);
+    },
+    error: (err) => console.error('Error al cargar usuarios', err)
+  });
+
+  // ESTA es la parte importante para rol 5
+  this.usuariosService.getUsuariosRolCinco().subscribe({
+    next: (data) => {
+      this.usuariosRolCinco = data;
+      this.totalPagesExternos = Math.ceil(this.usuariosRolCinco.length / this.itemsPerPage);
+      console.log('Usuarios con rol 5:', this.usuariosRolCinco); // 👈 debe mostrar datos
+    },
+    error: (err) => console.error('Error al cargar usuarios rol 5', err)
+  });
+
+
+
 
 
 

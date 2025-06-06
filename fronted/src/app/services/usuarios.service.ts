@@ -53,7 +53,7 @@ export class UsuariosService {
   obtenerUsuarios(): Observable<any> {
     return this.http.get<any>(this.apiUrl).pipe(
       map(res => {
-        console.log('Respuesta del backend:', res); 
+        console.log('Respuesta del backend:', res);
         return res.usuario;
       })
     );
@@ -68,10 +68,10 @@ export class UsuariosService {
   }
   obtenerRol(id: number): Observable<any> {
     return this.http.get<any>(`http://localhost:8000/api/rols/${id}`);
-  } 
+  }
   obtenerNacionalidades(): Observable<any[]> {
     return this.http.get<any>('http://localhost:8000/api/nacionalidad').pipe(
-      map(res => res.Nacionalidad) 
+      map(res => res.Nacionalidad)
     );
   }
   obtenerUsuarioPorDocumento(numDocumento: string) {
@@ -81,21 +81,21 @@ export class UsuariosService {
   actualizarUsuarioParcial(id: number, datos: Partial<Usuarios>): Observable<any> {
     return this.http.patch<any>(`http://localhost:8000/api/usuarios/${id}`, datos);
   }
-  
+
   eliminarUsuario(id: number): Observable<any> {
     return this.http.delete<any>(`http://localhost:8000/api/usuarios/${id}`);
   }
   eliminarUser(id: number): Observable<any> {
     return this.http.delete<any>(`http://localhost:8000/api/login/${id}`);
   }
-  
+
   obtenerUsuario(id: number): Observable<any> {
     return this.http.get<any>(`http://localhost:8000/api/usuarios/${id}`);
   }
-  
+
   obtenerGeneros(): Observable<any[]> {
     return this.http.get<any>('http://localhost:8000/api/genero').pipe(
-      map(res => res.genero) 
+      map(res => res.genero)
     );
   }
   obtenerUsuariosConRelaciones(): Observable<any[]> {
@@ -105,25 +105,25 @@ export class UsuariosService {
   }
 
 
-  
+
   obtenerTiposDocumento(): Observable<any[]> {
     return this.http.get<any>('http://localhost:8000/api/tipodocumento').pipe(
-      map(res => res.tipodocumento) 
+      map(res => res.tipodocumento)
     );
   }
-  
+
   obtenerEstadosCiviles(): Observable<any[]> {
     return this.http.get<any>('http://localhost:8000/api/estadocivil').pipe(
-      map(res => res.estadocivil) 
+      map(res => res.estadocivil)
     );
   }
-  
+
   obtenerEps(): Observable<any[]> {
     return this.http.get<any>('http://localhost:8000/api/epss').pipe(
-      map(res => res.eps) 
+      map(res => res.eps)
     );
   }
-  
+
   obtenerPensiones(): Observable<any[]> {
     return this.http.get<any>('http://localhost:8000/api/pensiones').pipe(
       map(res => res.pensiones)
@@ -131,7 +131,7 @@ export class UsuariosService {
   }
   obtenerRoles(): Observable<any[]> {
     return this.http.get<any>('http://localhost:8000/api/rols').pipe(
-      map(res => res.rol) 
+      map(res => res.rol)
     );
   }
   obtenerRolId(id: number): Observable<any> {
@@ -150,13 +150,15 @@ export class UsuariosService {
   actualizarRolId(userId: number, nuevoRol: number): Observable<any> {
     return this.http.patch(`http://localhost:8000/api/auth/rol/${userId}`, { rol: nuevoRol });
   }
-  
-  
-  
-  
-    
-  
-  
-  
+
+
+  getUsuariosRolCinco(): Observable<any[]> {
+  return this.http.get<any>('http://localhost:8000/api/auth/rolcinco').pipe(
+    map(res => res.usuarios)
+  );
+}
+
+
+
 }
 
