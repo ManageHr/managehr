@@ -62,31 +62,35 @@
         <form (ngSubmit)="updateInfo()">
           <div class="form-group">
             <label for="primerNombre">Primer Nombre:</label>
-            <input type="text" id="primerNombre" name="primerNombre" class="form-control" [(ngModel)]="user.primerNombre" readonly>
+            <input type="text" id="primerNombre" name="primerNombre" class="form-control" [(ngModel)]="user.primerNombre">
           </div>
           <div class="form-group">
             <label for="segundoNombre">Segundo Nombre:</label>
-            <input type="text" id="segundoNombre" name="segundoNombre" class="form-control" [(ngModel)]="user.segundoNombre" readonly>
+            <input type="text" id="segundoNombre" name="segundoNombre" class="form-control" [(ngModel)]="user.segundoNombre">
           </div>
           <div class="form-group">
             <label for="primerApellido">Primer Apellido:</label>
-            <input type="text" id="primerApellido" name="primerApellido" class="form-control" [(ngModel)]="user.primerApellido" readonly>
+            <input type="text" id="primerApellido" name="primerApellido" class="form-control" [(ngModel)]="user.primerApellido">
           </div>
           <div class="form-group">
             <label for="segundoApellido">Segundo Apellido:</label>
-            <input type="text" id="segundoApellido" name="segundoApellido" class="form-control" [(ngModel)]="user.segundoApellido" readonly>
+            <input type="text" id="segundoApellido" name="segundoApellido" class="form-control" [(ngModel)]="user.segundoApellido" >
           </div>
+
           <div class="form-group">
             <label for="tipoDocumento">Tipo de Documento:</label>
-            <input type="text" id="tipoDocumento" name="tipoDocumento" class="form-control" [(ngModel)]="user.tipoDocumento" readonly>
+            <select id="tipoDocumento" name="tipoDocumento" class="form-control" [(ngModel)]="user.tipoDocumento">
+              <option *ngFor="let e of tipoDocumentoLista" [value]="e.id">{{ e.nombre }}</option>
+            </select>
           </div>
+
           <div class="form-group">
             <label for="numeroDocumento">Número de Documento:</label>
-            <input type="text" id="numeroDocumento" name="numeroDocumento" class="form-control" [(ngModel)]="user.numeroDocumento" readonly>
+            <input type="text" id="numeroDocumento" name="numeroDocumento" class="form-control" [(ngModel)]="user.numeroDocumento" >
           </div>
           <div class="form-group">
             <label for="fechaNacimiento">Fecha de Nacimiento:</label>
-            <input type="date" id="fechaNacimiento" name="fechaNacimiento" class="form-control" [(ngModel)]="user.fechaNacimiento" readonly>
+            <input type="date" id="fechaNacimiento" name="fechaNacimiento" class="form-control" [(ngModel)]="user.fechaNacimiento" >
           </div>
           <div class="form-group">
             <label for="email">Email:</label>
@@ -114,7 +118,7 @@
           </div>
           <div class="form-group">
             <label for="eps">EPS:</label>
-            <select id="eps" name="eps" class="form-control" [(ngModel)]="user.eps" disabled>
+            <select id="eps" name="eps" class="form-control" [(ngModel)]="user.eps">
               <option *ngFor="let e of epsLista" [value]="e.codigo">{{ e.nombre }}</option>
             </select>
           </div>
@@ -126,7 +130,7 @@
           </div>
           <div class="form-group">
             <label for="pensiones">Pensiones:</label>
-            <select id="pensiones" name="pensiones" class="form-control" [(ngModel)]="user.pensiones" disabled>
+            <select id="pensiones" name="pensiones" class="form-control" [(ngModel)]="user.pensiones">
               <option *ngFor="let p of pensionesLista" [value]="p.codigo">{{ p.nombre }}</option>
             </select>
           </div>
