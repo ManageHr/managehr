@@ -39,13 +39,15 @@ export class HomeComponent implements OnInit {
 
 
   tipoDocumentoLista = [
-    { id: 1, nombre: 'Cedula de Ciudadania' },
-    { id: 2, nombre: 'Cedula de Extranjeria' },
-    { id: 3, nombre: 'Pasaporte' }
+    { id: "Cedula de Ciudadania", nombre: 'Cedula de Ciudadania' },
+    { id: "Cedula de Extranjeria", nombre: 'Cedula de Extranjeria' },
+    { id: "Pasaporte", nombre: 'Pasaporte' }
   ];
 
   generoLista = [
-    { id: 1, nombre: 'Masculino' },
+    { id: "Masculino", nombre: 'Masculino' },
+    { id: "Femenino", nombre: 'Femenino' },
+    { id: "Otro", nombre: 'Otro' }
   ];
 
 

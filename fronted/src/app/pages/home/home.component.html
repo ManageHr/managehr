@@ -104,6 +104,14 @@
             <label for="telefono">Teléfono:</label>
             <input type="text" id="telefono" name="telefono" class="form-control" [(ngModel)]="user.telefono">
           </div>
+
+          <div class="form-group">
+            <label for="genero">Género:</label>
+            <select id="genero" name="genero" class="form-control" [(ngModel)]="user.genero">
+              <option *ngFor="let g of generoLista" [value]="g.id">{{ g.nombre }}</option>
+            </select>
+          </div>
+
           <div class="form-group">
             <label for="numeroHijos">Número de Hijos:</label>
             <input type="number" id="numeroHijos" name="numeroHijos" class="form-control" [(ngModel)]="user.numeroHijos">
