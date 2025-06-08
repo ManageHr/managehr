@@ -37,6 +37,20 @@ export class HomeComponent implements OnInit {
     pensiones: ''
   };
 
+
+  tipoDocumentoLista = [
+    { id: "Cedula de Ciudadania", nombre: 'Cedula de Ciudadania' },
+    { id: "Cedula de Extranjeria", nombre: 'Cedula de Extranjeria' },
+    { id: "Pasaporte", nombre: 'Pasaporte' }
+  ];
+
+  generoLista = [
+    { id: "Masculino", nombre: 'Masculino' },
+    { id: "Femenino", nombre: 'Femenino' },
+    { id: "Otro", nombre: 'Otro' }
+  ];
+
+
   estadoCivilLista = [
     { id: 1, nombre: 'Soltero' },
     { id: 2, nombre: 'Casado' },
