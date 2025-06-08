@@ -18,6 +18,7 @@ declare var bootstrap: any;
   styleUrls: ['./usuarios.component.scss']
 })
 export class UsuariosComponent implements OnInit {
+  agregarusuariosModal = false;
   usuarios: Usuarios[] = [];
   userBase: any = null;
 
@@ -75,31 +76,31 @@ export class UsuariosComponent implements OnInit {
 
   totalPagesExternos: number = 1;
 
-ngOnInit(): void {
-  const userFromLocal = localStorage.getItem('usuario');
-  if (userFromLocal) {
-    this.usuario = JSON.parse(userFromLocal);
-    console.log('Usuario logueado:', this.usuario);
-  }
+  ngOnInit(): void {
+    const userFromLocal = localStorage.getItem('usuario');
+    if (userFromLocal) {
+      this.usuario = JSON.parse(userFromLocal);
+      console.log('Usuario logueado:', this.usuario);
+    }
 
-  // Esta parte es solo para cargar todos los usuarios si aún la usas
-  this.usuariosService.obtenerUsuarios().subscribe({
-    next: (data) => {
-      this.usuarios = data;
-      this.totalPages = Math.ceil(this.usuarios.length / this.itemsPerPage);
-    },
-    error: (err) => console.error('Error al cargar usuarios', err)
-  });
+    // Esta parte es solo para cargar todos los usuarios si aún la usas
+    this.usuariosService.obtenerUsuarios().subscribe({
+      next: (data) => {
+        this.usuarios = data;
+        this.totalPages = Math.ceil(this.usuarios.length / this.itemsPerPage);
+      },
+      error: (err) => console.error('Error al cargar usuarios', err)
+    });
 
-  // ESTA es la parte importante para rol 5
-  this.usuariosService.getUsuariosRolCinco().subscribe({
-    next: (data) => {
-      this.usuariosRolCinco = data;
-      this.totalPagesExternos = Math.ceil(this.usuariosRolCinco.length / this.itemsPerPage);
-      console.log('Usuarios con rol 5:', this.usuariosRolCinco); // 👈 debe mostrar datos
-    },
-    error: (err) => console.error('Error al cargar usuarios rol 5', err)
-  });
+    // ESTA es la parte importante para rol 5
+    this.usuariosService.getUsuariosRolCinco().subscribe({
+      next: (data) => {
+        this.usuariosRolCinco = data;
+        this.totalPagesExternos = Math.ceil(this.usuariosRolCinco.length / this.itemsPerPage);
+        console.log('Usuarios con rol 5:', this.usuariosRolCinco); // 👈 debe mostrar datos
+      },
+      error: (err) => console.error('Error al cargar usuarios rol 5', err)
+    });
 
 
 
@@ -132,8 +133,8 @@ ngOnInit(): void {
 
       this.usuariosService.obtenerUsersId(usuarioCompleto.usersId).subscribe({
         next: (response) => {
-          const user = response[0]?.usuario; 
-          this.usuarioSeleccionado.user = user; 
+          const user = response[0]?.usuario;
+          this.usuarioSeleccionado.user = user;
           console.log('Usuario recibido:', user);
           console.log('Roles cargados:', this.roles);
           console.log('Rol ID recibido:', user.rol?.idRol);
@@ -189,7 +190,7 @@ ngOnInit(): void {
       email: '',
       email_confirmation: '',
       password: "",
-      password_confirmation: '',
+      repetirPassword: "",
       direccion: '',
       numDocumento: 0,
       nacionalidadId: null,
@@ -200,6 +201,14 @@ ngOnInit(): void {
       pensionesCodigo: null,
       rol: null
     };
+    const modalElement = document.getElementById('agregarusuariosModal');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    } else {
+      console.error('No se encontró el modal con ID agregarusuariosModal');
+    }
+
   }
   cargarRoles() {
     this.usuariosService.obtenerRoles().subscribe(data => {
@@ -274,9 +283,16 @@ ngOnInit(): void {
 
     this.usuariosService.obtenerUsersId(usuario.usersId).subscribe(user => {
       this.usuarioSeleccionado.rol = user.rol;
-      //this.usuarioSeleccionado.userIdBase = user.id; // Para usar en la actualización
+
+      // Mostrar el modal después de que se cargue el usuario
+      const modalElement = document.getElementById('editarusuariosModal');
+      if (modalElement) {
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+      }
     });
   }
+
 
 
 
