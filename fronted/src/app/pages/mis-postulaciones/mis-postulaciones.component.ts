@@ -27,7 +27,7 @@ interface Usuario {
     CommonModule,
     FormsModule,
     MenuComponent,
-    FilterMisPostulacionesPipe
+    //FilterMisPostulacionesPipe
   ],
   templateUrl: './mis-postulaciones.component.html',
   styleUrls: ['./mis-postulaciones.component.scss']

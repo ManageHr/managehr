@@ -1,3 +1,4 @@
+@use 'sass:color';
 :host {
   font-size: 16px;
   font-family: sans-serif;
@@ -248,8 +249,9 @@ app-menu {
   color: white;
 
   &:hover {
-    background-color: darken(#6c757d, 10%);
+    background-color: color.adjust(#6c757d, $lightness: -10%);
   }
+
 }
 
 .user-data > .btn-primary {
@@ -307,13 +309,14 @@ app-menu {
 
 @media (max-width: 767px) {
   app-menu {
+    overflow-y: auto !important;
+
     > * {
       max-height: 200px !important;
       overflow-y: auto !important;
     }
-
-    overflow-y: auto !important;
   }
+
 
   .contenido-principal{
     background-color: #1643b400;

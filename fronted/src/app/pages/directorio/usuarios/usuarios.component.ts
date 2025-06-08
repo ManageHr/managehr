@@ -279,19 +279,20 @@ export class UsuariosComponent implements OnInit {
   }
 
   editarusuarios(usuario: Usuarios, index: number): void {
-    this.usuarioSeleccionado = { ...usuario };
+  this.usuarioSeleccionado = { ...usuario };
 
-    this.usuariosService.obtenerUsersId(usuario.usersId).subscribe(user => {
-      this.usuarioSeleccionado.rol = user.rol;
+  this.usuariosService.obtenerUsersId(usuario.usersId).subscribe(user => {
+    // Asegurarte que usuarioSeleccionado.rol tenga el id del rol
+    this.usuarioSeleccionado.rol = typeof user.rol === 'object' ? user.rol.idRol : user.rol;
 
-      // Mostrar el modal después de que se cargue el usuario
-      const modalElement = document.getElementById('editarusuariosModal');
-      if (modalElement) {
-        const modal = new bootstrap.Modal(modalElement);
-        modal.show();
-      }
-    });
-  }
+    const modalElement = document.getElementById('editarusuariosModal');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
+  });
+}
+
 
 
 
