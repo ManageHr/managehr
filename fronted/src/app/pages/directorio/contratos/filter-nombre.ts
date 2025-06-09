@@ -6,14 +6,9 @@ import { ContratosService, Contratos} from '../../../services/contratos.service'
   standalone: true
 })
 export class FilterNombre implements PipeTransform {
-  transform(contratos: Contratos[], termino: string): Contratos[] {
-    if (!contratos || !termino) return contratos;
-
-    const lowerFiltro = termino.toLowerCase();
-    return contratos.filter(contrato =>
-      `${contrato.fechaIngreso} ${contrato.fechaFinal} ${contrato.numDocumento}`
-        .toLowerCase()
-        .includes(lowerFiltro)
-    );
+  transform(contratos: Contratos[], filtro: string): Contratos[] {
+    if (!filtro || !contratos) return contratos;
+    const filtroLower = filtro.toLowerCase();
+    return contratos.filter(c => (c?.nombreUsuario ?? '').toLowerCase().includes(filtroLower));
   }
 }

@@ -16,10 +16,10 @@ class Contrato extends Model
     protected $fillable = [
         'estado',
         'fechaIngreso',
-        'fechaFinal',
+        'fechaFinalizacion',
         'archivo',
         'tipoContratoId',
-        'hojaDeVida',     // <- este es el campo clave foránea en la tabla `contrato`
+        'hojaDeVida',
         'area'
     ];
 
@@ -28,6 +28,10 @@ class Contrato extends Model
      */
     public function hojaDeVida()
     {
-        return $this->belongsTo(\App\Models\Hojasvida::class, 'hojaDeVida', 'idHojaDeVida');
+        return $this->belongsTo(Hojasvida::class, 'hojaDeVida', 'idHojaDeVida');
+    }
+    public function area()
+    {
+        return $this->belongsTo(Area::class, 'area');
     }
 }

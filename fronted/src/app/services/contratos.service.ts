@@ -5,16 +5,21 @@ import { map } from 'rxjs/operators';
 export interface Contratos {
  
   idContrato: number;
-  numDocumento: number;         
+  numDocumento: number;
   tipoContratoId: number;
   estado: number;
   fechaIngreso: string;
-  fechaFinal: string;
-  documento: string;
-  areaId: number;
+  fechaFinalizacion: string;
+  archivo: string;
+  area: number;
+  hojasDeVida: number;
+  nombreUsuario?: string;
 }
   
-
+export interface HojaDeVida {
+  idHojaDeVida: number;
+  usuarioNumDocumento: number;
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -24,14 +29,13 @@ export class ContratosService {
 
   constructor(private http: HttpClient) {}
   
-  obtenerContratos(): Observable<any> {
-    return this.http.get<any>(this.apiUrl).pipe(
-      map(res => {
-        console.log('Respuesta del backend:', res); 
-        return res.contrato;
-      })
-    );
+  obtenerContratos(): Observable<Contratos[]> {
+    return this.http.get<{ contratos: Contratos[]; status: number }>(this.apiUrl)
+      .pipe(
+        map(response => response.contratos) 
+      );
   }
+
 
  obtenerContratoPorDocumento(numDocumento: number): Observable<any> {
   const token = localStorage.getItem('token');
@@ -67,8 +71,19 @@ export class ContratosService {
   }
  
 actualizarContratoParcial(id: number, formData: FormData) {
+  
   return this.http.post(`http://localhost:8000/api/contrato/${id}/actualizar`, formData);
 }
+ obtenerHojadevida(id:number):Observable<any[]>{
+  return this.http.get<any>(`http://localhost:8000/api/hojasvida/${id}`).pipe(
+    map(res => res.hojadevida) 
+  );
+ }
+ obtenerNumDocumento(id:number):Observable<any[]>{
+  return this.http.get<any>(`http://localhost:8000/api/contrato-usuario/${id}`).pipe(
+    map(res => res.contrato) 
+  );
+ }
 
   
   

@@ -12,14 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('contrato', function (Blueprint $table) {
-            $table->integer('idContrato');
+            $table->integer('idContrato')->primary();
             $table->integer('estado');
             $table->date('fechaIngreso');
-            $table->date('fechaFinal');
-            $table->string('documento');
-            $table->integer('tipoContratoId')->index('fk_tipoContratoId_contrato');
-            $table->integer('numDocumento')->index('fk_numDocumento_contrato');
-            $table->integer('areaId');
+            $table->date('fechaFinalizacion');
+            $table->string('archivo');
+            $table->integer('tipoContratoId')->index('fk_contrato_tipocontrato');
+            $table->integer('hojaDeVida')->index('fk_contrato_hojadevida');
+            $table->integer('area')->index('fk_contrato_area');
         });
     }
 

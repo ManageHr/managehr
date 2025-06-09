@@ -35,19 +35,22 @@ export class ContratosComponent implements OnInit{
 
   contratoSeleccionado: Contratos = {
     idContrato: 0,
-    numDocumento: 0, // ✅ ahora está correcto
+    numDocumento: 0, 
     tipoContratoId: 1,
     estado: 1,
     fechaIngreso: '',
-    fechaFinal: '',
-    documento: '',
-    areaId: 0
+    fechaFinalizacion: '',
+    archivo: '',
+    area: 0,
+    hojasDeVida:0,
   };
 
   contrato: any = {}; // contrato logueado desde localStorage
   usuario:any={};
   nuevocontrato: any = {};
   area:any={};
+
+
   constructor(private contratosService: ContratosService,private usuariosService: UsuariosService) {}
 
   ngOnInit(): void {
@@ -56,16 +59,24 @@ export class ContratosComponent implements OnInit{
       this.usuario = JSON.parse(userFromLocal);
       console.log('usuario logueado:', this.usuario);
     }
-    this.contratosService.obtenerContratos().subscribe({
-      next: (data) => {
-        this.contratos = data; 
-        this.totalPages = Math.ceil(this.contratos.length / this.itemsPerPage);
-        console.log('contrato cargado:', this.contratos);
-      }
-    });
+
+   this.contratosService.obtenerContratos().subscribe({
+    next: (data) => {
+      console.log('contrato cargado:', data); // Ahora mostrará el array con 3 elementos
+      this.contratos = data;
+      this.totalPages = Math.ceil(this.contratos.length / this.itemsPerPage);
+    },
+    error: (err) => {
+      console.error('Error al obtener contratos:', err);
+    }
+  });
+
+
+
+
     this.obtenerTiposContrato();
-    
   }
+
   obtenerTiposContrato(): void {
     this.contratosService.obtenerTiposContrato().subscribe({
       next: (data) => {
@@ -149,8 +160,9 @@ export class ContratosComponent implements OnInit{
   
   get contratosPaginados(): Contratos[] {
     const start = (this.currentPage - 1) * this.itemsPerPage;
-    return this.contratos.slice(start, start + this.itemsPerPage);
+    return this.contratosFiltrados.slice(start, start + this.itemsPerPage);
   }
+
   
   cambiarPagina(pagina: number): void {
     if (pagina >= 1 && pagina <= this.totalPages) {
@@ -175,8 +187,8 @@ export class ContratosComponent implements OnInit{
         formData.append('tipoContratoId', this.contratoSeleccionado.tipoContratoId.toString());
         formData.append('estado', this.contratoSeleccionado.estado.toString());
         formData.append('fechaIngreso', this.contratoSeleccionado.fechaIngreso);
-        formData.append('fechaFinal', this.contratoSeleccionado.fechaFinal);
-        formData.append('areaId', this.contratoSeleccionado.areaId.toString()); // ✅ importante
+        formData.append('fechaFinal', this.contratoSeleccionado.fechaFinalizacion);
+        formData.append('areaId', this.contratoSeleccionado.area.toString());
   
         if (this.archivoSeleccionado) {
           formData.append('documento', this.archivoSeleccionado);
@@ -232,16 +244,16 @@ export class ContratosComponent implements OnInit{
   
     // Campos obligatorios o editables
     formData.append('_method', 'PATCH');
-    formData.append('idContrato', this.contratoSeleccionado.idContrato.toString());
+    
     formData.append('numDocumento', this.contratoSeleccionado.numDocumento.toString());
     formData.append('tipoContratoId', this.contratoSeleccionado.tipoContratoId.toString());
     formData.append('estado', this.contratoSeleccionado.estado.toString());
     formData.append('fechaIngreso', this.contratoSeleccionado.fechaIngreso);
-    formData.append('fechaFinal', this.contratoSeleccionado.fechaFinal);
-  
+    formData.append('fechaFinalizacion', this.contratoSeleccionado.fechaFinalizacion);
+    formData.append('area', this.contratoSeleccionado.area.toString());
     // Archivo (si fue seleccionado)
     if (this.archivoSeleccionado) {
-      formData.append('documento', this.archivoSeleccionado);
+      formData.append('archivo', this.archivoSeleccionado);
     }
     console.log('ID que se está enviando:', this.contratoSeleccionado.idContrato);
 
@@ -310,6 +322,19 @@ export class ContratosComponent implements OnInit{
     }
   }
   
+  get contratosFiltrados(): Contratos[] {
+    if (!this.filtroNombre.trim()) return this.contratos;
+    const filtro = this.filtroNombre.toLowerCase();
+    return this.contratos.filter(c =>
+  (c?.nombreUsuario ?? '').toLowerCase().includes(filtro)
+);
+
+
+
+  }
+
+
+
   
   
   

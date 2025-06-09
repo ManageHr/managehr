@@ -17,4 +17,10 @@ class Hojasvida extends Model
         'numeroLibretaMilitar',
         'usuarioNumDocumento'
     ];
+    public function usuario()
+{
+    return $this->belongsTo(Usuarios::class, 'usuarioNumDocumento', 'numDocumento');
+    // Ajusta si los campos se llaman diferente
+}
+
 }

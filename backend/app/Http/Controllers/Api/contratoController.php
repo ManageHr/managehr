@@ -12,37 +12,62 @@ class contratoController extends Controller
 {
     public function index()
     {
-        $contrato = Contrato::all();
-        $data = [
-            "contrato" => $contrato,
-            "status" => 200
-        ];
-        return response()->json($data, 200);
+        $contratos = Contrato::with(['hojaDeVida:idHojaDeVida,usuarioNumDocumento'])->get([
+            'idContrato',
+            'tipoContratoId',
+            'hojaDeVida',
+            'area',
+            'fechaIngreso',
+            'fechaFinalizacion',
+            'archivo',
+            'estado'
+        ]);
+
+        return response()->json([
+            'contratos' => $contratos,
+            'status' => 200
+        ]);
     }
 
     public function store(Request $request)
     {
+        // Validación de campos
         $validated = $request->validate([
             'numDocumento' => 'required|integer',
             'tipoContratoId' => 'required|integer',
             'estado' => 'required|integer',
             'fechaIngreso' => 'required|date',
-            'fechaFinal' => 'required|date',
-            'documento' => 'nullable|file|max:5120',
-            'areaId' => 'required| integer'
+            'fechaFinalizacion' => 'required|date|after_or_equal:fechaIngreso',
+            'archivo' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'area' => 'required|integer',
         ]);
 
-        if ($request->hasFile('documento')) {
-            $file = $request->file('documento');
-            $folder = 'Archivos/' . $request->input('numDocumento');
+        // Buscar la hoja de vida según el número de documento
+        $documento = $validated['numDocumento'];
+        $hoja = Hojasvida::where('usuarioNumDocumento', $documento)->first();
 
-            $extension = $file->getClientOriginalExtension();
-            $filename = $request->input('numDocumento') . '.' . $extension;
-            $path = $file->storeAs($folder, $filename, 'public');
-
-            $validated['documento'] = 'storage/' . $path;
+        if (!$hoja) {
+            return response()->json([
+                'mensaje' => "Hoja de vida no encontrada para el documento $documento",
+                'status' => 404
+            ], 404);
         }
 
+        // Si se carga un archivo, guardarlo en el sistema de archivos
+        if ($request->hasFile('archivo')) {
+            $file = $request->file('archivo');
+            $extension = $file->getClientOriginalExtension();
+            $filename = time() . '_' . $documento . '.' . $extension; // Evita sobrescribir
+            $folder = 'Archivos/' . $documento;
+            $path = $file->storeAs($folder, $filename, 'public');
+
+            $validated['archivo'] = 'storage/' . $path;
+        }
+
+        // Asociar contrato a la hoja de vida
+        $validated['hojaDeVida'] = $hoja->idHojaDeVida;
+
+        // Crear contrato
         $contrato = Contrato::create($validated);
 
         return response()->json([
@@ -52,49 +77,62 @@ class contratoController extends Controller
         ]);
     }
 
+
+
     public function show($id)
     {
-        $contrato = Contrato::find($id);
+        $contrato = Contrato::with('hojaDeVida')->find($id);
+
+        if (!$contrato) {
+            return response()->json([
+                'mensaje' => 'Contrato no encontrado',
+                'status' => 404
+            ], 404);
+        }
+
         return response()->json([
-            "contrato" => $contrato,
-            "status" => 200
-        ], 200);
+            'contrato' => $contrato,
+            'status' => 200
+        ]);
     }
 
     public function destroy($id)
     {
         $contrato = Contrato::find($id);
+
         if (!$contrato) {
             return response()->json([
-                "mensage" => " No se encontro el contrato",
+                "mensaje" => "No se encontró el contrato",
                 "status" => 404
             ], 404);
         }
+
         $contrato->delete();
+
         return response()->json([
-            "contrato" => 'Contrato eliminado',
+            "mensaje" => "Contrato eliminado correctamente",
             "status" => 200
-        ], 200);
+        ]);
     }
 
     public function update(Request $request, $id)
     {
         $contrato = Contrato::find($id);
+
         if (!$contrato) {
             return response()->json([
-                "mensage" => " No se encontro el contrato",
+                "mensaje" => "No se encontró el contrato",
                 "status" => 404
             ], 404);
         }
 
         $validator = Validator::make($request->all(), [
+            'tipoContratoId' => 'required|integer',
             'estado' => 'required|integer',
             'fechaIngreso' => 'required|date',
-            'fechaFinal' => 'required|date',
-            'documento' => 'required|string|max:100',
-            'tipoContratoId' => 'required',
-            'numDocumento' => 'required',
-            'areaId' => 'required| integer'
+            'fechaFinalizacion' => 'required|date|after_or_equal:fechaIngreso',
+            'archivo' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'area' => 'required|integer',
         ]);
 
         if ($validator->fails()) {
@@ -106,29 +144,49 @@ class contratoController extends Controller
 
         $contrato->estado = $request->estado;
         $contrato->fechaIngreso = $request->fechaIngreso;
-        $contrato->fechaFinal = $request->fechaFinal;
-        $contrato->documento = $request->documento;
+        $contrato->fechaFinalizacion = $request->fechaFinalizacion;
         $contrato->tipoContratoId = $request->tipoContratoId;
-        $contrato->numDocumento = $request->numDocumento;
+        $contrato->area = $request->area;
 
-        try {
-            $contrato->save();
-            return response()->json([
-                "contrato" => $contrato,
-                "status" => 200
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                "mensaje" => "Error al modificar el contrato",
-                "error" => $e->getMessage(),
-                "status" => 500
-            ], 500);
+        if ($request->hasFile('archivo')) {
+            $documento = $request->input('numDocumento');
+            if (!$documento) {
+                return response()->json([
+                    'mensaje' => 'Se requiere numDocumento para subir archivo',
+                    'status' => 400
+                ], 400);
+            }
+            $hoja = Hojasvida::where('usuarioNumDocumento', $documento)->first();
+            if (!$hoja) {
+                return response()->json([
+                    'mensaje' => 'Hoja de vida no encontrada para el documento ' . $documento,
+                    'status' => 404
+                ], 404);
+            }
+
+            $file = $request->file('archivo');
+            $extension = $file->getClientOriginalExtension();
+            $filename = $documento . '.' . $extension;
+            $folder = 'Archivos/' . $documento;
+            $path = $file->storeAs($folder, $filename, 'public');
+
+            $contrato->archivo = 'storage/' . $path;
         }
+
+
+        $contrato->save();
+
+        return response()->json([
+            "mensaje" => "Contrato actualizado correctamente",
+            "contrato" => $contrato,
+            "status" => 200
+        ]);
     }
 
     public function updatePartial(Request $request, $id)
     {
         $contrato = Contrato::find($id);
+
         if (!$contrato) {
             return response()->json([
                 "mensaje" => "No se encontró el contrato",
@@ -137,13 +195,12 @@ class contratoController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'numDocumento' => 'nullable|integer',
             'tipoContratoId' => 'nullable|integer',
             'estado' => 'nullable|integer',
             'fechaIngreso' => 'nullable|date',
-            'fechaFinal' => 'nullable|date',
-            'documento' => 'nullable|file|max:5120',
-            'areaId' => 'nullable| integer'
+            'fechaFinalizacion' => 'nullable|date',
+            'area' => 'nullable|integer',
+            'archivo' => 'nullable|file|max:5120'
         ]);
 
         if ($validator->fails()) {
@@ -154,24 +211,37 @@ class contratoController extends Controller
             ], 400);
         }
 
-        if ($request->has("estado")) $contrato->estado = $request->estado;
-        if ($request->has("fechaIngreso")) $contrato->fechaIngreso = $request->fechaIngreso;
-        if ($request->has("fechaFinal")) $contrato->fechaFinal = $request->fechaFinal;
-        if ($request->has("tipoContratoId")) $contrato->tipoContratoId = $request->tipoContratoId;
-        if ($request->has("numDocumento")) $contrato->numDocumento = $request->numDocumento;
-        if ($request->has("areaId")) $contrato->areaId = $request->areaId;
+        if ($request->filled('estado')) $contrato->estado = $request->estado;
+        if ($request->filled('fechaIngreso')) $contrato->fechaIngreso = $request->fechaIngreso;
+        if ($request->filled('fechaFinalizacion')) $contrato->fechaFinalizacion = $request->fechaFinalizacion;
+        if ($request->filled('tipoContratoId')) $contrato->tipoContratoId = $request->tipoContratoId;
+        if ($request->filled('area')) $contrato->area = $request->area;
 
-        if ($request->hasFile('documento')) {
-            $file = $request->file('documento');
-            $numDocumento = $request->input('numDocumento');
-            $folder = 'Archivos/' . $numDocumento;
+        if ($request->hasFile('archivo')) {
+            $documento = $request->input('numDocumento');
+            if (!$documento) {
+                return response()->json([
+                    'mensaje' => 'Se requiere numDocumento para subir archivo',
+                    'status' => 400
+                ], 400);
+            }
+            $hoja = Hojasvida::where('usuarioNumDocumento', $documento)->first();
+            if (!$hoja) {
+                return response()->json([
+                    'mensaje' => 'Hoja de vida no encontrada para el documento ' . $documento,
+                    'status' => 404
+                ], 404);
+            }
 
+            $file = $request->file('archivo');
             $extension = $file->getClientOriginalExtension();
-            $filename = $numDocumento . '.' . $extension;
-
+            $filename = $documento . '.' . $extension;
+            $folder = 'Archivos/' . $documento;
             $path = $file->storeAs($folder, $filename, 'public');
-            $contrato->documento = 'storage/' . $path;
+
+            $contrato->archivo = 'storage/' . $path;
         }
+
 
         $contrato->save();
 
@@ -179,36 +249,33 @@ class contratoController extends Controller
             "mensaje" => "Contrato actualizado correctamente",
             "contrato" => $contrato,
             "status" => 200
-        ], 200);
+        ]);
     }
-
-    /**
-     * Obtener contrato por número de documento de usuario (para solicitudes de vacaciones).
-     */
     public function buscarPorDocumento($numDocumento)
-{
-    $hoja = Hojasvida::where('usuarioNumDocumento', $numDocumento)->first();
+    {
+        $hoja = Hojasvida::where('usuarioNumDocumento', $numDocumento)->first();
 
-    if (!$hoja) {
+        if (!$hoja) {
+            return response()->json([
+                'message' => 'Hoja de vida no encontrada',
+                'contrato' => null
+            ], 404);
+        }
+
+        $contrato = Contrato::with('hojaDeVida')
+            ->where('hojaDeVida', $hoja->idHojaDeVida)
+            ->first();
+
+        if (!$contrato) {
+            return response()->json([
+                'message' => 'Contrato no encontrado',
+                'contrato' => null
+            ], 404);
+        }
+
         return response()->json([
-            'message' => 'Hoja de vida no encontrada',
-            'contrato' => null
+            'message' => 'Contrato encontrado',
+            'contrato' => $contrato
         ], 200);
     }
-
-    $contrato = Contrato::where('hojaDeVida', $hoja->idHojaDeVida)->first();
-
-    if (!$contrato) {
-        return response()->json([
-            'message' => 'Contrato no encontrado',
-            'contrato' => null
-        ], 200);
-    }
-
-    return response()->json([
-        'message' => 'Contrato encontrado',
-        'contrato' => $contrato
-    ], 200);
-}
-
 }
