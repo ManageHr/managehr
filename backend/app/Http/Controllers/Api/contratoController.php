@@ -12,22 +12,28 @@ class contratoController extends Controller
 {
     public function index()
     {
-        $contratos = Contrato::with(['hojaDeVida:idHojaDeVida,usuarioNumDocumento'])->get([
-            'idContrato',
-            'tipoContratoId',
-            'hojaDeVida',
-            'area',
-            'fechaIngreso',
-            'fechaFinalizacion',
-            'archivo',
-            'estado'
-        ]);
+        $contratos = Contrato::with([
+            'hojaDeVida:idHojaDeVida,usuarioNumDocumento',
+            'hojaDeVida.usuario:numDocumento,primerNombre,primerApellido', // Cambiado correctamente
+            'area:idArea,nombreArea',
+            'tipoContrato:idTipoContrato,nomTipoContrato'
+        ])->get([
+                    'idContrato',
+                    'tipoContratoId',
+                    'hojaDeVida',
+                    'area',
+                    'fechaIngreso',
+                    'fechaFinalizacion',
+                    'archivo',
+                    'estado'
+                ]);
 
         return response()->json([
             'contratos' => $contratos,
             'status' => 200
         ]);
     }
+
 
     public function store(Request $request)
     {
@@ -211,11 +217,16 @@ class contratoController extends Controller
             ], 400);
         }
 
-        if ($request->filled('estado')) $contrato->estado = $request->estado;
-        if ($request->filled('fechaIngreso')) $contrato->fechaIngreso = $request->fechaIngreso;
-        if ($request->filled('fechaFinalizacion')) $contrato->fechaFinalizacion = $request->fechaFinalizacion;
-        if ($request->filled('tipoContratoId')) $contrato->tipoContratoId = $request->tipoContratoId;
-        if ($request->filled('area')) $contrato->area = $request->area;
+        if ($request->filled('estado'))
+            $contrato->estado = $request->estado;
+        if ($request->filled('fechaIngreso'))
+            $contrato->fechaIngreso = $request->fechaIngreso;
+        if ($request->filled('fechaFinalizacion'))
+            $contrato->fechaFinalizacion = $request->fechaFinalizacion;
+        if ($request->filled('tipoContratoId'))
+            $contrato->tipoContratoId = $request->tipoContratoId;
+        if ($request->filled('area'))
+            $contrato->area = $request->area;
 
         if ($request->hasFile('archivo')) {
             $documento = $request->input('numDocumento');

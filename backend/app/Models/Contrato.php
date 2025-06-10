@@ -34,4 +34,8 @@ class Contrato extends Model
     {
         return $this->belongsTo(Area::class, 'area');
     }
+    public function tipoContrato()
+    {
+        return $this->belongsTo(TipoContrato::class, 'tipoContratoId', 'idTipoContrato');
+    }
 }

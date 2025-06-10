@@ -3,22 +3,34 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 export interface Contratos {
- 
   idContrato: number;
-  numDocumento: number;
   tipoContratoId: number;
   estado: number;
   fechaIngreso: string;
   fechaFinalizacion: string;
   archivo: string;
-  area: number;
-  hojasDeVida: number;
-  nombreUsuario?: string;
+  hoja_de_vida: HojaDeVida;
+  area: { 
+    idArea: number;
+    nombreArea: string;
+  },
+  tipo_contrato: {
+    idTipoContrato: number;
+    nomTipoContrato: string;
+  };
 }
+
   
 export interface HojaDeVida {
   idHojaDeVida: number;
   usuarioNumDocumento: number;
+  usuario: Usuario;
+}
+export interface Usuario {
+  idUsuario: number;
+  numDocumento: number;
+  primerNombre: string;
+  primerApellido: string;
 }
 @Injectable({
   providedIn: 'root'

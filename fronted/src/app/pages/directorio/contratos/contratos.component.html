@@ -4,25 +4,15 @@
   <div class="contenido-principal">
     <div class="header-horas d-flex justify-content-between align-items-center">
       <h3>Gestión de Contratos</h3>
-      <button
-        class="btn btn-light btn-sm agregar-btn"
-        data-bs-toggle="modal"
-        data-bs-target="#agregarContratoModal"
-        *ngIf="[1, 4].includes(usuario?.rol)"
-        (click)="abrirModalAgregar()"
-      >
+      <button class="btn btn-light btn-sm agregar-btn" data-bs-toggle="modal" data-bs-target="#agregarContratoModal"
+        *ngIf="[1, 4].includes(usuario?.rol)" (click)="abrirModalAgregar()">
         <i class="fas fa-plus-circle"></i> Agregar
       </button>
     </div>
 
     <div *ngIf="[1, 4].includes(usuario?.rol); else sinPermiso">
       <div class="mb-3">
-        <input
-          type="text"
-          [(ngModel)]="filtroNombre"
-          placeholder="Buscar..."
-          class="form-control mb-2"
-        />
+        <input type="text" [(ngModel)]="filtroNombre" placeholder="Buscar..." class="form-control mb-2" />
       </div>
 
       <!-- Tabla de contratos -->
@@ -42,8 +32,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr
-              *ngFor="
+            <tr *ngFor="
                 let contrato of contratos?.length
                   ? (contratos
                     | filterNombre : filtroNombre
@@ -51,38 +40,48 @@
                       : (currentPage - 1) * itemsPerPage
                       : currentPage * itemsPerPage)
                   : []
-              "
-            >
+              ">
               <td>{{ contrato.idContrato }}</td>
-              <td>{{contrato.nombreUsuario}}</td>
-              <td>{{ contrato.tipoContratoId }}</td>
+              <td>{{contrato.hoja_de_vida.usuarioNumDocumento}}</td>
+              <td>{{ contrato.tipo_contrato.nomTipoContrato }}</td>
               <td>{{ contrato.estado }}</td>
-              <td>{{ contrato.area }}</td>
+              <td>{{ contrato.area.nombreArea }}</td>
               <td>{{ contrato.fechaIngreso }}</td>
               <td>{{ contrato.fechaFinalizacion }}</td>
-              <td>
-                <img
-                  *ngIf="contrato.archivo"
-                  [src]="'http://localhost:8000/' + contrato.archivo"
-                  alt="Documento"
-                  class="img-thumbnail"
-                  style="max-width: 50px; height: auto; cursor: pointer"
-                  (click)="abrirModalImagen(contrato.archivo)"
-                />
+              <td *ngIf="contrato.archivo">
+                <!-- Imagen -->
+                <img *ngIf="esImagen(contrato.archivo)" [src]="'http://localhost:8000/' + contrato.archivo" alt="Imagen"
+                  class="img-thumbnail" style="max-width: 50px; height: auto; cursor: pointer"
+                  (click)="abrirModalImagen(contrato.archivo)" />
+
+                <!-- PDF -->
+                <div *ngIf="esPDF(contrato.archivo)">
+                  <a [href]="'http://localhost:8000/' + contrato.archivo" target="_blank">
+                    <img src="assets/icons/pdf-icon.png" alt="PDF" width="30" style="cursor: pointer;" />
+                  </a>
+                </div>
+
+                <!-- Excel -->
+                <div *ngIf="esExcel(contrato.archivo)">
+                  <a [href]="'http://localhost:8000/' + contrato.archivo" target="_blank">
+                    <img src="assets/icons/excel-icon.png" alt="Excel" width="30" style="cursor: pointer;" />
+                  </a>
+                </div>
+
+                <!-- Otro tipo -->
+                <div *ngIf="esOtro(contrato.archivo)">
+                  <a [href]="'http://localhost:8000/' + contrato.archivo" target="_blank">
+                    <img src="assets/icons/file-icon.png" alt="Archivo" width="30" style="cursor: pointer;" />
+                  </a>
+                </div>
               </td>
+
               <td>
-                <button
-                  class="btn btn-link btn-acciones editar"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editarContratoModal"
-                  (click)="editarContrato(contrato, 1)"
-                >
+                <button class="btn btn-link btn-acciones editar" data-bs-toggle="modal"
+                  data-bs-target="#editarContratoModal" (click)="editarContrato(contrato, 1)">
                   <i class="fas fa-edit"></i>
                 </button>
-                <button
-                  class="btn btn-link btn-acciones eliminar"
-                  (click)="confirmDelete(1)"
-                >
+                <button class="btn btn-link btn-acciones eliminar" (click)="confirmDelete(1)">
                   <i class="fas fa-trash-alt"></i>
                 </button>
               </td>
@@ -92,28 +91,19 @@
         <nav class="mt-3 d-flex justify-content-center">
           <ul class="pagination">
             <li class="page-item" [class.disabled]="currentPage === 1">
-              <button
-                class="page-link"
-                (click)="cambiarPagina(currentPage - 1)"
-              >
+              <button class="page-link" (click)="cambiarPagina(currentPage - 1)">
                 Anterior
               </button>
             </li>
 
-            <li
-              class="page-item"
-              *ngFor="let page of [].constructor(totalPages); let i = index"
-              [class.active]="currentPage === i + 1"
-            >
+            <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
+              [class.active]="currentPage === i + 1">
               <button class="page-link" (click)="cambiarPagina(i + 1)">
                 {{ i + 1 }}
               </button>
             </li>
             <li class="page-item" [class.disabled]="currentPage === totalPages">
-              <button
-                class="page-link"
-                (click)="cambiarPagina(currentPage + 1)"
-              >
+              <button class="page-link" (click)="cambiarPagina(currentPage + 1)">
                 Siguiente
               </button>
             </li>
@@ -124,13 +114,10 @@
       <!-- Tarjetas para pantallas pequeñas -->
       <div class="d-md-none">
         <div class="row">
-          <div
-            class="col-12 mb-3"
-            *ngFor="let contrato of contratos; let i = index"
-          >
+          <div class="col-12 mb-3" *ngFor="let contrato of contratos; let i = index">
             <div class="card">
               <div class="card-body">
-                <p><strong>Documento:</strong> {{ contrato.numDocumento }}</p>
+                <p><strong>Documento:</strong> {{ contrato.hoja_de_vida.usuarioNumDocumento }}</p>
                 <p><strong>Tipo:</strong> {{ contrato.tipoContratoId }}</p>
                 <p><strong>Estado:</strong> {{ contrato.estado }}</p>
                 <p>
@@ -140,35 +127,22 @@
                   <strong>Fecha Final:</strong> {{ contrato.fechaFinalizacion }}
                 </p>
                 <p>
-                  <strong>Documento File:</strong
-                  ><img
-                    [src]="'http://localhost:8000/' + contrato.archivo"
-                    alt="Documento"
-                    class="img-thumbnail border border-secondary shadow-sm"
-                    style="
+                  <strong>Documento File:</strong><img [src]="'http://localhost:8000/' + contrato.archivo"
+                    alt="Documento" class="img-thumbnail border border-secondary shadow-sm" style="
                       max-width: 5%;
                       height: 5%;
                       object-fit: contain;
                       cursor: pointer;
                       margin-left: 2%;
-                    "
-                    (click)="abrirModalImagen(contrato.archivo)"
-                  />
+                    " (click)="abrirModalImagen(contrato.archivo)" />
                 </p>
               </div>
               <div class="card-footer d-flex justify-content-end gap-2">
-                <button
-                  class="btn btn-outline-primary btn-sm"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editarContratoModal"
-                  (click)="editarContrato(contrato, i)"
-                >
+                <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
+                  data-bs-target="#editarContratoModal" (click)="editarContrato(contrato, i)">
                   <i class="fas fa-edit"></i>
                 </button>
-                <button
-                  class="btn btn-outline-danger btn-sm"
-                  (click)="confirmDelete(i)"
-                >
+                <button class="btn btn-outline-danger btn-sm" (click)="confirmDelete(i)">
                   <i class="fas fa-trash-alt"></i>
                 </button>
               </div>
@@ -179,51 +153,27 @@
     </div>
 
     <!-- Modal Agregar Contrato -->
-    <div
-      class="modal fade"
-      id="agregarContratoModal"
-      tabindex="-1"
-      aria-hidden="true"
-    >
+    <div class="modal fade" id="agregarContratoModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Agregar Contrato</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
-          <form
-            (ngSubmit)="agregarContrato()"
-            #formAgregar="ngForm"
-            enctype="multipart/form-data"
-          >
+          <form (ngSubmit)="agregarContrato()" #formAgregar="ngForm" enctype="multipart/form-data">
             <div class="modal-body">
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label class="form-label">Documento</label>
-                  <input
-                    class="form-control"
-                    [(ngModel)]="contratoSeleccionado.numDocumento"
-                    name="numDocumento"
-                    required
-                  />
+                  <input class="form-control" [(ngModel)]="contratoSeleccionado.hoja_de_vida.usuarioNumDocumento"
+                    name="numDocumento" required />
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">Tipo de Contrato</label>
-                  <select
-                    class="form-control"
-                    [(ngModel)]="contratoSeleccionado.tipoContratoId"
-                    name="tipoContratoId"
-                    required
-                  >
+                  <select class="form-control" [(ngModel)]="contratoSeleccionado.tipoContratoId" name="tipoContratoId"
+                    required>
                     <option [ngValue]="0">Seleccione Tipo de Contrato</option>
-                    <option
-                      *ngFor="let tipo of tiposContrato"
-                      [ngValue]="tipo.idTipoContrato"
-                    >
+                    <option *ngFor="let tipo of tiposContrato" [ngValue]="tipo.idTipoContrato">
                       {{ tipo.nomTipoContrato }}
                     </option>
                   </select>
@@ -231,12 +181,7 @@
 
                 <div class="col-md-6 mb-3">
                   <label class="form-label">Estado</label>
-                  <select
-                    class="form-control"
-                    [(ngModel)]="contratoSeleccionado.estado"
-                    name="estado"
-                    required
-                  >
+                  <select class="form-control" [(ngModel)]="contratoSeleccionado.estado" name="estado" required>
                     <option [ngValue]="1">Activo</option>
                     <option [ngValue]="2">Bloqueado</option>
                     <option [ngValue]="3">Cancelado</option>
@@ -245,63 +190,35 @@
 
                 <div class="col-md-6 mb-3">
                   <label class="form-label">Fecha Ingreso</label>
-                  <input
-                    type="date"
-                    class="form-control"
-                    [(ngModel)]="contratoSeleccionado.fechaIngreso"
-                    name="fechaIngreso"
-                    required
-                  />
+                  <input type="date" class="form-control" [(ngModel)]="contratoSeleccionado.fechaIngreso"
+                    name="fechaIngreso" required />
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">Fecha Final</label>
-                  <input
-                    type="date"
-                    class="form-control"
-                    [(ngModel)]="contratoSeleccionado.fechaFinalizacion"
-                    name="fechaFinalizacion"
-                    required
-                  />
+                  <input type="date" class="form-control" [(ngModel)]="contratoSeleccionado.fechaFinalizacion"
+                    name="fechaFinalizacion" required />
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">Documento adjunto</label>
-                  <input
-                    type="file"
-                    class="form-control text-light fw-semibold"
-                    name="documento"
-                    (change)="onFileSelected($event)"
-                    required
-                    style="
+                  <input type="file" class="form-control text-light fw-semibold" name="documento"
+                    (change)="onFileSelected($event)" required style="
                       background-color: #1e2235;
                       border: 1px solid #5a5f78;
                       font-size: 1.1rem;
-                    "
-                  />
+                    " />
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">Area</label>
-                  <input
-                    class="form-control"
-                    [(ngModel)]="contratoSeleccionado.area"
-                    name="areaId"
-                    required
-                  />
+                  <input class="form-control" [(ngModel)]="contratoSeleccionado.area.nombreArea" name="areaId"
+                    required />
                 </div>
               </div>
             </div>
             <div class="modal-footer">
-              <button
-                type="submit"
-                class="btn btn-primary"
-                [disabled]="formAgregar.invalid"
-              >
+              <button type="submit" class="btn btn-primary" [disabled]="formAgregar.invalid">
                 Guardar
               </button>
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                 Cancelar
               </button>
             </div>
@@ -315,59 +232,31 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Vista del Documento</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body text-center">
-            <img
-              [src]="imagenSeleccionada"
-              alt="Documento"
-              class="img-fluid rounded shadow"
-              style="max-height: 70vh"
-            />
+            <img [src]="imagenSeleccionada" alt="Documento" class="img-fluid rounded shadow" style="max-height: 70vh" />
           </div>
         </div>
       </div>
     </div>
     <!-- Modal Editar Contrato -->
-    <div
-      class="modal fade"
-      id="editarContratoModal"
-      tabindex="-1"
-      aria-hidden="true"
-    >
+    <div class="modal fade" id="editarContratoModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Editar Contrato</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body">
             <div class="row">
-              <form
-                (ngSubmit)="actualizarContrato()"
-                #formEditar="ngForm"
-                enctype="multipart/form-data"
-              >
-                <ng-container
-                  *ngTemplateOutlet="formularioContrato"
-                ></ng-container>
+              <form (ngSubmit)="actualizarContrato()" #formEditar="ngForm" enctype="multipart/form-data">
+                <ng-container *ngTemplateOutlet="formularioContrato"></ng-container>
                 <div class="modal-footer">
                   <button type="submit" class="btn btn-primary">
                     Guardar cambios
                   </button>
-                  <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal"
-                  >
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     Cancelar
                   </button>
                 </div>
@@ -382,26 +271,14 @@
     <ng-template #formularioContrato>
       <div class="col-md-6 mb-3">
         <label class="form-label">Documento</label>
-        <input
-          class="form-control"
-          [(ngModel)]="contratoSeleccionado.numDocumento"
-          name="numDocumento"
-          required
-        />
+        <input class="form-control" [(ngModel)]="contratoSeleccionado.hoja_de_vida.usuarioNumDocumento"
+          name="numDocumento" required />
       </div>
       <div class="col-md-6 mb-3">
         <label class="form-label">Tipo de Contrato</label>
-        <select
-          class="form-control"
-          [(ngModel)]="contratoSeleccionado.tipoContratoId"
-          name="tipoContratoId"
-          required
-        >
+        <select class="form-control" [(ngModel)]="contratoSeleccionado.tipoContratoId" name="tipoContratoId" required>
           <option [ngValue]="0">Seleccione Tipo de Contrato</option>
-          <option
-            *ngFor="let tipo of tiposContrato"
-            [ngValue]="tipo.idTipoContrato"
-          >
+          <option *ngFor="let tipo of tiposContrato" [ngValue]="tipo.idTipoContrato">
             {{ tipo.nomTipoContrato }}
           </option>
         </select>
@@ -409,12 +286,7 @@
 
       <div class="col-md-6 mb-3">
         <label class="form-label">Estado</label>
-        <select
-          class="form-control"
-          [(ngModel)]="contratoSeleccionado.estado"
-          name="estado"
-          required
-        >
+        <select class="form-control" [(ngModel)]="contratoSeleccionado.estado" name="estado" required>
           <option [ngValue]="1">Activo</option>
           <option [ngValue]="2">Bloqueado</option>
           <option [ngValue]="3">Cancelado</option>
@@ -423,38 +295,22 @@
 
       <div class="col-md-6 mb-3">
         <label class="form-label">Fecha Ingreso</label>
-        <input
-          type="date"
-          class="form-control"
-          [(ngModel)]="contratoSeleccionado.fechaIngreso"
-          name="fechaIngreso"
-          required
-        />
+        <input type="date" class="form-control" [(ngModel)]="contratoSeleccionado.fechaIngreso" name="fechaIngreso"
+          required />
       </div>
       <div class="col-md-6 mb-3">
         <label class="form-label">Fecha Final</label>
-        <input
-          type="date"
-          class="form-control"
-          [(ngModel)]="contratoSeleccionado.fechaFinalizacion"
-          name="fechaFinalizacion"
-          required
-        />
+        <input type="date" class="form-control" [(ngModel)]="contratoSeleccionado.fechaFinalizacion"
+          name="fechaFinalizacion" required />
       </div>
       <div class="col-md-6 mb-3">
         <label class="form-label">Documento adjunto</label>
-        <input
-          type="file"
-          class="form-control text-light fw-semibold"
-          name="documento"
-          (change)="onFileSelected($event)"
-          required
-          style="
+        <input type="file" class="form-control text-light fw-semibold" name="documento"
+          (change)="onFileSelected($event)" required style="
             background-color: #1e2235;
             border: 1px solid #5a5f78;
             font-size: 1.1rem;
-          "
-        />
+          " />
       </div>
     </ng-template>
   </div>
@@ -462,59 +318,28 @@
 <ng-template #formularioContratoAgregar>
   <div class="mb-3">
     <label class="form-label">Documento</label>
-    <input
-      class="form-control"
-      [(ngModel)]="nuevocontrato.numDocumento"
-      name="numDocumento"
-      required
-    />
+    <input class="form-control" [(ngModel)]="nuevocontrato.numDocumento" name="numDocumento" required />
   </div>
   <div class="mb-3">
     <label class="form-label">Tipo de Contrato</label>
-    <input
-      class="form-control"
-      [(ngModel)]="nuevocontrato.tipoContratoId"
-      name="tipoContratoId"
-      required
-    />
+    <input class="form-control" [(ngModel)]="nuevocontrato.tipoContratoId" name="tipoContratoId" required />
   </div>
   <div class="mb-3">
     <label class="form-label">Estado</label>
-    <input
-      class="form-control"
-      [(ngModel)]="nuevocontrato.estado"
-      name="estado"
-      required
-    />
+    <input class="form-control" [(ngModel)]="nuevocontrato.estado" name="estado" required />
   </div>
   <div class="mb-3">
     <label class="form-label">Fecha Ingreso</label>
-    <input
-      type="date"
-      class="form-control"
-      [(ngModel)]="nuevocontrato.fechaIngreso"
-      name="fechaIngreso"
-      required
-    />
+    <input type="date" class="form-control" [(ngModel)]="nuevocontrato.fechaIngreso" name="fechaIngreso" required />
   </div>
   <div class="mb-3">
     <label class="form-label">Fecha Final</label>
-    <input
-      type="date"
-      class="form-control"
-      [(ngModel)]="nuevocontrato.fechaFinalizacion"
-      name="fechaFinalizacion"
-      required
-    />
+    <input type="date" class="form-control" [(ngModel)]="nuevocontrato.fechaFinalizacion" name="fechaFinalizacion"
+      required />
   </div>
   <div class="mb-3">
     <label class="form-label">Documento adjunto</label>
-    <input
-      class="form-control"
-      [(ngModel)]="nuevocontrato.archivo"
-      name="documento"
-      required
-    />
+    <input class="form-control" [(ngModel)]="nuevocontrato.archivo" name="documento" required />
   </div>
 </ng-template>
 

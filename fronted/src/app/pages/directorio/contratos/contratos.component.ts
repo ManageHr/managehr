@@ -8,50 +8,63 @@ import { MenuComponent } from '../../menu/menu.component';
 import Swal from 'sweetalert2';
 import { Route } from '@angular/router';
 import { NgxPaginationModule } from 'ngx-pagination';
-import { FilterNombre } from './filter-nombre'; 
+import { FilterNombre } from './filter-nombre';
 declare var bootstrap: any;
-
 
 @Component({
   selector: 'app-contratos',
   standalone: true,
-  imports: [CommonModule, FormsModule, MenuComponent,NgxPaginationModule,FilterNombre],
+  imports: [CommonModule, FormsModule, MenuComponent, NgxPaginationModule, FilterNombre],
   templateUrl: './contratos.component.html',
   styleUrls: ['./contratos.component.scss']
 })
 
-export class ContratosComponent implements OnInit{
+export class ContratosComponent implements OnInit {
   contratos: Contratos[] = [];
-  filtroNombre: string ="";
+  filtroNombre: string = "";
   currentPage = 1;
   itemsPerPage = 5;
   nacionalidades: any[] = [];
   tipoContratoId: any[] = [];
   numDocumento: any[] = [];
-  totalPages=5;
+  totalPages = 5;
   archivoSeleccionado: File | null = null;
   tiposContrato: any[] = [];
-  
 
   contratoSeleccionado: Contratos = {
     idContrato: 0,
-    numDocumento: 0, 
     tipoContratoId: 1,
     estado: 1,
     fechaIngreso: '',
     fechaFinalizacion: '',
     archivo: '',
-    area: 0,
-    hojasDeVida:0,
+    area: {
+      idArea: 0,
+      nombreArea: ''
+    },
+    hoja_de_vida: {
+      idHojaDeVida: 0,
+      usuarioNumDocumento: 0,
+      usuario: {
+        idUsuario: 0,
+        numDocumento: 0,
+        primerNombre: '',
+        primerApellido: ''
+      }
+    },
+    tipo_contrato: {
+      idTipoContrato: 0,
+      nomTipoContrato: ''
+    }
   };
 
+
+
   contrato: any = {}; // contrato logueado desde localStorage
-  usuario:any={};
+  usuario: any = {};
   nuevocontrato: any = {};
-  area:any={};
 
-
-  constructor(private contratosService: ContratosService,private usuariosService: UsuariosService) {}
+  constructor(private contratosService: ContratosService, private usuariosService: UsuariosService) { }
 
   ngOnInit(): void {
     const userFromLocal = localStorage.getItem('usuario');
@@ -60,19 +73,16 @@ export class ContratosComponent implements OnInit{
       console.log('usuario logueado:', this.usuario);
     }
 
-   this.contratosService.obtenerContratos().subscribe({
-    next: (data) => {
-      console.log('contrato cargado:', data); // Ahora mostrará el array con 3 elementos
-      this.contratos = data;
-      this.totalPages = Math.ceil(this.contratos.length / this.itemsPerPage);
-    },
-    error: (err) => {
-      console.error('Error al obtener contratos:', err);
-    }
-  });
-
-
-
+    this.contratosService.obtenerContratos().subscribe({
+      next: (data) => {
+        console.log('contrato cargado:', data);
+        this.contratos = data;
+        this.totalPages = Math.ceil(this.contratos.length / this.itemsPerPage);
+      },
+      error: (err) => {
+        console.error('Error al obtener contratos:', err);
+      }
+    });
 
     this.obtenerTiposContrato();
   }
@@ -88,12 +98,11 @@ export class ContratosComponent implements OnInit{
       }
     });
   }
-  
+
   onFileSelected(event: any): void {
     this.archivoSeleccionado = event.target.files[0];
-
   }
-  
+
   cargarContratos(): void {
     this.contratosService.obtenerContratos().subscribe({
       next: (data) => {
@@ -109,20 +118,21 @@ export class ContratosComponent implements OnInit{
   editarContrato(contrato: any, i: number) {
     this.contratoSeleccionado = { ...contrato };
   }
+
   confirmDelete(index: number): void {
     const contrato = this.contratos[index];
-  console.log(contrato);
-    this.usuariosService.obtenerUsuario(contrato.numDocumento).subscribe({
+    console.log(contrato);
+    this.usuariosService.obtenerUsuario(contrato.hoja_de_vida.usuarioNumDocumento).subscribe({
       next: (res) => {
         const usuario = res.usuario ?? res;
-  
+
         if (!usuario || !usuario.primerNombre || !usuario.primerApellido) {
           Swal.fire('Error', 'No se encontró información del usuario.', 'error');
           return;
         }
-  
+
         const nombre = `${usuario.primerNombre} ${usuario.primerApellido}`;
-  
+
         Swal.fire({
           title: `¿Eliminar a ${nombre}?`,
           text: 'Esta acción no se puede deshacer.',
@@ -157,43 +167,42 @@ export class ContratosComponent implements OnInit{
       }
     });
   }
-  
+
   get contratosPaginados(): Contratos[] {
     const start = (this.currentPage - 1) * this.itemsPerPage;
     return this.contratosFiltrados.slice(start, start + this.itemsPerPage);
   }
 
-  
   cambiarPagina(pagina: number): void {
     if (pagina >= 1 && pagina <= this.totalPages) {
       this.currentPage = pagina;
     }
   }
+
   agregarContrato(): void {
-    this.usuariosService.obtenerUsuario(this.contratoSeleccionado.numDocumento).subscribe({
+    this.usuariosService.obtenerUsuario(this.contratoSeleccionado.hoja_de_vida.usuario.idUsuario).subscribe({
       next: (res) => {
         const usuario = res.usuario ?? res;
-  
+
         if (!usuario || !usuario.primerNombre || !usuario.primerApellido) {
           Swal.fire('Error', 'No se encontró información del usuario.', 'error');
           return;
         }
-  
+
         const nombre = `${usuario.primerNombre} ${usuario.primerApellido}`;
-  
-        // Si el usuario existe, sigue con el guardado
+
         const formData = new FormData();
-        formData.append('numDocumento', this.contratoSeleccionado.numDocumento.toString());
+        formData.append('numDocumento', this.contratoSeleccionado.hoja_de_vida.usuario.idUsuario.toString());
         formData.append('tipoContratoId', this.contratoSeleccionado.tipoContratoId.toString());
         formData.append('estado', this.contratoSeleccionado.estado.toString());
         formData.append('fechaIngreso', this.contratoSeleccionado.fechaIngreso);
         formData.append('fechaFinal', this.contratoSeleccionado.fechaFinalizacion);
-        formData.append('areaId', this.contratoSeleccionado.area.toString());
-  
+        formData.append('areaId', this.contratoSeleccionado.area.idArea.toString());
+
         if (this.archivoSeleccionado) {
           formData.append('documento', this.archivoSeleccionado);
         }
-  
+
         this.contratosService.agregarContrato(formData).subscribe({
           next: () => {
             Swal.fire({
@@ -202,7 +211,7 @@ export class ContratosComponent implements OnInit{
               icon: 'success',
               confirmButtonText: 'Aceptar'
             }).then(() => {
-              location.reload(); // o this.cargarContratos() si no quieres recargar
+              location.reload();
             });
           },
           error: (err) => {
@@ -217,44 +226,35 @@ export class ContratosComponent implements OnInit{
       }
     });
   }
-  
-  
-  imagenSeleccionada: string = '';
-   
 
+  imagenSeleccionada: string = '';
   abrirModalImagen(url: string) {
     this.imagenSeleccionada = 'http://localhost:8000/' + url;
-
     setTimeout(() => {
       const modalElement = document.getElementById('modalImagen');
       if (modalElement) {
         const modal = new bootstrap.Modal(modalElement);
         modal.show();
         document.getElementById('modalImagen');
-
       } else {
         console.error('Modal no encontrado en el DOM');
       }
-    }, 200); // <-- prueba con 200ms
+    }, 200);
   }
-
   actualizarContrato(): void {
-
     const formData = new FormData();
-  
-    // Campos obligatorios o editables
     formData.append('_method', 'PATCH');
-    
-    formData.append('numDocumento', this.contratoSeleccionado.numDocumento.toString());
+    formData.append('numDocumento', this.contratoSeleccionado.hoja_de_vida.usuario.idUsuario.toString());
     formData.append('tipoContratoId', this.contratoSeleccionado.tipoContratoId.toString());
     formData.append('estado', this.contratoSeleccionado.estado.toString());
     formData.append('fechaIngreso', this.contratoSeleccionado.fechaIngreso);
     formData.append('fechaFinalizacion', this.contratoSeleccionado.fechaFinalizacion);
-    formData.append('area', this.contratoSeleccionado.area.toString());
-    // Archivo (si fue seleccionado)
+    formData.append('area', this.contratoSeleccionado.area.idArea.toString());
+
     if (this.archivoSeleccionado) {
       formData.append('archivo', this.archivoSeleccionado);
     }
+
     console.log('ID que se está enviando:', this.contratoSeleccionado.idContrato);
 
     this.contratosService.actualizarContratoParcial(this.contratoSeleccionado.idContrato, formData).subscribe({
@@ -265,10 +265,10 @@ export class ContratosComponent implements OnInit{
           icon: 'success',
           confirmButtonText: 'Aceptar'
         }).then(() => {
-          location.reload(); // o this.cargarContratos(); si no querés recargar toda la página
+          location.reload();
         });
-  
-        const index = this.contratos.findIndex(c => c.numDocumento === this.contratoSeleccionado.numDocumento);
+
+        const index = this.contratos.findIndex(c => c.hoja_de_vida.usuario.idUsuario === this.contratoSeleccionado.hoja_de_vida.usuario.idUsuario);
         if (index !== -1) {
           this.contratos[index] = { ...this.contratoSeleccionado };
         }
@@ -281,12 +281,12 @@ export class ContratosComponent implements OnInit{
           icon: 'error',
           confirmButtonText: 'Aceptar'
         }).then(() => {
-          location.reload(); // o this.cargarContratos(); si no querés recargar toda la página
-        })
+          location.reload();
+        });
       }
     });
   }
-  
+
   abrirModalAgregar(): void {
     this.nuevocontrato = {
       numDocumento: '',
@@ -295,15 +295,15 @@ export class ContratosComponent implements OnInit{
       fechaIngreso: '',
       fechaFinal: '',
       documento: '',
-      areaId:0
+      area: { idArea: 0, nombreArea: '' }
     };
   }
+
   getNombreTipoContrato(tipoContratoId: number): string {
     const tipo = this.tiposContrato.find(t => t.idTipoContrato === tipoContratoId);
     return tipo ? tipo.nomTipoContrato : 'Desconocido';
   }
-  
-  
+
   getNombreEstado(estado: number): string {
     switch (estado) {
       case 1: return 'Activo';
@@ -312,7 +312,7 @@ export class ContratosComponent implements OnInit{
       default: return 'Desconocido';
     }
   }
-  
+
   getClaseEstado(estado: number): string {
     switch (estado) {
       case 1: return 'badge bg-success';
@@ -321,22 +321,29 @@ export class ContratosComponent implements OnInit{
       default: return 'badge bg-secondary';
     }
   }
-  
+
   get contratosFiltrados(): Contratos[] {
     if (!this.filtroNombre.trim()) return this.contratos;
     const filtro = this.filtroNombre.toLowerCase();
-    return this.contratos.filter(c =>
-  (c?.nombreUsuario ?? '').toLowerCase().includes(filtro)
-);
-
-
-
+    return this.contratos.filter(c => {
+      const nombreUsuario = `${c.hoja_de_vida.usuario.primerNombre} ${c.hoja_de_vida.usuario.primerApellido}`.toLowerCase();
+      return nombreUsuario.includes(filtro);
+    });
+  }
+  esImagen(archivo: string): boolean {
+    return archivo.match(/\.(jpg|jpeg|png|gif)$/i) !== null;
   }
 
+  esPDF(archivo: string): boolean {
+    return archivo.match(/\.pdf$/i) !== null;
+  }
 
+  esExcel(archivo: string): boolean {
+    return archivo.match(/\.(xls|xlsx)$/i) !== null;
+  }
 
-  
-  
-  
-  
+  esOtro(archivo: string): boolean {
+    return !this.esImagen(archivo) && !this.esPDF(archivo) && !this.esExcel(archivo);
+  }
+
 }
