@@ -13,7 +13,7 @@
 **Manage HR** es un software integral para optimizar la gestión de recursos humanos en las empresas. Ofrece una interfaz intuitiva que facilita el manejo de datos, agiliza la selección y contratación de personal, incluye chat interno para mejorar la comunicación y permite gestionar permisos y horas extra de forma sencilla, mejorando así los procesos internos.
 
 
-## 🎯 Objetivos
+## 🎯 Objetivos``
 
 ✔ Diseñar una interfaz gráfica amigable e intuitiva para el usuario.  
 ✔ Controlar eficientemente las vacaciones, permisos y ausencias del personal.  
@@ -37,6 +37,7 @@ Manage HR es una solución integral diseñada para cubrir un amplio espectro de 
 
 ## 📦 Instalación
 
+### 🔧 **Backend (Laravel + PHP)**
 ```bash
 instalar composer
 instalar node js
@@ -51,6 +52,9 @@ php artisan serve
 para seguridad si salen errores en angular
 símbolo del sistema como administrador y pegar
 Set-ExecutionPolicy RemoteSigned
+
+
+### 💻 **Frontend (Angular)**
 
 angular npm install
 
