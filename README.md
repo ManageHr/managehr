@@ -53,4 +53,14 @@ símbolo del sistema como administrador y pegar
 Set-ExecutionPolicy RemoteSigned
 
 angular npm install
-angular ng serve 
+
+si sale error de ng no se reconoce
+npm list -g @angular/cli
+si no deja utilizar este
+npm install -g @angular/cli
+
+
+angular ng serve
+
+Para permisos de fotos en laravel
+php artisan storage:link
