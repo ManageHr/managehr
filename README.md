@@ -5,9 +5,10 @@
 # ManageHR
 ## Integrantes
 - Juan David Joven
-- Sharon Nicolle Lopez
-- Oscar Andres Muñoz
+- Sharon Nicolle López
+- Oscar Andrés Muñoz
 - Yon Piter Ruiz
+
 
 **Manage HR** es un software integral para optimizar la gestión de recursos humanos en las empresas. Ofrece una interfaz intuitiva que facilita el manejo de datos, agiliza la selección y contratación de personal, incluye chat interno para mejorar la comunicación y permite gestionar permisos y horas extra de forma sencilla, mejorando así los procesos internos.
 
@@ -37,10 +38,19 @@ Manage HR es una solución integral diseñada para cubrir un amplio espectro de 
 ## 📦 Instalación
 
 ```bash
+instalar composer
+instalar node js
+dejarlas como predeterminadas en las variables de entorno
+
 git clone https://github.com/ManageHr/managehr.git
 cd managehr
 
 php composer install
 php artisan serve
-angular mpm install
+
+para seguridad si salen errores en angular
+símbolo del sistema como administrador y pegar
+Set-ExecutionPolicy RemoteSigned
+
+angular npm install
 angular ng serve 
