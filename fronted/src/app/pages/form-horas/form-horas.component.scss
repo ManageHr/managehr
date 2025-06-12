@@ -368,3 +368,44 @@ select.form-control-match {
   color: #d8c7c7;
   font-size: 13px;
 }
+
+
+.solicitudes-container {
+  background-color: #333645;
+  padding: 1rem;
+  border-radius: 10px;
+  max-height: 450px;
+  overflow-y: auto;
+  color: white;
+}
+
+
+
+  .card-solicitud {
+  background-color: #333645;
+  border: 1px solid #171c27;
+  border-radius: 10px;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  color: white;
+  font-size: 14px;
+}
+
+
+  .lista-solicitudes {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+
+  h2 {
+    margin-bottom: 10px;
+    flex-shrink: 0;
+  }
+}
+
+.solicitudes-scroll-fijo {
+  overflow-y: auto;
+  flex-grow: 1;
+  padding-right: 5px;
+}
