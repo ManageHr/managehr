@@ -3,42 +3,42 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
 export interface Usuarios {
-    id:number;
-    numDocumento: number;
-    primerNombre: string;
-    segundoNombre: string;
-    primerApellido: string;
-    segundoApellido: string;
-    telefono: string;
+  id: number;
+  numDocumento: number;
+  primerNombre: string;
+  segundoNombre: string;
+  primerApellido: string;
+  segundoApellido: string;
+  telefono: string;
+  email: string;
+  email_confirmation: string;
+  direccion: string;
+  password: string;
+  password_confirmation: string;
+  nacionalidadId?: number;
+  epsCodigo?: string;
+  generoId?: number;
+  tipoDocumentoId?: number;
+  estadoCivilId?: number;
+  pensionesCodigo?: string;
+  rol: number;
+  usersId: number;
+
+
+  user?: {
+    id: number;
+    name: string;
     email: string;
-    email_confirmation: string;
-    direccion: string;
-    password: string;
-    password_confirmation: string;
-    nacionalidadId?: number;
-    epsCodigo?: string;
-    generoId?: number;
-    tipoDocumentoId?: number;
-    estadoCivilId?: number;
-    pensionesCodigo?: string;
     rol: number;
-    usersId: number;
+  };
+  nombreRol?: string;
 
-
-    user?: {
-      id: number;
-      name: string;
-      email: string;
-      rol: number;
-    };
-    nombreRol?: string;
-
-    tipoDocumento?: { nombreTipoDocumento: string };
-    genero?: { abreviacionGenero: string };
-    estadoCivil?: { nombreEstado: string };
-    eps?: { nombreEps: string };
-    pensiones?: { nombrePensiones: string };
-    nacionalidad?: { nombre: string };
+  tipoDocumento?: { nombreTipoDocumento: string };
+  genero?: { abreviacionGenero: string };
+  estadoCivil?: { nombreEstado: string };
+  eps?: { nombreEps: string };
+  pensiones?: { nombrePensiones: string };
+  nacionalidad?: { nombre: string };
 
 }
 
@@ -48,7 +48,7 @@ export interface Usuarios {
 export class UsuariosService {
   private apiUrl = 'http://localhost:8000/api/usuarios';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   obtenerUsuarios(): Observable<any> {
     return this.http.get<any>(this.apiUrl).pipe(
@@ -144,8 +144,8 @@ export class UsuariosService {
       map(res => res.existe)
     );
   }
-  actualizarRol(userId: number, nuevoRol: number,correo:string): Observable<any> {
-    return this.http.patch(`http://localhost:8000/api/auth/rol/${userId}`, { rol: nuevoRol,email:correo });
+  actualizarRol(userId: number, nuevoRol: number, correo: string): Observable<any> {
+    return this.http.patch(`http://localhost:8000/api/auth/rol/${userId}`, { rol: nuevoRol, email: correo });
   }
   actualizarRolId(userId: number, nuevoRol: number): Observable<any> {
     return this.http.patch(`http://localhost:8000/api/auth/rol/${userId}`, { rol: nuevoRol });
@@ -153,10 +153,10 @@ export class UsuariosService {
 
 
   getUsuariosRolCinco(): Observable<any[]> {
-  return this.http.get<any>('http://localhost:8000/api/auth/rolcinco').pipe(
-    map(res => res.usuarios)
-  );
-}
+    return this.http.get<any>('http://localhost:8000/api/auth/rolcinco').pipe(
+      map(res => res.usuarios)
+    );
+  }
 
 
 
