@@ -17,7 +17,7 @@ return new class extends Migration
             $table->date('fechaIngreso');
             $table->date('fechaFinalizacion');
             $table->string('archivo');
-            $table->integer('tipoContratoId')->index('fk_contrato_tipocontrato');
+            $table->integer('cargoArea')->default(1)->comment('1: Empleado, 2: Jefe de área');
             $table->integer('hojaDeVida')->index('fk_contrato_hojadevida');
             $table->integer('area')->index('fk_contrato_area');
         });

@@ -10,23 +10,25 @@ use Illuminate\Support\Facades\Validator;
 
 class contratoController extends Controller
 {
+    // En el método index, agregamos 'cargoArea' en el select para que lo traiga
     public function index()
     {
         $contratos = Contrato::with([
             'hojaDeVida:idHojaDeVida,usuarioNumDocumento',
-            'hojaDeVida.usuario:numDocumento,primerNombre,primerApellido', // Cambiado correctamente
+            'hojaDeVida.usuario:numDocumento,primerNombre,primerApellido',
             'area:idArea,nombreArea',
             'tipoContrato:idTipoContrato,nomTipoContrato'
         ])->get([
-                    'idContrato',
-                    'tipoContratoId',
-                    'hojaDeVida',
-                    'area',
-                    'fechaIngreso',
-                    'fechaFinalizacion',
-                    'archivo',
-                    'estado'
-                ]);
+            'idContrato',
+            'tipoContratoId',
+            'hojaDeVida',
+            'area',
+            'fechaIngreso',
+            'fechaFinalizacion',
+            'archivo',
+            'estado',
+            'cargoArea', // agregar aquí
+        ]);
 
         return response()->json([
             'contratos' => $contratos,
@@ -35,9 +37,10 @@ class contratoController extends Controller
     }
 
 
+
+    // En store agregar validación cargoArea y asignación
     public function store(Request $request)
     {
-        // Validación de campos
         $validated = $request->validate([
             'numDocumento' => 'required|integer',
             'tipoContratoId' => 'required|integer',
@@ -46,9 +49,9 @@ class contratoController extends Controller
             'fechaFinalizacion' => 'required|date|after_or_equal:fechaIngreso',
             'archivo' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
             'area' => 'required|integer',
+            'cargoArea' => 'required|integer|in:1,2',  // validamos cargoArea
         ]);
 
-        // Buscar la hoja de vida según el número de documento
         $documento = $validated['numDocumento'];
         $hoja = Hojasvida::where('usuarioNumDocumento', $documento)->first();
 
@@ -59,21 +62,17 @@ class contratoController extends Controller
             ], 404);
         }
 
-        // Si se carga un archivo, guardarlo en el sistema de archivos
         if ($request->hasFile('archivo')) {
             $file = $request->file('archivo');
             $extension = $file->getClientOriginalExtension();
-            $filename = time() . '_' . $documento . '.' . $extension; // Evita sobrescribir
+            $filename = time() . '_' . $documento . '.' . $extension;
             $folder = 'Archivos/' . $documento;
             $path = $file->storeAs($folder, $filename, 'public');
-
             $validated['archivo'] = 'storage/' . $path;
         }
 
-        // Asociar contrato a la hoja de vida
         $validated['hojaDeVida'] = $hoja->idHojaDeVida;
 
-        // Crear contrato
         $contrato = Contrato::create($validated);
 
         return response()->json([
@@ -82,6 +81,7 @@ class contratoController extends Controller
             'status' => 201
         ]);
     }
+
 
 
 
@@ -121,6 +121,7 @@ class contratoController extends Controller
         ]);
     }
 
+    // En update agregar validación cargoArea y asignación
     public function update(Request $request, $id)
     {
         $contrato = Contrato::find($id);
@@ -139,6 +140,7 @@ class contratoController extends Controller
             'fechaFinalizacion' => 'required|date|after_or_equal:fechaIngreso',
             'archivo' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
             'area' => 'required|integer',
+            'cargoArea' => 'required|integer|in:1,2',  // validamos cargoArea
         ]);
 
         if ($validator->fails()) {
@@ -153,6 +155,7 @@ class contratoController extends Controller
         $contrato->fechaFinalizacion = $request->fechaFinalizacion;
         $contrato->tipoContratoId = $request->tipoContratoId;
         $contrato->area = $request->area;
+        $contrato->cargoArea = $request->cargoArea;  // asignamos cargoArea
 
         if ($request->hasFile('archivo')) {
             $documento = $request->input('numDocumento');
@@ -179,7 +182,6 @@ class contratoController extends Controller
             $contrato->archivo = 'storage/' . $path;
         }
 
-
         $contrato->save();
 
         return response()->json([
@@ -189,6 +191,8 @@ class contratoController extends Controller
         ]);
     }
 
+
+    // En updatePartial igual agregar validación y asignación opcional de cargoArea
     public function updatePartial(Request $request, $id)
     {
         $contrato = Contrato::find($id);
@@ -206,6 +210,7 @@ class contratoController extends Controller
             'fechaIngreso' => 'nullable|date',
             'fechaFinalizacion' => 'nullable|date',
             'area' => 'nullable|integer',
+            'cargoArea' => 'nullable|integer|in:1,2',  // validamos cargoArea opcional
             'archivo' => 'nullable|file|max:5120'
         ]);
 
@@ -227,6 +232,8 @@ class contratoController extends Controller
             $contrato->tipoContratoId = $request->tipoContratoId;
         if ($request->filled('area'))
             $contrato->area = $request->area;
+        if ($request->filled('cargoArea'))
+            $contrato->cargoArea = $request->cargoArea;
 
         if ($request->hasFile('archivo')) {
             $documento = $request->input('numDocumento');
@@ -253,7 +260,6 @@ class contratoController extends Controller
             $contrato->archivo = 'storage/' . $path;
         }
 
-
         $contrato->save();
 
         return response()->json([
@@ -262,6 +268,7 @@ class contratoController extends Controller
             "status" => 200
         ]);
     }
+
     public function buscarPorDocumento($numDocumento)
     {
         $hoja = Hojasvida::where('usuarioNumDocumento', $numDocumento)->first();

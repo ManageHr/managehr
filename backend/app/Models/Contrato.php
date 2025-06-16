@@ -20,7 +20,8 @@ class Contrato extends Model
         'archivo',
         'tipoContratoId',
         'hojaDeVida',
-        'area'
+        'area',
+        'cargoArea'
     ];
 
     /**
@@ -37,5 +38,14 @@ class Contrato extends Model
     public function tipoContrato()
     {
         return $this->belongsTo(TipoContrato::class, 'tipoContratoId', 'idTipoContrato');
+    }
+    public function getCargoAreaDescripcionAttribute()
+    {
+        $cargos = [
+            1 => 'Empleado',
+            2 => 'Jefe de área',
+        ];
+
+        return $cargos[$this->cargoArea] ?? 'Desconocido';
     }
 }
