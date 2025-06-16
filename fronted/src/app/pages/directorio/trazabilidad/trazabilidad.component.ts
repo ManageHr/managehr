@@ -40,6 +40,7 @@ export class TrazabilidadComponent implements OnInit {
   cargarTrazabilidad(): void {
     this.trazabilidadService.obtenerTrazabilidad().subscribe({
       next: (data) => {
+        console.log('Datos recibidos', data);
         this.trazabilidad = data;
         this.totalPages = Math.ceil(this.trazabilidad.length / this.itemsPerPage);
       },

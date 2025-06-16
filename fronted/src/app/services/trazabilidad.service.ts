@@ -22,10 +22,11 @@ export class TrazabilidadService {
   constructor(private http: HttpClient) {}
 
   obtenerTrazabilidad(): Observable<Trazabilidad[]> {
-    return this.http.get<any>('http://localhost:8000/api/trazabilidad').pipe(
-      map(res => res.tipodocumento) 
+    return this.http.get<{ tipodocumento: Trazabilidad[] }>(this.apiUrl).pipe(
+      map(response => response.tipodocumento)
     );
   }
+
 
   eliminarTrazabilidad(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
