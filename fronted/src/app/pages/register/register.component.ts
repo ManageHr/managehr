@@ -166,4 +166,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
     this.password = '';
     this.confirmarPassword = '';
   }
+
+  volver() {
+  window.history.back();
+}
 }
