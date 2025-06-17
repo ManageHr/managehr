@@ -48,7 +48,7 @@ Route::middleware('auth:api')->post('/rols/{rol}/permisos', [RolPermisoControlle
 
 
 Route::middleware('auth:api')->get('/me', [AuthController::class, 'me']);
-
+Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:api')->group(function () {
 
@@ -64,7 +64,7 @@ Route::middleware('auth:api')->group(function () {
 
 
     Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login']);
+    
     Route::delete('/login/{id}', [AuthController::class, 'destroy']);
     Route::get('/verificar-user', [AuthController::class, 'verificarExistencia']);
 
