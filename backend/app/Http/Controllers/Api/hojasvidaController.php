@@ -36,9 +36,9 @@ class hojasvidaController extends Controller
         }
 
         try {
-           // dd($request->all());
-          
-        
+            // dd($request->all());
+
+
             $Hojasvida = Hojasvida::create([
                 "claseLibretaMilitar" => $request->claseLibretaMilitar,
                 "numeroLibretaMilitar" => $request->numeroLibretaMilitar,
@@ -174,5 +174,21 @@ class hojasvidaController extends Controller
             "status" => 200
         ];
         return response()->json([$data], 200);
+    }
+    public function buscarPorDocumento($numDocumento)
+    {
+        $hoja = Hojasvida::with('usuario')->where('usuarioNumDocumento', $numDocumento)->first();
+
+        if (!$hoja) {
+            return response()->json([
+                "mensaje" => "Hoja de vida no encontrada para el documento $numDocumento",
+                "status" => 404
+            ], 404);
+        }
+
+        return response()->json([
+            "hojaDeVida" => $hoja,
+            "status" => 200
+        ], 200);
     }
 }

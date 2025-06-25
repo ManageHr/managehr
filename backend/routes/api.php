@@ -122,6 +122,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/hojasvida/{id}', [hojasvidaController::class, 'show']);
     Route::patch('/hojasvida/{id}', [hojasvidaController::class, 'updatePartial']);
     Route::delete('/hojasvida/{id}', [hojasvidaController::class, 'destroy']);
+    Route::get('/hojasvida/documento/{numDocumento}', [hojasvidaController::class, 'buscarPorDocumento']);
+
 
     Route::get('/usuarios', [usuarioController::class, 'index']);
     Route::post('/usuarios', [usuarioController::class, 'store']);
@@ -129,6 +131,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/usuarios/{id}', [usuarioController::class, 'show']);
     Route::patch('/usuarios/{id}', [usuarioController::class, 'updatePartial']);
     Route::delete('/usuarios/{id}', [usuarioController::class, 'destroy']);
+    Route::get('/jefespersonal', [usuarioController::class, 'obtenerJefesDePersonal']);
+
     Route::get('/verificar-usuario', [usuarioController::class, 'verificarExistencia']);
     Route::get('/usuarios-con-relaciones', [usuarioController::class, 'obtenerUsuariosConRelaciones']);
     Route::get('/usuarios/documento/{numDocumento}', [UsuarioController::class, 'obtenerUsuarioPorDocumento']);

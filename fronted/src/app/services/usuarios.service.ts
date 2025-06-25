@@ -157,6 +157,21 @@ export class UsuariosService {
       map(res => res.usuarios)
     );
   }
+  obtenerHojaVida(numDocumento: number): Observable<any> {
+    return this.http.get<any>(`http://localhost:8000/api/hojasvida/${numDocumento}`);
+  }
+
+  obtenerExperiencia(numDocumento: number): Observable<any> {
+    return this.http.get<any>(`http://localhost:8000/api/experiencias/${numDocumento}`);
+  }
+
+  obtenerEstudios(numDocumento: number): Observable<any> {
+    return this.http.get<any>(`http://localhost:8000/api/estudios/${numDocumento}`);
+  }
+  obtenerHojadevida(numDocumento: number): Observable<any> {
+    return this.http.get<any>(`http://localhost:8000/api/hojasvida/documento/${numDocumento}`);
+  }
+
 
 
 

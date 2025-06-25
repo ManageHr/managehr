@@ -17,6 +17,7 @@ import Swal from 'sweetalert2';
 })
 export class AreaComponent {
   areas: Areas[]=[];
+  jefesPersonal: any[] = [];
   filtroNombre:string="";
   area: any = {};
   currentPage = 1;
@@ -27,6 +28,7 @@ export class AreaComponent {
     idArea: 0,
     nombreArea: "",         
     jefePersonal: "",
+    idJefe:0,
     estado: 0
   };
   constructor(private areaService: AreaService,private authService: AuthService) {}
@@ -43,7 +45,15 @@ export class AreaComponent {
         console.log('area cargada:', this.areas);
       }
     });
-    
+    this.areaService.getJefesDePersonal().subscribe({
+      next: (res) => {
+        this.jefesPersonal = res.jefes;
+      },
+      error: (err) => {
+        console.error('Error al cargar jefes de personal:', err);
+      }
+    });
+
   }
   confirmDelete(idArea: number): void {
     this.areaService.obtenerAreaId(idArea).subscribe({
@@ -104,10 +114,11 @@ export class AreaComponent {
         // Verifica primero si el usuario existe
         this.areaService.obtenerNombre(this.areaSeleccionada.nombreArea).subscribe({
           next: (res) => {
+            const jefe = this.jefesPersonal.find(j => j.idJefe === this.areaSeleccionada.idJefe);
             const formData = new FormData();
-            formData.append('nombreArea', this.areaSeleccionada.nombreArea.toString());
-            formData.append('jefePersonal', this.areaSeleccionada.nombreArea);
-        
+            formData.append('nombreArea', this.areaSeleccionada.nombreArea);
+            formData.append('jefePersonal', jefe?.nombreCompleto || '');
+            formData.append('idJefe', this.areaSeleccionada.idJefe.toString());
             formData.append('estado', this.areaSeleccionada.estado.toString());
 
             this.areaService.agregarArea(formData).subscribe({
@@ -138,6 +149,7 @@ export class AreaComponent {
           idArea: 0,
           nombreArea: '',
           jefePersonal: '',
+          idJefe: 0,
           estado: 1
         };
       }
@@ -146,14 +158,25 @@ export class AreaComponent {
         this.areaSeleccionada = { ...area };
       }
       actualizarArea(): void {
-        const formData = new FormData();
-        formData.append('_method', 'PATCH');
-        formData.append('idArea', this.areaSeleccionada.idArea.toString());
-        formData.append('nombreArea', this.areaSeleccionada.nombreArea);
-        formData.append('jefePersonal', this.areaSeleccionada.jefePersonal);
-        formData.append('estado', this.areaSeleccionada.estado.toString());
-      
-        this.areaService.actualizarAreaParcial(this.areaSeleccionada.idArea, formData).subscribe({
+        const jefe = this.jefesPersonal.find(j => j.idJefe == this.areaSeleccionada.idJefe); // usa == por si llega como string
+        this.areaSeleccionada.jefePersonal = jefe ? jefe.nombreCompleto : '';
+
+        // Valida que jefePersonal no quede vacío
+        if (!this.areaSeleccionada.jefePersonal) {
+          Swal.fire('Error', 'Debe seleccionar un jefe de personal válido.', 'error');
+          return;
+        }
+
+        const datos = {
+          nombreArea: this.areaSeleccionada.nombreArea,
+          jefePersonal: this.areaSeleccionada.jefePersonal,
+          idJefe: Number(this.areaSeleccionada.idJefe),
+          estado: this.areaSeleccionada.estado
+        };
+
+        console.log('Datos a enviar:', datos);
+
+        this.areaService.actualizarArea(this.areaSeleccionada.idArea, datos).subscribe({
           next: () => {
             Swal.fire({
               title: '¡Actualizado!',
@@ -161,13 +184,8 @@ export class AreaComponent {
               icon: 'success',
               confirmButtonText: 'Aceptar'
             }).then(() => {
-              location.reload(); // o this.cargarAreas();
+              location.reload();
             });
-      
-            const index = this.areas.findIndex(a => a.idArea === this.areaSeleccionada.idArea);
-            if (index !== -1) {
-              this.areas[index] = { ...this.areaSeleccionada };
-            }
           },
           error: (err) => {
             console.error('Error al actualizar área:', err);
@@ -180,7 +198,14 @@ export class AreaComponent {
           }
         });
       }
-      
+
+
+
+      actualizarNombreJefe() {
+        const jefe = this.jefesPersonal.find(j => j.idJefe === this.areaSeleccionada.idJefe);
+        this.areaSeleccionada.jefePersonal = jefe ? jefe.nombreCompleto : '';
+      }
+
       getNombreEstado(estado: number): string {
         switch (estado) {
           case 1: return 'Activo';

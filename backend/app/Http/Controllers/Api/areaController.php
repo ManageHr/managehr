@@ -20,6 +20,7 @@ class areaController extends Controller
         $validator = Validator::make($request->all(), [
             "nombreArea" => "required|string|max:50",
             "jefePersonal" => "required|string|max:100",
+            "idJefe" => "required|integer",
             "estado" => "required|integer",
         ]);
 
@@ -84,6 +85,7 @@ class areaController extends Controller
         $validator = Validator::make($request->all(), [
             "nombreArea" => "required|string|max:50",
             "jefePersonal" => "required|string|max:100",
+            "idJefe" => "required|integer",
             "estado" => "required|integer",
             
         ]);
@@ -138,6 +140,7 @@ class areaController extends Controller
         $validator = Validator::make($request->all(), [
             "nombreArea" => "string|max:50",
             "jefePersonal" => "string|max:100",
+            "idJefe" => "integer",
             "estado" => "integer",
         ]);
         if ($validator->fails()) {
