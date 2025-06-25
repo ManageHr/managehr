@@ -15,6 +15,7 @@ class Estudios extends Model
         "nomEstudio",
         'nomInstitucion',
         'tituloObtenido',
-        'añoFinalizacion'
+        'anioInicio',
+        'anioFinalizacion'
     ];
 }

@@ -21,11 +21,12 @@
           type="text"
           class="form-control"
           placeholder="Buscar por nombre de área..."
-          [(ngModel)]="filtroNombre" style="
-          background-color: #1d2233;
-          color: white;
-          border: 1px solid #7a86a1;
-        "
+          [(ngModel)]="filtroNombre"
+          style="
+            background-color: #1d2233;
+            color: white;
+            border: 1px solid #7a86a1;
+          "
         />
       </div>
 
@@ -41,11 +42,15 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let area of areas
-            | filterNombre : filtroNombre
-            | paginate
-              : { itemsPerPage: itemsPerPage, currentPage: currentPage };
-          let i = index">
+            <tr
+              *ngFor="
+                let area of areas
+                  | filterNombre : filtroNombre
+                  | paginate
+                    : { itemsPerPage: itemsPerPage, currentPage: currentPage };
+                let i = index
+              "
+            >
               <td>{{ area.nombreArea }}</td>
               <td>{{ area.jefePersonal }}</td>
               <td>
@@ -65,7 +70,6 @@
                 <button
                   class="btn btn-outline-danger btn-sm"
                   (click)="confirmDelete(area.idArea)"
-
                 >
                   <i class="fas fa-trash-alt"></i>
                 </button>
@@ -115,7 +119,11 @@
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title">Agregar Área</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
             </div>
             <form (ngSubmit)="agregarArea()" #formAgregar="ngForm">
               <div class="modal-body">
@@ -130,12 +138,20 @@
                 </div>
                 <div class="mb-3">
                   <label class="form-label">Jefe de Personal</label>
-                  <input
+                  <select
                     class="form-control"
-                    [(ngModel)]="areaSeleccionada.jefePersonal"
-                    name="jefePersonal"
+                    [(ngModel)]="areaSeleccionada.idJefe"
+                    name="idJefe"
                     required
-                  />
+                  >
+                    <option value="0">Seleccione un jefe</option>
+                    <option
+                      *ngFor="let jefe of jefesPersonal"
+                      [ngValue]="jefe.idJefe"
+                    >
+                      {{ jefe.nombreCompleto }}
+                    </option>
+                  </select>
                 </div>
                 <div class="mb-3">
                   <label class="form-label">Estado</label>
@@ -151,8 +167,19 @@
                 </div>
               </div>
               <div class="modal-footer">
-                <button class="btn btn-primary" [disabled]="formAgregar.invalid">Guardar</button>
-                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
+                <button
+                  class="btn btn-primary"
+                  [disabled]="formAgregar.invalid"
+                >
+                  Guardar
+                </button>
+                <button
+                  class="btn btn-secondary"
+                  type="button"
+                  data-bs-dismiss="modal"
+                >
+                  Cancelar
+                </button>
               </div>
             </form>
           </div>
@@ -160,12 +187,21 @@
       </div>
 
       <!-- Modal Editar Área -->
-      <div class="modal fade" id="editarAreaModal" tabindex="-1" aria-hidden="true">
+      <div
+        class="modal fade"
+        id="editarAreaModal"
+        tabindex="-1"
+        aria-hidden="true"
+      >
         <div class="modal-dialog modal-dialog-scrollable">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title">Editar Área</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
             </div>
             <form (ngSubmit)="actualizarArea()" #formEditar="ngForm">
               <div class="modal-body">
@@ -180,12 +216,21 @@
                 </div>
                 <div class="mb-3">
                   <label class="form-label">Jefe de Personal</label>
-                  <input
+                  <select
                     class="form-control"
-                    [(ngModel)]="areaSeleccionada.jefePersonal"
-                    name="jefePersonal"
+                    [(ngModel)]="areaSeleccionada.idJefe"
+                    name="idJefe"
                     required
-                  />
+                    (change)="actualizarNombreJefe()"
+                  >
+                    <option value="" disabled>Seleccione un jefe</option>
+                    <option
+                      *ngFor="let jefe of jefesPersonal"
+                      [value]="jefe.idJefe"
+                    >
+                      {{ jefe.nombreCompleto }}
+                    </option>
+                  </select>
                 </div>
                 <div class="mb-3">
                   <label class="form-label">Estado</label>
@@ -202,18 +247,24 @@
               </div>
               <div class="modal-footer">
                 <button class="btn btn-primary">Guardar Cambios</button>
-                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
+                <button
+                  class="btn btn-secondary"
+                  type="button"
+                  data-bs-dismiss="modal"
+                >
+                  Cancelar
+                </button>
               </div>
             </form>
           </div>
         </div>
       </div>
-
     </div>
 
     <ng-template #sinPermiso>
-      <div class="alert alert-warning">No tienes permiso para ver esta información.</div>
+      <div class="alert alert-warning">
+        No tienes permiso para ver esta información.
+      </div>
     </ng-template>
   </div>
 </div>
-

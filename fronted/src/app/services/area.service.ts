@@ -8,6 +8,7 @@ export interface Areas {
   idArea: number;
   nombreArea: string;         
   jefePersonal: string;
+  idJefe:number
   estado: number;
 }
 @Injectable({
@@ -25,6 +26,10 @@ export class AreaService {
       
     );
   }
+  getJefesDePersonal(): Observable<any> {
+    return this.http.get('http://localhost:8000/api/jefespersonal');
+  }
+
   obtenerAreaId(id:number){
     return this.http.get<any>(`http://localhost:8000/api/area/${id}`);
   }
@@ -40,7 +45,9 @@ export class AreaService {
     return this.http.get(`http://localhost:8000/api/area-nombre/${nombre}`);
   }
   
-  actualizarAreaParcial(id: number, formData: FormData) {
-    return this.http.post(`http://localhost:8000/api/area/${id}`, formData);
+  actualizarArea(id: number, datos: any) {
+    return this.http.put(`http://localhost:8000/api/area/${id}`, datos);
   }
+
+
 }

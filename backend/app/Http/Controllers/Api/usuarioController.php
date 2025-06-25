@@ -23,7 +23,7 @@ class usuarioController extends Controller
         ];
         return response()->json($data, 200);
     }
- 
+
     /**
      * Show the form for creating a new resource.
      */
@@ -368,7 +368,6 @@ class usuarioController extends Controller
                 'status' => 200,
                 'message' => 'Usuario obtenido correctamente'
             ], 200);
-
         } catch (\Exception $e) {
             return response()->json([
                 'error' => $e->getMessage(),
@@ -378,7 +377,7 @@ class usuarioController extends Controller
         }
     }
 
-   public function obtenerUsuariosConRelaciones()
+    public function obtenerUsuariosConRelaciones()
     {
         try {
             $usuarios = Usuarios::with([
@@ -396,12 +395,41 @@ class usuarioController extends Controller
                 'status' => 200,
                 'message' => 'Usuarios obtenidos correctamente'
             ], 200);
-
         } catch (\Exception $e) {
             return response()->json([
                 'error' => $e->getMessage(),
                 'status' => 500,
                 'message' => 'Error al obtener usuarios'
+            ], 500);
+        }
+    }
+    public function obtenerJefesDePersonal()
+    {
+        try {
+            $jefes = User::where('rol', 2)
+                ->join('usuarios', 'users.id', '=', 'usuarios.usersId')
+                ->select(
+                    'users.id as idJefe',
+                    'usuarios.primerNombre',
+                    'usuarios.primerApellido'
+                )
+                ->get()
+                ->map(function ($jefe) {
+                    return [
+                        'idJefe' => $jefe->idJefe,
+                        'nombreCompleto' => $jefe->primerNombre . ' ' . $jefe->primerApellido
+                    ];
+                });
+
+            return response()->json([
+                'jefes' => $jefes,
+                'status' => 200
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al obtener jefes de personal',
+                'error' => $e->getMessage(),
+                'status' => 500
             ], 500);
         }
     }
