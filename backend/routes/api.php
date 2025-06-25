@@ -64,10 +64,10 @@ Route::middleware('auth:api')->group(function () {
 
 
     Route::post('/register', [AuthController::class, 'register']);
-    
-    Route::delete('/login/{id}', [AuthController::class, 'destroy']);
-    Route::get('/verificar-user', [AuthController::class, 'verificarExistencia']);
 
+
+    Route::get('/verificar-user', [AuthController::class, 'verificarExistencia']);
+    Route::delete('/login/{id}', [AuthController::class, 'destroy']);
     // Rutas de ROL
     Route::get('/rols', [rolController::class, 'index']);
     Route::post('/rols', [rolController::class, 'store']);
@@ -317,4 +317,3 @@ Route::middleware('auth:api')->group(function () {
 
 
 Route::middleware('auth:api')->group(function () {});
-

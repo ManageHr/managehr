@@ -71,7 +71,9 @@ class contratoController extends Controller
             $validated['archivo'] = 'storage/' . $path;
         }
 
+        unset($validated['numDocumento']);
         $validated['hojaDeVida'] = $hoja->idHojaDeVida;
+
 
         $contrato = Contrato::create($validated);
 

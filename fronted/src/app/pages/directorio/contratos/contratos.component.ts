@@ -30,33 +30,35 @@ export class ContratosComponent implements OnInit {
   totalPages = 5;
   archivoSeleccionado: File | null = null;
   tiposContrato: any[] = [];
-
+  areas: any[] = [];
   contratoSeleccionado: Contratos = {
-    idContrato: 0,
-    tipoContratoId: 1,
-    estado: 1,
-    fechaIngreso: '',
-    fechaFinalizacion: '',
-    archivo: '',
-    area: {
-      idArea: 0,
-      nombreArea: ''
-    },
-    hoja_de_vida: {
-      idHojaDeVida: 0,
-      usuarioNumDocumento: 0,
-      usuario: {
-        idUsuario: 0,
-        numDocumento: 0,
-        primerNombre: '',
-        primerApellido: ''
-      }
-    },
-    tipo_contrato: {
-      idTipoContrato: 0,
-      nomTipoContrato: ''
+  idContrato: 0,
+  tipoContratoId: 1,
+  estado: 1,
+  fechaIngreso: '',
+  fechaFinalizacion: '',
+  archivo: '',
+  cargoArea: 1, // <-- agrega esta línea
+  area: {
+    idArea: 0,
+    nombreArea: ''
+  },
+  hoja_de_vida: {
+    idHojaDeVida: 0,
+    usuarioNumDocumento: 0,
+    usuario: {
+      idUsuario: 0,
+      numDocumento: 0,
+      primerNombre: '',
+      primerApellido: ''
     }
-  };
+  },
+  tipo_contrato: {
+    idTipoContrato: 0,
+    nomTipoContrato: ''
+  }
+};
+
 
 
 
@@ -83,8 +85,24 @@ export class ContratosComponent implements OnInit {
         console.error('Error al obtener contratos:', err);
       }
     });
+    this.contratosService.obtenerAreas().subscribe({
+      next: res => {
+        console.log('Áreas cargadas:', res); 
+        this.areas = res;
+      },
+      error: () => Swal.fire('Error', 'No se pudieron cargar las áreas', 'error')
+    });
 
     this.obtenerTiposContrato();
+  }
+  cargoNombre(cargoAreaId?: number): string {
+    const cargos: { [key: number]: string } = {
+      1: 'Empleado',
+      2: 'Jefe de personal',
+      3: 'Coordinador',
+      4: 'Director'
+    };
+    return cargos[cargoAreaId ?? 0] || 'Desconocido';
   }
 
   obtenerTiposContrato(): void {
@@ -119,54 +137,51 @@ export class ContratosComponent implements OnInit {
     this.contratoSeleccionado = { ...contrato };
   }
 
-  confirmDelete(index: number): void {
-    const contrato = this.contratos[index];
-    console.log(contrato);
-    this.usuariosService.obtenerUsuario(contrato.hoja_de_vida.usuarioNumDocumento).subscribe({
-      next: (res) => {
-        const usuario = res.usuario ?? res;
+  confirmDelete(idContrato: number): void {
+    // Buscar el contrato en el array
+    const contrato = this.contratos.find(c => c.idContrato === idContrato);
 
-        if (!usuario || !usuario.primerNombre || !usuario.primerApellido) {
-          Swal.fire('Error', 'No se encontró información del usuario.', 'error');
-          return;
-        }
+    if (!contrato) {
+      Swal.fire('Error', 'Contrato no encontrado.', 'error');
+      return;
+    }
 
-        const nombre = `${usuario.primerNombre} ${usuario.primerApellido}`;
+    if (!contrato.hoja_de_vida || !contrato.hoja_de_vida.usuario) {
+      Swal.fire('Error', 'No se encontró información del usuario.', 'error');
+      return;
+    }
 
-        Swal.fire({
-          title: `¿Eliminar a ${nombre}?`,
-          text: 'Esta acción no se puede deshacer.',
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonText: 'Sí, eliminar',
-          cancelButtonText: 'Cancelar'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            this.contratosService.eliminarContrato(contrato.idContrato).subscribe({
-              next: () => {
-                Swal.fire({
-                  title: 'Eliminado',
-                  text: `${nombre} fue eliminado correctamente.`,
-                  icon: 'success',
-                  confirmButtonText: 'Aceptar'
-                }).then(() => {
-                  location.reload();
-                });
-              },
-              error: (err) => {
-                console.error('Error al eliminar:', err);
-                Swal.fire('Error', 'No se pudo eliminar el contrato.', 'error');
-              }
+    const nombre = `${contrato.hoja_de_vida.usuario.primerNombre} ${contrato.hoja_de_vida.usuario.primerApellido}`;
+
+    Swal.fire({
+      title: `¿Eliminar a ${nombre}?`,
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.contratosService.eliminarContrato(idContrato).subscribe({
+          next: () => {
+            Swal.fire({
+              title: 'Eliminado',
+              text: `${nombre} fue eliminado correctamente.`,
+              icon: 'success',
+              confirmButtonText: 'Aceptar'
+            }).then(() => {
+              this.cargarContratos(); // O refresca solo la lista
             });
+          },
+          error: (err) => {
+            console.error('Error al eliminar:', err);
+            Swal.fire('Error', 'No se pudo eliminar el contrato.', 'error');
           }
         });
-      },
-      error: (err) => {
-        console.error('No se pudo obtener el usuario:', err);
-        Swal.fire('Error', 'No se pudo obtener la información del usuario.', 'error');
       }
     });
   }
+
 
   get contratosPaginados(): Contratos[] {
     const start = (this.currentPage - 1) * this.itemsPerPage;
@@ -180,76 +195,79 @@ export class ContratosComponent implements OnInit {
   }
 
   agregarContrato(): void {
-    this.usuariosService.obtenerUsuario(this.contratoSeleccionado.hoja_de_vida.usuario.idUsuario).subscribe({
-      next: (res) => {
-        const usuario = res.usuario ?? res;
-
-        if (!usuario || !usuario.primerNombre || !usuario.primerApellido) {
-          Swal.fire('Error', 'No se encontró información del usuario.', 'error');
-          return;
-        }
-
-        const nombre = `${usuario.primerNombre} ${usuario.primerApellido}`;
-
-        const formData = new FormData();
-        formData.append('numDocumento', this.contratoSeleccionado.hoja_de_vida.usuario.idUsuario.toString());
-        formData.append('tipoContratoId', this.contratoSeleccionado.tipoContratoId.toString());
-        formData.append('estado', this.contratoSeleccionado.estado.toString());
-        formData.append('fechaIngreso', this.contratoSeleccionado.fechaIngreso);
-        formData.append('fechaFinal', this.contratoSeleccionado.fechaFinalizacion);
-        formData.append('areaId', this.contratoSeleccionado.area.idArea.toString());
-
-        if (this.archivoSeleccionado) {
-          formData.append('documento', this.archivoSeleccionado);
-        }
-
-        this.contratosService.agregarContrato(formData).subscribe({
-          next: () => {
-            Swal.fire({
-              title: '¡OK!',
-              text: `El contrato para ${nombre} fue creado exitosamente.`,
-              icon: 'success',
-              confirmButtonText: 'Aceptar'
-            }).then(() => {
-              location.reload();
-            });
-          },
-          error: (err) => {
-            console.error('Error al guardar:', err);
-            Swal.fire('¡ERROR!', 'No se pudo crear el contrato.', 'error');
-          }
-        });
-      },
-      error: (err) => {
-        console.error('Error al buscar el usuario:', err);
-        Swal.fire('Error', 'No se encontró el usuario. Verifique el número de documento.', 'error');
-      }
-    });
+  // Validar antes de enviar
+  if (!this.contratoSeleccionado.hoja_de_vida.usuarioNumDocumento || !this.contratoSeleccionado.tipoContratoId) {
+    Swal.fire('Error', 'Faltan datos obligatorios', 'error');
+    return;
   }
 
+  const formData = new FormData();
+  formData.append('numDocumento', this.contratoSeleccionado.hoja_de_vida.usuarioNumDocumento.toString());
+  formData.append('tipoContratoId', this.contratoSeleccionado.tipoContratoId.toString());
+  formData.append('estado', this.contratoSeleccionado.estado.toString());
+  formData.append('fechaIngreso', this.contratoSeleccionado.fechaIngreso);
+  formData.append('fechaFinalizacion', this.contratoSeleccionado.fechaFinalizacion);
+  formData.append('area', this.contratoSeleccionado.area.idArea.toString());
+  formData.append('cargoArea', this.contratoSeleccionado.cargoArea?.toString() || '1');
+
+  if (this.archivoSeleccionado) {
+    formData.append('archivo', this.archivoSeleccionado);
+  } else {
+    Swal.fire('Error', 'Debe adjuntar un archivo', 'error');
+    return;
+  }
+
+  this.contratosService.agregarContrato(formData).subscribe({
+    next: (res) => {
+      Swal.fire({
+        title: '¡Éxito!',
+        text: 'El contrato fue creado exitosamente.',
+        icon: 'success',
+        confirmButtonText: 'Aceptar'
+      }).then(() => {
+       
+        this.cargarContratos();
+       
+      });
+    },
+    error: (err) => {
+      console.error('Error al crear contrato:', err);
+      Swal.fire('Error', 'No se pudo crear el contrato. Verifique los datos.', 'error');
+    }
+  });
+}
+
+
   imagenSeleccionada: string = '';
-  abrirModalImagen(url: string) {
+  abrirModalImagen(url: string | null) {
+    if (!url) {
+      console.warn('No hay archivo para mostrar');
+      Swal.fire('Advertencia', 'No hay documento asociado para mostrar.', 'warning');
+      return;
+    }
+    
     this.imagenSeleccionada = 'http://localhost:8000/' + url;
     setTimeout(() => {
       const modalElement = document.getElementById('modalImagen');
       if (modalElement) {
         const modal = new bootstrap.Modal(modalElement);
         modal.show();
-        document.getElementById('modalImagen');
       } else {
         console.error('Modal no encontrado en el DOM');
       }
     }, 200);
   }
+
   actualizarContrato(): void {
     const formData = new FormData();
     formData.append('_method', 'PATCH');
-    formData.append('numDocumento', this.contratoSeleccionado.hoja_de_vida.usuario.idUsuario.toString());
+    formData.append('numDocumento', this.contratoSeleccionado.hoja_de_vida.usuario.numDocumento.toString());
     formData.append('tipoContratoId', this.contratoSeleccionado.tipoContratoId.toString());
     formData.append('estado', this.contratoSeleccionado.estado.toString());
     formData.append('fechaIngreso', this.contratoSeleccionado.fechaIngreso);
     formData.append('fechaFinalizacion', this.contratoSeleccionado.fechaFinalizacion);
     formData.append('area', this.contratoSeleccionado.area.idArea.toString());
+    formData.append('cargoArea', this.contratoSeleccionado.cargoArea?.toString() || '1');
 
     if (this.archivoSeleccionado) {
       formData.append('archivo', this.archivoSeleccionado);

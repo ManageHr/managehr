@@ -8,17 +8,28 @@ export interface Contratos {
   estado: number;
   fechaIngreso: string;
   fechaFinalizacion: string;
-  archivo: string;
-  hoja_de_vida: HojaDeVida;
-  area: { 
+  archivo: string | null;
+  cargoArea: number;
+  area: {
     idArea: number;
     nombreArea: string;
-  },
+  };
+  hoja_de_vida: {
+    idHojaDeVida: number;
+    usuarioNumDocumento: number;
+    usuario: {
+      idUsuario: number;
+      numDocumento: number;
+      primerNombre: string;
+      primerApellido: string;
+    };
+  };
   tipo_contrato: {
     idTipoContrato: number;
     nomTipoContrato: string;
   };
 }
+
 
   
 export interface HojaDeVida {
@@ -73,7 +84,7 @@ export class ContratosService {
   
   obtenerAreas():Observable<any[]>{
     return this.http.get<any>('http://localhost:8000/api/area').pipe(
-      map(res => res.area)
+      map(res => res.areas)
     );
   }
   obtenerNacionalidades(): Observable<any[]> {
