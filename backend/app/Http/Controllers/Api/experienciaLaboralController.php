@@ -22,13 +22,12 @@ class experienciaLaboralController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nomEmpresa' => 'required|string|max:45',
-            'nombJefe' => 'required|string|max:45',
+            'nomJefe' => 'required|string|max:45',
             'telefono' => 'required|integer',
             'cargo' => 'required|string|max:20',
             'actividades' => 'required|string',
-            'certificado' => 'required|string|max:100',
             'fechaInicio' => 'required|date',
-            'fechaFin' => 'required|date|after_or_equal:fechaInicio'
+            'fechaFinalizacion' => 'required|date|after_or_equal:fechaInicio'
         ]);
 
         if ($validator->fails()) {
@@ -87,9 +86,8 @@ class experienciaLaboralController extends Controller
             'telefono' => 'required|numeric|digits_between:7,11',
             'cargo' => 'required|string|max:20',
             'actividades' => 'required|string',
-            'certificado' => 'required|string|max:100',
             'fechaInicio' => 'required|date',
-            'fechaFin' => 'required|date|after_or_equal:fechaInicio'
+            'fechaFinalizacion' => 'required|date|after_or_equal:fechaInicio'
         ]);
 
         if ($validator->fails()) {
@@ -142,9 +140,8 @@ class experienciaLaboralController extends Controller
             'telefono' => 'numeric|digits_between:7,11',
             'cargo' => 'string|max:20',
             'actividades' => 'string',
-            'certificado' => 'string|max:100',
             'fechaInicio' => 'date',
-            'fechaFin' => 'date|after_or_equal:fechaInicio'
+            'fechaFinalizacion' => 'date|after_or_equal:fechaInicio'
         ]);
 
         if ($validator->fails()) {

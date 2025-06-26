@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Validator;
 
 class estudiosController extends Controller
 {
-    
+
     public function index()
     {
         $estudios = Estudios::all();
@@ -25,7 +25,8 @@ class estudiosController extends Controller
             'nomEstudio' => 'required|string|max:45',
             'nomInstitucion' => 'required|string|max:50',
             'tituloObtenido' => 'required|string|max:45',
-            'añoFinalizacion' => 'required|integer|min:1900|max:' . date('Y')
+            'anioInicio' => 'required|date:',
+            'anioFinalizacion' => 'required|date'
         ]);
 
         if ($validator->fails()) {
@@ -37,7 +38,12 @@ class estudiosController extends Controller
         }
 
         try {
-            $estudio = Estudios::create($request->all());
+            // Convertir año a fecha válida (ejemplo: 2025 → 2025-01-01)
+            $data = $request->all();
+            $data['anioFinalizacion'] = $request->anioFinalizacion . '-01-01';
+
+            $estudio = Estudios::create($data);
+
             return response()->json([
                 'mensaje' => 'Estudio creado correctamente',
                 'estudio' => $estudio,
@@ -51,6 +57,7 @@ class estudiosController extends Controller
             ], 500);
         }
     }
+
 
     public function show($id)
     {
@@ -82,7 +89,8 @@ class estudiosController extends Controller
             'nomEstudio' => 'required|string|max:100',
             'nomInstitucion' => 'required|string|max:100',
             'tituloObtenido' => 'required|string|max:100',
-            'añoFinalizacion' => 'required|integer|min:1900|max:' . date('Y')
+            'anioInicio' => 'required|date',
+            'anioFinalizacion' => 'required|date'
         ]);
 
         if ($validator->fails()) {
@@ -140,7 +148,8 @@ class estudiosController extends Controller
             'nomEstudio' => 'string|max:100',
             'nomInstitucion' => 'string|max:100',
             'tituloObtenido' => 'string|max:100',
-            'añoFinalizacion' => 'integer|min:1900|max:' . date('Y')
+            "anioInicio" => "date",
+            'anioFinalizacion' => 'date'
         ]);
 
         if ($validator->fails()) {

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nomEstudio', 45);
             $table->string('nomInstitucion', 50);
             $table->string('tituloObtenido', 45);
-            $table->year('añoFinalizacion');
+            $table->date('anioFinalizacion');
         });
     }
 

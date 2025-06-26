@@ -5,16 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Hojasvidahasestudios extends Model
+class Hojasvidahasexperiencia extends Model
 {
     use HasFactory;
-    protected $table = 'hojasvidahasestudios';
-    protected $primaryKey = 'idHasestudios';
+    protected $table = 'hojasvidahasexperiencia';
+    protected $primaryKey = 'idHasexperiencia';
     public $timestamps = false;
 
     protected $fillable = [
-        'idHojaDeVida',
-        'idEstudios',
+        'idHojaDevida',
+        'idExperiencia',
         'estado',
         'archivo'
     ];
@@ -22,8 +22,8 @@ class Hojasvidahasestudios extends Model
     {
         return $this->belongsTo(Hojasvida::class, 'idHojaDeVida', 'idHojaDeVida');
     }
-    public function idEstudios()
+    public function idExperiencia()
     {
-        return $this->belongsTo(Estudios::class, 'idEstudios', 'idEstudios');
+        return $this->belongsTo(ExperienciaLaboral::class, 'idExperiencia', 'idExperiencia');
     }
 }

@@ -39,6 +39,8 @@ use App\Http\Controllers\api\vacantesHasPostulacionesController;
 use App\Http\Controllers\Api\formincapacidadController;
 use App\Http\Controllers\Api\formvacationController;
 use App\Http\Controllers\Api\FormHorasController;
+use App\Http\Controllers\Api\HojasvidahasestudiosController;
+use App\Http\Controllers\Api\HojasvidahasexperienciaController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\notificacionesController;
 
@@ -317,6 +319,27 @@ Route::middleware('auth:api')->group(function () {
 
     // Obtener contrato del usuario
     Route::get('/contrato-usuario/{numDocumento}', [ContratoController::class, 'buscarPorDocumento']);
+
+    // hojasvidahasestudios
+    Route::get('/hojasvidahasestudios', [HojasvidahasestudiosController::class, 'index']);
+    Route::post('/hojasvidahasestudios', [HojasvidahasestudiosController::class, 'store']);
+    Route::put('/hojasvidahasestudios/{id}', [HojasvidahasestudiosController::class, 'update']);
+    Route::get('/hojasvidahasestudios/{id}', [HojasvidahasestudiosController::class, 'show']);
+    Route::delete('/hojasvidahasestudios/{id}', [HojasvidahasestudiosController::class, 'destroy']);
+    Route::get('/hojasvidahasestudios/por-hoja/{idHojaDeVida}', [HojasvidahasestudiosController::class, 'buscarPorHojaDeVida']);
+    Route::get('/hojasvidahasestudios/descargar/{id}', [HojasvidahasestudiosController::class, 'descargarArchivo']);
+
+    // hojasvidahasexperiencia
+    Route::prefix('hojasvidahasexperiencias')->group(function () {
+        Route::get('/', [HojasvidahasexperienciaController::class, 'index']);
+        Route::post('/', [HojasvidahasexperienciaController::class, 'store']);
+        Route::get('/{id}', [HojasvidahasexperienciaController::class, 'show']);
+        Route::put('/{id}', [HojasvidahasexperienciaController::class, 'update']);
+        Route::patch('/{id}', [HojasvidahasexperienciaController::class, 'updatePartial']);
+        Route::delete('/{id}', [HojasvidahasexperienciaController::class, 'destroy']);
+        Route::get('/documento/{numDocumento}', [HojasvidahasexperienciaController::class, 'buscarPorDocumento']);
+        Route::get('/descargar/{id}', [HojasvidahasexperienciaController::class, 'descargarArchivo']);
+    });
 });
 
 

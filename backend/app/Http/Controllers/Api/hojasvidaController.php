@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Hojasvidahasestudios;
 use App\Models\Hojasvida;
 use Illuminate\Support\Facades\Validator;
 
@@ -11,7 +12,7 @@ class hojasvidaController extends Controller
 {
     public function index()
     {
-        $Hojasvidas = Hojasvida::all();
+        $Hojasvidas = Hojasvidahasestudios::all();
         $data = [
             "rol" => $Hojasvidas,
             "status" => 200
@@ -39,7 +40,7 @@ class hojasvidaController extends Controller
             // dd($request->all());
 
 
-            $Hojasvida = Hojasvida::create([
+            $Hojasvida = Hojasvidahasestudios::create([
                 "claseLibretaMilitar" => $request->claseLibretaMilitar,
                 "numeroLibretaMilitar" => $request->numeroLibretaMilitar,
                 "usuarioNumDocumento" => $request->usuarioNumDocumento
@@ -190,5 +191,27 @@ class hojasvidaController extends Controller
             "hojaDeVida" => $hoja,
             "status" => 200
         ], 200);
+    }
+    public function descargarArchivo($id)
+    {
+        $registro = Hojasvidahasestudios::find($id);
+
+        if (!$registro || !$registro->archivo) {
+            return response()->json([
+                "mensaje" => "Archivo no encontrado",
+                "status" => 404
+            ], 404);
+        }
+
+        $ruta = storage_path('app/public/' . $registro->archivo);
+
+        if (!file_exists($ruta)) {
+            return response()->json([
+                "mensaje" => "El archivo no existe físicamente",
+                "status" => 404
+            ], 404);
+        }
+
+        return response()->download($ruta);
     }
 }
