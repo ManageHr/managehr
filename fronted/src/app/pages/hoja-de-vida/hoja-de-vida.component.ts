@@ -64,11 +64,18 @@ export class HojaDeVidaComponent implements OnInit {
     if (!this.idHojaDeVida) return;
     this.estudiosService.getPorHojaDeVida(this.idHojaDeVida).subscribe({
       next: (res) => {
-        this.estudios = res.estudios.map((e: any) => ({
-          ...e.idEstudios,
-          abierto: false,
-          idRelacion: e.id
-        }));
+        console.log('🔍 ESTUDIOS recibidos desde el backend:', res);
+
+        this.estudios = res.estudios.map((e: any) => {
+          const datos = e.id_estudios || e;
+          return {
+            ...datos,
+            abierto: false,
+            idRelacion: e.idHasestudios
+          };
+        });
+
+        console.log('📦 this.estudios procesado:', this.estudios);
       },
       error: (err) => {
         console.error('❌ Error al cargar estudios', err);
@@ -133,23 +140,45 @@ export class HojaDeVidaComponent implements OnInit {
   }
 
   guardarNuevoEstudio() {
-    if (!this.usuario?.numDocumento) return;
+    if (!this.usuario?.perfil?.numDocumento || !this.idHojaDeVida) return;
 
-    const payload = {
-      ...this.nuevoEstudio,
-      numDocumento: this.usuario.numDocumento,
-      estado: true
+    const payloadEstudio = {
+      nomEstudio: this.nuevoEstudio.nomEstudio,
+      nomInstitucion: this.nuevoEstudio.nomInstitucion,
+      tituloObtenido: this.nuevoEstudio.tituloObtenido,
+      anioInicio: this.nuevoEstudio.anioInicio,
+      anioFinalizacion: this.nuevoEstudio.anioFinalizacion
     };
 
-    this.estudiosService.create(payload).subscribe({
-      next: () => {
-        this.cerrarModalAgregarEstudio();
-        Swal.fire('Estudio agregado', 'El estudio fue registrado correctamente', 'success');
-        this.cargarEstudios();
+    this.estudiosService.create(payloadEstudio).subscribe({
+      next: (res) => {
+        const idEstudios = res.estudio?.idEstudios;
+        if (!idEstudios) {
+          Swal.fire('Error', 'No se recibió el ID del estudio creado', 'error');
+          return;
+        }
+
+        const relacionPayload = {
+          numDocumento: this.usuario.perfil.numDocumento,
+          idEstudios: idEstudios,
+          estado: true
+        };
+
+        this.estudiosService.createRelacionEstudio(relacionPayload).subscribe({
+          next: () => {
+            Swal.fire('Éxito', 'Estudio agregado correctamente', 'success');
+            this.cerrarModalAgregarEstudio();
+            this.cargarEstudios();
+          },
+          error: (err) => {
+            console.error('❌ Error al crear relación del estudio', err);
+            Swal.fire('Error', 'No se pudo guardar la relación del estudio', 'error');
+          }
+        });
       },
       error: (err) => {
-        console.error('❌ Error al guardar estudio', err);
-        Swal.fire('Error', 'No se pudo guardar el estudio', 'error');
+        console.error('❌ Error al crear el estudio', err);
+        Swal.fire('Error', 'No se pudo crear el estudio', 'error');
       }
     });
   }

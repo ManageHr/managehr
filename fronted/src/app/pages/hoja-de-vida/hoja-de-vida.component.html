@@ -9,6 +9,7 @@
     <div class="profile-container">
       <div class="profile-info">
 
+        <!-- Libreta militar -->
         <div class="user-data" *ngIf="hojaDeVida">
           <h4 class="data-title">
             Libreta Militar
@@ -28,6 +29,7 @@
           </div>
         </div>
 
+        <!-- Modal editar libreta -->
         <div class="modal-overlay" *ngIf="mostrarModalEditarLibreta">
           <div class="modal-content">
             <h2>Editar Libreta Militar</h2>
@@ -48,7 +50,7 @@
           </div>
         </div>
 
-
+        <!-- ESTUDIOS -->
         <div class="user-data">
           <h4 class="data-title">
             Estudios
@@ -69,7 +71,7 @@
                 <button (click)="eliminarEstudio(i); $event.stopPropagation()">Eliminar</button>
               </div>
             </div>
-            <div class="accordion-body" [class.open]="estudio.abierto">
+            <div *ngIf="estudio.abierto" class="accordion-body">
               <div class="grid-item"><span class="label">Institución:</span> <span class="value">{{ estudio.nomInstitucion }}</span></div>
               <div class="grid-item"><span class="label">Título Obtenido:</span> <span class="value">{{ estudio.tituloObtenido }}</span></div>
               <div class="grid-item"><span class="label">Año Inicio:</span> <span class="value">{{ estudio.anioInicio | date: 'yyyy' }}</span></div>
@@ -78,7 +80,7 @@
           </div>
         </div>
 
-
+        <!-- Modal agregar estudio -->
         <div class="modal-overlay" *ngIf="mostrarModalAgregarEstudio">
           <div class="modal-content">
             <h2>Agregar Estudio</h2>
@@ -111,7 +113,7 @@
           </div>
         </div>
 
-
+        <!-- EXPERIENCIA LABORAL -->
         <div class="user-data">
           <h4 class="data-title">
             Experiencia Laboral
@@ -132,7 +134,7 @@
                 <button (click)="eliminarExperiencia(i); $event.stopPropagation()">Eliminar</button>
               </div>
             </div>
-            <div class="accordion-body" [class.open]="exp.abierto">
+            <div *ngIf="exp.abierto" class="accordion-body">
               <div class="grid-item"><span class="label">Nombre del Jefe:</span> <span class="value">{{ exp.nomJefe }}</span></div>
               <div class="grid-item"><span class="label">Teléfono:</span> <span class="value">{{ exp.telefono }}</span></div>
               <div class="grid-item"><span class="label">Cargo:</span> <span class="value">{{ exp.cargo }}</span></div>
@@ -143,7 +145,7 @@
           </div>
         </div>
 
-
+        <!-- Modal agregar experiencia -->
         <div class="modal-overlay" *ngIf="mostrarModalAgregarExperiencia">
           <div class="modal-content">
             <h2>Agregar Experiencia</h2>

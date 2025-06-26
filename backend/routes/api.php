@@ -125,6 +125,7 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/hojasvida/{id}', [hojasvidaController::class, 'destroy']);
     Route::get('/hojasvida/documento/{numDocumento}', [hojasvidaController::class, 'buscarPorDocumento']);
     Route::put('/hojasvida/{id}', [hojasvidaController::class, 'update']);
+    Route::get('estudios/hoja/{idHojaDeVida}', [HojasvidahasestudiosController::class, 'buscarPorHojaDeVida']);
 
 
     Route::get('/usuarios', [usuarioController::class, 'index']);
