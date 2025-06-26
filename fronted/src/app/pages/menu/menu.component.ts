@@ -21,16 +21,19 @@ export class MenuComponent implements OnInit {
 
   constructor(private router: Router) {} // Si AuthService no se usa en este componente, puedes quitarlo del constructor
 
-  ngOnInit(): void {
-    const usuarioGuardado = localStorage.getItem('usuario');
-    if (usuarioGuardado) {
-      this.usuario = JSON.parse(usuarioGuardado);
-      console.log('Usuario cargado:', this.usuario);
-    } else {
-      console.log('No hay usuario en localStorage');
-      // Considera qué hacer si no hay usuario, quizás redirigir al login
-    }
+ngOnInit(): void {
+  const usuarioGuardado = localStorage.getItem('usuario');
+  if (usuarioGuardado) {
+    this.usuario = JSON.parse(usuarioGuardado);
+    console.log('Usuario cargado:', this.usuario);
+
+    // NUEVO: asegúrate de que tenga numDocumento
+    console.log('🔍 numDocumento:', this.usuario.numDocumento);
+  } else {
+    console.log('No hay usuario en localStorage');
   }
+}
+
 
   logout(): void {
     localStorage.removeItem('token');

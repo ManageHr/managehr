@@ -12,13 +12,13 @@ class hojasvidaController extends Controller
 {
     public function index()
     {
-        $Hojasvidas = Hojasvidahasestudios::all();
-        $data = [
-            "rol" => $Hojasvidas,
+        $Hojasvidas = Hojasvida::all(); 
+        return response()->json([
+            "data" => $Hojasvidas,
             "status" => 200
-        ];
-        return response()->json($data, 200);
+        ], 200);
     }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -40,12 +40,12 @@ class hojasvidaController extends Controller
             // dd($request->all());
 
 
-            $Hojasvida = Hojasvidahasestudios::create([
-                "claseLibretaMilitar" => $request->claseLibretaMilitar,
-                "numeroLibretaMilitar" => $request->numeroLibretaMilitar,
-                "usuarioNumDocumento" => $request->usuarioNumDocumento
+            $Hojasvida = Hojasvida::create([
+            "claseLibretaMilitar" => $request->claseLibretaMilitar,
+            "numeroLibretaMilitar" => $request->numeroLibretaMilitar,
+            "usuarioNumDocumento" => $request->usuarioNumDocumento
+        ]);
 
-            ]);
 
             return response()->json([
                 "mensaje" => "Hoja de vida creada correctamente",

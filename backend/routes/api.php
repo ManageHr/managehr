@@ -120,11 +120,12 @@ Route::middleware('auth:api')->group(function () {
     // Rutas de HOJAS DE VIDA
     Route::get('/hojasvida', [hojasvidaController::class, 'index']);
     Route::post('/hojasvida', [hojasvidaController::class, 'store']);
-    Route::put('/hojasvida/{id}', [hojasvidaController::class, 'update']);
     Route::get('/hojasvida/{id}', [hojasvidaController::class, 'show']);
     Route::patch('/hojasvida/{id}', [hojasvidaController::class, 'updatePartial']);
     Route::delete('/hojasvida/{id}', [hojasvidaController::class, 'destroy']);
     Route::get('/hojasvida/documento/{numDocumento}', [hojasvidaController::class, 'buscarPorDocumento']);
+    Route::put('/hojasvida/{id}', [hojasvidaController::class, 'update']);
+    Route::get('estudios/hoja/{idHojaDeVida}', [HojasvidahasestudiosController::class, 'buscarPorHojaDeVida']);
 
 
     Route::get('/usuarios', [usuarioController::class, 'index']);

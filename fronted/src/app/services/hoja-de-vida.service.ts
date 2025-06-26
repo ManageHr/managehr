@@ -6,9 +6,17 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class HojaDeVidaService {
+  private apiUrl = 'http://localhost:8000/api';
+
   constructor(private http: HttpClient) {}
 
-  getHojaDeVida(): Observable<any> {
-    return this.http.get<any>('http://localhost:8000/api/hoja-de-vida');
+  // Obtener hoja de vida por número de documento
+  getHojaDeVidaPorDocumento(numDocumento: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/hojasvida/documento/${numDocumento}`);
+  }
+
+  // También podrías querer agregar método para actualizar
+  actualizarHojaDeVida(idHoja: number, data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/hojasvida/${idHoja}`, data);
   }
 }
