@@ -64,6 +64,12 @@
         <i class="fas fa-user"></i>
         <span>Perfil</span>
       </a>
+      
+      <a class="nav-link" *ngIf="[3].includes(usuario?.rol)" (click)="navigateTo('/hoja-de-vida')" [class.active]="isActive('/hoja-de-vida')">
+        <i class="fas fa-file-alt"></i>
+        <span>Hoja de Vida</span>
+      </a>
+
       <a class="nav-link" *ngIf="usuario?.rol === 2" (click)="navigateTo('/jefe-personal')" [class.active]="isActive('/jefe-personal')">
         <i class="fas fa-users"></i>
         <span>Empleados</span>

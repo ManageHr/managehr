@@ -313,6 +313,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/solicitudes-incapacidades', [formincapacidadController::class, 'index']);
     Route::post('/solicitudes-incapacidades', [formincapacidadController::class, 'store']);
 
+    Route::middleware('auth:api')->get('/hoja-de-vida', [HojaDeVidaController::class, 'index']);
+    
     // Solicitudes de Horas Extra
     Route::get('/horas-extra', [FormHorasController::class, 'index']);
     Route::post('/horas-extra', [FormHorasController::class, 'store']);
