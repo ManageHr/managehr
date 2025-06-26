@@ -7,6 +7,7 @@ use App\Models\Hojasvida;
 use App\Models\Hojasvidahasexperiencia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+
 class HojasvidahasexperienciaController extends Controller
 {
     public function index()
@@ -21,8 +22,8 @@ class HojasvidahasexperienciaController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'idHojaDevida' => 'required|integer',
-            'idExperiencia' => 'required|integer',
+            'idHojaDevida' => 'required|integer|exists:hojasvida,idHojaDeVida',
+            'idExperiencia' => 'required|integer|exists:experiencialaboral,idExperiencia',
             'estado' => 'required|boolean',
             'archivo' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048'
         ]);
@@ -35,13 +36,13 @@ class HojasvidahasexperienciaController extends Controller
             ], 400);
         }
 
-        
+        $data = $request->only(['idHojaDevida', 'idExperiencia', 'estado']); // ✅ ← ahora sí incluyes los datos
 
         if ($request->hasFile('archivo')) {
-            $nombreLimpio = preg_replace('/[^A-Za-z0-9_\-]/', '_', $request->cargoEmpresa);
+            $nombreLimpio = preg_replace('/[^A-Za-z0-9_\-]/', '_', $request->cargoEmpresa ?? 'experiencia');
             $extension = $request->file('archivo')->getClientOriginalExtension();
             $filename = $nombreLimpio . '_' . time() . '.' . $extension;
-            $folder = 'Archivos/' . $request->numDocumento;
+            $folder = 'Archivos/' . ($request->numDocumento ?? 'sin_documento');
             $path = $request->file('archivo')->storeAs($folder, $filename, 'public');
             $data['archivo'] = 'storage/' . $path;
         }
@@ -61,6 +62,7 @@ class HojasvidahasexperienciaController extends Controller
             ], 500);
         }
     }
+
 
     public function show($id)
     {

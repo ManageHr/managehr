@@ -171,6 +171,10 @@ export class UsuariosService {
   obtenerHojadevida(numDocumento: number): Observable<any> {
     return this.http.get<any>(`http://localhost:8000/api/hojasvida/documento/${numDocumento}`);
   }
+  
+  obtenerExperienciaLaboral(numDocumento: number) {
+    return this.http.get<any>(`http://localhost:8000/api/hojasvidahasexperiencias/documento/${numDocumento}`);
+  }
 
 
 
