@@ -129,6 +129,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('estudios/hoja/{idHojaDeVida}', [HojasvidahasestudiosController::class, 'buscarPorHojaDeVida']);  
     Route::delete('/hojasvidahasestudios/{id}', [HojasvidahasestudiosController::class, 'destroy']);
     Route::delete('/hojasvidahasexperiencia/{id}', [HojasvidahasexperienciaController::class, 'destroy']);
+    Route::post('/experiencia-con-archivo', [experienciaLaboralController::class, 'storeConArchivo']);
 
     // Antes (esto apunta mal la ruta):
     Route::post('/experiencia', [HojasvidahasexperienciaController::class, 'store']);

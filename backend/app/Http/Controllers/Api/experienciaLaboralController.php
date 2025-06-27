@@ -4,8 +4,10 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Models\ExperienciaLaboral;
+use App\Models\HojasVidaHasExperiencia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class experienciaLaboralController extends Controller
 {
@@ -48,6 +50,62 @@ class experienciaLaboralController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'mensaje' => 'Error al registrar la experiencia',
+                'error' => $e->getMessage(),
+                'status' => 500
+            ], 500);
+        }
+    }
+
+    public function storeConArchivo(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'nomEmpresa' => 'required|string|max:45',
+            'nomJefe' => 'required|string|max:45',
+            'telefono' => 'required|numeric',
+            'cargo' => 'required|string|max:20',
+            'actividades' => 'nullable|string',
+            'fechaInicio' => 'required|date',
+            'fechaFinalizacion' => 'required|date|after_or_equal:fechaInicio',
+            'idHojaDevida' => 'required|exists:hojasvida,idHojaDeVida',
+            'archivo' => 'nullable|file|max:2048'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'mensaje' => 'Error en la validación con archivo',
+                'errors' => $validator->errors(),
+                'status' => 400
+            ], 400);
+        }
+
+        try {
+            // 1. Crear la experiencia
+            $experiencia = ExperienciaLaboral::create($request->only([
+                'nomEmpresa', 'nomJefe', 'telefono', 'cargo', 'actividades', 'fechaInicio', 'fechaFinalizacion'
+            ]));
+
+            // 2. Manejar archivo si viene
+            $archivoPath = null;
+            if ($request->hasFile('archivo')) {
+                $archivoPath = $request->file('archivo')->store('archivos/experiencias', 'public');
+            }
+
+            // 3. Crear la relación con hoja de vida
+            HojasVidaHasExperiencia::create([
+                'idHojaDevida' => $request->idHojaDevida,
+                'idExperiencia' => $experiencia->idExperiencia,
+                'archivo' => $archivoPath,
+                'estado' => true
+            ]);
+
+            return response()->json([
+                'mensaje' => 'Experiencia con archivo registrada correctamente',
+                'data' => $experiencia,
+                'status' => 201
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'mensaje' => 'Error al guardar experiencia con archivo',
                 'error' => $e->getMessage(),
                 'status' => 500
             ], 500);
