@@ -12,7 +12,7 @@ class hojasvidaController extends Controller
 {
     public function index()
     {
-        $Hojasvidas = Hojasvida::all(); 
+        $Hojasvidas = Hojasvida::all();
         return response()->json([
             "data" => $Hojasvidas,
             "status" => 200
@@ -41,10 +41,10 @@ class hojasvidaController extends Controller
 
 
             $Hojasvida = Hojasvida::create([
-            "claseLibretaMilitar" => $request->claseLibretaMilitar,
-            "numeroLibretaMilitar" => $request->numeroLibretaMilitar,
-            "usuarioNumDocumento" => $request->usuarioNumDocumento
-        ]);
+                "claseLibretaMilitar" => $request->claseLibretaMilitar,
+                "numeroLibretaMilitar" => $request->numeroLibretaMilitar,
+                "usuarioNumDocumento" => $request->usuarioNumDocumento
+            ]);
 
 
             return response()->json([
@@ -63,7 +63,15 @@ class hojasvidaController extends Controller
 
     public function show($id)
     {
-        $Hojasvida = Hojasvida::find($id);
+        $Hojasvida = Hojasvida::with([
+            'usuario.tipoDocumento',
+            'usuario.genero',
+            'usuario.estadoCivil',
+            'usuario.eps',
+            'usuario.pensiones',
+            'usuario.nacionalidad'
+        ])->where('idHojasDeVida', $id)->first();
+
         if (!$Hojasvida) {
             $data = [
                 "mensage" => " No se encontro Hojasvida",
@@ -178,7 +186,15 @@ class hojasvidaController extends Controller
     }
     public function buscarPorDocumento($numDocumento)
     {
-        $hoja = Hojasvida::with('usuario')->where('usuarioNumDocumento', $numDocumento)->first();
+        $hoja = Hojasvida::with([
+            'usuario.tipoDocumento',
+            'usuario.genero',
+            'usuario.estadoCivil',
+            'usuario.eps',
+            'usuario.pensiones',
+            'usuario.nacionalidad'
+        ])->where('usuarioNumDocumento', $numDocumento)->first();
+
 
         if (!$hoja) {
             return response()->json([

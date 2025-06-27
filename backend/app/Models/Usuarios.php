@@ -64,7 +64,7 @@ class Usuarios extends Model
 
     public function nacionalidad()
     {
-        return $this->belongsTo(Nacionalidad::class, 'nacionalidadId', 'idnacionalidad');
+        return $this->belongsTo(Nacionalidad::class, 'nacionalidadId', 'idNacionalidad');
     }
 
     public function user()
