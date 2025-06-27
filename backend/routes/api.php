@@ -125,7 +125,20 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/hojasvida/{id}', [hojasvidaController::class, 'destroy']);
     Route::get('/hojasvida/documento/{numDocumento}', [hojasvidaController::class, 'buscarPorDocumento']);
     Route::put('/hojasvida/{id}', [hojasvidaController::class, 'update']);
-    Route::get('estudios/hoja/{idHojaDeVida}', [HojasvidahasestudiosController::class, 'buscarPorHojaDeVida']);
+    Route::get('estudios/hoja/{idHojaDeVida}', [HojasvidahasestudiosController::class, 'buscarPorHojaDeVida']);  
+    Route::delete('/hojasvidahasestudios/{id}', [HojasvidahasestudiosController::class, 'destroy']);
+    Route::delete('/hojasvidahasexperiencia/{id}', [HojasvidahasexperienciaController::class, 'destroy']);
+
+    // Antes (esto apunta mal la ruta):
+    Route::post('/experiencia', [HojasvidahasexperienciaController::class, 'store']);
+
+    // ✅ Después:
+    Route::post('/experiencia', [experienciaLaboralController::class, 'store']);
+
+    // Ruta para guardar relación hojaDeVida ↔ experiencia
+    Route::post('/hojasvidahasexperiencia', [HojasvidahasexperienciaController::class, 'store']);
+
+    Route::get('/hojasvidahasexperiencia/hoja/{idHojaDeVida}', [HojasvidahasexperienciaController::class, 'buscarPorHojaId']);
 
 
     Route::get('/usuarios', [usuarioController::class, 'index']);
@@ -248,7 +261,7 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/estudios/{id}', [estudiosController::class, 'destroy']);
 
     Route::get('/explaboral', [experienciaLaboralController::class, 'index']);
-    Route::post('/explaboral', [experienciaLaboralController::class, 'store']);
+    Route::post('/experiencialaboral', [experienciaLaboralController::class, 'store']);
     Route::put('/explaboral/{id}', [experienciaLaboralController::class, 'update']);
     Route::get('/explaboral/{id}', [experienciaLaboralController::class, 'show']);
     Route::patch('/explaboral/{id}', [experienciaLaboralController::class, 'updatePartial']);

@@ -4,19 +4,29 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ExperienciaService {
-  private url = 'http://localhost:8000/api/experiencia';
+  private baseUrl = 'http://localhost:8000/api';
+  private experienciaUrl = `${this.baseUrl}/experiencia`;
+  private relacionUrl = `${this.baseUrl}/hojasvidahasexperiencia`;
 
   constructor(private http: HttpClient) {}
 
+  // Obtener experiencias por ID de hoja de vida
   getPorHojaDeVida(idHoja: number): Observable<any> {
-    return this.http.get(`${this.url}/hoja/${idHoja}`);
+    return this.http.get(`${this.relacionUrl}/hoja/${idHoja}`);
   }
 
+  // Crear una nueva experiencia laboral
   create(data: any): Observable<any> {
-    return this.http.post(this.url, data);
+    return this.http.post(`${this.baseUrl}/experiencia`, data); // POST a tabla experiencialaboral
   }
 
+  createRelacionExperiencia(relacion: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/hojasvidahasexperiencia`, relacion); // POST a tabla intermedia
+  }
+
+
+  // Eliminar relación hoja de vida - experiencia
   delete(id: number): Observable<any> {
-    return this.http.delete(`${this.url}/${id}`);
+    return this.http.delete(`${this.relacionUrl}/${id}`);
   }
 }

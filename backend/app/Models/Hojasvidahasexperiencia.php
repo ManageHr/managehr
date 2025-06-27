@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Hojasvidahasexperiencia extends Model
 {
     use HasFactory;
+
     protected $table = 'hojasvidahasexperiencia';
     protected $primaryKey = 'idHasexperiencia';
     public $timestamps = false;
@@ -18,12 +19,15 @@ class Hojasvidahasexperiencia extends Model
         'estado',
         'archivo'
     ];
-    public function idHojaDeVida()
+
+    public function hojaDeVida()
     {
-        return $this->belongsTo(Hojasvida::class, 'idHojaDeVida', 'idHojaDeVida');
+        return $this->belongsTo(Hojasvida::class, 'idHojaDevida', 'idHojaDeVida');
     }
-    public function idExperiencia()
+
+    public function experiencia()
     {
         return $this->belongsTo(ExperienciaLaboral::class, 'idExperiencia', 'idExperiencia');
     }
+
 }

@@ -17,9 +17,9 @@ export class EstudiosService {
     return this.http.post(this.estudiosUrl, data);
   }
 
-  delete(id: number): Observable<any> {
-    return this.http.delete(`${this.estudiosUrl}/${id}`);
-  }
+  delete(idRelacion: number): Observable<any> {
+  return this.http.delete(`http://localhost:8000/api/hojasvidahasestudios/${idRelacion}`);
+}
 
   createRelacionEstudio(payload: any): Observable<any> {
     return this.http.post<any>(this.relacionesUrl, payload);
