@@ -28,6 +28,7 @@ use App\Http\Controllers\Api\tipohorasController;
 use App\Http\Controllers\Api\horasextraController;
 use App\Http\Controllers\Api\VacantesUserController;
 use App\Http\Controllers\Api\MisPostulacionesController;
+use App\Http\Controllers\Api\jefePersonalController;
 
 use App\Http\Controllers\Api\RolPermisoController;
 use App\Http\Controllers\api\tipoContratoController;
@@ -133,7 +134,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/usuarios/{id}', [usuarioController::class, 'show']);
     Route::patch('/usuarios/{id}', [usuarioController::class, 'updatePartial']);
     Route::delete('/usuarios/{id}', [usuarioController::class, 'destroy']);
-    Route::get('/jefespersonal', [usuarioController::class, 'obtenerJefesDePersonal']);
 
     Route::get('/verificar-usuario', [usuarioController::class, 'verificarExistencia']);
     Route::get('/usuarios-con-relaciones', [usuarioController::class, 'obtenerUsuariosConRelaciones']);
@@ -342,7 +342,10 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/documento/{numDocumento}', [HojasvidahasexperienciaController::class, 'buscarPorDocumento']);
         Route::get('/descargar/{id}', [HojasvidahasexperienciaController::class, 'descargarArchivo']);
     });
+    
+    Route::get('jefe-personal/empleados/{jefeId}', [JefePersonalController::class, 'empleadosPorJefe']);
 });
 
 
 Route::middleware('auth:api')->group(function () {});
+
