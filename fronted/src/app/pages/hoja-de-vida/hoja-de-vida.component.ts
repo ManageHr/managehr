@@ -193,19 +193,32 @@ export class HojaDeVidaComponent implements OnInit {
   }
 
   eliminarEstudio(index: number) {
-    const idRelacion = this.estudios[index].idRelacion;
+  Swal.fire({
+    title: '¿Estás segura?',
+    text: 'Esta acción eliminará el estudio permanentemente.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const idRelacion = this.estudios[index].idRelacion;
 
-    this.estudiosService.delete(idRelacion).subscribe({
-      next: () => {
-        Swal.fire('Eliminado', 'El estudio ha sido eliminado', 'success');
-        this.cargarEstudios();
-      },
-      error: (err) => {
-        console.error('❌ Error al eliminar estudio', err);
-        Swal.fire('Error', 'No se pudo eliminar el estudio', 'error');
-      }
-    });
-  }
+      this.estudiosService.delete(idRelacion).subscribe({
+        next: () => {
+          Swal.fire('Eliminado', 'El estudio ha sido eliminado', 'success');
+          this.cargarEstudios();
+        },
+        error: (err) => {
+          console.error('❌ Error al eliminar estudio', err);
+          Swal.fire('Error', 'No se pudo eliminar el estudio', 'error');
+        }
+      });
+    }
+  });
+}
 
   toggleEstudio(index: number) {
     this.estudios[index].abierto = !this.estudios[index].abierto;
@@ -265,18 +278,32 @@ export class HojaDeVidaComponent implements OnInit {
   }
 
   eliminarExperiencia(index: number) {
-    const idRelacion = this.experiencias[index].idRelacion;
-    this.experienciaService.delete(idRelacion).subscribe({
-      next: () => {
-        Swal.fire('Eliminado', 'La experiencia ha sido eliminada', 'success');
-        this.cargarExperiencias();
-      },
-      error: (err) => {
-        console.error('❌ Error al eliminar experiencia', err);
-        Swal.fire('Error', 'No se pudo eliminar la experiencia', 'error');
-      }
-    });
-  }
+  Swal.fire({
+    title: '¿Estás segura?',
+    text: 'Esta acción eliminará la experiencia laboral permanentemente.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const idRelacion = this.experiencias[index].idRelacion;
+
+      this.experienciaService.delete(idRelacion).subscribe({
+        next: () => {
+          Swal.fire('Eliminado', 'La experiencia ha sido eliminada', 'success');
+          this.cargarExperiencias();
+        },
+        error: (err) => {
+          console.error('❌ Error al eliminar experiencia', err);
+          Swal.fire('Error', 'No se pudo eliminar la experiencia', 'error');
+        }
+      });
+    }
+  });
+}
 
   toggleExperiencia(index: number) {
     this.experiencias[index].abierto = !this.experiencias[index].abierto;
