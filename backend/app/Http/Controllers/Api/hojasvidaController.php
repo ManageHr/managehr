@@ -12,13 +12,13 @@ class hojasvidaController extends Controller
 {
     public function index()
     {
-        $Hojasvidas = Hojasvidahasestudios::all();
-        $data = [
-            "rol" => $Hojasvidas,
+        $Hojasvidas = Hojasvida::all();
+        return response()->json([
+            "data" => $Hojasvidas,
             "status" => 200
-        ];
-        return response()->json($data, 200);
+        ], 200);
     }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -40,12 +40,12 @@ class hojasvidaController extends Controller
             // dd($request->all());
 
 
-            $Hojasvida = Hojasvidahasestudios::create([
+            $Hojasvida = Hojasvida::create([
                 "claseLibretaMilitar" => $request->claseLibretaMilitar,
                 "numeroLibretaMilitar" => $request->numeroLibretaMilitar,
                 "usuarioNumDocumento" => $request->usuarioNumDocumento
-
             ]);
+
 
             return response()->json([
                 "mensaje" => "Hoja de vida creada correctamente",
@@ -63,7 +63,15 @@ class hojasvidaController extends Controller
 
     public function show($id)
     {
-        $Hojasvida = Hojasvida::find($id);
+        $Hojasvida = Hojasvida::with([
+            'usuario.tipoDocumento',
+            'usuario.genero',
+            'usuario.estadoCivil',
+            'usuario.eps',
+            'usuario.pensiones',
+            'usuario.nacionalidad'
+        ])->where('idHojasDeVida', $id)->first();
+
         if (!$Hojasvida) {
             $data = [
                 "mensage" => " No se encontro Hojasvida",
@@ -178,7 +186,15 @@ class hojasvidaController extends Controller
     }
     public function buscarPorDocumento($numDocumento)
     {
-        $hoja = Hojasvida::with('usuario')->where('usuarioNumDocumento', $numDocumento)->first();
+        $hoja = Hojasvida::with([
+            'usuario.tipoDocumento',
+            'usuario.genero',
+            'usuario.estadoCivil',
+            'usuario.eps',
+            'usuario.pensiones',
+            'usuario.nacionalidad'
+        ])->where('usuarioNumDocumento', $numDocumento)->first();
+
 
         if (!$hoja) {
             return response()->json([

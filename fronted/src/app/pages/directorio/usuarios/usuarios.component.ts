@@ -46,7 +46,7 @@ export class UsuariosComponent implements OnInit {
 
   mostrarModal: boolean = false;
   rolNombreSeleccionado: string = '';
-
+  experienciasLaborales: any[] = [];
   usuarioSeleccionado: Usuarios = {
     id: 0,
     primerNombre: '',
@@ -240,24 +240,24 @@ export class UsuariosComponent implements OnInit {
   }
   mostrarHojaVida(usuario: Usuarios): void {
     console.log("usuario de HV ", usuario.numDocumento);
-  this.usuariosService.obtenerHojadevida(usuario.numDocumento).subscribe({
-    next: (res) => {
-      console.log('Respuesta Hoja de Vida:', res);
-      if (res && res.hojaDeVida) {
-        this.hojaDeVidaSeleccionada = res.hojaDeVida;
-        console.log(this.hojaDeVidaSeleccionada);
-      } else {
-        this.hojaDeVidaSeleccionada = null;
-        Swal.fire('Atención', 'No se encontró hoja de vida para el usuario.', 'info');
+    this.usuariosService.obtenerHojadevida(usuario.numDocumento).subscribe({
+      next: (res) => {
+        console.log('Respuesta Hoja de Vida:', res);
+        if (res && res.hojaDeVida) {
+          this.hojaDeVidaSeleccionada = res.hojaDeVida;
+          console.log(this.hojaDeVidaSeleccionada);
+        } else {
+          this.hojaDeVidaSeleccionada = null;
+          Swal.fire('Atención', 'No se encontró hoja de vida para el usuario.', 'info');
+        }
+        this.abrirModalHojaVida();
+      },
+      error: (err) => {
+        console.error('Error al obtener la hoja de vida:', err);
+        Swal.fire('Error', 'No tiene asociada una hoja de vida para el usuario.', 'error');
       }
-      this.abrirModalHojaVida();
-    },
-    error: (err) => {
-      console.error('Error al obtener la hoja de vida:', err);
-      Swal.fire('Error', 'No se pudo cargar la hoja de vida.', 'error');
-    }
-  });
-}
+    });
+  }
 
   cargarUsuarios(): void {
     this.usuariosService.obtenerUsuarios().subscribe({
@@ -326,10 +326,7 @@ abrirModalHojaVida(): void {
 }
 
 
-mostrarExperiencia(usuario: Usuarios): void {
-  console.log(`Mostrar Experiencia Laboral de: ${usuario.numDocumento}`);
-  // Lógica para abrir modal o redirigir
-}
+
 
 mostrarEstudios(usuario: Usuarios): void {
   console.log(`Mostrar Estudios de: ${usuario.numDocumento}`);
@@ -500,7 +497,33 @@ mostrarEstudios(usuario: Usuarios): void {
       });
     });
   }
+  
+  mostrarExperiencia(usuario: any): void {
+    this.usuarioSeleccionado = usuario;
+    try {
+      
+      console.log('Usuario seleccionado experiencia:', this.usuarioSeleccionado);
+      this.usuariosService.obtenerExperienciaLaboral(usuario.numDocumento).subscribe({
+        next: (res) => {
+          this.experienciasLaborales = res.data || [];
+          this.abrirModalExperiencia();
+        },
+        error: (err) => {
+          console.error('Error al obtener experiencias:', err);
+        }
+      });
+    } catch (error) {
+         Swal.fire('Error', 'No Tiene una hoja de vida para este usuario.', 'error');
+    }
+  }
 
+  abrirModalExperiencia(): void {
+    const modal = document.getElementById('modalExperiencia');
+    if (modal) {
+      const modalInstance = new bootstrap.Modal(modal);
+      modalInstance.show();
+    }
+  }
   actualizarUsuario(): void {
     if (!this.usuarioSeleccionado || !this.usuarioSeleccionado.numDocumento) return;
 

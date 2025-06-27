@@ -121,11 +121,25 @@ Route::middleware('auth:api')->group(function () {
     // Rutas de HOJAS DE VIDA
     Route::get('/hojasvida', [hojasvidaController::class, 'index']);
     Route::post('/hojasvida', [hojasvidaController::class, 'store']);
-    Route::put('/hojasvida/{id}', [hojasvidaController::class, 'update']);
     Route::get('/hojasvida/{id}', [hojasvidaController::class, 'show']);
     Route::patch('/hojasvida/{id}', [hojasvidaController::class, 'updatePartial']);
     Route::delete('/hojasvida/{id}', [hojasvidaController::class, 'destroy']);
     Route::get('/hojasvida/documento/{numDocumento}', [hojasvidaController::class, 'buscarPorDocumento']);
+    Route::put('/hojasvida/{id}', [hojasvidaController::class, 'update']);
+    Route::get('estudios/hoja/{idHojaDeVida}', [HojasvidahasestudiosController::class, 'buscarPorHojaDeVida']);  
+    Route::delete('/hojasvidahasestudios/{id}', [HojasvidahasestudiosController::class, 'destroy']);
+    Route::delete('/hojasvidahasexperiencia/{id}', [HojasvidahasexperienciaController::class, 'destroy']);
+
+    // Antes (esto apunta mal la ruta):
+    Route::post('/experiencia', [HojasvidahasexperienciaController::class, 'store']);
+
+    // ✅ Después:
+    Route::post('/experiencia', [experienciaLaboralController::class, 'store']);
+
+    // Ruta para guardar relación hojaDeVida ↔ experiencia
+    Route::post('/hojasvidahasexperiencia', [HojasvidahasexperienciaController::class, 'store']);
+
+    Route::get('/hojasvidahasexperiencia/hoja/{idHojaDeVida}', [HojasvidahasexperienciaController::class, 'buscarPorHojaId']);
 
 
     Route::get('/usuarios', [usuarioController::class, 'index']);
@@ -247,7 +261,7 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/estudios/{id}', [estudiosController::class, 'destroy']);
 
     Route::get('/explaboral', [experienciaLaboralController::class, 'index']);
-    Route::post('/explaboral', [experienciaLaboralController::class, 'store']);
+    Route::post('/experiencialaboral', [experienciaLaboralController::class, 'store']);
     Route::put('/explaboral/{id}', [experienciaLaboralController::class, 'update']);
     Route::get('/explaboral/{id}', [experienciaLaboralController::class, 'show']);
     Route::patch('/explaboral/{id}', [experienciaLaboralController::class, 'updatePartial']);
@@ -313,7 +327,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/solicitudes-incapacidades', [formincapacidadController::class, 'index']);
     Route::post('/solicitudes-incapacidades', [formincapacidadController::class, 'store']);
 
-    Route::middleware('auth:api')->get('/hoja-de-vida', [HojaDeVidaController::class, 'index']);
+    Route::middleware('auth:api')->get('/hoja-de-vida', [HojasvidaController::class, 'index']);
     
     // Solicitudes de Horas Extra
     Route::get('/horas-extra', [FormHorasController::class, 'index']);
