@@ -6,6 +6,7 @@ interface EmpleadosResponse {
   empleados: any[];
   area: string;
   message: string;
+  
 }
 
 @Injectable({ providedIn: 'root' })
@@ -24,5 +25,17 @@ export class JefePersonalService {
 
   getEmpleadosPorJefe(jefeId: number): Observable<EmpleadosResponse> {
     return this.http.get<EmpleadosResponse>(`${this.apiUrl}/jefe-personal/empleados/${jefeId}`);
+  }
+
+  getHojaDeVidaPorDocumento(numDocumento: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/hojasvida/documento/${numDocumento}`);
+  }
+  
+  getEstudiosPorHoja(idHojaDeVida: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/hojasvidahasestudios/por-hoja/${idHojaDeVida}`);
+  }
+  
+  getExperienciaPorHoja(idHojaDeVida: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/hojasvidahasexperiencia/hoja/${idHojaDeVida}`);
   }
 } 

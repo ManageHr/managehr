@@ -324,4 +324,40 @@
   .button .btn-close {
     color: #0069d9;
   }
+
   
+  /* Estilos para los títulos de sección */
+.section-title {
+  background: var(--active-color);
+  color: #fff;
+  font-weight: bold;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 4px;
+  margin-top: 12px;
+  letter-spacing: 1px;
+  font-size: 1.09rem;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  text-transform: uppercase;
+  box-shadow: 0 2px 8px 0 #0001;
+  border-left: 4px solid #2563eb; /* Un azul un poco más oscuro para contraste, o pon var(--active-color) si quieres igual */
+}
+
+.title-divider {
+  margin-top: 0;
+  margin-bottom: 14px;
+  border: none;
+  border-top: 2px solid #fff6;
+  width: 36%;
+  /* El divisor ahora es blanco traslúcido para que resalte sobre el fondo azul */
+}
+
+/* Ajuste responsivo para el modal */
+@media (max-width: 576px) {
+  .modal-dialog {
+    max-width: 95vw;
+    margin: 0 auto;
+  }
+}

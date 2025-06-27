@@ -324,18 +324,11 @@ abrirModalHojaVida(): void {
     console.error('No se encontró el modal de Hoja de Vida');
   }
 }
-
-
-
-
+    
 mostrarEstudios(usuario: Usuarios): void {
   console.log(`Mostrar Estudios de: ${usuario.numDocumento}`);
   // Lógica para abrir modal o redirigir
 }
-
-
-
-
 
   confirmDelete(index: number): void {
     const usuario = this.usuariosPaginados[index];
