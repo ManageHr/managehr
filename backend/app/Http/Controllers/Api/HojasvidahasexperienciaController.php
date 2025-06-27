@@ -20,48 +20,42 @@ class HojasvidahasexperienciaController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'idHojaDevida' => 'required|integer|exists:hojasvida,idHojaDeVida',
-            'idExperiencia' => 'required|integer|exists:experiencialaboral,idExperiencia',
-            'estado' => 'required|boolean',
-            'archivo' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048'
-        ]);
+{
+    $validator = Validator::make($request->all(), [
+        'idHojaDevida' => 'required|integer|exists:hojasvida,idHojaDeVida',
+        'idExperiencia' => 'required|integer|exists:experiencialaboral,idExperiencia',
+        'estado' => 'required|boolean',
+        'archivo' => 'nullable|string|max:255' // Se permite nulo
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                "mensaje" => "Error en la validación de la experiencia",
-                "errors" => $validator->errors(),
-                "status" => 400
-            ], 400);
-        }
-
-        $data = $request->only(['idHojaDevida', 'idExperiencia', 'estado']); // ✅ ← ahora sí incluyes los datos
-
-        if ($request->hasFile('archivo')) {
-            $nombreLimpio = preg_replace('/[^A-Za-z0-9_\-]/', '_', $request->cargoEmpresa ?? 'experiencia');
-            $extension = $request->file('archivo')->getClientOriginalExtension();
-            $filename = $nombreLimpio . '_' . time() . '.' . $extension;
-            $folder = 'Archivos/' . ($request->numDocumento ?? 'sin_documento');
-            $path = $request->file('archivo')->storeAs($folder, $filename, 'public');
-            $data['archivo'] = 'storage/' . $path;
-        }
-
-        try {
-            $registro = Hojasvidahasexperiencia::create($data);
-            return response()->json([
-                "mensaje" => "Experiencia registrada correctamente",
-                "experiencia" => $registro,
-                "status" => 201
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                "mensaje" => "Error al registrar experiencia",
-                "error" => $e->getMessage(),
-                "status" => 500
-            ], 500);
-        }
+    if ($validator->fails()) {
+        return response()->json([
+            'mensaje' => 'Error en la validación de la experiencia',
+            'errors' => $validator->errors(),
+            'status' => 400
+        ], 400);
     }
+
+    try {
+        // Si no viene el campo 'archivo', se define como null
+        $data = $request->all();
+        $data['archivo'] = $data['archivo'] ?? null;
+
+        $relacion = Hojasvidahasexperiencia::create($data);
+
+        return response()->json([
+            'mensaje' => 'Relación experiencia creada correctamente',
+            'data' => $relacion,
+            'status' => 201
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'mensaje' => 'Error al guardar la relación experiencia',
+            'error' => $e->getMessage(),
+            'status' => 500
+        ], 500);
+    }
+}
 
 
     public function show($id)
@@ -139,23 +133,24 @@ class HojasvidahasexperienciaController extends Controller
         ]);
     }
 
-    public function destroy($id)
-    {
-        $exp = Hojasvidahasexperiencia::find($id);
-        if (!$exp) {
-            return response()->json([
-                "mensaje" => "Experiencia no encontrada",
-                "status" => 404
-            ], 404);
-        }
-
-        $exp->delete();
-
+   public function destroy($id)
+{
+    $relacion = Hojasvidahasexperiencia::find($id);
+    if (!$relacion) {
         return response()->json([
-            "mensaje" => "Experiencia eliminada",
-            "status" => 200
+            'mensaje' => 'Relación no encontrada',
+            'status' => 404
         ]);
     }
+
+    $relacion->delete();
+
+    return response()->json([
+        'mensaje' => 'Relación experiencia eliminada correctamente',
+        'status' => 200
+    ]);
+}
+
 
     public function buscarPorDocumento($numDocumento)
     {
@@ -168,7 +163,17 @@ class HojasvidahasexperienciaController extends Controller
             ], 404);
         }
 
-        $experiencias = Hojasvidahasexperiencia::where('idHojaDeVida', $hoja->idHojaDeVida)->get();
+        $experiencias = Hojasvidahasexperiencia::where('idHojaDevida', $hoja->idHojaDeVida)->get();
+
+        return response()->json([
+            "data" => $experiencias,
+            "status" => 200
+        ]);
+    }
+
+    public function buscarPorHojaDeVida($idHojaDevida)
+    {
+        $experiencias = Hojasvidahasexperiencia::where('idHojaDevida', $idHojaDevida)->get();
 
         return response()->json([
             "data" => $experiencias,
@@ -198,4 +203,25 @@ class HojasvidahasexperienciaController extends Controller
 
         return response()->download($ruta);
     }
+
+    public function buscarPorHojaId($idHojaDeVida)
+{
+    try {
+        $relaciones = Hojasvidahasexperiencia::with('experiencia')
+            ->where('idHojaDevida', $idHojaDeVida)
+            ->get();
+
+        return response()->json([
+            'data' => $relaciones,
+            'status' => 200
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'mensaje' => 'Error al obtener experiencias de la hoja de vida',
+            'error' => $e->getMessage(),
+            'status' => 500
+        ], 500);
+    }
+}
+
 }

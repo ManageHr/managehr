@@ -171,27 +171,15 @@ class HojasvidahasestudiosController extends Controller
     }
 
     public function destroy($id)
-    {
-        $registro = Hojasvidahasestudios::find($id);
-
-        if (!$registro) {
-            return response()->json([
-                "mensaje" => "No se encontró el estudio",
-                "status" => 404
-            ], 404);
-        }
-
-        if ($registro->archivo && Storage::disk("public")->exists($registro->archivo)) {
-            Storage::disk("public")->delete($registro->archivo);
-        }
-
-        $registro->delete();
-
-        return response()->json([
-            "mensaje" => "Estudio eliminado correctamente",
-            "status" => 200
-        ], 200);
+{
+    $relacion = Hojasvidahasestudios::find($id);
+    if (!$relacion) {
+        return response()->json(['mensaje' => 'Relación no encontrada'], 404);
     }
+
+    $relacion->delete();
+    return response()->json(['mensaje' => 'Relación eliminada correctamente'], 200);
+}
 
     // 🔍 Obtener todos los estudios por ID de hoja de vida
     public function buscarPorHojaDeVida($idHojaDeVida)

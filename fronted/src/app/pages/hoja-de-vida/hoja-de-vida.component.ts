@@ -65,7 +65,6 @@ export class HojaDeVidaComponent implements OnInit {
     this.estudiosService.getPorHojaDeVida(this.idHojaDeVida).subscribe({
       next: (res) => {
         console.log('🔍 ESTUDIOS recibidos desde el backend:', res);
-
         this.estudios = res.estudios.map((e: any) => {
           const datos = e.id_estudios || e;
           return {
@@ -74,7 +73,6 @@ export class HojaDeVidaComponent implements OnInit {
             idRelacion: e.idHasestudios
           };
         });
-
         console.log('📦 this.estudios procesado:', this.estudios);
       },
       error: (err) => {
@@ -85,20 +83,31 @@ export class HojaDeVidaComponent implements OnInit {
   }
 
   cargarExperiencias() {
-    if (!this.idHojaDeVida) return;
-    this.experienciaService.getPorHojaDeVida(this.idHojaDeVida).subscribe({
-      next: (res) => {
-        this.experiencias = res.experiencias.map((exp: any) => ({
-          ...exp,
-          abierto: false
-        }));
-      },
-      error: (err) => {
-        console.error('❌ Error al cargar experiencias', err);
-        Swal.fire('Error', 'No se pudieron cargar las experiencias', 'error');
-      }
-    });
-  }
+  if (!this.idHojaDeVida) return;
+
+  this.experienciaService.getPorHojaDeVida(this.idHojaDeVida).subscribe({
+    next: (res) => {
+      const lista = res.data ?? [];
+
+      this.experiencias = lista.map((relacion: any) => {
+        const datos = relacion.experiencia || {}; // asegura que sí haya relación
+
+        return {
+          ...datos,
+          abierto: false,
+          idRelacion: relacion.idHasexperiencia ?? relacion.id // opcional para eliminar luego
+        };
+      });
+
+      console.log('📦 Experiencias procesadas:', this.experiencias);
+    },
+    error: (err) => {
+      console.error('❌ Error al cargar experiencias', err);
+      Swal.fire('Error', 'No se pudieron cargar las experiencias', 'error');
+    }
+  });
+}
+
 
   abrirModalEditarLibreta() {
     this.mostrarModalEditarLibreta = true;
@@ -110,13 +119,11 @@ export class HojaDeVidaComponent implements OnInit {
 
   guardarCambiosLibreta() {
     if (!this.hojaDeVida.idHojaDeVida) return;
-
     const payload = {
       claseLibretaMilitar: this.hojaDeVida.claseLibretaMilitar,
       numeroLibretaMilitar: this.hojaDeVida.numeroLibretaMilitar,
       usuarioNumDocumento: this.hojaDeVida.usuarioNumDocumento
     };
-
     this.hojaDeVidaService.actualizarHojaDeVida(this.hojaDeVida.idHojaDeVida, payload).subscribe({
       next: () => {
         this.cerrarModalEditarLibreta();
@@ -183,19 +190,23 @@ export class HojaDeVidaComponent implements OnInit {
     });
   }
 
-  eliminarEstudio(index: number) {
-    const idRelacion = this.estudios[index].idRelacion;
-    this.estudiosService.delete(idRelacion).subscribe({
-      next: () => {
-        Swal.fire('Eliminado', 'El estudio ha sido eliminado', 'success');
-        this.cargarEstudios();
-      },
-      error: (err) => {
-        console.error('❌ Error al eliminar estudio', err);
-        Swal.fire('Error', 'No se pudo eliminar el estudio', 'error');
-      }
-    });
-  }
+eliminarEstudio(index: number) {
+  const idRelacion = this.estudios[index].idRelacion; 
+
+  this.estudiosService.delete(idRelacion).subscribe({
+    next: () => {
+      Swal.fire('Eliminado', 'El estudio ha sido eliminado', 'success');
+      this.cargarEstudios();
+    },
+    error: (err) => {
+      console.error('❌ Error al eliminar estudio', err);
+      Swal.fire('Error', 'No se pudo eliminar el estudio', 'error');
+    }
+  });
+}
+
+
+
 
   toggleEstudio(index: number) {
     this.estudios[index].abierto = !this.estudios[index].abierto;
@@ -216,40 +227,77 @@ export class HojaDeVidaComponent implements OnInit {
     this.mostrarModalAgregarExperiencia = false;
   }
 
-  guardarNuevaExperiencia() {
-    if (!this.idHojaDeVida) return;
+guardarNuevaExperiencia() {
+  if (!this.idHojaDeVida) return;
 
-    const payload = {
-      ...this.nuevaExperiencia,
-      idHojaDeVida: this.idHojaDeVida
+  const payloadExperiencia = {
+    nomEmpresa: this.nuevaExperiencia.nomEmpresa,
+    nomJefe: this.nuevaExperiencia.nomJefe,
+    telefono: this.nuevaExperiencia.telefono,
+    cargo: this.nuevaExperiencia.cargo,
+    actividades: this.nuevaExperiencia.actividades,
+    fechaInicio: this.nuevaExperiencia.fechaInicio,
+    fechaFinalizacion: this.nuevaExperiencia.fechaFinalizacion
+  };
+
+  // Paso 1: Crear experiencia laboral
+  this.experienciaService.create(payloadExperiencia).subscribe({
+    next: (res) => {
+      const idExperiencia = res?.data?.idExperiencia || res?.experiencia?.idExperiencia;
+
+      if (!idExperiencia) {
+        Swal.fire('Error', 'No se recibió el ID de la experiencia creada', 'error');
+        return;
+      }
+
+      // Paso 2: Crear relación hojaDeVida ↔ experiencia
+      const relacionPayload = {
+      idHojaDevida: this.idHojaDeVida,
+      idExperiencia: idExperiencia,
+      estado: true,
+      archivo: null // << puedes dejarlo explícitamente
     };
 
-    this.experienciaService.create(payload).subscribe({
-      next: () => {
-        this.cerrarModalAgregarExperiencia();
-        Swal.fire('Experiencia guardada', 'La experiencia fue registrada correctamente', 'success');
-        this.cargarExperiencias();
-      },
-      error: (err) => {
-        console.error('❌ Error al guardar experiencia', err);
-        Swal.fire('Error', 'No se pudo guardar la experiencia', 'error');
+
+      this.experienciaService.createRelacionExperiencia(relacionPayload).subscribe({
+        next: () => {
+          this.cerrarModalAgregarExperiencia();
+          Swal.fire('Éxito', 'Experiencia registrada correctamente', 'success');
+          this.cargarExperiencias();
+        },
+        error: (err) => {
+          console.error('❌ Error al guardar la relación experiencia', err);
+          Swal.fire('Error', 'No se pudo guardar la relación de experiencia', 'error');
+        }
+      });
+    },
+    error: (err) => {
+      console.error('❌ Error al guardar experiencia', err);
+
+      if (err.error?.errors) {
+        console.log('🛠️ Errores de validación:', err.error.errors);
       }
-    });
-  }
+
+      Swal.fire('Error', 'No se pudo guardar la experiencia', 'error');
+    }
+  });
+}
+
 
   eliminarExperiencia(index: number) {
-    const idExp = this.experiencias[index].id;
-    this.experienciaService.delete(idExp).subscribe({
-      next: () => {
-        Swal.fire('Eliminado', 'La experiencia ha sido eliminada', 'success');
-        this.cargarExperiencias();
-      },
-      error: (err) => {
-        console.error('❌ Error al eliminar experiencia', err);
-        Swal.fire('Error', 'No se pudo eliminar la experiencia', 'error');
-      }
-    });
-  }
+  const idRelacion = this.experiencias[index].idRelacion;
+  this.experienciaService.delete(idRelacion).subscribe({
+    next: () => {
+      Swal.fire('Eliminado', 'La experiencia ha sido eliminada', 'success');
+      this.cargarExperiencias();
+    },
+    error: (err) => {
+      console.error('❌ Error al eliminar experiencia', err);
+      Swal.fire('Error', 'No se pudo eliminar la experiencia', 'error');
+    }
+  });
+}
+
 
   toggleExperiencia(index: number) {
     this.experiencias[index].abierto = !this.experiencias[index].abierto;
