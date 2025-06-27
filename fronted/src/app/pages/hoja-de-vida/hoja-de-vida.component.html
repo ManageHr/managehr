@@ -141,6 +141,11 @@
               <div class="grid-item"><span class="label">Actividades:</span> <span class="value">{{ exp.actividades }}</span></div>
               <div class="grid-item"><span class="label">Fecha Inicio:</span> <span class="value">{{ exp.fechaInicio | date: 'yyyy-MM-dd' }}</span></div>
               <div class="grid-item"><span class="label">Fecha Finalización:</span> <span class="value">{{ exp.fechaFinalizacion | date: 'yyyy-MM-dd' }}</span></div>
+              <div class="grid-item" *ngIf="exp.archivo">
+              <span class="label">Archivo Soporte:</span>
+              <a class="value" [href]="'http://localhost:8000/storage/' + exp.archivo" target="_blank">Ver archivo</a>
+              </div>
+
             </div>
           </div>
         </div>
@@ -177,6 +182,10 @@
               <div class="form-group">
                 <label>Fecha Finalización</label>
                 <input type="date" [(ngModel)]="nuevaExperiencia.fechaFinalizacion" name="fechaFinalizacion">
+              </div>
+              <div class="form-group">
+                <label>Archivo soporte</label>
+                <input type="file" (change)="onArchivoSeleccionado($event)" required />
               </div>
               <div class="modal-buttons">
                 <button type="submit">Guardar</button>
