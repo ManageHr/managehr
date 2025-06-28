@@ -17,16 +17,22 @@ export class ExperienciaService {
 
   // Crear una nueva experiencia laboral
   create(data: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/experiencia`, data); // POST a tabla experiencialaboral
+    return this.http.post(`${this.experienciaUrl}`, data);
   }
 
+  // Crear relación hoja de vida ↔ experiencia
   createRelacionExperiencia(relacion: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/hojasvidahasexperiencia`, relacion); // POST a tabla intermedia
+    return this.http.post(`${this.relacionUrl}`, relacion);
   }
-
 
   // Eliminar relación hoja de vida - experiencia
   delete(id: number): Observable<any> {
     return this.http.delete(`${this.relacionUrl}/${id}`);
   }
+
+  // Crear experiencia laboral incluyendo archivo (usando FormData)
+  createConArchivo(formData: FormData): Observable<any> {
+    return this.http.post(`${this.baseUrl}/experiencia-con-archivo`, formData);
+  }
 }
+

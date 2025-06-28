@@ -24,6 +24,7 @@ import { FormIncapacidadesComponent } from './pages/form-incapacidades/form-inca
 import { FormHorasComponent } from './pages/form-horas/form-horas.component';
 import { JefePersonalComponent } from './pages/jefe-personal/jefe-personal.component';
 import { HojaDeVidaComponent } from './pages/hoja-de-vida/hoja-de-vida.component';
+import { VacacionesJefeComponent } from './pages/vacaciones-jefe/vacaciones-jefe.component';
 import { AuthGuard } from './guards/auth.guard';
 
 
@@ -61,7 +62,8 @@ export const routes: Routes = [
       { path: 'vacantes copy/gestion', component: GestionComponent },
       { path: 'mis-postulaciones', component: MisPostulacionesComponent },
       { path: 'jefe-personal', component: JefePersonalComponent, canActivate: [AuthGuard] },
-      { path: 'hoja-de-vida',component: HojaDeVidaComponent,canActivate: [AuthGuard]}
+      { path: 'hoja-de-vida',component: HojaDeVidaComponent,canActivate: [AuthGuard]},
+      { path: 'vacaciones-jefe', component: VacacionesJefeComponent, canActivate: [AuthGuard] }
 
     ]
   },
