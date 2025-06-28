@@ -295,8 +295,9 @@ export class UsuariosComponent implements OnInit {
   }
 
 
-  nombreCompleto(usuarios: Usuarios): string {
-    return `${usuarios.primerNombre} ${usuarios.primerApellido}`;
+  nombreCompleto(usuario: any): string {
+    if (!usuario) return '';
+    return `${usuario.primerNombre} ${usuario.primerApellido}`;
   }
 
   editarusuarios(usuario: Usuarios, index: number): void {
@@ -498,32 +499,6 @@ mostrarEstudios(usuario: Usuarios): void {
     });
   }
   
-  mostrarExperiencia(usuario: any): void {
-    this.usuarioSeleccionado = usuario;
-    try {
-      
-      console.log('Usuario seleccionado experiencia:', this.usuarioSeleccionado);
-      this.usuariosService.obtenerExperienciaLaboral(usuario.numDocumento).subscribe({
-        next: (res) => {
-          this.experienciasLaborales = res.data || [];
-          this.abrirModalExperiencia();
-        },
-        error: (err) => {
-          console.error('Error al obtener experiencias:', err);
-        }
-      });
-    } catch (error) {
-         Swal.fire('Error', 'No Tiene una hoja de vida para este usuario.', 'error');
-    }
-  }
-
-  abrirModalExperiencia(): void {
-    const modal = document.getElementById('modalExperiencia');
-    if (modal) {
-      const modalInstance = new bootstrap.Modal(modal);
-      modalInstance.show();
-    }
-  }
   actualizarUsuario(): void {
     if (!this.usuarioSeleccionado || !this.usuarioSeleccionado.numDocumento) return;
 
@@ -574,6 +549,28 @@ mostrarEstudios(usuario: Usuarios): void {
   }
 
   currentPageExternos: number = 1;
+  verExperiencia(usuario: any): void {
+    this.usuariosService.obtenerExperienciaLaboral(usuario.numDocumento).subscribe({
+      next: (res) => {
+        this.usuarioSeleccionado = res.data.usuario;
+        this.hojaDeVidaSeleccionada = res.data.hojaDeVida;
+        this.experienciasLaborales = res.data.experiencias;
+        this.abrirModalExperiencia();
+      },
+      error: (err) => {
+        console.error('Error al obtener experiencia:', err);
+      },
+    });
+  }
+
+  abrirModalExperiencia(): void {
+    const modal = document.getElementById('modalExperiencia');
+    if (modal) {
+      const modalInstance = new bootstrap.Modal(modal);
+      modalInstance.show();
+    }
+  }
+
 
 
 }

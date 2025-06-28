@@ -20,42 +20,42 @@ class HojasvidahasexperienciaController extends Controller
     }
 
     public function store(Request $request)
-{
-    $validator = Validator::make($request->all(), [
-        'idHojaDevida' => 'required|integer|exists:hojasvida,idHojaDeVida',
-        'idExperiencia' => 'required|integer|exists:experiencialaboral,idExperiencia',
-        'estado' => 'required|boolean',
-        'archivo' => 'nullable|string|max:255' // Se permite nulo
-    ]);
-
-    if ($validator->fails()) {
-        return response()->json([
-            'mensaje' => 'Error en la validación de la experiencia',
-            'errors' => $validator->errors(),
-            'status' => 400
-        ], 400);
-    }
-
-    try {
-        // Si no viene el campo 'archivo', se define como null
-        $data = $request->all();
-        $data['archivo'] = $data['archivo'] ?? null;
-
-        $relacion = Hojasvidahasexperiencia::create($data);
-
-        return response()->json([
-            'mensaje' => 'Relación experiencia creada correctamente',
-            'data' => $relacion,
-            'status' => 201
+    {
+        $validator = Validator::make($request->all(), [
+            'idHojaDevida' => 'required|integer|exists:hojasvida,idHojaDeVida',
+            'idExperiencia' => 'required|integer|exists:experiencialaboral,idExperiencia',
+            'estado' => 'required|boolean',
+            'archivo' => 'nullable|string|max:255' // Se permite nulo
         ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'mensaje' => 'Error al guardar la relación experiencia',
-            'error' => $e->getMessage(),
-            'status' => 500
-        ], 500);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'mensaje' => 'Error en la validación de la experiencia',
+                'errors' => $validator->errors(),
+                'status' => 400
+            ], 400);
+        }
+
+        try {
+            // Si no viene el campo 'archivo', se define como null
+            $data = $request->all();
+            $data['archivo'] = $data['archivo'] ?? null;
+
+            $relacion = Hojasvidahasexperiencia::create($data);
+
+            return response()->json([
+                'mensaje' => 'Relación experiencia creada correctamente',
+                'data' => $relacion,
+                'status' => 201
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'mensaje' => 'Error al guardar la relación experiencia',
+                'error' => $e->getMessage(),
+                'status' => 500
+            ], 500);
+        }
     }
-}
 
 
     public function show($id)
@@ -133,28 +133,29 @@ class HojasvidahasexperienciaController extends Controller
         ]);
     }
 
-   public function destroy($id)
-{
-    $relacion = Hojasvidahasexperiencia::find($id);
-    if (!$relacion) {
+    public function destroy($id)
+    {
+        $relacion = Hojasvidahasexperiencia::find($id);
+        if (!$relacion) {
+            return response()->json([
+                'mensaje' => 'Relación no encontrada',
+                'status' => 404
+            ]);
+        }
+
+        $relacion->delete();
+
         return response()->json([
-            'mensaje' => 'Relación no encontrada',
-            'status' => 404
+            'mensaje' => 'Relación experiencia eliminada correctamente',
+            'status' => 200
         ]);
     }
-
-    $relacion->delete();
-
-    return response()->json([
-        'mensaje' => 'Relación experiencia eliminada correctamente',
-        'status' => 200
-    ]);
-}
 
 
     public function buscarPorDocumento($numDocumento)
     {
-        $hoja = Hojasvida::where('usuarioNumDocumento', $numDocumento)->first();
+        // Buscar la hoja de vida por número de documento
+        $hoja = Hojasvida::with('usuario')->where('usuarioNumDocumento', $numDocumento)->first();
 
         if (!$hoja) {
             return response()->json([
@@ -163,13 +164,21 @@ class HojasvidahasexperienciaController extends Controller
             ], 404);
         }
 
-        $experiencias = Hojasvidahasexperiencia::where('idHojaDevida', $hoja->idHojaDeVida)->get();
+        // Buscar experiencias relacionadas a la hoja de vida, incluyendo los detalles de la experiencia
+        $experiencias = Hojasvidahasexperiencia::with('experiencia')
+            ->where('idHojaDevida', $hoja->idHojaDeVida)
+            ->get();
 
         return response()->json([
-            "data" => $experiencias,
+            "data" => [
+                "hojaDeVida" => $hoja,
+                "usuario" => $hoja->usuario, // Relación directa desde hoja de vida
+                "experiencias" => $experiencias
+            ],
             "status" => 200
         ]);
     }
+
 
     public function buscarPorHojaDeVida($idHojaDevida)
     {
@@ -205,23 +214,22 @@ class HojasvidahasexperienciaController extends Controller
     }
 
     public function buscarPorHojaId($idHojaDeVida)
-{
-    try {
-        $relaciones = Hojasvidahasexperiencia::with('experiencia')
-            ->where('idHojaDevida', $idHojaDeVida)
-            ->get();
+    {
+        try {
+            $relaciones = Hojasvidahasexperiencia::with('experiencia')
+                ->where('idHojaDevida', $idHojaDeVida)
+                ->get();
 
-        return response()->json([
-            'data' => $relaciones,
-            'status' => 200
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'mensaje' => 'Error al obtener experiencias de la hoja de vida',
-            'error' => $e->getMessage(),
-            'status' => 500
-        ], 500);
+            return response()->json([
+                'data' => $relaciones,
+                'status' => 200
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'mensaje' => 'Error al obtener experiencias de la hoja de vida',
+                'error' => $e->getMessage(),
+                'status' => 500
+            ], 500);
+        }
     }
-}
-
 }
