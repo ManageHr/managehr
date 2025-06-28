@@ -758,69 +758,113 @@
     </div>
     <!-- Modal de Experiencia Laboral -->
     <div
-  class="modal fade"
-  id="modalExperiencia"
-  tabindex="-1"
-  aria-labelledby="modalExperienciaLabel"
-  aria-hidden="true"
->
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header bg-dark text-white">
-        <h5 class="modal-title">
-          Experiencia Laboral de {{ nombreCompleto(usuarioSeleccionado) }}
-        </h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Cerrar"
-        ></button>
-      </div>
-      <div class="modal-body">
-        <div *ngIf="experienciasLaborales.length > 0; else noHayExperiencias">
-          <div *ngFor="let exp of experienciasLaborales" class="card mb-3 shadow-sm">
-            <div class="card-body">
-              <h5 class="card-title">{{ exp.experiencia.nomEmpresa }}</h5>
-              <p class="card-text">
-                <strong>Cargo:</strong> {{ exp.experiencia.cargo }}<br />
-                <strong>Jefe Inmediato:</strong> {{ exp.experiencia.nomJefe }}<br />
-                <strong>Teléfono:</strong> {{ exp.experiencia.telefono }}<br />
-                <strong>Actividades:</strong> {{ exp.experiencia.actividades }}<br />
-                <strong>Tiempo:</strong>
-                {{ exp.experiencia.fechaInicio }} hasta {{ exp.experiencia.fechaFinalizacion }}<br />
-                <strong>Estado:</strong>
-                <span class="badge" [ngClass]="exp.estado ? 'bg-success' : 'bg-secondary'">
-                  {{ exp.estado ? 'Activo' : 'Inactivo' }}
-                </span>
-              </p>
-              <div *ngIf="exp.archivo">
-                <a
-                  [href]="'http://localhost:8000/' + exp.archivo"
-                  target="_blank"
-                  class="btn btn-sm btn-outline-primary"
-                >
-                  <i class="fas fa-download"></i> Descargar Certificado
-                </a>
+      class="modal fade"
+      id="modalExperiencia"
+      tabindex="-1"
+      aria-labelledby="modalExperienciaLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header bg-dark text-white">
+            <h5 class="modal-title">
+              Experiencia Laboral de {{ nombreCompleto(usuarioSeleccionado) }}
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Cerrar"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div
+              *ngIf="experienciasLaborales.length > 0; else noHayExperiencias"
+            >
+              <div
+                *ngFor="let exp of experienciasLaborales"
+                class="card mb-3 shadow-sm"
+              >
+                <div class="card-body">
+                  <h5 class="card-title">{{ exp.experiencia.nomEmpresa }}</h5>
+                  <p class="card-text">
+                    <strong>Cargo:</strong> {{ exp.experiencia.cargo }}<br />
+                    <strong>Jefe Inmediato:</strong> {{ exp.experiencia.nomJefe
+                    }}<br />
+                    <strong>Teléfono:</strong> {{ exp.experiencia.telefono
+                    }}<br />
+                    <strong>Actividades:</strong>
+                    {{ exp.experiencia.actividades }}<br />
+                    <strong>Tiempo:</strong>
+                    {{ exp.experiencia.fechaInicio }} hasta
+                    {{ exp.experiencia.fechaFinalizacion }}<br />
+                    <strong>Estado:</strong>
+                    <span
+                      class="badge"
+                      [ngClass]="exp.estado ? 'bg-success' : 'bg-secondary'"
+                    >
+                      {{ exp.estado ? "Activo" : "Inactivo" }}
+                    </span>
+                  </p>
+                  <div *ngIf="exp.archivo">
+                    <a
+                      [href]="'http://localhost:8000/' + exp.archivo"
+                      target="_blank"
+                      class="btn btn-sm btn-outline-primary"
+                    >
+                      <i class="fas fa-download"></i> Descargar Certificado
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
+            <ng-template #noHayExperiencias>
+              <p class="text-muted">
+                Este usuario no tiene experiencias laborales registradas.
+              </p>
+            </ng-template>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cerrar
+            </button>
           </div>
         </div>
-        <ng-template #noHayExperiencias>
-          <p class="text-muted">
-            Este usuario no tiene experiencias laborales registradas.
-          </p>
-        </ng-template>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-          Cerrar
-        </button>
       </div>
     </div>
-  </div>
-</div>
+    <!-- Modal de Error de Datos -->
+    <div *ngIf="experienciasLaborales.length === 0">
+      <p class="text-muted">
+        Este usuario no tiene experiencias laborales registradas.
+      </p>
+    </div>
 
+    <table *ngIf="experienciasLaborales.length > 0" class="table table-striped">
+      <thead>
+        <tr>
+          <th>Empresa</th>
+          <th>Cargo</th>
+          <th>Tiempo</th>
+          <th>Certificado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let experiencia of experienciasLaborales">
+          <td>{{ experiencia.empresa }}</td>
+          <td>{{ experiencia.cargo }}</td>
+          <td>{{ experiencia.tiempoLaborado }}</td>
+          <td>
+            <a [href]="urlCertificado(experiencia.certificado)" target="_blank"
+              >Ver</a
+            >
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
     <!-- Formulario reutilizable -->
     <ng-template #formulariousuarios>

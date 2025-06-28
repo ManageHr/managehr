@@ -545,19 +545,63 @@ mostrarEstudios(usuario: Usuarios): void {
   verExperiencia(usuario: any): void {
     this.usuariosService.obtenerExperienciaLaboral(usuario.numDocumento).subscribe({
       next: (res) => {
+        const hoja = res.data?.hojaDeVida;
+        const experiencias = res.data?.experiencias;
+        console.log('Experiencias recibidas:', experiencias);
+
+        if (!hoja || !experiencias || experiencias.length === 0) {
+          this.alerta("Este usuario no tiene experiencias laborales registradas.");
+          this.usuarioSeleccionado = usuario;
+          this.experienciasLaborales = []; // Vaciar para prevenir residuos
+          
+          return;
+        }
+
         this.usuarioSeleccionado = res.data.usuario;
-        this.hojaDeVidaSeleccionada = res.data.hojaDeVida;
-        this.experienciasLaborales = res.data.experiencias;
+        this.hojaDeVidaSeleccionada = hoja;
+        this.experienciasLaborales = experiencias;
         this.abrirModalExperiencia();
       },
       error: (err) => {
-        console.error('Error al obtener experiencia:', err);
-      },
+        if (err.status === 404 && err.error?.mensaje === "Hoja de vida no encontrada") {
+          
+          this.usuarioSeleccionado = usuario;
+          this.experienciasLaborales = []; // Prevenir errores en el HTML
+          this.abrirModalExperiencia();
+          
+        } else {
+          console.error('Error inesperado al obtener experiencia:', err);
+          this.alerta("Error inesperado al consultar experiencia.");
+        }
+      }
     });
   }
 
+  urlCertificado(nombreArchivo: string): string {
+    return `http://localhost:8000/storage/experiencias/${nombreArchivo}`;
+  }
+
+
+
+
   abrirModalExperiencia(): void {
     const modal = document.getElementById('modalExperiencia');
+    if (modal) {
+      const modalInstance = new bootstrap.Modal(modal);
+      modalInstance.show();
+    }
+  }
+  alerta(mensaje: string): void {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Atención',
+      text: mensaje,
+      confirmButtonText: 'Cerrar',
+    });
+  }
+
+  abrirModalErrorDatos(): void {
+    const modal = document.getElementById('modalErrorDatos');
     if (modal) {
       const modalInstance = new bootstrap.Modal(modal);
       modalInstance.show();
