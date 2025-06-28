@@ -29,6 +29,7 @@ use App\Http\Controllers\Api\horasextraController;
 use App\Http\Controllers\Api\VacantesUserController;
 use App\Http\Controllers\Api\MisPostulacionesController;
 use App\Http\Controllers\Api\jefePersonalController;
+use App\Http\Controllers\Api\VacacionesJefeController;
 
 use App\Http\Controllers\Api\RolPermisoController;
 use App\Http\Controllers\api\tipoContratoController;
@@ -359,6 +360,15 @@ Route::middleware('auth:api')->group(function () {
     });
     
     Route::get('jefe-personal/empleados/{jefeId}', [JefePersonalController::class, 'empleadosPorJefe']);
+
+    // Rutas para Vacaciones del Jefe de Personal
+    Route::prefix('solicitudes-vacaciones-jefe')->group(function () {
+        Route::get('/', [VacacionesJefeController::class, 'obtenerSolicitudesVacaciones']);
+        Route::get('/estadisticas', [VacacionesJefeController::class, 'obtenerEstadisticas']);
+        Route::get('/{id}', [VacacionesJefeController::class, 'obtenerSolicitud']);
+        Route::put('/{id}/aprobar', [VacacionesJefeController::class, 'aprobarSolicitud']);
+        Route::put('/{id}/rechazar', [VacacionesJefeController::class, 'rechazarSolicitud']);
+    });
 });
 
 
