@@ -393,7 +393,7 @@ app-menu {
   }
 
   .modal-content form {
-    grid-template-columns: 1fr; // Ya está ✔
+    grid-template-columns: 1fr; 
     gap: 15px;
   }
 
@@ -408,7 +408,7 @@ app-menu {
   }
 
   .modal-buttons {
-    position: static; // Ya está ✔
+    position: static; 
     flex-direction: column;
     gap: 10px;
     margin-top: 20px;
