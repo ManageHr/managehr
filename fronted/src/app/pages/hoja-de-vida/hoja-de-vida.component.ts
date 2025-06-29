@@ -312,4 +312,21 @@ export class HojaDeVidaComponent implements OnInit {
     this.nuevaExperiencia = { ...this.experiencias[index] };
     this.mostrarModalAgregarExperiencia = true;
   }
+
+  soloLetras(event: KeyboardEvent) {
+  const pattern = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/;
+  const inputChar = String.fromCharCode(event.keyCode || event.which);
+  if (!pattern.test(inputChar)) {
+    event.preventDefault();
+  }
+}
+
+soloNumeros(event: KeyboardEvent) {
+  const pattern = /^[0-9]*$/;
+  const inputChar = String.fromCharCode(event.keyCode || event.which);
+  if (!pattern.test(inputChar)) {
+    event.preventDefault();
+  }
+}
+
 }
