@@ -21,3 +21,9 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+# Permitir archivos en storage/app/public/archivos
+!storage/app/
+!storage/app/public/
+!storage/app/public/archivos/
+!storage/app/public/archivos/**
+
