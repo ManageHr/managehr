@@ -317,11 +317,25 @@ app-menu {
     }
   }
 
+  .header-horas {
+  margin-left: 10px;
 
-  .contenido-principal{
+  }
+
+  .profile-header {
+  margin-left: 0px;
+}
+
+
+
+
+  .contenido-principal {
     background-color: #1643b400;
-    width: 100vh;
-    margin-left: 15%;
+    width: 100%;
+    margin-left: 0;
+    padding: 15px;
+    margin-left: 50px;
+    font-size: 15px;
   }
 
   .profile-image-placeholder {
@@ -365,4 +379,45 @@ app-menu {
   color: #ffffff;
   background-color: #44444467;
   appearance: none;
+}
+
+@media (max-width: 767px) {
+  .modal-content {
+    padding: 20px;
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .modal-title {
+    font-size: 1.5rem;
+  }
+
+  .modal-content form {
+    grid-template-columns: 1fr; // Ya está ✔
+    gap: 15px;
+  }
+
+  .form-group label {
+    font-size: 0.9rem;
+  }
+
+  .modal-content form .form-group input,
+  .modal-content form .form-group select {
+    font-size: 0.95rem;
+    padding: 10px;
+  }
+
+  .modal-buttons {
+    position: static; // Ya está ✔
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: center;
+    align-items: stretch;
+
+    .btn {
+      width: 100%;
+      text-align: center;
+    }
+  }
 }

@@ -226,7 +226,6 @@ export class HojaDeVidaComponent implements OnInit {
 
   editarEstudio(index: number) {
     this.nuevoEstudio = { ...this.estudios[index] };
-    this.eliminarEstudio(index);
     this.mostrarModalAgregarEstudio = true;
   }
 
@@ -311,7 +310,23 @@ export class HojaDeVidaComponent implements OnInit {
 
   editarExperiencia(index: number) {
     this.nuevaExperiencia = { ...this.experiencias[index] };
-    this.eliminarExperiencia(index);
     this.mostrarModalAgregarExperiencia = true;
   }
+
+  soloLetras(event: KeyboardEvent) {
+  const pattern = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/;
+  const inputChar = String.fromCharCode(event.keyCode || event.which);
+  if (!pattern.test(inputChar)) {
+    event.preventDefault();
+  }
+}
+
+soloNumeros(event: KeyboardEvent) {
+  const pattern = /^[0-9]*$/;
+  const inputChar = String.fromCharCode(event.keyCode || event.which);
+  if (!pattern.test(inputChar)) {
+    event.preventDefault();
+  }
+}
+
 }

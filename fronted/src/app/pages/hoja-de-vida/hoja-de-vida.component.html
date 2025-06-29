@@ -9,46 +9,54 @@
     <div class="profile-container">
       <div class="profile-info">
 
-        <!-- Libreta militar -->
         <div class="user-data" *ngIf="hojaDeVida">
-          <h4 class="data-title">
-            Libreta Militar
-            <button class="btn-editar" (click)="abrirModalEditarLibreta()">
-              <i class="fas fa-edit"></i>
-            </button>
-          </h4>
-          <div class="data-grid">
-            <div class="grid-item">
-              <span class="label">Clase Libreta Militar:</span>
-              <span class="value">{{ hojaDeVida.claseLibretaMilitar || 'No registrado' }}</span>
-            </div>
-            <div class="grid-item">
-              <span class="label">Número de Libreta:</span>
-              <span class="value">{{ hojaDeVida.numeroLibretaMilitar || 'No registrado' }}</span>
-            </div>
-          </div>
-        </div>
+  <h4 class="data-title">
+    Libreta Militar
+    <button class="btn-editar" (click)="abrirModalEditarLibreta()">
+      <i class="fas fa-edit"></i>
+    </button>
+  </h4>
+  <div class="data-grid">
+    <div class="grid-item">
+      <span class="label">Clase Libreta Militar:</span>
+      <span class="value">{{ hojaDeVida.claseLibretaMilitar || 'No registrado' }}</span>
+    </div>
+    <div class="grid-item">
+      <span class="label">Número de Libreta:</span>
+      <span class="value">{{ hojaDeVida.numeroLibretaMilitar || 'No registrado' }}</span>
+    </div>
+  </div>
+</div>
 
-        <!-- Modal editar libreta -->
-        <div class="modal-overlay" *ngIf="mostrarModalEditarLibreta">
-          <div class="modal-content">
-            <h2>Editar Libreta Militar</h2>
-            <form (ngSubmit)="guardarCambiosLibreta()">
-              <div class="form-group">
-                <label>Clase Libreta Militar</label>
-                <input type="text" [(ngModel)]="hojaDeVida.claseLibretaMilitar" name="clase" required>
-              </div>
-              <div class="form-group">
-                <label>Número de Libreta</label>
-                <input type="text" [(ngModel)]="hojaDeVida.numeroLibretaMilitar" name="numero" required>
-              </div>
-              <div class="modal-buttons">
-                <button type="submit">Guardar</button>
-                <button type="button" (click)="cerrarModalEditarLibreta()">Cancelar</button>
-              </div>
-            </form>
-          </div>
+  <!-- Modal editar libreta -->
+  <div class="modal-overlay" *ngIf="mostrarModalEditarLibreta">
+    <div class="modal-content">
+      <h2>Editar Libreta Militar</h2>
+      <form (ngSubmit)="guardarCambiosLibreta()">
+        <div class="form-group">
+          <label>Clase Libreta Militar</label>
+          <input type="text"
+                [(ngModel)]="hojaDeVida.claseLibretaMilitar"
+                name="clase"
+                required
+                (keypress)="soloLetras($event)">
         </div>
+        <div class="form-group">
+          <label>Número de Libreta</label>
+          <input type="text"
+                [(ngModel)]="hojaDeVida.numeroLibretaMilitar"
+                name="numero"
+                required
+                (keypress)="soloNumeros($event)">
+        </div>
+        <div class="modal-buttons">
+          <button type="submit">Guardar</button>
+          <button type="button" (click)="cerrarModalEditarLibreta()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
 
         <!-- ESTUDIOS -->
         <div class="user-data">
@@ -113,7 +121,6 @@
           </div>
         </div>
 
-        <!-- EXPERIENCIA LABORAL -->
         <div class="user-data">
           <h4 class="data-title">
             Experiencia Laboral
@@ -142,10 +149,9 @@
               <div class="grid-item"><span class="label">Fecha Inicio:</span> <span class="value">{{ exp.fechaInicio | date: 'yyyy-MM-dd' }}</span></div>
               <div class="grid-item"><span class="label">Fecha Finalización:</span> <span class="value">{{ exp.fechaFinalizacion | date: 'yyyy-MM-dd' }}</span></div>
               <div class="grid-item" *ngIf="exp.archivo">
-              <span class="label">Archivo Soporte:</span>
-              <a class="value" [href]="'http://localhost:8000/storage/' + exp.archivo" target="_blank">Ver archivo</a>
+                <span class="label">Archivo Soporte:</span>
+                <a class="value" [href]="'http://localhost:8000/storage/' + exp.archivo" target="_blank">Ver archivo</a>
               </div>
-
             </div>
           </div>
         </div>
@@ -161,11 +167,11 @@
               </div>
               <div class="form-group">
                 <label>Jefe Inmediato</label>
-                <input type="text" [(ngModel)]="nuevaExperiencia.nomJefe" name="nomJefe" required>
+                <input type="text" [(ngModel)]="nuevaExperiencia.nomJefe" name="nomJefe" required (keypress)="soloLetras($event)">
               </div>
               <div class="form-group">
                 <label>Teléfono</label>
-                <input type="text" [(ngModel)]="nuevaExperiencia.telefono" name="telefono" required>
+                <input type="text" [(ngModel)]="nuevaExperiencia.telefono" name="telefono" required (keypress)="soloNumeros($event)">
               </div>
               <div class="form-group">
                 <label>Cargo</label>
