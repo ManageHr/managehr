@@ -16,7 +16,7 @@ class usuarioController extends Controller
      */
     public function index()
     {
-        $user = Usuarios::all();
+        $user = Usuarios::with('user.rol')->get();
         $data = [
             "usuario" => $user,
             "status" => 200
