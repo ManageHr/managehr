@@ -8,6 +8,7 @@ import Swal from 'sweetalert2';
 import { Route } from '@angular/router';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { FilterNombre } from './filter-nombre';
+import { forkJoin } from 'rxjs';
 declare var bootstrap: any;
 
 @Component({
@@ -26,6 +27,7 @@ export class UsuariosComponent implements OnInit {
   hojaDeVidaSeleccionada: any = null;
 
   filtroNombre: string = "";
+  filtroNombreExternos: string = "";
   currentPage = 1;
   itemsPerPage = 5;
   nacionalidades: any[] = [];
@@ -43,7 +45,7 @@ export class UsuariosComponent implements OnInit {
     { idRol: 5, nombreRol: 'Externo' },
     { idRol: 7, nombreRol: 'Para borrar nuevo MODEL' }
   ];
-
+  
   mostrarModal: boolean = false;
   rolNombreSeleccionado: string = '';
   experienciasLaborales: any[] = [];
@@ -83,34 +85,44 @@ export class UsuariosComponent implements OnInit {
       console.log('Usuario logueado:', this.usuario);
     }
 
-    // Esta parte es solo para cargar todos los usuarios si aún la usas
     this.usuariosService.obtenerUsuarios().subscribe({
-      next: (data) => {
-        this.usuarios = data;
+      next: (data: Usuarios[]) => {
+        console.log('Todos los usuarios:', data);
+
+        this.usuarios = data.filter((u: Usuarios) => {
+          const rol =
+            typeof u.rol === 'number'
+              ? u.rol
+              : typeof u.user?.rol === 'object'
+              ? (u.user.rol as any)?.idRol
+              : u.user?.rol;
+          return rol !== 5;
+        });
+
+        this.usuariosRolCinco = data.filter((u: Usuarios) => {
+          const rol =
+            typeof u.rol === 'number'
+              ? u.rol
+              : typeof u.user?.rol === 'object'
+              ? (u.user.rol as any)?.idRol
+              : u.user?.rol;
+          return rol === 5;
+        });
+
         this.totalPages = Math.ceil(this.usuarios.length / this.itemsPerPage);
+        this.totalPagesExternos = Math.ceil(this.usuariosRolCinco.length / this.itemsPerPage);
+        console.log('Externos:', this.usuariosRolCinco);
+        console.log('Usuarios normales:', this.usuarios);
+
       },
       error: (err) => console.error('Error al cargar usuarios', err)
     });
 
-    // ESTA es la parte importante para rol 5
-    this.usuariosService.getUsuariosRolCinco().subscribe({
-      next: (data) => {
-        this.usuariosRolCinco = data;
-        this.totalPagesExternos = Math.ceil(this.usuariosRolCinco.length / this.itemsPerPage);
-        console.log('Usuarios con rol 5:', this.usuariosRolCinco); // 👈 debe mostrar datos
-      },
-      error: (err) => console.error('Error al cargar usuarios rol 5', err)
-    });
-
-
-
-
-
-
-
     this.cargarForaneas();
 
   }
+  
+
   mostrarInfoPorDocumento(numDocumento: string): void {
     this.usuariosService.obtenerUsuarioPorDocumento(numDocumento).subscribe({
       next: (res) => {
@@ -126,8 +138,12 @@ export class UsuariosComponent implements OnInit {
 
 
   mostrarInfoUsuario(usuarioId: any): void {
-    const usuarioCompleto = this.usuarios.find(u => u.usersId === usuarioId);
+    // Buscar en ambas listas
+    const usuarioCompleto = this.usuarios.find(u => u.usersId === usuarioId)
+      || this.usuariosRolCinco.find(u => u.usersId === usuarioId);
+
     console.log('Usuario encontrado:', usuarioCompleto);
+    
     if (usuarioCompleto) {
       this.usuarioSeleccionado = usuarioCompleto;
 
@@ -135,9 +151,6 @@ export class UsuariosComponent implements OnInit {
         next: (response) => {
           const user = response[0]?.usuario;
           this.usuarioSeleccionado.user = user;
-          console.log('Usuario recibido:', user);
-          console.log('Roles cargados:', this.roles);
-          console.log('Rol ID recibido:', user.rol?.idRol);
 
           const rolId = typeof user.rol === 'object' ? user.rol.idRol : user.rol;
           const rol = this.roles.find(r => r.idRol === rolId);
@@ -154,6 +167,7 @@ export class UsuariosComponent implements OnInit {
       console.log('Usuario no encontrado:', usuarioId);
     }
   }
+
 
 
   cerrarModal(): void {
@@ -219,24 +233,23 @@ export class UsuariosComponent implements OnInit {
 
   }
   cargarForaneas() {
-    this.usuariosService.obtenerNacionalidades().subscribe(data => this.nacionalidades = data);
-    this.usuariosService.obtenerGeneros().subscribe(data => this.generos = data);
-    this.usuariosService.obtenerTiposDocumento().subscribe(data => this.tiposDocumento = data);
-    this.usuariosService.obtenerEstadosCiviles().subscribe(data => this.estadosCiviles = data);
-    this.usuariosService.obtenerEps().subscribe(data => {
-      this.eps = data;
-      console.log('EPS cargadas:', data);
+    forkJoin({
+      nacionalidades: this.usuariosService.obtenerNacionalidades(),
+      generos: this.usuariosService.obtenerGeneros(),
+      tiposDocumento: this.usuariosService.obtenerTiposDocumento(),
+      estadosCiviles: this.usuariosService.obtenerEstadosCiviles(),
+      eps: this.usuariosService.obtenerEps(),
+      pensiones: this.usuariosService.obtenerPensiones(),
+      roles: this.usuariosService.obtenerRoles()
+    }).subscribe(res => {
+      this.nacionalidades = res.nacionalidades;
+      this.generos = res.generos;
+      this.tiposDocumento = res.tiposDocumento;
+      this.estadosCiviles = res.estadosCiviles;
+      this.eps = res.eps;
+      this.pensiones = res.pensiones;
+      this.roles = res.roles;
     });
-
-    this.usuariosService.obtenerPensiones().subscribe(data => {
-      this.pensiones = data;
-      console.log('Pensiones cargadas:', data);
-    });
-    this.usuariosService.obtenerRoles().subscribe(data => {
-      this.roles = data;
-      console.log('Roles cargados:', this.roles);
-    });
-
   }
   mostrarHojaVida(usuario: Usuarios): void {
     console.log("usuario de HV ", usuario.numDocumento);
@@ -257,6 +270,9 @@ export class UsuariosComponent implements OnInit {
         Swal.fire('Error', 'No tiene asociada una hoja de vida para el usuario.', 'error');
       }
     });
+  }
+  trackByUsuario(index: number, usuario: Usuarios): number {
+    return usuario.usersId;
   }
 
   cargarUsuarios(): void {
@@ -607,6 +623,56 @@ mostrarEstudios(usuario: Usuarios): void {
       modalInstance.show();
     }
   }
+  get totalPagesFiltrados(): number {
+    const filtrados = this.usuarios.filter((u) =>
+      this.nombreCompleto(u).toLowerCase().includes(this.filtroNombre.toLowerCase()) ||
+      u.numDocumento.toString().includes(this.filtroNombre)
+    );
+    return Math.ceil(filtrados.length / this.itemsPerPage);
+  }
+  get totalPagesExternosFiltrados(): number {
+    const filtrados = this.usuariosRolCinco.filter((u) =>
+      this.nombreCompleto(u).toLowerCase().includes(this.filtroNombreExternos.toLowerCase()) ||
+      u.numDocumento.toString().includes(this.filtroNombreExternos)
+    );
+    return Math.ceil(filtrados.length / this.itemsPerPage);
+  }
+  
+
+  getPaginas(currentPage: number, totalPages: number): (number | string)[] {
+  const delta = 2;
+  const range: (number | string)[] = [];
+  const left = Math.max(2, currentPage - delta);
+  const right = Math.min(totalPages - 1, currentPage + delta);
+
+  range.push(1);
+  if (left > 2) range.push('...');
+
+  for (let i = left; i <= right; i++) {
+    range.push(i);
+  }
+
+  if (right < totalPages - 1) range.push('...');
+  if (totalPages > 1) range.push(totalPages);
+
+  return range;
+}
+
+  
+
+  irAPaginaUsuarios(pagina: number | string): void {
+    if (typeof pagina === 'number') {
+      this.cambiarPagina(pagina);
+    }
+  }
+
+  irAPaginaExternos(page: number | string): void {
+    if (typeof page === 'number') {
+      this.currentPageExternos = page;
+    }
+  }
+
+
 
 
 
