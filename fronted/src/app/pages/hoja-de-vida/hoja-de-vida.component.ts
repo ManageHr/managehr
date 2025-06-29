@@ -226,7 +226,6 @@ export class HojaDeVidaComponent implements OnInit {
 
   editarEstudio(index: number) {
     this.nuevoEstudio = { ...this.estudios[index] };
-    this.eliminarEstudio(index);
     this.mostrarModalAgregarEstudio = true;
   }
 
@@ -311,7 +310,6 @@ export class HojaDeVidaComponent implements OnInit {
 
   editarExperiencia(index: number) {
     this.nuevaExperiencia = { ...this.experiencias[index] };
-    this.eliminarExperiencia(index);
     this.mostrarModalAgregarExperiencia = true;
   }
 }
