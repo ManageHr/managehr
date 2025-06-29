@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Usuarios;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Auth;
@@ -23,6 +24,7 @@ class AuthController extends Controller
         ];
         return response()->json($data, 200);
     }
+
     public function register(Request $request)
     {
         // Validar campos, incluyendo confirmación de email y contraseña
@@ -128,14 +130,32 @@ class AuthController extends Controller
         ];
         return response()->json([$data], 200);
     }
+    public function verificarNumDocYUsuario(Request $request)
+    {
+        $numDocumento = $request->query('numDocumento');
+        $usuario = $request->query('usuario');
 
+        $existeEnUsers = User::where('name', $usuario)->exists();
+        $existeEnUsuarios = Usuarios::where('numDocumento', $numDocumento)->exists();
+
+        return response()->json([
+            'existeEnUsers' => $existeEnUsers,
+            'existeEnUsuarios' => $existeEnUsuarios,
+            'existe' => $existeEnUsers || $existeEnUsuarios
+        ]);
+    }
     public function verificarExistencia(Request $request)
     {
         $email = $request->query('email');
 
-        $existe = User::where('email', $email)->exists();
+        $existeUser = User::where('email', $email)->exists();
+        $existeEnUsuarios = Usuarios::where('email', $email)->exists();
 
-        return response()->json(['existe' => $existe]);
+        return response()->json([
+            'existeEnUsers' => $existeUser,
+            'existeEnUsuarios' => $existeEnUsuarios,
+            'existe' => $existeUser || $existeEnUsuarios
+        ]);
     }
     public function indexConRoles()
     {
@@ -213,5 +233,4 @@ class AuthController extends Controller
         ];
         return response()->json([$data], 200);
     }
-
 }

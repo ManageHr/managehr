@@ -3,6 +3,7 @@ import { MenuComponent } from "../menu/menu.component";
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../services/user.service';
+import { UsuariosService } from '../../services/usuarios.service';
 import { User } from '../../models/user';
 
 @Component({
@@ -104,12 +105,12 @@ export class HomeComponent implements OnInit {
     { id: 527, nombre: 'WALLIS Y FORTUNA' }, { id: 528, nombre: 'SAMOA AMERICANA' }, { id: 599, nombre: 'OTROS PAISES O TERRITORIOS DE OCEANIA' }
   ];
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService,private usuariosService:UsuariosService) {}
 
   ngOnInit(): void {
     this.loadUserData();
   }
-
+  
   loadUserData(): void {
     this.userService.getUserProfile().subscribe((userData: any) => {
       this.user = {

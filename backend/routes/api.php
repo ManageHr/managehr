@@ -53,6 +53,9 @@ Route::middleware('auth:api')->post('/rols/{rol}/permisos', [RolPermisoControlle
 
 Route::middleware('auth:api')->get('/me', [AuthController::class, 'me']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
+Route::get('/verificar-numdoc-usuario', [AuthController::class, 'verificarNumDocYUsuario']);
+Route::get('/verificar-user', [AuthController::class, 'verificarExistencia']);
 
 Route::middleware('auth:api')->group(function () {
 
@@ -67,10 +70,10 @@ Route::middleware('auth:api')->group(function () {
     Route::patch('/auth/rol/{id}', [AuthController::class, 'updatePartial']);
 
 
-    Route::post('/register', [AuthController::class, 'register']);
+    
 
 
-    Route::get('/verificar-user', [AuthController::class, 'verificarExistencia']);
+    
     Route::delete('/login/{id}', [AuthController::class, 'destroy']);
     // Rutas de ROL
     Route::get('/rols', [rolController::class, 'index']);

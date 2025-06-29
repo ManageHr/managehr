@@ -48,6 +48,11 @@ export class AreaService {
   actualizarArea(id: number, datos: any) {
     return this.http.put(`http://localhost:8000/api/area/${id}`, datos);
   }
+  verificarCorreoExistente(email: string): Observable<any> {
+  return this.http.get(`http://localhost:8000/api/verificar-user`, {
+    params: { email }
+  });
+}
 
 
 }

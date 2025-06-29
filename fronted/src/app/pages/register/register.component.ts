@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from 'src/app/services/auth.service';
+import { UsuariosService } from 'src/app/services/usuarios.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -19,6 +20,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   confirmarPassword: string = '';
   mensaje: string = '';
   registroExitoso: boolean = false;
+  numDocumento: string = '';
 
   vacantes = [
     {
@@ -76,6 +78,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
+    private usuariosService: UsuariosService,
     private router: Router
   ) {}
 
@@ -99,12 +102,17 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   enviarFormulario(): void {
     if (this.email !== this.confirmarEmail) {
-      this.mensaje = '❗ Los correos electrónicos no coinciden.';
+      this.mensaje = 'Los correos electrónicos no coinciden.';
       return;
     }
 
     if (this.password !== this.confirmarPassword) {
-      this.mensaje = '❗ Las contraseñas no coinciden.';
+      this.mensaje = 'Las contraseñas no coinciden.';
+      return;
+    }
+
+    if (!this.numDocumento) {
+      this.mensaje = 'Debe ingresar su número de documento.';
       return;
     }
 
@@ -113,24 +121,23 @@ export class RegisterComponent implements OnInit, OnDestroy {
       email: this.email,
       email_confirmation: this.confirmarEmail,
       password: this.password,
-      rol: 5, // Asignar rol automáticamente como Proveedor
-      password_confirmation: this.confirmarPassword
+      password_confirmation: this.confirmarPassword,
+      rol: 5
     };
 
     this.authService.register(data).subscribe({
       next: (res) => {
-        this.mensaje = '✅ Registro exitoso 🎉';
+        this.mensaje = 'Registro exitoso';
         this.registroExitoso = true;
 
-        // Guardar datos en localStorage
         localStorage.setItem('token', res.token);
         if (res.user) {
           localStorage.setItem('usuario', JSON.stringify(res.user));
+          this.crearUsuario(res.user.id); // 👈 crear Usuario con ID del User
         }
 
-        // Redirigir de manera limpia
         this.router.navigate(['/vacantes']).then(() => {
-          this.eliminarModalBackdrop(); // Asegúrate de eliminar cualquier overlay residual
+          this.eliminarModalBackdrop();
         });
 
         this.resetForm();
@@ -139,14 +146,56 @@ export class RegisterComponent implements OnInit, OnDestroy {
         console.error(err);
         if (err.status === 422 && err.error?.errors) {
           const errores = Object.values(err.error.errors).flat().join(' ');
-          this.mensaje = `❌ ${errores}`;
+          this.mensaje = errores;
         } else {
-          this.mensaje = err.error?.message || '⚠️ Error en el registro.';
+          this.mensaje = err.error?.message || 'Error en el registro.';
         }
         this.registroExitoso = false;
       }
     });
   }
+  crearUsuario(userId: number): void {
+    const nombresSeparados = this.nombre.trim().split(' ');
+    const primerNombre = nombresSeparados[0] || '';
+    const segundoNombre = nombresSeparados.length >= 4 ? nombresSeparados[1] : '';
+    const primerApellido = nombresSeparados.length >= 2 ? nombresSeparados[nombresSeparados.length - 2] : '';
+    const segundoApellido = nombresSeparados.length >= 3 ? nombresSeparados[nombresSeparados.length - 1] : '';
+
+    const usuarioData = {
+      numDocumento: this.numDocumento,
+      primerNombre: primerNombre,
+      segundoNombre: segundoNombre,
+      primerApellido: primerApellido,
+      segundoApellido: segundoApellido,
+      password: this.password,
+      fechaNac: '1990-01-01',
+      numHijos: 0,
+      contactoEmergencia: 'No aplica',
+      numContactoEmergencia: '0000000000',
+      email: this.email,
+      direccion: 'No especificada',
+      telefono: '0000000000',
+      nacionalidadId: 160,       // COLOMBIA
+      epsCodigo: 'EPS001',       // ALIANSALUD (por defecto)
+      generoId: 1,               // Masculino
+      tipoDocumentoId: 1,        // Cédula
+      estadoCivilId: 1,          // Soltero
+      pensionesCodigo: '230201', // PROTECCION
+      usersId: userId
+    };
+
+    this.authService.crearUsuario(usuarioData).subscribe({
+      next: (res) => {
+        console.log('Usuario creado correctamente:', res);
+      },
+      error: (err) => {
+        console.error('Error al crear usuario:', err);
+      }
+    });
+  }
+
+
+
 
   private eliminarModalBackdrop(): void {
     // Elimina cualquier overlay del modal que pueda permanecer en el DOM

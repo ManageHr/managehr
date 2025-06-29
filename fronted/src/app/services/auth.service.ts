@@ -59,6 +59,21 @@ export class AuthService {
   actualizarRol(idUsuario: number, nuevoRol: number) {
     return this.http.patch(`${this.apiUrl}/rols/${idUsuario}`, { rol: nuevoRol });
   }
+  verificarCorreoExistente(email: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/verificar-user`, {
+      params: { email }
+    });
+  }
+  verificarNumDocYUsuario(numDocumento: string, usuario: string): Observable<any> {
+    return this.http.get<any>('http://localhost:8000/api/verificar-numdoc-usuario', {
+      params: { numDocumento, usuario }
+    });
+    
+  }
+  crearUsuario(data: any): Observable<any> {
+    return this.http.post('http://localhost:8000/api/usuarios', data);
+  }
+
   
   
 }
