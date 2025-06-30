@@ -10,6 +10,13 @@
       <button
         class="btn btn-light btn-sm agregar-btn"
         *ngIf="[1, 4].includes(usuario?.rol)"
+        data-bs-toggle="modal" data-bs-target="#modalReporteUsuarios" (click)="abrirModalReporte()"
+      >
+        <i class="fas fa-plus-circle"></i> Reporte Usuarios
+      </button>
+      <button
+        class="btn btn-light btn-sm agregar-btn"
+        *ngIf="[1, 4].includes(usuario?.rol)"
         (click)="abrirModalAgregar()"
       >
         <i class="fas fa-plus-circle"></i> Agregar
@@ -51,7 +58,8 @@
                 let u of usuarios
                   | filterNombre : filtroNombre
                   | paginate
-                    : { itemsPerPage: itemsPerPage, currentPage: currentPage }; trackBy: trackByUsuario
+                    : { itemsPerPage: itemsPerPage, currentPage: currentPage };
+                trackBy: trackByUsuario;
                 let i = index
               "
             >
@@ -95,7 +103,7 @@
                 </button>
                 <button
                   class="btn btn-link btn-acciones"
-                  (click)="mostrarEstudios(u)"
+                  (click)="mostrarHasEstudios(u)"
                 >
                   <i class="fas fa-graduation-cap" title="Estudios"></i>
                 </button>
@@ -116,7 +124,9 @@
             </li>
             <li
               class="page-item"
-              *ngFor="let paginas of getPaginas(currentPage, totalPagesFiltrados)"
+              *ngFor="
+                let paginas of getPaginas(currentPage, totalPagesFiltrados)
+              "
               [class.active]="paginas === currentPage"
               [class.disabled]="paginas === '...'"
             >
@@ -129,7 +139,10 @@
               </button>
             </li>
 
-            <li class="page-item" [class.disabled]="currentPage === totalPagesFiltrados">
+            <li
+              class="page-item"
+              [class.disabled]="currentPage === totalPagesFiltrados"
+            >
               <button
                 class="page-link"
                 (click)="cambiarPagina(currentPage + 1)"
@@ -180,7 +193,8 @@
                     : {
                         itemsPerPage: itemsPerPage,
                         currentPage: currentPageExternos
-                      }; trackBy: trackByUsuario
+                      };
+                trackBy: trackByUsuario;
                 let i = index
               "
             >
@@ -246,7 +260,10 @@
             <li
               class="page-item"
               *ngFor="
-                let page of getPaginas(currentPageExternos, totalPagesExternosFiltrados)
+                let page of getPaginas(
+                  currentPageExternos,
+                  totalPagesExternosFiltrados
+                )
               "
               [class.active]="page === currentPageExternos"
               [class.disabled]="page === '...'"
@@ -262,7 +279,9 @@
 
             <li
               class="page-item"
-              [class.disabled]="currentPageExternos === totalPagesExternosFiltrados"
+              [class.disabled]="
+                currentPageExternos === totalPagesExternosFiltrados
+              "
             >
               <button
                 class="page-link"
@@ -345,7 +364,8 @@
               let u of usuarios
                 | filterNombre : filtroNombre
                 | paginate
-                  : { itemsPerPage: itemsPerPage, currentPage: currentPage };trackBy: trackByUsuario
+                  : { itemsPerPage: itemsPerPage, currentPage: currentPage };
+              trackBy: trackByUsuario;
               let i = index
             "
           >
@@ -414,7 +434,9 @@
             </li>
             <li
               class="page-item"
-              *ngFor="let paginas of getPaginas(currentPage, totalPagesFiltrados)"
+              *ngFor="
+                let paginas of getPaginas(currentPage, totalPagesFiltrados)
+              "
               [class.active]="paginas === currentPage"
               [class.disabled]="paginas === '...'"
             >
@@ -427,7 +449,10 @@
               </button>
             </li>
 
-            <li class="page-item" [class.disabled]="currentPage === totalPagesFiltrados">
+            <li
+              class="page-item"
+              [class.disabled]="currentPage === totalPagesFiltrados"
+            >
               <button
                 class="page-link"
                 (click)="cambiarPagina(currentPage + 1)"
@@ -470,7 +495,8 @@
                   : {
                       itemsPerPage: itemsPerPage,
                       currentPage: currentPageExternos
-                    }; trackBy: trackByUsuario
+                    };
+              trackBy: trackByUsuario;
               let i = index
             "
           >
@@ -503,6 +529,24 @@
                 >
                   <i class="fas fa-trash-alt"></i>
                 </button>
+                <button
+                  class="btn btn-outline-secondary btn-sm"
+                  (click)="mostrarHojaVida(usuarios)"
+                >
+                  <i class="fas fa-file-alt"></i>
+                </button>
+                <button
+                  class="btn btn-outline-secondary btn-sm"
+                  (click)="verExperiencia(usuarios)"
+                >
+                  <i class="fas fa-briefcase"></i>
+                </button>
+                <button
+                  class="btn btn-outline-secondary btn-sm"
+                  (click)="mostrarEstudios(usuarios)"
+                >
+                  <i class="fas fa-graduation-cap"></i>
+                </button>
               </div>
             </div>
           </div>
@@ -522,7 +566,10 @@
             <li
               class="page-item"
               *ngFor="
-                let page of getPaginas(currentPageExternos, totalPagesExternosFiltrados)
+                let page of getPaginas(
+                  currentPageExternos,
+                  totalPagesExternosFiltrados
+                )
               "
               [class.active]="page === currentPageExternos"
               [class.disabled]="page === '...'"
@@ -538,7 +585,9 @@
 
             <li
               class="page-item"
-              [class.disabled]="currentPageExternos === totalPagesExternosFiltrados"
+              [class.disabled]="
+                currentPageExternos === totalPagesExternosFiltrados
+              "
             >
               <button
                 class="page-link"
@@ -1025,7 +1074,7 @@
                   </p>
                   <div *ngIf="exp.archivo">
                     <a
-                      [href]="'http://localhost:8000/' + exp.archivo"
+                      [href]="'http://localhost:8000/storage/' + exp.archivo"
                       target="_blank"
                       class="btn btn-sm btn-outline-primary"
                     >
@@ -1060,7 +1109,102 @@
       </p>
     </div>
 
-    
+    <!--Modal estudios-->
+    <div
+      class="modal fade"
+      id="modalEstudios"
+      tabindex="-1"
+      aria-labelledby="modalEstudiosLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header bg-dark text-white">
+            <h5 class="modal-title">
+              Estudios de {{ nombreCompleto(usuarioSeleccionado) }}
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Cerrar"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div *ngIf="estudios.length > 0; else noHayEstudios">
+              <div *ngFor="let est of estudios" class="card mb-3 shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title">
+                    {{
+                      est.estudio?.nomInstitucion || "Institución no registrada"
+                    }}
+                  </h5>
+                  <p class="card-text">
+                    <strong>Estudio:</strong> {{ est.estudio?.nomEstudio
+                    }}<br />
+                    <strong>Título Obtenido:</strong>
+                    {{ est.estudio?.tituloObtenido }}<br />
+                    <strong>Años:</strong> {{ est.estudio?.anioInicio }} -
+                    {{ est.estudio?.anioFinalizacion }}<br />
+                    <strong>Estado:</strong>
+                    <span
+                      class="badge"
+                      [ngClass]="est.estado ? 'bg-success' : 'bg-secondary'"
+                    >
+                      {{ est.estado ? "Activo" : "Inactivo" }}
+                    </span>
+                  </p>
+                  <div *ngIf="est.archivo">
+                    <a
+                      [href]="urlEstudio(est.archivo)"
+                      target="_blank"
+                      class="btn btn-sm btn-outline-primary"
+                    >
+                      <i class="fas fa-download"></i> Descargar Certificado
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <ng-template #noHayEstudios>
+              <p class="text-muted">
+                Este usuario no tiene estudios registrados.
+              </p>
+            </ng-template>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Modal para el Reporte -->
+    <div class="modal fade" id="modalReporteUsuarios" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header bg-dark text-white">
+          <h5 class="modal-title">Reporte de Usuarios por Rol</h5>
+          <button type="button" class="btn-close" (click)="cerrarModalReporte()" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <canvas id="graficaRoles" width="400" height="200"></canvas>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline-success" (click)="descargarExcel()">Descargar Excel</button>
+          <button class="btn btn-outline-danger" (click)="descargarPDF()">Descargar PDF</button>
+          <button class="btn btn-secondary" (click)="cerrarModalReporte()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
     <!-- Formulario reutilizable -->
     <ng-template #formulariousuarios>

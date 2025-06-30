@@ -168,12 +168,19 @@ export class UsuariosService {
   obtenerEstudios(numDocumento: number): Observable<any> {
     return this.http.get<any>(`http://localhost:8000/api/estudios/${numDocumento}`);
   }
+  obtenerHasEstudios(numDocumento: number) {
+    return this.http.get<any>(`http://localhost:8000/api/hojasvidahasestudios/documento/${numDocumento}`);
+  }
+
   obtenerHojadevida(numDocumento: number): Observable<any> {
     return this.http.get<any>(`http://localhost:8000/api/hojasvida/documento/${numDocumento}`);
   }
   
   obtenerExperienciaLaboral(numDocumento: number) {
     return this.http.get<any>(`http://localhost:8000/api/hojasvidahasexperiencias/documento/${numDocumento}`);
+  }
+  getUsuariosConRoles(): Observable<any> {
+    return this.http.get<any>('http://localhost:8000/api/usuarios/reporte/all');
   }
 
 

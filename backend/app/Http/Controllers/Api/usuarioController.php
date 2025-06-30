@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\rol;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Usuarios;
@@ -432,5 +433,36 @@ class usuarioController extends Controller
                 'status' => 500
             ], 500);
         }
+    }
+   
+
+    public function reporteRoles()
+    {
+        $usuarios = Usuarios::with('user')->get();
+
+        $usuariosConRol = $usuarios->map(function ($usuario) {
+            $user = $usuario->user;
+
+            // Si no hay user, devuelve el usuario tal cual
+            if (!$user) return $usuario;
+
+            // Verificamos si 'rol' es un número (ID), no una colección
+            if (is_numeric($user->rol)) {
+                $rol = Rol::find($user->rol);
+                if ($rol) {
+                    $user->rol = [
+                        'idRol' => $rol->idRol,
+                        'nombreRol' => $rol->nombreRol,
+                    ];
+                }
+            }
+
+            return $usuario;
+        });
+
+        return response()->json([
+            "usuario" => $usuariosConRol,
+            "status" => 200
+        ]);
     }
 }

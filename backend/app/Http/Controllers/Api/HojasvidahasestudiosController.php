@@ -13,7 +13,7 @@ class HojasvidahasestudiosController extends Controller
 {
     public function index()
     {
-        $registros = Hojasvidahasestudios::with(['idHojaDeVida', 'idEstudios'])->get();
+        $registros = Hojasvidahasestudios::all();
 
         return response()->json([
             "data" => $registros,
@@ -171,17 +171,44 @@ class HojasvidahasestudiosController extends Controller
     }
 
     public function destroy($id)
-{
-    $relacion = Hojasvidahasestudios::find($id);
-    if (!$relacion) {
-        return response()->json(['mensaje' => 'Relación no encontrada'], 404);
+    {
+        $relacion = Hojasvidahasestudios::find($id);
+        if (!$relacion) {
+            return response()->json(['mensaje' => 'Relación no encontrada'], 404);
+        }
+
+        $relacion->delete();
+        return response()->json(['mensaje' => 'Relación eliminada correctamente'], 200);
+    }
+    public function buscarPorDocumento($numDocumento)
+    {
+        // Buscar la hoja de vida por número de documento
+        $hoja = Hojasvida::with('usuario')->where('usuarioNumDocumento', $numDocumento)->first();
+
+        if (!$hoja) {
+            return response()->json([
+                "mensaje" => "Hoja de vida no encontrada",
+                "status" => 404
+            ], 404);
+        }
+
+        
+        $estudios = Hojasvidahasestudios::with('estudio')
+            ->where('idHojaDevida', $hoja->idHojaDeVida)
+            ->get();
+
+        return response()->json([
+            "data" => [
+                "hojaDeVida" => $hoja,
+                "usuario" => $hoja->usuario, 
+                "estudios" => $estudios
+            ],
+            "status" => 200
+        ]);
     }
 
-    $relacion->delete();
-    return response()->json(['mensaje' => 'Relación eliminada correctamente'], 200);
-}
 
-    // 🔍 Obtener todos los estudios por ID de hoja de vida
+    // Obtener todos los estudios por ID de hoja de vida
     public function buscarPorHojaDeVida($idHojaDeVida)
     {
         $registros = Hojasvidahasestudios::with('idEstudios')

@@ -153,6 +153,9 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/usuarios/{id}', [usuarioController::class, 'show']);
     Route::patch('/usuarios/{id}', [usuarioController::class, 'updatePartial']);
     Route::delete('/usuarios/{id}', [usuarioController::class, 'destroy']);
+    
+    Route::get('/usuarios/reporte/all', [usuarioController::class, 'reporteRoles']);
+
 
     Route::get('/verificar-usuario', [usuarioController::class, 'verificarExistencia']);
     Route::get('/usuarios-con-relaciones', [usuarioController::class, 'obtenerUsuariosConRelaciones']);
@@ -348,6 +351,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/hojasvidahasestudios/{id}', [HojasvidahasestudiosController::class, 'show']);
     Route::delete('/hojasvidahasestudios/{id}', [HojasvidahasestudiosController::class, 'destroy']);
     Route::get('/hojasvidahasestudios/por-hoja/{idHojaDeVida}', [HojasvidahasestudiosController::class, 'buscarPorHojaDeVida']);
+    Route::get('hojasvidahasestudios/documento/{numDocumento}', [HojasvidahasestudiosController::class, 'buscarPorDocumento']);
     Route::get('/hojasvidahasestudios/descargar/{id}', [HojasvidahasestudiosController::class, 'descargarArchivo']);
 
     // hojasvidahasexperiencia

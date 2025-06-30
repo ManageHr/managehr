@@ -9,6 +9,34 @@ import { Route } from '@angular/router';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { FilterNombre } from './filter-nombre';
 import { forkJoin } from 'rxjs';
+import * as ExcelJS from 'exceljs';
+
+
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import {
+  Chart,
+  BarController,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
+
+Chart.register(
+  BarController,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Title,
+  Tooltip,
+  Legend
+);
+
 declare var bootstrap: any;
 
 @Component({
@@ -671,9 +699,288 @@ mostrarEstudios(usuario: Usuarios): void {
       this.currentPageExternos = page;
     }
   }
+  estudios: any[] = [];
+
+  mostrarHasEstudios(usuario: Usuarios): void {
+    this.usuariosService.obtenerHasEstudios(usuario.numDocumento).subscribe({
+      next: (res) => {
+        const hoja = res.data?.hojaDeVida;
+        const estudios = res.data?.estudios;
+
+        if (!hoja || !estudios || estudios.length === 0) {
+          this.alerta("Este usuario no tiene estudios registrados.");
+          this.usuarioSeleccionado = usuario;
+          this.estudios = [];
+          return;
+        }
+
+        this.usuarioSeleccionado = res.data.usuario;
+        this.hojaDeVidaSeleccionada = hoja;
+        this.estudios = estudios;
+        this.abrirModalEstudios();
+      },
+      error: (err) => {
+        if (err.status === 404 && err.error?.mensaje === "Hoja de vida no encontrada") {
+          this.usuarioSeleccionado = usuario;
+          this.estudios = [];
+          this.abrirModalEstudios();
+        } else {
+          console.error('Error al obtener estudios:', err);
+          this.alerta("Error inesperado al consultar estudios.");
+        }
+      }
+    });
+  }
+  abrirModalEstudios(): void {
+    const modal = document.getElementById('modalEstudios');
+    if (modal) {
+      const modalInstance = new bootstrap.Modal(modal);
+      modalInstance.show();
+    } else {
+      console.error('No se encontró el modal de Estudios');
+    }
+  }
+  urlEstudio(nombreArchivo: string): string {
+    return `http://localhost:8000/storage/${nombreArchivo}`;
+  }
+  chart: any;
+  generarGrafico(): void {
+    this.usuariosService.getUsuariosConRoles().subscribe({
+      next: (res) => {
+        this.usuarios = res.usuario;
+
+        const conteoPorRol: { [key: string]: number } = {};
+
+        this.usuarios.forEach((usuario: any) => {
+          const rolNombre = (usuario.user?.rol as any)?.nombreRol || 'Sin Rol';
+          conteoPorRol[rolNombre] = (conteoPorRol[rolNombre] || 0) + 1;
+        });
+
+        const labels = Object.keys(conteoPorRol);
+        const data = Object.values(conteoPorRol);
+
+        if (this.chart) this.chart.destroy();
+
+        this.chart = new Chart('graficaRoles', {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [
+              {
+                label: 'Usuarios por Rol',
+                data,
+                backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'],
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: false },
+              title: { display: true, text: 'Distribución de Roles' },
+            },
+          },
+        });
+      },
+      error: (err) => {
+        console.error('Error al obtener datos para el gráfico', err);
+      }
+    });
+  }
+
+  descargarExcel(): void {
+  const workbook = new ExcelJS.Workbook();
+  const sheet = workbook.addWorksheet('Usuarios');
+
+  
+  sheet.addRow([]); // espacio
+
+  // 🎯 Definición de columnas
+  sheet.columns = [
+    { header: 'Documento', key: 'documento', width: 20 },
+    { header: 'Nombre', key: 'nombre', width: 30 },
+    { header: 'Correo', key: 'correo', width: 30 }
+  ];
+
+  // 💾 Agrupar usuarios por rol
+  const usuariosPorRol: { [rol: string]: any[] } = {};
+  this.usuarios.forEach((u) => {
+    const rol = (u.user?.rol as any)?.nombreRol || 'Sin Rol';
+    if (!usuariosPorRol[rol]) usuariosPorRol[rol] = [];
+    usuariosPorRol[rol].push(u);
+  });
+
+  Object.entries(usuariosPorRol).forEach(([rol, usuarios]) => {
+    // ➤ Fila separadora de rol
+    const rolRow = sheet.addRow([`Rol: ${rol}`]);
+    rolRow.font = { bold: true };
+    rolRow.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFD9D9D9' }, // Gris claro
+    };
+    sheet.mergeCells(`A${rolRow.number}:C${rolRow.number}`);
+
+    // ➤ Encabezado de tabla
+    const encabezadoRow = sheet.addRow(['Documento', 'Nombre', 'Correo']);
+    encabezadoRow.font = { bold: true };
+    encabezadoRow.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFB0C4DE' }, // Azul pastel
+    };
+
+    encabezadoRow.eachCell((cell) => {
+      cell.border = {
+        top: { style: 'thin' },
+        bottom: { style: 'thin' },
+        left: { style: 'thin' },
+        right: { style: 'thin' },
+      };
+    });
+
+    // ➤ Filas de datos
+    usuarios.forEach((u, index) => {
+      const dataRow = sheet.addRow([
+        u.numDocumento,
+        `${u.primerNombre} ${u.primerApellido}`,
+        u.email
+      ]);
+
+      // Estilo intercalado
+      if (index % 2 === 0) {
+        dataRow.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFF7F7F7' }, // Gris muy claro
+        };
+      }
+
+      dataRow.eachCell((cell) => {
+        cell.border = {
+          top: { style: 'thin' },
+          bottom: { style: 'thin' },
+          left: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      });
+    });
+
+    sheet.addRow([]); // espacio entre bloques
+  });
+
+  // 📤 Descargar archivo
+  workbook.xlsx.writeBuffer().then((buffer) => {
+    const blob = new Blob([buffer], {
+      type:
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+    saveAs(blob, 'usuarios_reporte.xlsx');
+  });
+}
+  
 
 
+  descargarPDF(): void {
+    const doc = new jsPDF();
+
+    const imgLogo = new Image();
+    imgLogo.src = 'https://i.postimg.cc/BnHG09W1/logo.png';
+
+    imgLogo.onload = () => {
+      doc.setFillColor(4, 26, 43);
+      doc.rect(0, 0, 210, 30, 'F');
+      doc.addImage(imgLogo, 'PNG', 10, 5, 20, 20);
+      doc.setFontSize(16);
+      doc.setTextColor(200);
+      doc.text('ManageHR - Sistema para gestión de recursos humanos', 35, 15);
+
+      let startY = 35;
+
+      // Capturar gráfica como imagen
+      const canvas: any = document.getElementById('graficaRoles');
+      const graficaImg = canvas.toDataURL('image/png', 1.0);
+      doc.addImage(graficaImg, 'PNG', 10, startY, 180, 80);
+
+      startY += 90;
+
+      // Agrupar usuarios por rol
+      const usuariosPorRol: { [rol: string]: any[] } = {};
+      this.usuarios.forEach(u => {
+        const rol = (u.user?.rol as any)?.nombreRol || 'Sin Rol';
+        if (!usuariosPorRol[rol]) usuariosPorRol[rol] = [];
+        usuariosPorRol[rol].push(u);
+      });
+
+      Object.entries(usuariosPorRol).forEach(([rol, usuarios]) => {
+        doc.setFontSize(12);
+        doc.setTextColor(0);
+        doc.text(`Rol: ${rol}`, 10, startY);
+
+        const body = usuarios.map((u) => [
+          u.numDocumento,
+          `${u.primerNombre} ${u.primerApellido}`,
+          u.email,
+        ]);
+
+        autoTable(doc, {
+          head: [['Documento', 'Nombre', 'Correo']],
+          body,
+          startY: startY + 5,
+          theme: 'grid',
+          styles: {
+            halign: 'left',
+            fontSize: 10
+          },
+          didParseCell: (data) => {
+            if (data.section === 'body' && data.row.index % 2 === 0) {
+              data.cell.styles.fillColor = [240, 240, 240]; // Intercalado
+            }
+          }
+        });
+
+        startY = (doc as any).lastAutoTable.finalY + 10;
+      });
+
+      doc.save('usuarios_reporte.pdf');
+    };
+  }
+
+
+
+
+
+  cerrarModalReporte(): void {
+    const modalElement = document.getElementById('modalReporteUsuarios');
+    if (modalElement) {
+      const modalInstance = bootstrap.Modal.getInstance(modalElement);
+      if (modalInstance) {
+        modalInstance.hide();
+      } else {
+        console.warn('No se encontró una instancia activa del modal. Creando una nueva para cerrarla.');
+        new bootstrap.Modal(modalElement).hide();
+      }
+    } else {
+      console.error('No se encontró el elemento modalReporteUsuarios en el DOM');
+    }
+  }
+
+  abrirModalReporte(): void {
+    const modalEl = document.getElementById('modalReporteUsuarios');
+    if (modalEl) {
+      const modalInstance = new bootstrap.Modal(modalEl);
+      modalInstance.show();
+    }
+
+    this.generarGrafico();
+  }
 
 
 
 }
+
+
+
+
+
+

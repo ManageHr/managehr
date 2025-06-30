@@ -18,11 +18,11 @@ class Hojasvidahasestudios extends Model
         'estado',
         'archivo'
     ];
-    public function idHojaDeVida()
+    public function hojaDeVida()
     {
         return $this->belongsTo(Hojasvida::class, 'idHojaDeVida', 'idHojaDeVida');
     }
-    public function idEstudios()
+    public function estudio()
     {
         return $this->belongsTo(Estudios::class, 'idEstudios', 'idEstudios');
     }
