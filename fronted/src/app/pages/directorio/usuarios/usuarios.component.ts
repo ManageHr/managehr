@@ -789,74 +789,48 @@ mostrarEstudios(usuario: Usuarios): void {
   }
 
   descargarExcel(): void {
-  const workbook = new ExcelJS.Workbook();
-  const sheet = workbook.addWorksheet('Usuarios');
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Usuarios');
+
+    
+    sheet.addRow([]); // espacio
+
+    
+    sheet.columns = [
+      { header: 'Documento', key: 'documento', width: 20 },
+      { header: 'Nombre', key: 'nombre', width: 30 },
+      { header: 'Correo', key: 'correo', width: 30 }
+    ];
 
   
-  sheet.addRow([]); // espacio
-
-  // 🎯 Definición de columnas
-  sheet.columns = [
-    { header: 'Documento', key: 'documento', width: 20 },
-    { header: 'Nombre', key: 'nombre', width: 30 },
-    { header: 'Correo', key: 'correo', width: 30 }
-  ];
-
-  // 💾 Agrupar usuarios por rol
-  const usuariosPorRol: { [rol: string]: any[] } = {};
-  this.usuarios.forEach((u) => {
-    const rol = (u.user?.rol as any)?.nombreRol || 'Sin Rol';
-    if (!usuariosPorRol[rol]) usuariosPorRol[rol] = [];
-    usuariosPorRol[rol].push(u);
-  });
-
-  Object.entries(usuariosPorRol).forEach(([rol, usuarios]) => {
-    // ➤ Fila separadora de rol
-    const rolRow = sheet.addRow([`Rol: ${rol}`]);
-    rolRow.font = { bold: true };
-    rolRow.fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: { argb: 'FFD9D9D9' }, // Gris claro
-    };
-    sheet.mergeCells(`A${rolRow.number}:C${rolRow.number}`);
-
-    // ➤ Encabezado de tabla
-    const encabezadoRow = sheet.addRow(['Documento', 'Nombre', 'Correo']);
-    encabezadoRow.font = { bold: true };
-    encabezadoRow.fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: { argb: 'FFB0C4DE' }, // Azul pastel
-    };
-
-    encabezadoRow.eachCell((cell) => {
-      cell.border = {
-        top: { style: 'thin' },
-        bottom: { style: 'thin' },
-        left: { style: 'thin' },
-        right: { style: 'thin' },
-      };
+    const usuariosPorRol: { [rol: string]: any[] } = {};
+    this.usuarios.forEach((u) => {
+      const rol = (u.user?.rol as any)?.nombreRol || 'Sin Rol';
+      if (!usuariosPorRol[rol]) usuariosPorRol[rol] = [];
+      usuariosPorRol[rol].push(u);
     });
 
-    // ➤ Filas de datos
-    usuarios.forEach((u, index) => {
-      const dataRow = sheet.addRow([
-        u.numDocumento,
-        `${u.primerNombre} ${u.primerApellido}`,
-        u.email
-      ]);
+    Object.entries(usuariosPorRol).forEach(([rol, usuarios]) => {
+      
+      const rolRow = sheet.addRow([`Rol: ${rol}`]);
+      rolRow.font = { bold: true };
+      rolRow.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFD9D9D9' }, 
+      };
+      sheet.mergeCells(`A${rolRow.number}:C${rolRow.number}`);
 
-      // Estilo intercalado
-      if (index % 2 === 0) {
-        dataRow.fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: 'FFF7F7F7' }, // Gris muy claro
-        };
-      }
+    
+      const encabezadoRow = sheet.addRow(['Documento', 'Nombre', 'Correo']);
+      encabezadoRow.font = { bold: true };
+      encabezadoRow.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFB0C4DE' }, 
+      };
 
-      dataRow.eachCell((cell) => {
+      encabezadoRow.eachCell((cell) => {
         cell.border = {
           top: { style: 'thin' },
           bottom: { style: 'thin' },
@@ -864,20 +838,46 @@ mostrarEstudios(usuario: Usuarios): void {
           right: { style: 'thin' },
         };
       });
+
+      
+      usuarios.forEach((u, index) => {
+        const dataRow = sheet.addRow([
+          u.numDocumento,
+          `${u.primerNombre} ${u.primerApellido}`,
+          u.email
+        ]);
+
+        
+        if (index % 2 === 0) {
+          dataRow.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFF7F7F7' }, 
+          };
+        }
+
+        dataRow.eachCell((cell) => {
+          cell.border = {
+            top: { style: 'thin' },
+            bottom: { style: 'thin' },
+            left: { style: 'thin' },
+            right: { style: 'thin' },
+          };
+        });
+      });
+
+      sheet.addRow([]); 
     });
 
-    sheet.addRow([]); // espacio entre bloques
-  });
-
-  // 📤 Descargar archivo
-  workbook.xlsx.writeBuffer().then((buffer) => {
-    const blob = new Blob([buffer], {
-      type:
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    
+    workbook.xlsx.writeBuffer().then((buffer) => {
+      const blob = new Blob([buffer], {
+        type:
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      saveAs(blob, 'usuarios_reporte.xlsx');
     });
-    saveAs(blob, 'usuarios_reporte.xlsx');
-  });
-}
+  }
   
 
 
@@ -897,14 +897,14 @@ mostrarEstudios(usuario: Usuarios): void {
 
       let startY = 35;
 
-      // Capturar gráfica como imagen
+      
       const canvas: any = document.getElementById('graficaRoles');
       const graficaImg = canvas.toDataURL('image/png', 1.0);
       doc.addImage(graficaImg, 'PNG', 10, startY, 180, 80);
 
       startY += 90;
 
-      // Agrupar usuarios por rol
+     
       const usuariosPorRol: { [rol: string]: any[] } = {};
       this.usuarios.forEach(u => {
         const rol = (u.user?.rol as any)?.nombreRol || 'Sin Rol';
@@ -934,7 +934,7 @@ mostrarEstudios(usuario: Usuarios): void {
           },
           didParseCell: (data) => {
             if (data.section === 'body' && data.row.index % 2 === 0) {
-              data.cell.styles.fillColor = [240, 240, 240]; // Intercalado
+              data.cell.styles.fillColor = [240, 240, 240]; 
             }
           }
         });
