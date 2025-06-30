@@ -49,22 +49,37 @@ cd managehr
 php composer install
 php artisan serve
 
-para seguridad si salen errores en angular
+Para seguridad si salen errores en angular
 símbolo del sistema como administrador y pegar
 Set-ExecutionPolicy RemoteSigned
 
 
 ### 💻 **Frontend (Angular)**
 
-angular npm install
+Angular npm install
 
-si sale error de ng no se reconoce
+Si sale error de ng no se reconoce
+
 npm list -g @angular/cli
 si no deja utilizar este
 npm install -g @angular/cli
 
 
-angular ng serve
+Angular ng serve
 
 Para permisos de fotos en laravel
 php artisan storage:link
+
+Para reportes angular
+
+npm install chart.js jspdf xlsx file-saver
+
+Para fpdf
+
+npm install jspdf jspdf-autotable
+npm install --save-dev @types/jspdf-autotable
+
+Para permitir descargas
+
+npm install --save file-saver
+npm install --save-dev @types/file-saver
