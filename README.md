@@ -83,3 +83,7 @@ Para permitir descargas
 
 npm install --save file-saver
 npm install --save-dev @types/file-saver
+
+
+Por si tiene errores
+npm install --save-dev @types/file-saver @types/jspdf @types/xlsx
