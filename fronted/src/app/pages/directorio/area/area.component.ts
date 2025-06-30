@@ -53,7 +53,14 @@ export class AreaComponent {
         console.error('Error al cargar jefes de personal:', err);
       }
     });
+    this.calcularTotalPages();
 
+  }
+  calcularTotalPages(): void {
+    const filtrados = this.areas.filter(a =>
+      a.nombreArea.toLowerCase().includes(this.filtroNombre.toLowerCase())
+    );
+    this.totalPages = Math.ceil(filtrados.length / this.itemsPerPage);
   }
   confirmDelete(idArea: number): void {
     this.areaService.obtenerAreaId(idArea).subscribe({
@@ -223,5 +230,38 @@ export class AreaComponent {
           default: return 'badge bg-secondary';
         }
       }
+      get paginasVisibles(): number[] {
+        const paginas: number[] = [];
+        const total = this.totalPages;
+        const actual = this.currentPage;
+
+        if (total <= 10) {
+          for (let i = 1; i <= total; i++) {
+            paginas.push(i);
+          }
+        } else {
+          paginas.push(1);
+
+          if (actual > 5) {
+            paginas.push(-1); // "..."
+          }
+
+          const start = Math.max(2, actual - 2);
+          const end = Math.min(total - 1, actual + 2);
+
+          for (let i = start; i <= end; i++) {
+            paginas.push(i);
+          }
+
+          if (actual < total - 4) {
+            paginas.push(-1); // "..."
+          }
+
+          paginas.push(total);
+        }
+
+        return paginas;
+      }
+
       
 }

@@ -11,13 +11,14 @@
       <div class="mb-3">
         <input
           type="text"
-          class="form-control"
-          placeholder="Buscar por nombre o Numero de documento..."
-          [(ngModel)]="filtro" style="
-          background-color: #1d2233;
-          color: white;
-          border: 1px solid #7a86a1;
-        "
+          class="form-control mb-3"
+          placeholder="Buscar por documento o email"
+          [(ngModel)]="filtro"
+          style="
+            background-color: #1d2233;
+            color: white;
+            border: 1px solid #7a86a1;
+          "
         />
       </div>
 
@@ -37,24 +38,45 @@
             </tr>
           </thead>
           <tbody>
-            <tr
-              *ngFor="
-                let traza of trazabilidad
-                  | filterNombre : filtro
-                  | paginate
-                    : { itemsPerPage: itemsPerPage, currentPage: currentPage };
-                let i = index
-              "
-            >
+            <tr *ngFor="let traza of trazabilidadPaginada; let i = index">
+
               <td>{{ traza.idTrazabilidad }}</td>
               <td>{{ traza.fechaModificacion }}</td>
               <td>{{ traza.iP }}</td>
-              <td style="max-width: 150px; white-space: normal; word-wrap: break-word;">{{ traza.usuarioanterior }}</td>
-              <td style="max-width: 150px; white-space: normal; word-wrap: break-word;">{{ traza.usuarionuevo }}</td>
-              <td style="max-width: 150px; white-space: normal; word-wrap: break-word;">
+              <td
+                style="
+                  max-width: 150px;
+                  white-space: normal;
+                  word-wrap: break-word;
+                "
+              >
+                {{ traza.usuarioanterior }}
+              </td>
+              <td
+                style="
+                  max-width: 150px;
+                  white-space: normal;
+                  word-wrap: break-word;
+                "
+              >
+                {{ traza.usuarionuevo }}
+              </td>
+              <td
+                style="
+                  max-width: 150px;
+                  white-space: normal;
+                  word-wrap: break-word;
+                "
+              >
                 {{ traza.claveAnterior }}
               </td>
-              <td style="max-width: 150px; white-space: normal; word-wrap: break-word;">
+              <td
+                style="
+                  max-width: 150px;
+                  white-space: normal;
+                  word-wrap: break-word;
+                "
+              >
                 {{ traza.claveNueva }}
               </td>
               <td>{{ traza.numDocumento }}</td>
@@ -69,7 +91,8 @@
             </tr>
           </tbody>
         </table>
-        <nav class="mt-3 d-flex justify-content-center">
+        <!-- Paginación para pantallas grandes -->
+        <nav class="mt-3 d-none d-md-flex justify-content-center">
           <ul class="pagination">
             <li class="page-item" [class.disabled]="currentPage === 1">
               <button
@@ -103,22 +126,16 @@
       <!-- Tarjetas: visible en pantallas pequeñas -->
       <div class="d-md-none">
         <div class="row">
-          <div
-            class="col-12 mb-3"
-            *ngFor="let traza of trazabilidad; let i = index"
-          >
+          <div class="col-12 mb-3" *ngFor="let traza of trazabilidadPaginada; let i = index">
             <div class="card">
               <div class="card-body">
-                
                 <p class="mb-2">
                   <strong>ID:</strong> {{ traza.idTrazabilidad }}
                 </p>
                 <p class="mb-2">
                   <strong>Fecha:</strong> {{ traza.fechaModificacion }}
                 </p>
-                <p class="mb-2">
-                  <strong>IP:</strong> {{ traza.iP }}
-                </p>
+                <p class="mb-2"><strong>IP:</strong> {{ traza.iP }}</p>
                 <p class="mb-2">
                   <strong>Usuario Ant.:</strong> {{ traza.usuarioanterior }}
                 </p>
@@ -147,13 +164,42 @@
             </div>
           </div>
         </div>
+        <!-- Paginación para móviles -->
+        <nav class="mt-3 d-md-none d-flex justify-content-center">
+          <ul class="pagination">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <button
+                class="page-link"
+                (click)="cambiarPagina(currentPage - 1)"
+              >
+                Anterior
+              </button>
+            </li>
+            <li
+              class="page-item"
+              *ngFor="let page of [].constructor(totalPages); let i = index"
+              [class.active]="currentPage === i + 1"
+            >
+              <button class="page-link" (click)="cambiarPagina(i + 1)">
+                {{ i + 1 }}
+              </button>
+            </li>
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+              <button
+                class="page-link"
+                (click)="cambiarPagina(currentPage + 1)"
+              >
+                Siguiente
+              </button>
+            </li>
+          </ul>
+        </nav>
       </div>
     </div>
-</div>
-<ng-template #sinPermiso>
-  <div class="alert alert-warning">
-    No tienes permiso para ver esta información.
   </div>
-</ng-template>
-
-
+  <ng-template #sinPermiso>
+    <div class="alert alert-warning">
+      No tienes permiso para ver esta información.
+    </div>
+  </ng-template>
+</div>

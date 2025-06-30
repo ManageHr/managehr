@@ -252,6 +252,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/contrato/{id}', [contratoController::class, 'show']);
     Route::patch('/contrato/{id}', [contratoController::class, 'updatePartial']);
     Route::delete('/contrato/{id}', [contratoController::class, 'destroy']);
+    Route::get('/contrato/reporte/area', [contratoController::class, 'obtenerContratosConArea']);
 
 
     Route::get('/tipocontrato', [tipoContratoController::class, 'index']);

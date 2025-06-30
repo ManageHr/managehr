@@ -149,4 +149,8 @@ actualizarContratoParcial(id: number, formData: FormData) {
       map(res => res.Pensiones) 
     );
   }
+  obtenerContratosCompletos(): Observable<{ mensaje: string, data: any[] }> {
+    return this.http.get<{ mensaje: string, data: any[] }>(`http://localhost:8000/api/contrato/reporte/area`);
+  }
+
 }

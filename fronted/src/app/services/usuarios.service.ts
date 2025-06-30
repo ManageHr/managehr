@@ -23,7 +23,7 @@ export interface Usuarios {
   pensionesCodigo?: string;
   rol: number;
   usersId: number;
-
+  fechaNacimiento: string;
 
   user?: {
     id: number;

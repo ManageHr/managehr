@@ -10,7 +10,9 @@
       <button
         class="btn btn-light btn-sm agregar-btn"
         *ngIf="[1, 4].includes(usuario?.rol)"
-        data-bs-toggle="modal" data-bs-target="#modalReporteUsuarios" (click)="abrirModalReporte()"
+        data-bs-toggle="modal"
+        data-bs-target="#modalReporteUsuarios"
+        (click)="abrirModalReporte()"
       >
         <i class="fas fa-plus-circle"></i> Reporte Usuarios
       </button>
@@ -628,8 +630,14 @@
                     class="form-control"
                     [(ngModel)]="nuevoUsuario.primerNombre"
                     name="primerNombre"
+                    required
+                    pattern="[a-zA-Z\s]*"
+                    title="Solo letras"
+                    (keypress)="soloLetras($event)"
                   />
-                  <div class="invalid-feedback">Este campo es obligatorio</div>
+                  <div class="invalid-feedback">
+                    Este campo es obligatorio y solo permite letras
+                  </div>
                 </div>
                 <div class="col-md-4 mb-3">
                   <label class="form-label">Segundo Nombre</label>
@@ -637,6 +645,9 @@
                     class="form-control"
                     [(ngModel)]="nuevoUsuario.segundoNombre"
                     name="segundoNombre"
+                    pattern="[a-zA-Z\s]*"
+                    title="Solo letras"
+                    (keypress)="soloLetras($event)"
                   />
                 </div>
                 <div class="col-md-4 mb-3">
@@ -646,6 +657,9 @@
                     [(ngModel)]="nuevoUsuario.primerApellido"
                     name="primerApellido"
                     required
+                    pattern="[a-zA-Z\s]*"
+                    title="Solo letras"
+                    (keypress)="soloLetras($event)"
                   />
                 </div>
                 <div class="col-md-4 mb-3">
@@ -654,6 +668,9 @@
                     class="form-control"
                     [(ngModel)]="nuevoUsuario.segundoApellido"
                     name="segundoApellido"
+                    pattern="[a-zA-Z\s]*"
+                    title="Solo letras"
+                    (keypress)="soloLetras($event)"
                   />
                 </div>
                 <!-- Tipo de Documento -->
@@ -677,11 +694,23 @@
                 <div class="col-md-4 mb-3">
                   <label class="form-label">Número de Documento</label>
                   <input
-                    type="number"
-                    minlength="8"
+                    type="text"
                     class="form-control"
                     [(ngModel)]="nuevoUsuario.numDocumento"
                     name="numDocumento"
+                    required
+                    pattern="^[0-9]*$"
+                    title="Solo números"
+                    (keypress)="soloNumeros($event)"
+                  />
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label class="form-label">Fecha de Nacimiento</label>
+                  <input
+                    type="date"
+                    class="form-control"
+                    [(ngModel)]="nuevoUsuario.fechaNacimiento"
+                    name="fechaNacimiento"
                     required
                   />
                 </div>
@@ -1186,25 +1215,40 @@
       </div>
     </div>
     <!-- Modal para el Reporte -->
-    <div class="modal fade" id="modalReporteUsuarios" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-      <div class="modal-content">
-        <div class="modal-header bg-dark text-white">
-          <h5 class="modal-title">Reporte de Usuarios por Rol</h5>
-          <button type="button" class="btn-close" (click)="cerrarModalReporte()" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <canvas id="graficaRoles" width="400" height="200"></canvas>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-outline-success" (click)="descargarExcel()">Descargar Excel</button>
-          <button class="btn btn-outline-danger" (click)="descargarPDF()">Descargar PDF</button>
-          <button class="btn btn-secondary" (click)="cerrarModalReporte()">Cerrar</button>
+    <div
+      class="modal fade"
+      id="modalReporteUsuarios"
+      tabindex="-1"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header bg-dark text-white">
+            <h5 class="modal-title">Reporte de Usuarios por Rol</h5>
+            <button
+              type="button"
+              class="btn-close"
+              (click)="cerrarModalReporte()"
+              aria-label="Cerrar"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <canvas id="graficaRoles" width="400" height="200"></canvas>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-outline-success" (click)="descargarExcel()">
+              Descargar Excel
+            </button>
+            <button class="btn btn-outline-danger" (click)="descargarPDF()">
+              Descargar PDF
+            </button>
+            <button class="btn btn-secondary" (click)="cerrarModalReporte()">
+              Cerrar
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-
 
     <!-- Formulario reutilizable -->
     <ng-template #formulariousuarios>
@@ -1214,6 +1258,7 @@
           class="form-control"
           [(ngModel)]="usuarioSeleccionado.telefono"
           name="telefono"
+          (keypress)="soloNumeros($event)"
           required
         />
       </div>

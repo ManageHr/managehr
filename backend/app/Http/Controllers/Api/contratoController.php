@@ -298,4 +298,24 @@ class contratoController extends Controller
             'contrato' => $contrato
         ], 200);
     }
+    public function obtenerContratosConArea()
+    {
+        try {
+            $contratos = Contrato::with([
+                'area',
+                'tipoContrato',
+                'hojaDeVida.usuario'
+            ])->get();
+
+            return response()->json([
+                'mensaje' => 'Contratos obtenidos correctamente',
+                'data' => $contratos
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'mensaje' => 'Error al obtener contratos',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

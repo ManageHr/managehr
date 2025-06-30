@@ -97,7 +97,8 @@ export class UsuariosComponent implements OnInit {
     estadoCivilId: 0,
     pensionesCodigo: "",
     rol: 0,
-    usersId: 0
+    usersId: 0,
+    fechaNacimiento: ''
   };
 
   usuario: any = {};
@@ -234,14 +235,15 @@ export class UsuariosComponent implements OnInit {
       password: "",
       repetirPassword: "",
       direccion: '',
-      numDocumento: 0,
+      numDocumento: "",
       nacionalidadId: null,
       epsCodigo: null,
       generoId: null,
       tipoDocumentoId: null,
       estadoCivilId: null,
       pensionesCodigo: null,
-      rol: null
+      rol: null,
+      fechaNacimiento:""
     };
     const modalElement = document.getElementById('agregarusuariosModal');
     if (modalElement) {
@@ -491,7 +493,7 @@ mostrarEstudios(usuario: Usuarios): void {
             primerApellido: this.nuevoUsuario.primerApellido,
             segundoApellido: this.nuevoUsuario.segundoApellido,
             password: repetirPassword,
-            fechaNac: '2000-01-01',
+            fechaNac: this.nuevoUsuario.fechaNacimiento,
             numHijos: 0,
             contactoEmergencia: 'NO REGISTRADO',
             numContactoEmergencia: '0000000000',
@@ -535,7 +537,28 @@ mostrarEstudios(usuario: Usuarios): void {
       });
     });
   }
-  
+  soloLetras(event: KeyboardEvent): boolean {
+    const input = event.key;
+    const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/;
+
+    if (!regex.test(input)) {
+      event.preventDefault();
+      return false;
+    }
+    return true;
+  }
+  soloNumeros(event: KeyboardEvent): boolean {
+    const charCode = event.key;
+    const regex = /^[0-9]$/;
+
+    if (!regex.test(charCode)) {
+      event.preventDefault();
+      return false;
+    }
+    return true;
+  }
+
+
   actualizarUsuario(): void {
     if (!this.usuarioSeleccionado || !this.usuarioSeleccionado.numDocumento) return;
 
