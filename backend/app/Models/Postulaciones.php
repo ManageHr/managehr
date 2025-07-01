@@ -31,7 +31,7 @@ class Postulaciones extends Model
 
     protected $appends = ['fecha_formateada'];
 
-     protected $with = ['vacante'];
+    protected $with = ['vacante'];
 
     public function getFechaFormateadaAttribute()
     {
@@ -45,5 +45,9 @@ class Postulaciones extends Model
     public function vacante()
     {
         return $this->belongsTo(\App\Models\Vacantes::class, 'vacantesId', 'idVacantes');
+    }
+    public function usuario()
+    {
+        return $this->belongsTo(Usuarios::class, 'numDocumento','numDocumento');
     }
 }

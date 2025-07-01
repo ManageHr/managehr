@@ -14,6 +14,29 @@
     top: 0;
   }
 
+.estado-pendiente {
+  background-color: #ffc107; // Amarillo
+  color: #212529;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.estado-aceptado {
+  background-color: #28a745; // Verde
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.estado-rechazado {
+  background-color: #dc3545; // Rojo
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+}
 
   .contenido-principal {
     margin-left: 250px; // mismo ancho que el menú
@@ -280,7 +303,7 @@
 
   .table tr {
     /* Style table rows as cards */
-    border: 1px solid #ddd; /* Card border */
+   
     display: block; /* Make row a block element */
     margin-bottom: .625em; /* Space between rows */
     background-color: #1e2131; /* Card background */
@@ -293,7 +316,7 @@
     /* Style table data cells */
     border-bottom: none; /* Eliminada la línea divisoria */
     display: block; /* Make cell a block element */
-    font-size: .8em; /* Adjust font size */
+    font-size: .9em; /* Adjust font size */
     text-align: left; /* Alinear texto a la izquierda */
     padding-left: 1rem; /* Adjust padding */
     padding-right: 1rem; // Add padding on the right
@@ -302,7 +325,7 @@
   }
 
   .table td::before {
-    content: attr(data-label) ":"; /* Add colon and space after label */
+    content: attr(data-label) ""; /* Add colon and space after label */
     font-weight: bold;
     text-transform: uppercase;
     display: inline-block;

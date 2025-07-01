@@ -9,12 +9,16 @@ export interface Postulacion {
   estado: 'Aceptado' | 'Rechazado' | 'Pendiente';
   vacantesId: number;
   userId?: number;
+  
+  
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class PostulacionesService {
+    // src/app/services/postulaciones.service.ts (o en otro archivo compartido)
+
 
   // ⚠️ CORREGIDAS: se usa 127.0.0.1 en lugar de localhost
   private apiUrl = 'http://127.0.0.1:8000/api/postulaciones';
@@ -105,4 +109,11 @@ export class PostulacionesService {
       default: return 0;
     }
   }
+  obtenertodos():Observable<any>{
+    return this.http.get<any>('http://localhost:8000/api/postulaciones').pipe(
+      map(res => res.Postulaciones) 
+    );
+  } 
+  
+
 }

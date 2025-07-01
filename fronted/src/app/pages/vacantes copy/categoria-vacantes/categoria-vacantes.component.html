@@ -10,7 +10,12 @@
     </div>
 
     <div class="mb-3">
-      <input type="text" class="form-control" placeholder="Buscar por Nombre..." [(ngModel)]="filtroNombre">
+      <input type="text"
+       class="form-control"
+       placeholder="Buscar por Nombre..."
+       [(ngModel)]="filtroNombre"
+       (ngModelChange)="paginaActual = 1">
+
     </div>
 
     <div *ngIf="[1, 4].includes(usuario?.rol); else sinPermiso">
@@ -24,7 +29,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let categoria of categorias | filterCategoria : filtroNombre; let i = index">
+          <tr *ngFor="let categoria of categoriasPaginadas; let i = index">
+
             <td data-label="ID">{{ categoria.idCatVac }}</td>
             <td data-label="Nombre">{{ categoria.nomCategoria }}</td>
             <td data-label="Acciones">
@@ -39,6 +45,23 @@
           </tr>
         </tbody>
       </table>
+      <nav *ngIf="totalPaginas > 1" aria-label="Paginación de categorías" class="mt-3">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" [class.disabled]="paginaActual === 1">
+            <a class="page-link" (click)="cambiarPagina(paginaActual - 1)">Anterior</a>
+          </li>
+
+          <li class="page-item"
+              *ngFor="let pagina of [].constructor(totalPaginas); let i = index"
+              [class.active]="paginaActual === i + 1">
+            <a class="page-link" (click)="cambiarPagina(i + 1)">{{ i + 1 }}</a>
+          </li>
+
+          <li class="page-item" [class.disabled]="paginaActual === totalPaginas">
+            <a class="page-link" (click)="cambiarPagina(paginaActual + 1)">Siguiente</a>
+          </li>
+        </ul>
+      </nav>
 
        <div *ngIf="categorias.length === 0 && !filtroNombre" class="alert alert-info mt-3">
              No hay categorías de vacantes disponibles.

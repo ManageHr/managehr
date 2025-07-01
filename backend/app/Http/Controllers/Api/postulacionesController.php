@@ -9,13 +9,14 @@ use App\Models\Usuarios;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class PostulacionesController extends Controller
 {
     public function index(Request $request)
     {
         try {
-            $query = Postulaciones::query();
+            $query = Postulaciones::with(['usuario']); // <-- Aquí incluimos la relación
 
             if ($request->has('vacantesId')) {
                 $query->where('vacantesId', $request->input('vacantesId'));
@@ -34,6 +35,9 @@ class PostulacionesController extends Controller
             ], 500);
         }
     }
+
+
+
 
     public function show($idPostulaciones)
     {
@@ -145,13 +149,104 @@ class PostulacionesController extends Controller
                 'message' => 'Postulación registrada exitosamente.',
                 'data' => $postulacion
             ], 201);
-
         } catch (\Exception $e) {
             Log::error("Error al registrar postulación: " . $e->getMessage());
             return response()->json([
                 'message' => 'Error al registrar la postulación',
                 'error' => $e->getMessage()
             ], 500);
+        }
+    }
+    public function porVacante()
+    {
+        try {
+            $reporte = Postulaciones::with('vacante')
+                ->get()
+                ->groupBy('vacantesId')
+                ->map(function ($grupo) {
+                    $vacante = $grupo->first()->vacante;
+                    return [
+                        'vacantesId' => $grupo->first()->vacantesId,
+                        'nombreVacante' => $vacante ? $vacante->nomVacante : 'Sin nombre',
+                        'totalPostulantes' => $grupo->count(),
+                        'postulantes' => $grupo->map(function ($p) {
+                            return [
+                                'nombre' => $p->usuario->primerNombre . ' ' . $p->usuario->primerApellido,
+                                'documento' => $p->usuario->numDocumento,
+                                'correo' => $p->usuario->correo
+                            ];
+                        })->values()
+                    ];
+                })->values();
+
+            return response()->json(['data' => $reporte]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error en el reporte', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+
+
+    // 2. Por estado (aceptado, rechazado, pendiente)
+    public function porEstado()
+    {
+        try {
+            $postulaciones = Postulaciones::with('usuario')
+                ->get()
+                ->groupBy('estado')
+                ->map(function ($items, $estado) {
+                    return [
+                        'estado' => $estado,
+                        'total' => $items->count(),
+                        'postulantes' => $items->map(function ($item) {
+                            return [
+                                'nombre' => $item->usuario->primerNombre . ' ' . $item->usuario->primerApellido,
+                                'documento' => $item->usuario->numDocumento,
+                                'correo' => $item->usuario->email,
+                            ];
+                        }),
+                    ];
+                })
+                ->values();
+
+            return response()->json(['data' => $postulaciones], 200);
+        } catch (\Exception $e) {
+            Log::error("Error en reportePorEstado: " . $e->getMessage());
+            return response()->json(['message' => 'Error al generar el reporte por estado.', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    // 3. Por empleados internos (usuarios con rol ≠ 5)
+    public function porEmpleado()
+    {
+        try {
+            $postulaciones = Postulaciones::with(['usuario.user'])
+                ->get()
+                ->filter(function ($item) {
+                    return $item->usuario->user->rol != 5;
+                })
+                ->groupBy(function ($item) {
+                    return $item->usuario->user->rol ?? 'Sin Rol';
+                })
+                ->map(function ($items, $rolId) {
+                    return [
+                        'rolId' => $rolId,
+                        'total' => $items->count(),
+                        'postulantes' => $items->map(function ($item) {
+                            return [
+                                'nombre' => $item->usuario->primerNombre . ' ' . $item->usuario->primerApellido,
+                                'documento' => $item->usuario->numDocumento,
+                                'correo' => $item->usuario->email,
+                            ];
+                        }),
+                    ];
+                })
+                ->values();
+
+            return response()->json(['data' => $postulaciones], 200);
+        } catch (\Exception $e) {
+            Log::error("Error en reporteEmpleadosInternos: " . $e->getMessage());
+            return response()->json(['message' => 'Error al generar el reporte de empleados internos.', 'error' => $e->getMessage()], 500);
         }
     }
 }

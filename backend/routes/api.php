@@ -70,10 +70,10 @@ Route::middleware('auth:api')->group(function () {
     Route::patch('/auth/rol/{id}', [AuthController::class, 'updatePartial']);
 
 
-    
 
 
-    
+
+
     Route::delete('/login/{id}', [AuthController::class, 'destroy']);
     // Rutas de ROL
     Route::get('/rols', [rolController::class, 'index']);
@@ -130,7 +130,7 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/hojasvida/{id}', [hojasvidaController::class, 'destroy']);
     Route::get('/hojasvida/documento/{numDocumento}', [hojasvidaController::class, 'buscarPorDocumento']);
     Route::put('/hojasvida/{id}', [hojasvidaController::class, 'update']);
-    Route::get('estudios/hoja/{idHojaDeVida}', [HojasvidahasestudiosController::class, 'buscarPorHojaDeVida']);  
+    Route::get('estudios/hoja/{idHojaDeVida}', [HojasvidahasestudiosController::class, 'buscarPorHojaDeVida']);
     Route::delete('/hojasvidahasestudios/{id}', [HojasvidahasestudiosController::class, 'destroy']);
     Route::delete('/hojasvidahasexperiencia/{id}', [HojasvidahasexperienciaController::class, 'destroy']);
     Route::post('/experiencia-con-archivo', [experienciaLaboralController::class, 'storeConArchivo']);
@@ -153,7 +153,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/usuarios/{id}', [usuarioController::class, 'show']);
     Route::patch('/usuarios/{id}', [usuarioController::class, 'updatePartial']);
     Route::delete('/usuarios/{id}', [usuarioController::class, 'destroy']);
-    
+
     Route::get('/usuarios/reporte/all', [usuarioController::class, 'reporteRoles']);
 
 
@@ -211,7 +211,10 @@ Route::middleware('auth:api')->group(function () {
     Route::patch('/postulaciones/{id}', [postulacionesController::class, 'updatePartial']);
     Route::delete('/postulaciones/{id}', [postulacionesController::class, 'destroy']);
     Route::get('/postulaciones/buscar/vacante/{vacantesId}', [PostulacionesController::class, 'searchByVacantesId']);
-
+    Route::get('/postulaciones/reporte/vacante', [postulacionesController::class, 'porVacante']);
+    Route::get('/postulaciones/reporte/estado', [postulacionesController::class, 'porEstado']);
+    Route::get('/postulaciones/reporte/internos', [postulacionesController::class, 'porEmpleado']);
+    
 
     Route::get('/pensiones', [pensionesController::class, 'index']);
     Route::post('/pensiones', [pensionesController::class, 'store']);
@@ -338,7 +341,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/solicitudes-incapacidades', [formincapacidadController::class, 'store']);
 
     Route::middleware('auth:api')->get('/hoja-de-vida', [HojasvidaController::class, 'index']);
-    
+
     // Solicitudes de Horas Extra
     Route::get('/horas-extra', [FormHorasController::class, 'index']);
     Route::post('/horas-extra', [FormHorasController::class, 'store']);
@@ -367,7 +370,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/documento/{numDocumento}', [HojasvidahasexperienciaController::class, 'buscarPorDocumento']);
         Route::get('/descargar/{id}', [HojasvidahasexperienciaController::class, 'descargarArchivo']);
     });
-    
+
     Route::get('jefe-personal/empleados/{jefeId}', [JefePersonalController::class, 'empleadosPorJefe']);
 
     // Rutas para Vacaciones del Jefe de Personal
@@ -382,4 +385,3 @@ Route::middleware('auth:api')->group(function () {
 
 
 Route::middleware('auth:api')->group(function () {});
-

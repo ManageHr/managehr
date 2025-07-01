@@ -272,7 +272,7 @@
 
   .table tr {
     /* Style table rows as cards */
-    border: 1px solid #ddd; /* Card border */
+    
     display: block; /* Make row a block element */
     margin-bottom: .625em; /* Space between rows */
     background-color: #1e2131; /* Card background */
@@ -285,7 +285,7 @@
     /* Style table data cells */
     border-bottom: none; /* Eliminada la línea divisoria */
     display: block; /* Make cell a block element */
-    font-size: .8em; /* Adjust font size */
+    font-size: .9em; /* Adjust font size */
     text-align: left; /* ** CORREGIDO: Alinear texto a la izquierda ** */
     padding-left: 1rem; /* Adjust padding */
     padding-right: 1rem; // Add padding on the right
