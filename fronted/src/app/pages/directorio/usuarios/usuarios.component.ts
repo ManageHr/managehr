@@ -764,7 +764,7 @@ mostrarEstudios(usuario: Usuarios): void {
     }
   }
   urlEstudio(nombreArchivo: string): string {
-    return `http://localhost:8000/storage/${nombreArchivo}`;
+    return `http://localhost:8000/${nombreArchivo}`;
   }
   chart: any;
   generarGrafico(): void {

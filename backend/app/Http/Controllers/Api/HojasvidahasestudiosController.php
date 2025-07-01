@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Hojasvida;
+use App\Models\Estudios;
 use Illuminate\Http\Request;
 use App\Models\Hojasvidahasestudios;
 use Illuminate\Support\Facades\Validator;
@@ -30,6 +31,7 @@ class HojasvidahasestudiosController extends Controller
             'archivo' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ]);
 
+
         if ($validator->fails()) {
             return response()->json([
                 'mensaje' => 'Error en la validación del estudio',
@@ -50,7 +52,7 @@ class HojasvidahasestudiosController extends Controller
         }
 
         // Buscar nombre del estudio
-        $estudio = \App\Models\Estudios::find($request->idEstudios);
+        $estudio = Estudios::find($request->idEstudios);
         if (!$estudio) {
             return response()->json([
                 'mensaje' => 'Estudio no encontrado',
@@ -98,7 +100,7 @@ class HojasvidahasestudiosController extends Controller
 
     public function show($id)
     {
-        $registro = Hojasvidahasestudios::with('idEstudios')->find($id);
+        $registro = Hojasvidahasestudios::with('estudio')->find($id);
 
         if (!$registro) {
             return response()->json([
@@ -124,11 +126,10 @@ class HojasvidahasestudiosController extends Controller
             ], 404);
         }
 
-        $validator = Validator::make($request->all(), [
+        $validator = Validator::make($request->request->all(), [
             "idHojaDeVida" => "required|exists:hojasvida,idHojaDeVida",
             "idEstudios" => "required|exists:estudios,idEstudios",
             "estado" => "required|boolean",
-            "archivo" => "nullable|file|mimes:pdf,jpg,jpeg,png|max:2048"
         ]);
 
         if ($validator->fails()) {
@@ -140,18 +141,34 @@ class HojasvidahasestudiosController extends Controller
         }
 
         try {
-            $registro->idHojaDeVida = $request->idHojaDeVida;
-            $registro->idEstudios = $request->idEstudios;
-            $registro->estado = $request->estado;
+            $registro->idHojaDeVida = $request->input('idHojaDeVida');
+            $registro->idEstudios = $request->input('idEstudios');
+            $registro->estado = $request->input('estado');
 
             if ($request->hasFile("archivo")) {
-                // Borra archivo anterior
-                if ($registro->archivo && Storage::disk("public")->exists($registro->archivo)) {
-                    Storage::disk("public")->delete($registro->archivo);
-                }
+                // 🔍 Buscar datos para generar ruta personalizada
+                $hoja = Hojasvida::find($request->input('idHojaDeVida'));
+                $estudio = Estudios::find($request->input('idEstudios'));
 
-                $ruta = $request->file("archivo")->store("hojasvida/estudios", "public");
-                $registro->archivo = $ruta;
+                if ($hoja && $estudio) {
+                    // 🧹 Borrar archivo anterior si existe
+                    if ($registro->archivo && Storage::disk("public")->exists($registro->archivo)) {
+                        Storage::disk("public")->delete($registro->archivo);
+                    }
+
+                    // 📝 Nombre amigable
+                    $documento = $hoja->usuarioNumDocumento;
+                    $nombreCarrera = preg_replace('/[^A-Za-z0-9_\-]/', '_', $estudio->nomEstudio);
+                    $extension = $request->file('archivo')->getClientOriginalExtension();
+                    $filename = $nombreCarrera . '_' . time() . '.' . $extension;
+                    $folder = 'Archivos/' . $documento;
+
+                    // 📦 Guardar en storage/app/public/Archivos/{documento}
+                    $path = $request->file('archivo')->storeAs($folder, $filename, 'public');
+
+                    // 📌 Guardar ruta final
+                    $registro->archivo = 'storage/' . $path;
+                }
             }
 
             $registro->save();
@@ -169,6 +186,11 @@ class HojasvidahasestudiosController extends Controller
             ], 500);
         }
     }
+
+
+
+
+
 
     public function destroy($id)
     {
@@ -192,7 +214,7 @@ class HojasvidahasestudiosController extends Controller
             ], 404);
         }
 
-        
+
         $estudios = Hojasvidahasestudios::with('estudio')
             ->where('idHojaDevida', $hoja->idHojaDeVida)
             ->get();
@@ -200,7 +222,7 @@ class HojasvidahasestudiosController extends Controller
         return response()->json([
             "data" => [
                 "hojaDeVida" => $hoja,
-                "usuario" => $hoja->usuario, 
+                "usuario" => $hoja->usuario,
                 "estudios" => $estudios
             ],
             "status" => 200
@@ -211,8 +233,8 @@ class HojasvidahasestudiosController extends Controller
     // Obtener todos los estudios por ID de hoja de vida
     public function buscarPorHojaDeVida($idHojaDeVida)
     {
-        $registros = Hojasvidahasestudios::with('idEstudios')
-            ->where('idHojaDeVida', $idHojaDeVida)
+        $registros = Hojasvidahasestudios::with('estudio')
+            ->where('idHojaDevida', $idHojaDeVida)
             ->get();
 
         if ($registros->isEmpty()) {

@@ -24,4 +24,15 @@ export class EstudiosService {
   createRelacionEstudio(payload: any): Observable<any> {
     return this.http.post<any>(this.relacionesUrl, payload);
   }
+  agregarEstudio(formData: FormData): Observable<any> {
+    return this.http.post(`http://localhost:8000/api/hojasvidahasestudios`, formData);
+  }
+  buscarEstudioPorNombre(data: any): Observable<any> {
+    return this.http.post(`${this.estudiosUrl}/buscar`, data);
+  }
+  actualizarRelacionEstudio(id: number, data: FormData) {
+    return this.http.post(`${this.relacionesUrl}/${id}`, data);
+  }
+
+
 }

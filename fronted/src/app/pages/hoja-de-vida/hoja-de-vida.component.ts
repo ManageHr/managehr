@@ -25,11 +25,14 @@ export class HojaDeVidaComponent implements OnInit {
 
   nuevoEstudio: any = {};
   nuevaExperiencia: any = {};
-
+  archivoEstudio: File | null = null;
   archivoExperiencia: File | null = null;
 
   usuario: any;
   idHojaDeVida: number | null = null;
+
+  editandoEstudio: boolean = false;
+  idRelacionEstudio: number | null = null; 
 
   constructor(
     private hojaDeVidaService: HojaDeVidaService,
@@ -68,7 +71,7 @@ export class HojaDeVidaComponent implements OnInit {
       next: (res) => {
         console.log('🔍 ESTUDIOS recibidos desde el backend:', res);
         this.estudios = res.estudios.map((e: any) => {
-          const datos = e.id_estudios || e;
+          const datos = e.estudio || e;
           return {
             ...datos,
             abierto: false,
@@ -147,49 +150,112 @@ export class HojaDeVidaComponent implements OnInit {
   cerrarModalAgregarEstudio() {
     this.mostrarModalAgregarEstudio = false;
   }
+  crearRelacionEstudio(idEstudios: number): void {
+    const formData = new FormData();
+    formData.append('numDocumento', this.usuario.perfil.numDocumento);
+    formData.append('idEstudios', idEstudios.toString());
+    formData.append('estado', '1');
 
-  guardarNuevoEstudio() {
+    if (this.archivoEstudio) {
+      formData.append('archivo', this.archivoEstudio);
+    }
+    console.log(formData);
+    for (let pair of formData.entries()) {
+      console.log(`${pair[0]}:`, pair[1]);
+    }
+    this.estudiosService.agregarEstudio(formData).subscribe({
+      next: () => {
+        Swal.fire('Éxito', 'Estudio agregado correctamente', 'success');
+        this.cerrarModalAgregarEstudio();
+        this.cargarEstudios();
+      },
+      error: (err) => {
+        console.error('❌ Error al crear relación del estudio', err);
+        Swal.fire('Error', 'No se pudo guardar la relación del estudio', 'error');
+      }
+    });
+  }
+  
+
+  guardarNuevoEstudio(): void {
     if (!this.usuario?.perfil?.numDocumento || !this.idHojaDeVida) return;
 
     const payloadEstudio = {
-      nomEstudio: this.nuevoEstudio.nomEstudio,
-      nomInstitucion: this.nuevoEstudio.nomInstitucion,
-      tituloObtenido: this.nuevoEstudio.tituloObtenido,
+      nomEstudio: this.nuevoEstudio.nomEstudio.trim(),
+      nomInstitucion: this.nuevoEstudio.nomInstitucion.trim(),
+      tituloObtenido: this.nuevoEstudio.tituloObtenido.trim(),
       anioInicio: this.nuevoEstudio.anioInicio,
       anioFinalizacion: this.nuevoEstudio.anioFinalizacion
     };
 
-    this.estudiosService.create(payloadEstudio).subscribe({
+    // Paso 1: Validar si el estudio ya existe
+    this.estudiosService.buscarEstudioPorNombre(payloadEstudio).subscribe({
       next: (res) => {
-        const idEstudios = res.estudio?.idEstudios;
-        if (!idEstudios) {
-          Swal.fire('Error', 'No se recibió el ID del estudio creado', 'error');
-          return;
-        }
+        const idEstudios = res?.estudio?.idEstudios;
 
-        const relacionPayload = {
-          numDocumento: this.usuario.perfil.numDocumento,
-          idEstudios: idEstudios,
-          estado: true
-        };
-
-        this.estudiosService.createRelacionEstudio(relacionPayload).subscribe({
-          next: () => {
-            Swal.fire('Éxito', 'Estudio agregado correctamente', 'success');
-            this.cerrarModalAgregarEstudio();
-            this.cargarEstudios();
-          },
-          error: (err) => {
-            console.error('❌ Error al crear relación del estudio', err);
-            Swal.fire('Error', 'No se pudo guardar la relación del estudio', 'error');
+        if (idEstudios) {
+          if (this.editandoEstudio && this.idRelacionEstudio) {
+            this.actualizarRelacionEstudio(this.idRelacionEstudio, idEstudios);
+          } else {
+            this.crearRelacionEstudio(idEstudios);
           }
-        });
+        } else {
+          // Si no existe, crearlo primero
+          this.estudiosService.create(payloadEstudio).subscribe({
+            next: (resCreate) => {
+              const nuevoId = resCreate?.estudio?.idEstudios;
+              if (!nuevoId) {
+                Swal.fire('Error', 'No se recibió el ID del estudio creado', 'error');
+                return;
+              }
+              if (this.editandoEstudio && this.idRelacionEstudio) {
+                this.actualizarRelacionEstudio(this.idRelacionEstudio, nuevoId);
+              } else {
+                this.crearRelacionEstudio(nuevoId);
+              }
+            },
+            error: (err) => {
+              console.error('❌ Error al crear estudio', err);
+              Swal.fire('Error', 'No se pudo crear el estudio', 'error');
+            }
+          });
+        }
       },
       error: (err) => {
-        console.error('❌ Error al crear el estudio', err);
-        Swal.fire('Error', 'No se pudo crear el estudio', 'error');
+        console.error('❌ Error al validar existencia del estudio', err);
+        Swal.fire('Error', 'No se pudo verificar si el estudio ya existe', 'error');
       }
     });
+  }
+
+  actualizarRelacionEstudio(idRelacion: number, idEstudios: number): void {
+    const formData = new FormData();
+    formData.append('idHojaDeVida', this.idHojaDeVida!.toString());
+    formData.append('idEstudios', idEstudios.toString());
+    formData.append('estado', '1');
+    if (this.archivoEstudio) {
+      formData.append('archivo', this.archivoEstudio);
+    }
+
+    this.estudiosService.actualizarRelacionEstudio(idRelacion, formData).subscribe({
+      next: () => {
+        Swal.fire('Éxito', 'Estudio actualizado correctamente', 'success');
+        this.cerrarModalAgregarEstudio();
+        this.cargarEstudios();
+        this.resetFormularioEstudio();
+      },
+      error: (err) => {
+        console.error('❌ Error al actualizar estudio', err);
+        Swal.fire('Error', 'No se pudo actualizar el estudio', 'error');
+      }
+    });
+  }
+
+  resetFormularioEstudio(): void {
+    this.nuevoEstudio = {} as any;
+    this.archivoEstudio = null;
+    this.idRelacionEstudio = null;
+    this.editandoEstudio = false;
   }
 
   eliminarEstudio(index: number) {
@@ -224,10 +290,25 @@ export class HojaDeVidaComponent implements OnInit {
     this.estudios[index].abierto = !this.estudios[index].abierto;
   }
 
-  editarEstudio(index: number) {
-    this.nuevoEstudio = { ...this.estudios[index] };
+  editarEstudio(index: number): void {
+    const estudioSeleccionado = this.estudios[index];
+    this.nuevoEstudio = {
+      nomEstudio: estudioSeleccionado.nomEstudio,
+      nomInstitucion: estudioSeleccionado.nomInstitucion,
+      tituloObtenido: estudioSeleccionado.tituloObtenido,
+      anioInicio: estudioSeleccionado.anioInicio,
+      anioFinalizacion: estudioSeleccionado.anioFinalizacion
+    };
+    this.idRelacionEstudio = estudioSeleccionado.idRelacion;
+    this.editandoEstudio = true;
     this.mostrarModalAgregarEstudio = true;
   }
+
+
+
+
+
+
 
   abrirModalAgregarExperiencia() {
     this.nuevaExperiencia = {};
@@ -238,7 +319,12 @@ export class HojaDeVidaComponent implements OnInit {
   cerrarModalAgregarExperiencia() {
     this.mostrarModalAgregarExperiencia = false;
   }
-
+  onArchivoSeleccionadoEstudio(event: Event): void{
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.archivoEstudio = input.files[0];
+    }
+  }
   onArchivoSeleccionado(event: any): void {
     const file = event.target.files[0];
     if (file) {

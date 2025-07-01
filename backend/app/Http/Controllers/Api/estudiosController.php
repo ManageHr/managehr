@@ -169,4 +169,23 @@ class estudiosController extends Controller
             'status' => 200
         ]);
     }
+    public function buscarPorCampos(Request $request)
+    {
+        $request->validate([
+            'nomEstudio' => 'required|string',
+            'nomInstitucion' => 'required|string',
+            'tituloObtenido' => 'required|string',
+        ]);
+
+        $estudio = Estudios::where('nomEstudio', $request->nomEstudio)
+            ->where('nomInstitucion', $request->nomInstitucion)
+            ->where('tituloObtenido', $request->tituloObtenido)
+            ->first();
+
+        if ($estudio) {
+            return response()->json(['existe' => true, 'estudio' => $estudio], 200);
+        } else {
+            return response()->json(['existe' => false], 200);
+        }
+    }
 }
