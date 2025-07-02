@@ -113,6 +113,7 @@
               required
               [(ngModel)]="numDocumento"
               placeholder="Ingrese su número de documento"
+              (keypress)="soloNumeros($event)"
             />
           </div>
           <div class="mb-3">
@@ -125,6 +126,7 @@
               required
               [(ngModel)]="nombre"
               placeholder="Nombre completo"
+              (keypress)="soloLetras($event)"
             />
           </div>
           <div class="mb-3">

@@ -219,4 +219,28 @@ export class RegisterComponent implements OnInit, OnDestroy {
   volver() {
   window.history.back();
 }
+
+
+soloLetras(event: KeyboardEvent): boolean {
+    const input = event.key;
+    const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/;
+
+    if (!regex.test(input)) {
+      event.preventDefault();
+      return false;
+    }
+    return true;
+  }
+  soloNumeros(event: KeyboardEvent): boolean {
+    const charCode = event.key;
+    const regex = /^[0-9]$/;
+
+    if (!regex.test(charCode)) {
+      event.preventDefault();
+      return false;
+    }
+    return true;
+  }
+
+
 }
