@@ -32,44 +32,7 @@
     }
   }
   
- ::ng-deep .ngx-pagination li.current {
-  background-color: #0d6efd;
-  color: white;
-  font-weight: bold;
-}
-
-::ng-deep .ngx-pagination li:hover:not(.current) {
-  background-color: #e9ecef;
-}
-::ng-deep .ngx-pagination .disabled,
-::ng-deep .ngx-pagination li.disabled a{
-  background-color: #6c757d !important; /* gris oscuro tipo Bootstrap */
-  color: white !important;
-  border-radius: 5px;
-  padding: 6px 12px;
-  opacity: 1 !important; /* Evita transparencia */
-  pointer-events: none;
-}
-::ng-deep .ngx-pagination li.disabled.next a {
-  color: white !important;
-  background-color: rgba(0, 123, 255, 0.7) !important; /* un poco más oscuro para que resalte */
-  border-color: rgba(0, 123, 255, 0.7) !important;
-}
-
-::ng-deep .ngx-pagination li a {
-  background-color: #1d2233 !important; /* tu color normal de fondo */
-  color: white !important;
-  border: 1px solid #7a86a1 !important;
-}
-
-::ng-deep .ngx-pagination li a:hover {
-  background-color: #495057 !important;
-}
-::ng-deep .ngx-pagination li.active a {
-  background-color: #007bff !important; /* azul intenso */
-  color: white !important;
-  border-color: #007bff !important;
-}
+ 
 
 
   
@@ -342,6 +305,43 @@
   }
 }
 
-  
+ ::ng-deep .ngx-pagination li.current {
+  background-color: #0d6efd;
+  color: white;
+  font-weight: bold;
+}
+
+::ng-deep .ngx-pagination li:hover:not(.current) {
+  background-color: #e9ecef;
+}
+::ng-deep .ngx-pagination .disabled,
+::ng-deep .ngx-pagination li.disabled a{
+  background-color: #6c757d !important; /* gris oscuro tipo Bootstrap */
+  color: white !important;
+  border-radius: 5px;
+  padding: 6px 12px;
+  opacity: 1 !important; /* Evita transparencia */
+  pointer-events: none;
+}
+::ng-deep .ngx-pagination li.disabled.next a {
+  color: white !important;
+  background-color: rgba(0, 123, 255, 0.7) !important; /* un poco más oscuro para que resalte */
+  border-color: rgba(0, 123, 255, 0.7) !important;
+}
+
+::ng-deep .ngx-pagination li a {
+  background-color: #1d2233 !important; /* tu color normal de fondo */
+  color: white !important;
+  border: 1px solid #7a86a1 !important;
+}
+
+::ng-deep .ngx-pagination li a:hover {
+  background-color: #495057 !important;
+}
+::ng-deep .ngx-pagination li.active a {
+  background-color: #007bff !important; /* azul intenso */
+  color: white !important;
+  border-color: #007bff !important;
+} 
   
   
