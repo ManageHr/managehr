@@ -11,12 +11,19 @@ class HorasextraController extends Controller
 {
     public function index()
     {
-        $horas = Horasextra::all();
+        $horas = HorasExtra::with([
+            'tipoHoraExtra',
+            'contrato.hojaDeVida.usuario.user.rol',
+            'contrato.area'
+        ])->get();
+
         return response()->json([
-            'horasextra' => $horas,
+            'data' => $horas,
             'status' => 200
         ], 200);
     }
+
+
 
     public function store(Request $request)
     {

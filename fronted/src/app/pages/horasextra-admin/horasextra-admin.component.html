@@ -6,7 +6,7 @@
       id="tituloTargetas1"
       class="header-horas d-flex justify-content-between align-items-center"
     >
-      <h3>Incapacidades</h3>
+      <h3>Horas Extras</h3>
       <div class="d-flex gap-2">
         <button
           class="btn btn-light btn-sm agregar-btn"
@@ -24,8 +24,6 @@
         </button>
       </div>
     </div>
-
-    <!-- Filtro -->
     <div *ngIf="[1, 4].includes(usuario?.rol); else sinPermiso">
       <div id="tituloTargetasfiltro1" class="mb-3">
         <input
@@ -52,17 +50,18 @@
             <th>Documento</th>
             <th>Correo</th>
             <th>Teléfono</th>
-            <th>Inicio</th>
-            <th>Final</th>
-            <th>Días</th>
-            <th>Archivo</th>
+            <th>Fecha</th>
+            <th>Tipo hora</th>
+            <th>Cantidad</th>
+            <th>Área</th>
+            <th>Rol</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           <tr
             *ngFor="
-              let i of incapacidadesFiltradas
+              let i of horasextrasFiltradas
                 | paginate
                   : { itemsPerPage: itemsPerPage, currentPage: currentPage }
             "
@@ -74,24 +73,18 @@
             <td>{{ i.contrato?.hoja_de_vida?.usuario?.numDocumento }}</td>
             <td>{{ i.contrato?.hoja_de_vida?.usuario?.email }}</td>
             <td>{{ i.contrato?.hoja_de_vida?.usuario?.telefono }}</td>
-            <td>{{ i.fechaInicio }}</td>
-            <td>{{ i.fechaFinal }}</td>
-            <td>{{ calcularDias(i.fechaInicio, i.fechaFinal) }}</td>
-            <td>
-              <a
-                target="_blank"
-                class="btn btn-outline-primary btn-sm"
-                (click)="verArchivoEnModal(i.archivo)"
-              >
-                Ver archivo
-              </a>
-            </td>
+            <td>{{ i.fecha }}</td>
+            <td>{{ i.tipo_hora_extra?.nombreTipoHoras }}</td>
+            <td>{{ i.nHorasExtra }}</td>
+            <td>{{ i.contrato?.area?.nombreArea }}</td>
+            <td>{{ i.contrato?.hoja_de_vida?.usuario?.user?.rol?.nombreRol }}</td>
+            
             <td>
               <button
                 class="btn btn-danger btn-sm"
                 (click)="
                   confirmarEliminacion(
-                    i.idIncapacidad,
+                    i.idHorasExtra,
                     i.contrato?.hoja_de_vida?.usuario?.user?.name ??
                       'Nombre desconocido'
                   )
@@ -100,7 +93,6 @@
                 <i class="fas fa-trash"></i>
               </button>
             </td>
-            
           </tr>
         </tbody>
       </table>
@@ -120,7 +112,7 @@
       <div
         class="card mb-3"
         *ngFor="
-          let i of incapacidadesFiltradas
+          let i of horasextrasFiltradas
             | paginate
               : { itemsPerPage: itemsPerPage, currentPage: currentPage }
         "
@@ -137,23 +129,19 @@
             {{ i.contrato?.hoja_de_vida?.usuario?.email }}<br />
             <strong>Teléfono:</strong>
             {{ i.contrato?.hoja_de_vida?.usuario?.telefono }}<br />
-            <strong>Inicio:</strong> {{ i.fechaInicio }}<br />
-            <strong>Final:</strong> {{ i.fechaFinal }}<br />
-            <strong>Días:</strong>
-            {{ calcularDias(i.fechaInicio, i.fechaFinal) }}
+            <strong>Fecha:</strong> {{ i.fecha }}<br />
+            <strong>Tipo Hora:</strong> {{ i.tipo_hora_extra?.nombreTipoHoras }}<br />
+            <strong>Cantidad:</strong>
+            {{ i.nHorasExtra }}<br/>
+            <strong>Área:</strong>
+            {{ i.contrato?.area?.nombreArea }}<br/>
+            <strong>Rol:</strong>
+            {{ i.contrato?.hoja_de_vida?.usuario?.user?.rol?.nombreRol }}<br/>
           </p>
           <div class="card-footer d-flex justify-content-end gap-2">
-            <a
-              
-              
-              class="btn btn-outline-primary btn-sm"
-              (click)="abrirArchivo(i.archivo)"
-            >
-              Ver archivo
-            </a>
             <button
               class="btn btn-outline-danger btn-sm"
-              (click)="eliminarIncapacidad(i.idIncapacidad)"
+              (click)="eliminarhorasextra(i.idHorasExtra)"
             >
               <i class="fas fa-trash"></i>
             </button>
@@ -163,128 +151,13 @@
     </div>
     <!-- Paginador para tarjetas móviles -->
     <pagination-controls
-  *ngIf="incapacidadesFiltradas.length > itemsPerPage"
-  (pageChange)="currentPage = $event"
-  [autoHide]="true"
-  class="d-flex justify-content-center mt-3 d-md-none"
-></pagination-controls>
+      *ngIf="horasextrasFiltradas.length > itemsPerPage"
+      (pageChange)="currentPage = $event"
+      [autoHide]="true"
+      class="d-flex justify-content-center mt-3 d-md-none"
+    ></pagination-controls>
 
-    <!-- Modal para agregar Incapacidad -->
-    <div
-      class="modal fade"
-      id="modalAgregarIncapacidad"
-      tabindex="-1"
-      aria-labelledby="modalAgregarIncapacidadLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-          <form [formGroup]="formIncapacidad" (ngSubmit)="crearIncapacidad()">
-            <div class="modal-header">
-              <h5 class="modal-title" id="modalAgregarIncapacidadLabel">
-                Agregar Incapacidad
-              </h5>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Cerrar"
-              ></button>
-            </div>
-            <div class="modal-body">
-              <!-- Descripción -->
-              <div class="mb-3">
-                <label for="descrip" class="form-label">Descripción</label>
-                <textarea
-                  formControlName="descrip"
-                  id="descrip"
-                  class="form-control"
-                  rows="3"
-                  placeholder="Motivo o detalle de la incapacidad..."
-                  required
-                ></textarea>
-              </div>
-
-              <!-- Contrato -->
-              <div class="mb-3">
-                <label for="contratoId" class="form-label">Contrato</label>
-                <select
-                  formControlName="contratoId"
-                  id="contratoId"
-                  class="form-control"
-                  required
-                >
-                  <option value="">Seleccione un contrato</option>
-                  <option
-                    *ngFor="let contrato of contratos"
-                    [value]="contrato.idContrato"
-                  >
-                    {{ contrato.hoja_de_vida?.usuario?.primerNombre }}
-                    {{ contrato.hoja_de_vida?.usuario?.primerApellido }} —
-                    {{ contrato.idContrato }}
-                  </option>
-                </select>
-              </div>
-
-              <!-- Fechas -->
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label for="fechaInicio" class="form-label"
-                    >Fecha Inicio</label
-                  >
-                  <input
-                    type="date"
-                    id="fechaInicio"
-                    class="form-control"
-                    formControlName="fechaInicio"
-                    required
-                  />
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label for="fechaFinal" class="form-label">Fecha Final</label>
-                  <input
-                    type="date"
-                    id="fechaFinal"
-                    class="form-control"
-                    formControlName="fechaFinal"
-                    required
-                  />
-                </div>
-              </div>
-
-              <!-- Archivo -->
-              <div class="mb-3">
-                <label for="archivo" class="form-label">Archivo</label>
-                <input
-                  type="file"
-                  class="form-control"
-                  id="archivo"
-                  (change)="onArchivoSeleccionado($event)"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                />
-              </div>
-            </div>
-
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                class="btn btn-primary"
-                [disabled]="formIncapacidad.invalid"
-              >
-                Guardar
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+    
 
     <!-- Permiso denegado -->
     <ng-template #sinPermiso>
@@ -363,10 +236,7 @@
         <canvas id="graficoArea" height="100"></canvas>
       </div>
       <div class="modal-footer">
-        <button
-          class="btn btn-outline-danger"
-          (click)="descargarPDFPorArea()"
-        >
+        <button class="btn btn-outline-danger" (click)="descargarPDFPorArea()">
           <i class="bi bi-file-earmark-pdf"></i> PDF
         </button>
         <button
@@ -424,4 +294,3 @@
     </div>
   </div>
 </div>
-

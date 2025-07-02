@@ -12,7 +12,7 @@ class Usuarios extends Model
     protected $table = 'usuarios';
     public $timestamps = false;
     protected $primaryKey = 'numDocumento';
-    public $incrementing = false; 
+    public $incrementing = false;
     protected $keyType = 'integer';
     protected $fillable = [
         'numDocumento',
@@ -37,7 +37,7 @@ class Usuarios extends Model
         'usersId'
     ];
 
-    
+
     public function tipoDocumento()
     {
         return $this->belongsTo(TipoDocumento::class, 'tipoDocumentoId', 'idTipoDocumento');
@@ -70,5 +70,9 @@ class Usuarios extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'usersId', 'id');
+    }
+    public function rol()
+    {
+        return $this->belongsTo(Rol::class, 'rolId', 'id'); // si aplica
     }
 }

@@ -13,8 +13,19 @@ class HorasExtra extends Model
     protected $fillable = [
         'descripcion',
         'fecha',
-        'tipoHorasId',   
+        'tipoHorasId',
         'nHorasExtra',
         'contratoId',
     ];
+    public function tipoHoraExtra()
+    {
+        return $this->belongsTo(TipoHoras::class, 'tipoHorasId', 'idTipoHoras');
+    }
+    public function contrato()
+    {
+        return $this->belongsTo(Contrato::class, 'contratoId')->with([
+            'hojaDeVida.usuario.user.rol',
+            'area',
+        ]);
+    }
 }

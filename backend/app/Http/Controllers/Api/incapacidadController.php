@@ -14,7 +14,8 @@ class incapacidadController extends Controller
     {
         try {
             $incapacidades = Incapacidad::with([
-                'contrato.hojaDeVida.usuario.user'
+                'contrato.hojaDeVida.usuario.user',
+                'contrato.area'  // <-- Agregado para cargar área
             ])->get();
 
             return response()->json([
@@ -29,6 +30,7 @@ class incapacidadController extends Controller
             ], 500);
         }
     }
+
 
 
     /**
