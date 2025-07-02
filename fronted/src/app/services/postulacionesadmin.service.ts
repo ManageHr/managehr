@@ -17,7 +17,7 @@ export interface Postulacion {
   idPostulaciones: number;
   fechaPostulacion: string;
   fecha_formateada: string;
-  estado: 'Aceptado' | 'Rechazado' | 'Pendiente';
+  estado: number;
   vacantesId: number;
   numDocumento: number;
 
@@ -45,16 +45,14 @@ export interface Postulacion {
 export class PostulacionesadminService {
    private apiUrl = 'http://localhost:8000/api/postulaciones';
   constructor(private http: HttpClient) { }
+
+
   getPostulaciones(): Observable<Postulacion[]> {
-  return this.http.get<{ data: Postulacion[] }>(this.apiUrl).pipe(
-    map(response => {
-      return response.data.map(post => ({
-        ...post,
-        estado: typeof post.estado === 'number' ? this.mapEstado(post.estado) : post.estado
-      }));
-    })
-  );
-}
+    return this.http.get<{ data: Postulacion[] }>(this.apiUrl).pipe(
+      map(response => response.data)
+    );
+  }
+
 
 
   private mapEstado(estado: number): 'Pendiente' | 'Aceptado' | 'Rechazado' {
@@ -74,6 +72,8 @@ export class PostulacionesadminService {
   getReporteInternos(): Observable<any> {
     return this.http.get('http://localhost:8000/api/postulaciones/reporte/internos');
   }
-
+  actualizarEstado(id: number,estado : number): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, { estado });
+  }
 
 }

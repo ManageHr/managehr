@@ -31,15 +31,15 @@ class Contrato extends Model
     {
         return $this->belongsTo(Hojasvida::class, 'hojaDeVida', 'idHojaDeVida');
     }
-    
+
     /**
      * Relación: Un contrato pertenece a un área
      */
     public function area()
     {
-        return $this->belongsTo(Area::class, 'area');
+        return $this->belongsTo(Area::class, 'area', 'idArea');
     }
-    
+
     /**
      * Relación: Un contrato pertenece a un tipo de contrato
      */
@@ -47,7 +47,7 @@ class Contrato extends Model
     {
         return $this->belongsTo(TipoContrato::class, 'tipoContratoId', 'idTipoContrato');
     }
-    
+
     /**
      * Relación: Un contrato pertenece a un usuario a través de la hoja de vida
      */
@@ -62,7 +62,7 @@ class Contrato extends Model
             'usuarioNumDocumento' // Clave local en hojasvida
         );
     }
-    
+
     public function getCargoAreaDescripcionAttribute()
     {
         $cargos = [

@@ -9,14 +9,23 @@ use Illuminate\Support\Facades\Validator;
 
 class vacacioneController extends Controller
 {
+
+
     public function index()
     {
-        $vacaciones = Vacaciones::all();
+        $vacaciones = Vacaciones::with([
+            'contrato.tipoContrato',
+            'contrato.area',
+            'contrato.hojaDeVida.usuario'
+        ])->get();
+
         return response()->json([
-            "vacaciones" => $vacaciones,
-            "status" => 200
+            'vacaciones' => $vacaciones,
+            'status' => 200
         ]);
     }
+
+
 
     public function store(Request $request)
     {
@@ -60,7 +69,12 @@ class vacacioneController extends Controller
     }
     public function show($id)
     {
-        $vacaciones = Vacaciones::find($id);
+        $vacaciones = Vacaciones::with([
+            'contrato.tipoContrato',
+            'contrato.area',
+            'contrato.hojaDeVida.usuario'
+        ])->where('idVacaciones', $id)->first();
+
         if (!$vacaciones) {
             return response()->json([
                 "mensaje" => "Vacación no encontrada",
@@ -73,6 +87,7 @@ class vacacioneController extends Controller
             "status" => 200
         ]);
     }
+
 
     public function update(Request $request, $id)
     {
@@ -170,4 +185,28 @@ class vacacioneController extends Controller
             "status" => 200
         ]);
     }
+    public function actualizarEstado(Request $request, $id)
+    {
+        $estado = ucfirst(strtolower(trim($request->estado))); // <-- limpia el input
+        $request->merge(['estado' => $estado]);
+
+        $request->validate([
+            'estado' => 'required|in:Pendiente,Aprobado,Rechazado'
+        ]);
+
+        $vacacion = Vacaciones::find($id);
+        if (!$vacacion) {
+            return response()->json(['mensaje' => 'Vacación no encontrada'], 404);
+        }
+
+        $vacacion->estado = $estado;
+        $vacacion->save();
+
+        return response()->json([
+            'mensaje' => 'Estado actualizado correctamente',
+            'vacacion' => $vacacion,
+            'status' => 200
+        ]);
+    }
+   
 }

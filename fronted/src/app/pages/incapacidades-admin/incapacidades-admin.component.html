@@ -1,0 +1,101 @@
+<app-menu></app-menu>
+<div class="layout">
+  <div class="contenido-principal">
+    <div
+      id="tituloTargetas1"
+      class="header-horas d-flex justify-content-between align-items-center"
+    >
+      <h3>Incapacidades</h3>
+      <button
+        class="btn btn-light btn-sm agregar-btn"
+        *ngIf="[1, 4].includes(usuario?.rol)"
+        data-bs-toggle="modal"
+        data-bs-target="#modalReporteUsuarios"
+        (click)="abrirModalReporteUsuarios()"
+      >
+        <i class="fas fa-plus-circle"></i> Reporte Usuarios
+      </button>
+      <button
+        class="btn btn-light btn-sm agregar-btn"
+        *ngIf="[1, 4].includes(usuario?.rol)"
+        data-bs-toggle="modal"
+        data-bs-target="#modalReporteUsuarios"
+        (click)="abrirModalReporteArea()"
+      >
+        <i class="fas fa-plus-circle"></i> Reporte Usuarios
+      </button>
+      <button
+        class="btn btn-light btn-sm agregar-btn"
+        *ngIf="[1, 4].includes(usuario?.rol)"
+        (click)="abrirModalAgregar()"
+      >
+        <i class="fas fa-plus-circle"></i> Agregar
+      </button>
+    </div>
+    <div *ngIf="[1, 4].includes(usuario?.rol); else sinPermiso">
+      <!-- Tabla: visible en pantallas grandes -->
+
+      <div id="tituloTargetasfiltro1" class="mb-3">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Buscar por nombre o Numero de documento..."
+          style="
+            background-color: #1d2233;
+            color: white;
+            border: 1px solid #7a86a1;
+          "
+          [(ngModel)]="filtroNombre"
+        />
+      </div>
+  </div>
+  <div class="table-responsive d-none d-md-block">
+  <table class="table table-striped table-bordered table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th>Nombre</th>
+        <th>Documento</th>
+        <th>Correo</th>
+        <th>Teléfono</th>
+        <th>Inicio</th>
+        <th>Final</th>
+        <th>Días</th>
+        <th>Archivo</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let i of incapacidades | paginate : { itemsPerPage: itemsPerPage, currentPage: currentPage }; let idx = index">
+        <td>{{ i.contrato?.hoja_de_vida?.usuario?.primerNombre }} {{ i.contrato?.hoja_de_vida?.usuario?.primerApellido }}</td>
+        <td>{{ i.contrato?.hoja_de_vida?.usuario?.numDocumento }}</td>
+        <td>{{ i.contrato?.hoja_de_vida?.usuario?.email }}</td>
+        <td>{{ i.contrato?.hoja_de_vida?.usuario?.telefono }}</td>
+        <td>{{ i.fechaInicio }}</td>
+        <td>{{ i.fechaFinal }}</td>
+        <td>{{ calcularDias(i.fechaInicio, i.fechaFinal) }}</td>
+        <td>
+          <a [href]="'http://localhost:8000/' + i.archivo" target="_blank" class="btn btn-outline-primary btn-sm">
+            Ver archivo
+          </a>
+        </td>
+        <td>
+          <button class="btn btn-danger btn-sm" (click)="eliminarIncapacidad(i.idIncapacidad)">
+            <i class="fas fa-trash"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</div>
+<ng-template #sinPermiso>
+  <div class="alert alert-warning">
+    No tienes permiso para ver esta información.
+  </div>
+</ng-template>
+<ng-template #sinPermiso1>
+  <div class="alert alert-warning">
+    No tienes permiso para ver esta información.
+  </div>
+</ng-template>

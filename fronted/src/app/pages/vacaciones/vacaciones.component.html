@@ -4,148 +4,444 @@
   <div class="contenido-principal">
     <div class="header-horas d-flex justify-content-between align-items-center">
       <h3>Vacaciones</h3>
-      <button class="btn btn-light btn-sm agregar-btn" data-bs-toggle="modal" data-bs-target="#agregarVacacionesModal"
-        *ngIf="[1, 4].includes(usuario?.rol)">
+      <button
+        class="btn btn-light btn-sm agregar-btn"
+        data-bs-toggle="modal"
+        data-bs-target="#agregarVacacionesModal"
+        *ngIf="[8].includes(usuario?.rol)"
+      >
         <i class="fas fa-plus-circle"></i> Agregar
+      </button>
+      <button class="btn btn-primary me-2" (click)="abrirModalEstado()">
+        📊 Reporte por Estado
+      </button>
+      <button class="btn btn-success me-2" (click)="abrirModalUsuario()">
+        📊 Reporte por Usuario
+      </button>
+      <button class="btn btn-warning" (click)="abrirModalArea()">
+        📊 Reporte por Área
       </button>
     </div>
 
     <div *ngIf="[1, 4].includes(usuario?.rol); else sinPermiso">
       <div class="mb-3">
-        <input type="text" class="form-control text-white border-0 py-2" placeholder="Buscar por nombre o documento..." style="
-        background-color: #1d2233;
-        color: white;
-        border: 1px solid #7a86a1;
-      "
-          [(ngModel)]="filtroNombre" />
+        <input
+          type="text"
+          class="form-control text-white border-0 py-2"
+          placeholder="Buscar por nombre, documento o Área..."
+          style="
+            background-color: #1d2233;
+            color: white;
+            border: 1px solid #7a86a1;
+          "
+          [(ngModel)]="filtroNombre"
+        />
       </div>
 
       <!-- Tabla -->
-      <div class="table-responsive d-none d-md-block">
-        <table class="table table-striped table-bordered table-hover">
-          <thead class="table-dark">
-            <tr>
-              <th>Empleado</th>
-              <th>Fecha Inicio</th>
-              <th>Fecha Fin</th>
-              <th>Días</th>
-              <th>Motivo</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let vac of vacaciones | filterNombre: filtroNombre ; let i = index">
-              <td>{{ vac.usuarioNombre }}</td>
-              <td>{{ vac.fechaInicio }}</td>
-              <td>{{ vac.fechaFin }}</td>
-              <td>{{ vac.dias }}</td>
-              <td>{{ vac.motivo }}</td>
-              <td>{{ vac.estado }}</td>
-              <td>
-                <button class="btn btn-info btn-sm" >
-                  <i class="fas fa-eye"></i>
-                </button>
-                <button class="btn btn-link btn-sm" data-bs-toggle="modal" data-bs-target="#editarVacacionesModal"
-                  >
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button class="btn btn-danger btn-sm" >
-                  <i class="fas fa-trash-alt"></i>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <table class="table table-bordered table-hover table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th>
+            <th>Empleado</th>
+            <th>Documento</th>
+            <th>Área</th>
+            <th>Fecha Inicio</th>
+            <th>Fecha Final</th>
+            <th>Días</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let v of vacacionesFiltradasPaginadas; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td data-label="EMPLEADO: ">
+              {{ v.contrato.hoja_de_vida.usuario.primerNombre }}
+              {{ v.contrato.hoja_de_vida.usuario.segundoNombre || "" }}
+              {{ v.contrato.hoja_de_vida.usuario.primerApellido }}
+            </td>
+            <td data-label="DOCUMENTO: ">
+              {{ v.contrato.hoja_de_vida.usuario.numDocumento }}
+            </td>
+            <td data-label="ÁREA: ">{{ v.contrato.area.nombreArea }}</td>
+            <td data-label="FECHA INICIO: ">{{ v.fechaInicio }}</td>
+            <td data-label="FECHA FIN: ">{{ v.fechaFinal }}</td>
+            <td data-label="#DIAS: ">{{ v.dias }}</td>
+            <td>
+              <span
+                class="badge bg-warning text-dark"
+                *ngIf="v.estado === 'Pendiente'"
+                >Pendiente</span
+              >
+              <span class="badge bg-success" *ngIf="v.estado === 'Aprobado'"
+                >Aprobado</span
+              >
+              <span class="badge bg-danger" *ngIf="v.estado === 'Rechazado'"
+                >Rechazado</span
+              >
+            </td>
+            <td>
+              <button
+                class="btn btn-outline-info btn-sm me-1"
+                (click)="verDetalles(v.idVacaciones)"
+                title="Ver Detalles"
+              >
+                <i class="bi bi-eye"></i>
+              </button>
 
-      <!-- Modal Agregar Vacaciones -->
-      <!-- <div class="modal fade" id="agregarVacacionesModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-            <form (ngSubmit)="" #formVac="ngForm">
-              <div class="modal-header">
-                <h5 class="modal-title">Agregar Vacaciones</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-              </div>
-              <div class="modal-body">
-                <div class="mb-3">
-                  <label class="form-label">Empleado</label>
-                  <select class="form-control" [(ngModel)]="nuevaVacacion.usuarioId" name="usuarioId" required>
-                    <option [ngValue]="null">Seleccione un empleado</option>
-                    <option *ngFor="let u of usuarios" [value]="u.idUsuario">{{ u.nombreCompleto }}</option>
-                  </select>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Fecha Inicio</label>
-                  <input type="date" class="form-control" [(ngModel)]="nuevaVacacion.fechaInicio" name="fechaInicio" required />
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Fecha Fin</label>
-                  <input type="date" class="form-control" [(ngModel)]="nuevaVacacion.fechaFin" name="fechaFin" required />
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Días</label>
-                  <input type="number" class="form-control" [(ngModel)]="nuevaVacacion.dias" name="dias" required />
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button type="submit" class="btn btn-primary" [disabled]="formVac.invalid">Guardar</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div> -->
-
-      <!-- Tarjetas responsive -->
-      <!-- <div class="d-md-none">
-        <div class="row">
-          <div class="col-12 mb-3" *ngFor="let vac of vacaciones">
-            <div class="card">
-              <div class="card-body">
-                <p><strong>Empleado:</strong> {{ vac.usuarioNombre }}</p>
-                <p><strong>Inicio:</strong> {{ vac.fechaInicio }}</p>
-                <p><strong>Fin:</strong> {{ vac.fechaFin }}</p>
-                <p><strong>Días:</strong> {{ vac.dias }}</p>
-                <p><strong>Estado:</strong> {{ vac.estado }}</p>
-              </div>
-              <div class="card-footer d-flex justify-content-end gap-2">
-                <button class="btn btn-info btn-sm" (click)="verDetallesVacaciones(vac)">
-                  <i class="fas fa-eye"></i>
-                </button>
-                <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editarVacacionesModal"
-                  (click)="editarVacaciones(vac)">
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button class="btn btn-outline-danger btn-sm" (click)="eliminarVacaciones(i)">
-                  <i class="fas fa-trash-alt"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> -->
-
-      <!-- Paginación -->
+              <!-- Botón Editar (ícono de lápiz) -->
+              <button
+                class="btn btn-outline-warning btn-sm"
+                (click)="editarEstado(v.idVacaciones)"
+                title="Editar Estado"
+              >
+                <i class="bi bi-pencil"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
       <nav class="mt-3 d-flex justify-content-center">
-        <ul class="pagination">
+        <ul class="pagination pagination-sm">
+          <!-- Botón Anterior -->
           <li class="page-item" [class.disabled]="currentPage === 1">
-            <button class="page-link" (click)="cambiarPagina(currentPage - 1)">Anterior</button>
+            <button
+              class="page-link"
+              (click)="cambiarPaginaSiEsNumero(currentPage - 1)"
+            >
+              Anterior
+            </button>
           </li>
-          <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
-            [class.active]="currentPage === i + 1">
-            <button class="page-link" (click)="cambiarPagina(i + 1)">{{ i + 1 }}</button>
+
+          <!-- Números y puntos -->
+          <li
+            *ngFor="let pagina of getPaginas()"
+            class="page-item"
+            [class.active]="pagina === currentPage"
+          >
+            <ng-container *ngIf="typeof pagina === 'number'; else puntos">
+              <button
+                class="page-link"
+                (click)="cambiarPaginaSiEsNumero(pagina)"
+              >
+                {{ pagina }}
+              </button>
+            </ng-container>
           </li>
+
+          <!-- Botón Siguiente -->
           <li class="page-item" [class.disabled]="currentPage === totalPages">
-            <button class="page-link" (click)="cambiarPagina(currentPage + 1)">Siguiente</button>
+            <button
+              class="page-link"
+              (click)="cambiarPaginaSiEsNumero(currentPage + 1)"
+            >
+              Siguiente
+            </button>
           </li>
         </ul>
       </nav>
+
+      <ng-template #puntos>
+        <span class="page-link disabled">...</span>
+      </ng-template>
+    </div>
+    <!-- Modal Reporte por Estado -->
+    <div
+      class="modal fade"
+      id="modalReporteEstado"
+      tabindex="-1"
+      aria-labelledby="modalReporteEstadoLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-dark text-white">
+            <h5 class="modal-title" id="modalReporteEstadoLabel">
+              Reporte de Vacaciones por Estado
+            </h5>
+            <button
+              type="button"
+              class="btn-close bg-white"
+              data-bs-dismiss="modal"
+              aria-label="Cerrar"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <canvas id="graficoEstado" height="100"></canvas>
+          </div>
+          <div class="modal-footer">
+            <button
+              class="btn btn-outline-danger"
+              (click)="descargarPDFPorEstado()"
+            >
+              <i class="bi bi-file-earmark-pdf"></i> PDF
+            </button>
+            <button
+              class="btn btn-outline-success"
+              (click)="descargarExcelPorEstado()"
+            >
+              <i class="bi bi-file-earmark-excel"></i> Excel
+            </button>
+            <button class="btn btn-secondary" data-bs-dismiss="modal">
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Modal Reporte por Usuario -->
+    <div
+      class="modal fade"
+      id="modalReporteUsuario"
+      tabindex="-1"
+      aria-labelledby="modalReporteUsuarioLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-dark text-white">
+            <h5 class="modal-title" id="modalReporteUsuarioLabel">
+              Reporte de Vacaciones por Usuario
+            </h5>
+            <button
+              type="button"
+              class="btn-close bg-white"
+              data-bs-dismiss="modal"
+              aria-label="Cerrar"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <canvas id="graficoUsuario" height="100"></canvas>
+          </div>
+          <div class="modal-footer">
+            <button
+              class="btn btn-outline-danger"
+              (click)="descargarPDFPorUsuario()"
+            >
+              <i class="bi bi-file-earmark-pdf"></i> PDF
+            </button>
+            <button
+              class="btn btn-outline-success"
+              (click)="descargarExcelPorUsuario()"
+            >
+              <i class="bi bi-file-earmark-excel"></i> Excel
+            </button>
+            <button class="btn btn-secondary" data-bs-dismiss="modal">
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Modal Reporte por Área -->
+    <div
+      class="modal fade"
+      id="modalReporteArea"
+      tabindex="-1"
+      aria-labelledby="modalReporteAreaLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-dark text-white">
+            <h5 class="modal-title" id="modalReporteAreaLabel">
+              Reporte de Vacaciones por Área
+            </h5>
+            <button
+              type="button"
+              class="btn-close bg-white"
+              data-bs-dismiss="modal"
+              aria-label="Cerrar"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <canvas id="graficoArea" height="100"></canvas>
+          </div>
+          <div class="modal-footer">
+            <button
+              class="btn btn-outline-danger"
+              (click)="descargarPDFPorArea()"
+            >
+              <i class="bi bi-file-earmark-pdf"></i> PDF
+            </button>
+            <button
+              class="btn btn-outline-success"
+              (click)="descargarExcelPorArea()"
+            >
+              <i class="bi bi-file-earmark-excel"></i> Excel
+            </button>
+            <button class="btn btn-secondary" data-bs-dismiss="modal">
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--Moodal Detalles-->
+    <div
+      class="modal fade"
+      id="verDetallesModal"
+      tabindex="-1"
+      aria-labelledby="verDetallesModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-info text-white">
+            <h5 class="modal-title">Detalles de Vacaciones</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body" *ngIf="detalleVacacion">
+            <p>
+              <strong>Empleado:</strong>
+              {{ detalleVacacion.contrato.hoja_de_vida.usuario.primerNombre }}
+              {{
+                detalleVacacion.contrato.hoja_de_vida.usuario.segundoNombre ||
+                  ""
+              }}
+              {{ detalleVacacion.contrato.hoja_de_vida.usuario.primerApellido }}
+              {{
+                detalleVacacion.contrato.hoja_de_vida.usuario.segundoApellido ||
+                  ""
+              }}
+            </p>
+
+            <p>
+              <strong>Documento:</strong>
+              {{ detalleVacacion.contrato.hoja_de_vida.usuario.numDocumento }}
+            </p>
+            <p>
+              <strong>Email:</strong>
+              {{ detalleVacacion.contrato.hoja_de_vida.usuario.email }}
+            </p>
+            <p>
+              <strong>Telefono:</strong>
+              {{ detalleVacacion.contrato.hoja_de_vida.usuario.telefono }}
+            </p>
+            <p>
+              <strong>Área:</strong>
+              {{ detalleVacacion.contrato.area.nombreArea }}
+            </p>
+            <p>
+              <strong>Cargo:</strong> {{ detalleVacacion.contrato.cargoArea }}
+            </p>
+            <p>
+              <strong>Tipo de Contrato:</strong>
+              {{ detalleVacacion.contrato.tipo_contrato.nomTipoContrato }}
+            </p>
+            <p>
+              <strong>Fecha de Ingreso:</strong>
+              {{ detalleVacacion.contrato.fechaIngreso }}
+            </p>
+            <p>
+              <strong>Fecha de Finalización:</strong>
+              {{ detalleVacacion.fechaFinal }}
+            </p>
+            <p><strong>Días Solicitados:</strong> {{ detalleVacacion.dias }}</p>
+            <p><strong>Motivo:</strong> {{ detalleVacacion.motivo }}</p>
+            <p><strong>Estado:</strong> {{ detalleVacacion.estado }}</p>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para Editar Estado -->
+    <div
+      class="modal fade"
+      id="editarEstadoModal"
+      tabindex="-1"
+      aria-labelledby="editarEstadoModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Editar Estado de Vacación</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Cerrar"
+            ></button>
+          </div>
+
+          <div class="modal-body">
+            <p>
+              <strong>Nombre:</strong>
+              {{
+                vacacionSeleccionada?.contrato?.hoja_de_vida?.usuario
+                  ?.primerNombre
+              }}
+              {{
+                vacacionSeleccionada?.contrato?.hoja_de_vida?.usuario
+                  ?.primerApellido
+              }}
+            </p>
+            <p>
+              <strong>Área:</strong>
+              {{ vacacionSeleccionada?.contrato?.area?.nombreArea }}
+            </p>
+            <p><strong>Motivo:</strong> {{ vacacionSeleccionada?.motivo }}</p>
+            <p>
+              <strong>Fechas:</strong>
+              {{ vacacionSeleccionada?.fechaInicio }} al
+              {{ vacacionSeleccionada?.fechaFinal }}
+            </p>
+
+            <div class="mb-3">
+              <label for="estadoEdit" class="form-label">Estado</label>
+              <select
+                id="estadoEdit"
+                class="form-select"
+                [(ngModel)]="vacacionSeleccionada.estado"
+                name="estadoEdit"
+              >
+                <option value="Pendiente">Pendiente</option>
+                <option value="Aprobado">Aprobado</option>
+                <option value="Rechazado">Rechazado</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              (click)="actualizarEstado()"
+            >
+              Actualizar Estado
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <ng-template #sinPermiso>
-      <div class="alert alert-warning">No tienes permiso para ver esta información.</div>
+      <div class="alert alert-warning">
+        No tienes permiso para ver esta información.
+      </div>
     </ng-template>
   </div>
 </div>

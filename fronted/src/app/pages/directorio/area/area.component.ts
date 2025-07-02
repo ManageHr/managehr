@@ -1,5 +1,5 @@
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MenuComponent } from '../../menu/menu.component';
 import { NgxPaginationModule } from 'ngx-pagination';

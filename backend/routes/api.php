@@ -181,6 +181,9 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/vacaciones/{id}', [vacacioneController::class, 'show']);
     Route::patch('/vacaciones/{id}', [vacacioneController::class, 'updatePartial']);
     Route::delete('/vacaciones/{id}', [vacacioneController::class, 'destroy']);
+    Route::put('/vacaciones/{id}/estado', [VacacioneController::class, 'actualizarEstado']);
+    
+
 
     Route::get('/usuarioshasrol', [usuarioshasrolController::class, 'index']);
     Route::post('/usuarioshasrol', [usuarioshasrolController::class, 'store']);
@@ -206,7 +209,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('/postulaciones', [postulacionesController::class, 'index']);
     Route::post('/postulaciones', [postulacionesController::class, 'store']);
-    Route::put('/postulaciones/{id}', [postulacionesController::class, 'update']);
+    Route::put('/postulaciones/{id}', [postulacionesController::class, 'updateStatus']);
     Route::get('/postulaciones/{id}', [postulacionesController::class, 'show']);
     Route::patch('/postulaciones/{id}', [postulacionesController::class, 'updatePartial']);
     Route::delete('/postulaciones/{id}', [postulacionesController::class, 'destroy']);

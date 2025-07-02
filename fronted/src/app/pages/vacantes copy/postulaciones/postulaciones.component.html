@@ -16,6 +16,12 @@
       >
         📊 Reportes por Estado
       </button>
+      <button
+        class="btn btn-outline-primary btn-sm"
+        (click)="abrirModalReporteInternos()"
+      >
+        📊 Reportes Empleados
+      </button>
     </div>
 
     <div class="mb-3">
@@ -56,12 +62,12 @@
             <td data-label="Estado">
               <span
                 [ngClass]="{
-                  'estado-pendiente': p.estado === 'Pendiente',
-                  'estado-aceptado': p.estado === 'Aceptado',
-                  'estado-rechazado': p.estado === 'Rechazado'
+                  'estado-pendiente': p.estado === 2,
+                  'estado-aceptado': p.estado === 1,
+                  'estado-rechazado': p.estado === 3
                 }"
               >
-                {{ p.estado }}
+                {{ obtenerNombreEstado(p.estado) }}
               </span>
             </td>
 
@@ -133,6 +139,61 @@
         No tienes permiso para ver esta información.
       </div>
     </ng-template>
+    <!-- Modal Reporte Internos -->
+    <div
+      class="modal fade"
+      id="modalReporteInternos"
+      tabindex="-1"
+      aria-labelledby="modalInternosLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="modalInternosLabel">
+              Reporte de Postulaciones Internas (Empleados)
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Cerrar"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="d-flex justify-content-end mb-3 gap-2">
+              <button
+                class="btn btn-outline-danger"
+                (click)="descargarPDFInternos()"
+              >
+                <i class="bi bi-file-earmark-pdf-fill"></i> PDF
+              </button>
+              <button
+                class="btn btn-outline-success"
+                (click)="descargarExcelInternos()"
+              >
+                <i class="bi bi-file-earmark-excel-fill"></i> Excel
+              </button>
+            </div>
+
+            <!-- Gráfico -->
+            <div class="text-center">
+              <canvas id="graficoInternos" width="600" height="300"></canvas>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!--Modal por estado-->
     <div
       class="modal fade"
@@ -213,10 +274,11 @@
                 class="form-control"
                 required
               >
-                <option value="Pendiente">Pendiente</option>
-                <option value="Aceptado">Aceptado</option>
-                <option value="Rechazado">Rechazado</option>
+                <option [ngValue]="2">Pendiente</option>
+                <option [ngValue]="1">Aceptado</option>
+                <option [ngValue]="3">Rechazado</option>
               </select>
+
               <button type="submit" class="btn btn-primary mt-3">
                 Guardar
               </button>

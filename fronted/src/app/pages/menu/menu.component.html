@@ -107,6 +107,7 @@
         <i class="fa-solid fa-heart-pulse"></i>
         <span>Incapacidades</span>
       </a>
+
       <a class="nav-link" *ngIf="[2].includes(usuario?.rol)" (click)="navigateTo('/horas-extra')" [class.active]="isActive('/horas-extra')">
         <i class="fas fa-calendar-plus"></i>
         <span>Horas extra</span>

@@ -220,7 +220,7 @@ class PostulacionesController extends Controller
     public function porEmpleado()
     {
         try {
-            $postulaciones = Postulaciones::with(['usuario.user'])
+            $postulaciones = Postulaciones::with(['usuario.user', 'vacante']) // 👈 AÑADIDO
                 ->get()
                 ->filter(function ($item) {
                     return $item->usuario->user->rol != 5;
@@ -237,6 +237,7 @@ class PostulacionesController extends Controller
                                 'nombre' => $item->usuario->primerNombre . ' ' . $item->usuario->primerApellido,
                                 'documento' => $item->usuario->numDocumento,
                                 'correo' => $item->usuario->email,
+                                'vacante' => $item->vacante->nomVacante ?? 'No especificada' // 👈 Añadido
                             ];
                         }),
                     ];

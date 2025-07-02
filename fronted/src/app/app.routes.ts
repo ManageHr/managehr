@@ -26,6 +26,7 @@ import { JefePersonalComponent } from './pages/jefe-personal/jefe-personal.compo
 import { HojaDeVidaComponent } from './pages/hoja-de-vida/hoja-de-vida.component';
 import { VacacionesJefeComponent } from './pages/vacaciones-jefe/vacaciones-jefe.component';
 import { AuthGuard } from './guards/auth.guard';
+import { IncapacidadesAdminComponent } from './pages/incapacidades-admin/incapacidades-admin.component';
 
 
 
@@ -63,7 +64,8 @@ export const routes: Routes = [
       { path: 'mis-postulaciones', component: MisPostulacionesComponent },
       { path: 'jefe-personal', component: JefePersonalComponent, canActivate: [AuthGuard] },
       { path: 'hoja-de-vida',component: HojaDeVidaComponent,canActivate: [AuthGuard]},
-      { path: 'vacaciones-jefe', component: VacacionesJefeComponent, canActivate: [AuthGuard] }
+      { path: 'vacaciones-jefe', component: VacacionesJefeComponent, canActivate: [AuthGuard] },
+      { path: 'incapacidades-admin', component: IncapacidadesAdminComponent, canActivate: [AuthGuard] },
 
     ]
   },

@@ -1,22 +1,35 @@
 <?php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Incapacidad;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class incapacidadController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $incapacidad=Incapacidad::all();
-        $data=[
-            "incapacidad" => $incapacidad,
-            "status" => 200
-        ];
-        return response()->json($data,200);
+        try {
+            $incapacidades = Incapacidad::with([
+                'contrato.hojaDeVida.usuario.user'
+            ])->get();
+
+            return response()->json([
+                'data' => $incapacidades
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error al obtener incapacidades (IncapacidadController::index): ' . $e->getMessage());
+
+            return response()->json([
+                'message' => 'Ocurrió un error al obtener las incapacidades.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -38,7 +51,7 @@ class incapacidadController extends Controller
             'fechaFinal' => 'required|date',
             'contratoId' => 'required|integer'
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json([
                 'mensaje' => 'Error en la validación de datos de la incapacidad',
@@ -66,9 +79,9 @@ class incapacidadController extends Controller
                 'fechaInicio' => $request->fechaInicio,
                 'fechaFinal' => $request->fechaFinal,
                 'contratoId' => $request->contratoId
-                
+
             ]);
-    
+
             return response()->json([
                 'mensaje' => 'incapacidad creado correctamente',
                 'incapacidad' => $incapacidad,
@@ -81,9 +94,6 @@ class incapacidadController extends Controller
                 'status' => 500
             ], 500);
         }
-        
-        
-        
     }
 
     /**
@@ -91,12 +101,12 @@ class incapacidadController extends Controller
      */
     public function show($id)
     {
-        $incapacidad=Incapacidad::find($id);
-        $data=[
+        $incapacidad = Incapacidad::find($id);
+        $data = [
             "incapacidad" => $incapacidad,
             "status" => 200
         ];
-        return response()->json($data,200);
+        return response()->json($data, 200);
     }
 
     /**
@@ -130,7 +140,7 @@ class incapacidadController extends Controller
             return response()->json([$data], 404);
         }
         $validator = Validator::make($request->all(), [
-            
+
             'descrip' => 'required|string|max:500',
             'archivo' => 'nullable|file|max:5120',
             'fechaInicio' => 'required|date',
@@ -157,7 +167,7 @@ class incapacidadController extends Controller
             // guardamos la URL relativa
             $validated['archivo'] = 'storage/' . $path;
         }
-        
+
         $incapacidad->descrip = $request->descrip;
         $incapacidad->archivo = $request->archivo;
         $incapacidad->fechaInicio = $request->fechaInicio;
@@ -190,7 +200,7 @@ class incapacidadController extends Controller
             return response()->json([$data], 404);
         }
         $validator = Validator::make($request->all(), [
-            
+
             'descrip' => 'string|max:500',
             'archivo' => 'string|max:50',
             'fechaInicio' => 'date',
@@ -220,8 +230,8 @@ class incapacidadController extends Controller
         if ($request->has("contratoId")) {
             $incapacidad->contratoId = $request->contratoId;
         }
-        
-        
+
+
         $incapacidad->save();
         $data = [
             "incapacidad:" => $incapacidad,
