@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Hojasvida;
 use App\Models\User;
 use App\Models\rol;
 use Illuminate\Http\Request;
@@ -139,20 +140,38 @@ class usuarioController extends Controller
     public function destroy($id)
     {
         $usuario = Usuarios::find($id);
+
         if (!$usuario) {
-            $data = [
-                "mensage" => " No se encontro Usuarios",
+            return response()->json([
+                "mensaje" => "No se encontró el usuario",
                 "status" => 404
-            ];
-            return response()->json([$data], 404);
+            ], 404);
         }
+
+        // Eliminar hojas de vida asociadas
+        $numDocumento = $usuario->numDocumento;
+        Hojasvida::where('usuarioNumDocumento', $numDocumento)->delete();
+
+        // Guardar el usersId
+        $usersId = $usuario->usersId;
+
+        // Eliminar usuario
         $usuario->delete();
-        $data = [
-            "rol" => 'Usuario eliminado',
+
+        // Eliminar user
+        $user = User::find($usersId);
+        if ($user) {
+            $user->delete();
+        }
+
+        return response()->json([
+            "mensaje" => "Usuario, hoja de vida y cuenta eliminados correctamente",
             "status" => 200
-        ];
-        return response()->json([$data], 200);
+        ], 200);
     }
+
+
+
     public function update(Request $request, $id)
     {
         $usuario = Usuarios::find($id);
@@ -434,7 +453,7 @@ class usuarioController extends Controller
             ], 500);
         }
     }
-   
+
 
     public function reporteRoles()
     {

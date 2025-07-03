@@ -388,27 +388,19 @@ confirmDelete(usuario: Usuarios, index: number): void {
   }).then((result) => {
     if (result.isConfirmed) {
 
-      const user2= this.usuariosService.eliminarUser(usuario.usersId);
-      if (!user2) {
-        Swal.fire('Error', 'No se pudo eliminar el usuario, no existe en la base de datos', 'error');
-        return;
-      }
-      this.usuariosService.eliminarUsuario(usuario.usersId).subscribe({
+      
+      this.usuariosService.eliminarUsuario(usuario.numDocumento).subscribe({
         next: (res) => {
           Swal.fire('Eliminado', 'El usuario ha sido eliminado', 'success');
-
-          // Identifica de qué lista eliminar
-          if (usuario.rol === 5) {
-            this.usuariosRolCinco.splice(index, 1); // eliminar de lista externa
-          } else {
-            this.usuarios.splice(index, 1); // eliminar de lista interna
-          }
+          this.cargarAmbasListasUsuarios();
+          
         },
         error: (err) => {
           console.error(err);
-          Swal.fire('Error', 'No se pudo eliminar el usuario', 'error');
+          Swal.fire('Error', 'No se pudo eliminar el usuario Ya que tiene contratos asosiados', 'error');
         },
       });
+      
     }
   });
 }
@@ -444,6 +436,38 @@ confirmDelete(usuario: Usuarios, index: number): void {
         }
       });
     }
+  }
+  cargarAmbasListasUsuarios(): void {
+    this.usuariosService.obtenerUsuarios().subscribe({
+      next: (data: Usuarios[]) => {
+        this.usuarios = data.filter((u: Usuarios) => {
+          const rol =
+            typeof u.rol === 'number'
+              ? u.rol
+              : typeof u.user?.rol === 'object'
+              ? (u.user.rol as any)?.idRol
+              : u.user?.rol;
+          return rol !== 5;
+        });
+
+        this.usuariosRolCinco = data.filter((u: Usuarios) => {
+          const rol =
+            typeof u.rol === 'number'
+              ? u.rol
+              : typeof u.user?.rol === 'object'
+              ? (u.user.rol as any)?.idRol
+              : u.user?.rol;
+          return rol === 5;
+        });
+
+        this.totalPages = Math.ceil(this.usuarios.length / this.itemsPerPage);
+        this.totalPagesExternos = Math.ceil(this.usuariosRolCinco.length / this.itemsPerPage);
+
+        console.log('Usuarios normales:', this.usuarios);
+        console.log('Usuarios externos:', this.usuariosRolCinco);
+      },
+      error: (err) => console.error('Error al recargar ambas tablas de usuarios', err)
+    });
   }
 
   get usuariosPaginados(): Usuarios[] {
