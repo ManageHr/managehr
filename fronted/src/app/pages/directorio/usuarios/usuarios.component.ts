@@ -73,7 +73,7 @@ export class UsuariosComponent implements OnInit {
     { idRol: 5, nombreRol: 'Externo' },
     { idRol: 7, nombreRol: 'Para borrar nuevo MODEL' }
   ];
-  
+
   mostrarModal: boolean = false;
   rolNombreSeleccionado: string = '';
   experienciasLaborales: any[] = [];
@@ -150,7 +150,7 @@ export class UsuariosComponent implements OnInit {
     this.cargarForaneas();
 
   }
-  
+
 
   mostrarInfoPorDocumento(numDocumento: string): void {
     this.usuariosService.obtenerUsuarioPorDocumento(numDocumento).subscribe({
@@ -172,7 +172,7 @@ export class UsuariosComponent implements OnInit {
       || this.usuariosRolCinco.find(u => u.usersId === usuarioId);
 
     console.log('Usuario encontrado:', usuarioCompleto);
-    
+
     if (usuarioCompleto) {
       this.usuarioSeleccionado = usuarioCompleto;
 
@@ -371,48 +371,48 @@ abrirModalHojaVida(): void {
     console.error('No se encontró el modal de Hoja de Vida');
   }
 }
-    
+
 mostrarEstudios(usuario: Usuarios): void {
   console.log(`Mostrar Estudios de: ${usuario.numDocumento}`);
   // Lógica para abrir modal o redirigir
 }
 
-  confirmDelete(index: number): void {
-    const usuario = this.usuariosPaginados[index];
-    const nombre = `${usuario.primerNombre} ${usuario.primerApellido}`;
+confirmDelete(usuario: Usuarios, index: number): void {
+  Swal.fire({
+    title: '¿Estás seguro?',
+    text: 'Esta acción eliminará al usuario de forma permanente '+ usuario.primerNombre + ' ' + usuario.primerApellido,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+  }).then((result) => {
+    if (result.isConfirmed) {
 
-    Swal.fire({
-      title: `¿Eliminar a ${nombre}?`,
-      text: 'Esta acción eliminará también el acceso del usuario.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Primero elimina el usuario extendido (tabla Usuarios)
-        this.usuariosService.eliminarUsuario(usuario.numDocumento).subscribe({
-          next: () => {
-            // Luego elimina el acceso base (tabla Users)
-            this.usuariosService.eliminarUser(usuario.usersId).subscribe({
-              next: () => {
-                Swal.fire('Eliminado', 'Usuario eliminado correctamente.', 'success');
-                this.cargarUsuarios();
-              },
-              error: (err) => {
-                console.error('Error al eliminar acceso base:', err);
-                Swal.fire('Error', 'No se pudo eliminar el acceso base del usuario.', 'error');
-              }
-            });
-          },
-          error: (err) => {
-            console.error('Error al eliminar usuario extendido:', err);
-            Swal.fire('Error', 'No se pudo eliminar el usuario.', 'error');
-          }
-        });
+      const user2= this.usuariosService.eliminarUser(usuario.usersId);
+      if (!user2) {
+        Swal.fire('Error', 'No se pudo eliminar el usuario, no existe en la base de datos', 'error');
+        return;
       }
-    });
-  }
+      this.usuariosService.eliminarUsuario(usuario.usersId).subscribe({
+        next: (res) => {
+          Swal.fire('Eliminado', 'El usuario ha sido eliminado', 'success');
+
+          // Identifica de qué lista eliminar
+          if (usuario.rol === 5) {
+            this.usuariosRolCinco.splice(index, 1); // eliminar de lista externa
+          } else {
+            this.usuarios.splice(index, 1); // eliminar de lista interna
+          }
+        },
+        error: (err) => {
+          console.error(err);
+          Swal.fire('Error', 'No se pudo eliminar el usuario', 'error');
+        },
+      });
+    }
+  });
+}
+
 
 
 
@@ -620,7 +620,7 @@ mostrarEstudios(usuario: Usuarios): void {
           this.alerta("Este usuario no tiene experiencias laborales registradas.");
           this.usuarioSeleccionado = usuario;
           this.experienciasLaborales = []; // Vaciar para prevenir residuos
-          
+
           return;
         }
 
@@ -631,11 +631,11 @@ mostrarEstudios(usuario: Usuarios): void {
       },
       error: (err) => {
         if (err.status === 404 && err.error?.mensaje === "Hoja de vida no encontrada") {
-          
+
           this.usuarioSeleccionado = usuario;
           this.experienciasLaborales = []; // Prevenir errores en el HTML
           this.abrirModalExperiencia();
-          
+
         } else {
           console.error('Error inesperado al obtener experiencia:', err);
           this.alerta("Error inesperado al consultar experiencia.");
@@ -688,7 +688,7 @@ mostrarEstudios(usuario: Usuarios): void {
     );
     return Math.ceil(filtrados.length / this.itemsPerPage);
   }
-  
+
 
   getPaginas(currentPage: number, totalPages: number): (number | string)[] {
   const delta = 2;
@@ -709,7 +709,7 @@ mostrarEstudios(usuario: Usuarios): void {
   return range;
 }
 
-  
+
 
   irAPaginaUsuarios(pagina: number | string): void {
     if (typeof pagina === 'number') {
@@ -815,17 +815,17 @@ mostrarEstudios(usuario: Usuarios): void {
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet('Usuarios');
 
-    
+
     sheet.addRow([]); // espacio
 
-    
+
     sheet.columns = [
       { header: 'Documento', key: 'documento', width: 20 },
       { header: 'Nombre', key: 'nombre', width: 30 },
       { header: 'Correo', key: 'correo', width: 30 }
     ];
 
-  
+
     const usuariosPorRol: { [rol: string]: any[] } = {};
     this.usuarios.forEach((u) => {
       const rol = (u.user?.rol as any)?.nombreRol || 'Sin Rol';
@@ -834,23 +834,23 @@ mostrarEstudios(usuario: Usuarios): void {
     });
 
     Object.entries(usuariosPorRol).forEach(([rol, usuarios]) => {
-      
+
       const rolRow = sheet.addRow([`Rol: ${rol}`]);
       rolRow.font = { bold: true };
       rolRow.fill = {
         type: 'pattern',
         pattern: 'solid',
-        fgColor: { argb: 'FFD9D9D9' }, 
+        fgColor: { argb: 'FFD9D9D9' },
       };
       sheet.mergeCells(`A${rolRow.number}:C${rolRow.number}`);
 
-    
+
       const encabezadoRow = sheet.addRow(['Documento', 'Nombre', 'Correo']);
       encabezadoRow.font = { bold: true };
       encabezadoRow.fill = {
         type: 'pattern',
         pattern: 'solid',
-        fgColor: { argb: 'FFB0C4DE' }, 
+        fgColor: { argb: 'FFB0C4DE' },
       };
 
       encabezadoRow.eachCell((cell) => {
@@ -862,7 +862,7 @@ mostrarEstudios(usuario: Usuarios): void {
         };
       });
 
-      
+
       usuarios.forEach((u, index) => {
         const dataRow = sheet.addRow([
           u.numDocumento,
@@ -870,12 +870,12 @@ mostrarEstudios(usuario: Usuarios): void {
           u.email
         ]);
 
-        
+
         if (index % 2 === 0) {
           dataRow.fill = {
             type: 'pattern',
             pattern: 'solid',
-            fgColor: { argb: 'FFF7F7F7' }, 
+            fgColor: { argb: 'FFF7F7F7' },
           };
         }
 
@@ -889,10 +889,10 @@ mostrarEstudios(usuario: Usuarios): void {
         });
       });
 
-      sheet.addRow([]); 
+      sheet.addRow([]);
     });
 
-    
+
     workbook.xlsx.writeBuffer().then((buffer) => {
       const blob = new Blob([buffer], {
         type:
@@ -901,7 +901,7 @@ mostrarEstudios(usuario: Usuarios): void {
       saveAs(blob, 'usuarios_reporte.xlsx');
     });
   }
-  
+
 
 
   descargarPDF(): void {
@@ -920,14 +920,14 @@ mostrarEstudios(usuario: Usuarios): void {
 
       let startY = 35;
 
-      
+
       const canvas: any = document.getElementById('graficaRoles');
       const graficaImg = canvas.toDataURL('image/png', 1.0);
       doc.addImage(graficaImg, 'PNG', 10, startY, 180, 80);
 
       startY += 90;
 
-     
+
       const usuariosPorRol: { [rol: string]: any[] } = {};
       this.usuarios.forEach(u => {
         const rol = (u.user?.rol as any)?.nombreRol || 'Sin Rol';
@@ -957,7 +957,7 @@ mostrarEstudios(usuario: Usuarios): void {
           },
           didParseCell: (data) => {
             if (data.section === 'body' && data.row.index % 2 === 0) {
-              data.cell.styles.fillColor = [240, 240, 240]; 
+              data.cell.styles.fillColor = [240, 240, 240];
             }
           }
         });
