@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from 'src/app/services/auth.service';
 import { UsuariosService } from 'src/app/services/usuarios.service';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-register',
@@ -22,6 +23,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
   registroExitoso: boolean = false;
   numDocumento: string = '';
 
+  primerNombre = '';
+  segundoNombre = '';
+  primerApellido = '';
+  segundoApellido = '';
   vacantes = [
     {
       titulo: 'Desarrollador Frontend',
@@ -80,7 +85,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private usuariosService: UsuariosService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     // Asegúrate de eliminar cualquier clase innecesaria del body al cargar el componente
@@ -101,6 +106,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   enviarFormulario(): void {
+    
     if (this.email !== this.confirmarEmail) {
       this.mensaje = 'Los correos electrónicos no coinciden.';
       return;
@@ -115,7 +121,43 @@ export class RegisterComponent implements OnInit, OnDestroy {
       this.mensaje = 'Debe ingresar su número de documento.';
       return;
     }
+    const partes = this.nombre.trim().split(/\s+/); // Elimina espacios extra
 
+    // Limpiar antes de asignar
+    this.primerNombre = '';
+    this.segundoNombre = '';
+    this.primerApellido = '';
+    this.segundoApellido = '';
+
+    if (partes.length < 2) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Debe ingresar al menos un nombre y un apellido.',
+        confirmButtonText: 'Aceptar'
+      }).then(() => {
+        this.resetForm();
+        this.eliminarModalBackdrop();
+      });
+      return;
+    } else if (partes.length === 2) {
+      [this.primerNombre, this.primerApellido] = partes;
+    } else if (partes.length === 3) {
+      [this.primerNombre, this.primerApellido, this.segundoApellido] = partes;
+    } else if (partes.length === 4) {
+      [this.primerNombre, this.segundoNombre, this.primerApellido, this.segundoApellido] = partes;
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Solo se admiten máximo 2 nombres y 2 apellidos.',
+        confirmButtonText: 'Aceptar'
+      }).then(() => {
+        this.resetForm();
+        this.eliminarModalBackdrop();
+      });
+      return;
+    }
     const data = {
       name: this.nombre,
       email: this.email,
@@ -125,13 +167,15 @@ export class RegisterComponent implements OnInit, OnDestroy {
       rol: 5
     };
 
+
     this.authService.register(data).subscribe({
       next: (res) => {
         this.mensaje = 'Registro exitoso';
         this.registroExitoso = true;
 
-        localStorage.setItem('token', res.token);
+        
         if (res.user) {
+          localStorage.setItem('token', res.token);
           localStorage.setItem('usuario', JSON.stringify(res.user));
           this.crearUsuario(res.user.id); // 👈 crear Usuario con ID del User
         }
@@ -155,18 +199,51 @@ export class RegisterComponent implements OnInit, OnDestroy {
     });
   }
   crearUsuario(userId: number): void {
-    const nombresSeparados = this.nombre.trim().split(' ');
-    const primerNombre = nombresSeparados[0] || '';
-    const segundoNombre = nombresSeparados.length >= 4 ? nombresSeparados[1] : '';
-    const primerApellido = nombresSeparados.length >= 2 ? nombresSeparados[nombresSeparados.length - 2] : '';
-    const segundoApellido = nombresSeparados.length >= 3 ? nombresSeparados[nombresSeparados.length - 1] : '';
+    const partes = this.nombre.trim().split(/\s+/); // Elimina espacios extra
+
+    // Limpiar antes de asignar
+    this.primerNombre = '';
+    this.segundoNombre = '';
+    this.primerApellido = '';
+    this.segundoApellido = '';
+
+    if (partes.length < 2) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Debe ingresar al menos un nombre y un apellido.',
+        confirmButtonText: 'Aceptar'
+      }).then(() => {
+        this.resetForm();
+        this.eliminarModalBackdrop();
+      });
+      return;
+    } else if (partes.length === 2) {
+      [this.primerNombre, this.primerApellido] = partes;
+    } else if (partes.length === 3) {
+      [this.primerNombre, this.primerApellido, this.segundoApellido] = partes;
+    } else if (partes.length === 4) {
+      [this.primerNombre, this.segundoNombre, this.primerApellido, this.segundoApellido] = partes;
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Solo se admiten máximo 2 nombres y 2 apellidos.',
+        confirmButtonText: 'Aceptar'
+      }).then(() => {
+        this.resetForm();
+        this.eliminarModalBackdrop();
+      });
+      return;
+    }
+
 
     const usuarioData = {
       numDocumento: this.numDocumento,
-      primerNombre: primerNombre,
-      segundoNombre: segundoNombre,
-      primerApellido: primerApellido,
-      segundoApellido: segundoApellido,
+      primerNombre: this.primerNombre,
+      segundoNombre: this.segundoNombre,
+      primerApellido: this.primerApellido,
+      segundoApellido: this.segundoApellido,
       password: this.password,
       fechaNac: '1990-01-01',
       numHijos: 0,
@@ -183,17 +260,16 @@ export class RegisterComponent implements OnInit, OnDestroy {
       pensionesCodigo: '230201', // PROTECCION
       usersId: userId
     };
-
-    this.authService.crearUsuario(usuarioData).subscribe({
-      next: (res) => {
-        console.log('Usuario creado correctamente:', res);
-      },
-      error: (err) => {
-        console.error('Error al crear usuario:', err);
-      }
-    });
+    
+        this.authService.crearUsuario(usuarioData).subscribe({
+          next: (res) => {
+            console.log('Usuario creado correctamente:', res);
+          },
+          error: (err) => {
+            console.error('Error al crear usuario:', err);
+          }
+        });
   }
-
 
 
 
@@ -217,11 +293,9 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   volver() {
-  window.history.back();
-}
-
-
-soloLetras(event: KeyboardEvent): boolean {
+    window.history.back();
+  }
+  soloLetras(event: KeyboardEvent): boolean {
     const input = event.key;
     const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/;
 
@@ -241,6 +315,4 @@ soloLetras(event: KeyboardEvent): boolean {
     }
     return true;
   }
-
-
 }

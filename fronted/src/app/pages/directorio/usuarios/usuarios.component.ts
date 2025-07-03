@@ -10,7 +10,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { FilterNombre } from './filter-nombre';
 import { forkJoin } from 'rxjs';
 import * as ExcelJS from 'exceljs';
-
+import { Modal } from 'bootstrap';
 
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -537,7 +537,13 @@ confirmDelete(usuario: Usuarios, index: number): void {
             next: () => {
               Swal.fire('¡Éxito!', 'El usuario fue creado correctamente.', 'success');
               this.nuevoUsuario = {};
-              this.cargarUsuarios();
+              this.cargarAmbasListasUsuarios();
+              const modalEl = document.getElementById('agregarusuariosModal');
+              if (modalEl) {
+                const modal = Modal.getInstance(modalEl) || new Modal(modalEl);
+                modal.hide();
+              }
+              return;
             },
             error: (err) => {
               console.error('Error al guardar usuario:', err);

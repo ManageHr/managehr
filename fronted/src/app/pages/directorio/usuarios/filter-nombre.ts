@@ -6,14 +6,18 @@ import { Usuarios } from '../../../services/usuarios.service';
   standalone: true
 })
 export class FilterNombre implements PipeTransform {
-  transform(usuarios: Usuarios[], termino: string): Usuarios[] {
-    if (!usuarios || !termino) return usuarios;
+  transform(usuarios: Usuarios[], filtro: string): Usuarios[] {
+    if (!usuarios || !filtro) return usuarios;
 
-    const lowerFiltro = termino.toLowerCase();
-    return usuarios.filter(usuario =>
-      `${usuario.primerNombre} ${usuario.segundoNombre} ${usuario.primerApellido} ${usuario.segundoApellido} ${usuario.numDocumento}`
-        .toLowerCase()
-        .includes(lowerFiltro)
-    );
+    const filtroLower = filtro.toLowerCase();
+
+    return usuarios.filter(u => {
+      const nombreCompleto = `${u.primerNombre} ${u.segundoNombre || ''} ${u.primerApellido} ${u.segundoApellido || ''}`.toLowerCase();
+      const documento = String(u.numDocumento);
+      return (
+        nombreCompleto.includes(filtroLower) ||
+        documento.includes(filtroLower)
+      );
+    });
   }
 }
