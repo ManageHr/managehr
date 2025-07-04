@@ -18,17 +18,13 @@ export class SolicitudesIncapacidadService {
     return this.http.post(this.apiUrl, formData, { headers });
   }
 
-  /**
-   * Obtiene las solicitudes de incapacidad del usuario actual.
-   * El endpoint puede ser tipo: /api/solicitudes-incapacidades/user o similar según tu backend.
-   * Si tu backend tiene otra ruta, ajústala aquí.
-   */
+ 
 obtenerSolicitudesIncapacidadUsuario(): Observable<any[]> {
   const token = localStorage.getItem('token');
   const headers = new HttpHeaders({
     'Authorization': `Bearer ${token}`
   });
   return this.http.get<any[]>(`http://localhost:8000/api/solicitudes-incapacidades`, { headers });
-  // Quita el `/user` si ese endpoint no existe, usa la ruta real de tu backend
+
 }
 }

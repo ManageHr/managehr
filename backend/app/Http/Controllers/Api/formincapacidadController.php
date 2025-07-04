@@ -38,7 +38,7 @@ class formincapacidadController extends Controller
             $file = $request->file('archivo');
 
             try {
-                $path = $file->store('uploads/incapacidades', 'public');
+                $path = $file->store('storage/Archivos/incapacidades', 'public');
                 $filePath = $path;
                 Log::info('Archivo de incapacidad guardado', [
                     'path' => $filePath,
