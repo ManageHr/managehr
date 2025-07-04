@@ -12,12 +12,49 @@ class NotificacionesController extends Controller
 {
     public function index()
     {
-        $notificacion = Notificacion::all();
+        $notificaciones = Notificacion::with([
+            'contrato.area',
+            'contrato.hojaDeVida.usuario'
+        ])->get();
+
         return response()->json([
-            'Notificaciones' => $notificacion,
+            'Notificaciones' => $notificaciones,
             'status' => 200
         ], 200);
     }
+    public function actualizarEstado(Request $request, $id)
+    {
+        $notificacion = Notificacion::find($id);
+
+        if (!$notificacion) {
+            return response()->json([
+                'mensaje' => 'Notificación no encontrada',
+                'status' => 404
+            ], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'estado' => 'required|integer', // o enum si tienes valores fijos
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'mensaje' => 'Error en la validación',
+                'errors' => $validator->errors(),
+                'status' => 400
+            ], 400);
+        }
+
+        $notificacion->estado = $request->input('estado');
+        $notificacion->save();
+
+        return response()->json([
+            'mensaje' => 'Estado actualizado correctamente',
+            'Notificacion' => $notificacion,
+            'status' => 200
+        ]);
+    }
+
 
     public function store(Request $request)
     {

@@ -327,7 +327,10 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/{id}', [NotificacionesController::class, 'show']);
         Route::put('/{id}', [NotificacionesController::class, 'update']);
         Route::delete('/{id}', [NotificacionesController::class, 'destroy']);
+        Route::put('/{id}/estado',[NotificacionesController::class, 'actualizarEstado']);
     });
+ 
+
     Route::get('/trazabilidad', [trazabilidadController::class, 'index']);
     Route::post('/trazabilidad', [trazabilidadController::class, 'store']);
     Route::put('/trazabilidad/{id}', [trazabilidadController::class, 'update']);

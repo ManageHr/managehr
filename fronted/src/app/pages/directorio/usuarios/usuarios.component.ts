@@ -5,13 +5,14 @@ import { UsuariosService, Usuarios } from '../../../services/usuarios.service';
 import { AuthService } from '../../../services/auth.service';
 import { MenuComponent } from '../../menu/menu.component';
 import Swal from 'sweetalert2';
+import { AuthInterceptor } from 'src/app/interceptors/auth.interceptor';
 import { Route } from '@angular/router';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { FilterNombre } from './filter-nombre';
 import { forkJoin } from 'rxjs';
 import * as ExcelJS from 'exceljs';
 import { Modal } from 'bootstrap';
-
+import { Router } from '@angular/router';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
@@ -103,12 +104,23 @@ export class UsuariosComponent implements OnInit {
 
   usuario: any = {};
   nuevoUsuario: any = {};
-  constructor(private usuariosService: UsuariosService, private authService: AuthService) { }
+  constructor(private router: Router,private usuariosService: UsuariosService, private authService: AuthService) { }
 
   totalPagesExternos: number = 1;
 
   ngOnInit(): void {
     const userFromLocal = localStorage.getItem('usuario');
+    const token = localStorage.getItem('token');
+    console.log('Token:', token);
+    console.log('Usuario local:', userFromLocal);
+     
+
+   
+  
+    if (!token || !userFromLocal) {
+      this.router.navigate(['/login']);
+      return;
+    }
     if (userFromLocal) {
       this.usuario = JSON.parse(userFromLocal);
       console.log('Usuario logueado:', this.usuario);
