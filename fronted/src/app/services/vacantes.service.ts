@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+// Interfaz de datos de la API
 export interface Vacante {
-  idVacantes: number; 
-  nomVacante: string; 
+  idVacantes: number;
+  nomVacante: string;
   descripVacante: string;
-  salario: string;
-  expMinima: string; 
+  salario: number;
+  expMinima: string;
   cargoVacante: string;
   catVacId: number;
 }
@@ -16,15 +17,16 @@ export interface Vacante {
   providedIn: 'root'
 })
 export class VacantesService {
+  private apiUrl = 'http://localhost:8000/api/vacantesExternos';
 
-  private apiUrl = 'http://localhost:8000/api/vacantesuser'; 
-
-  constructor(private http: HttpClient) { }
-
+  constructor(private http: HttpClient) {}
 
   getVacantes(): Observable<Vacante[]> {
     return this.http.get<Vacante[]>(this.apiUrl);
   }
 
-  
+  // Si deseas agregar un método futuro para postulación:
+  // postularUsuario(data: any): Observable<any> {
+  //   return this.http.post(`${this.apiUrl}/postulaciones`, data);
+  // }
 }

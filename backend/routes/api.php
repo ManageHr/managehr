@@ -182,7 +182,7 @@ Route::middleware('auth:api')->group(function () {
     Route::patch('/vacaciones/{id}', [vacacioneController::class, 'updatePartial']);
     Route::delete('/vacaciones/{id}', [vacacioneController::class, 'destroy']);
     Route::put('/vacaciones/{id}/estado', [VacacioneController::class, 'actualizarEstado']);
-    
+
 
 
     Route::get('/usuarioshasrol', [usuarioshasrolController::class, 'index']);
@@ -217,7 +217,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/postulaciones/reporte/vacante', [postulacionesController::class, 'porVacante']);
     Route::get('/postulaciones/reporte/estado', [postulacionesController::class, 'porEstado']);
     Route::get('/postulaciones/reporte/internos', [postulacionesController::class, 'porEmpleado']);
-    
+
 
     Route::get('/pensiones', [pensionesController::class, 'index']);
     Route::post('/pensiones', [pensionesController::class, 'store']);
@@ -388,3 +388,5 @@ Route::middleware('auth:api')->group(function () {
 
 
 Route::middleware('auth:api')->group(function () {});
+
+Route::get('/vacantesExternos', [vacantesController::class, 'index']);

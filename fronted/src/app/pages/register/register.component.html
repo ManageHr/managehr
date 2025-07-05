@@ -4,7 +4,7 @@
       <i class="bi bi-arrow-left"></i>
     </button>
 
-    <!-- Contenido de Vacantes -->
+    <!-- Encabezado -->
     <div class="header-horas d-flex justify-content-between align-items-center">
       <h3>Vacantes</h3>
     </div>
@@ -13,6 +13,10 @@
       <!-- Lista de Vacantes -->
       <div class="col-lg-8 col-md-12 pe-lg-4">
         <div class="vacantes-list">
+          <div *ngIf="vacantes.length === 0" class="text-muted text-center py-4">
+            No hay vacantes disponibles en este momento.
+          </div>
+
           <div
             class="vacante-item"
             *ngFor="let vacante of vacantes"
@@ -22,7 +26,7 @@
             <div class="d-flex align-items-center flex-grow-1">
               <div class="vacante-avatar me-3">
                 <img
-                  [src]="vacante.imagen"
+                  [src]="vacante.imagen || 'https://cdn-icons-png.flaticon.com/512/2721/2721297.png'"
                   [alt]="vacante.titulo"
                   class="rounded-circle"
                 />
@@ -37,8 +41,8 @@
       </div>
 
       <!-- Panel de Detalles -->
-      <div class="col-lg-4 col-md-12">
-        <div class="detalles-panel" *ngIf="vacanteSeleccionada">
+      <div class="col-lg-4 col-md-12" *ngIf="vacanteSeleccionada">
+        <div class="detalles-panel">
           <h4 class="detalles-title text-center mb-4">
             {{ vacanteSeleccionada.titulo }}
           </h4>
@@ -62,7 +66,7 @@
             </ul>
           </div>
 
-          <div class="boton-postularme">
+          <div class="boton-postularme text-center">
             <button
               type="button"
               class="btn btn-postularme"
@@ -102,9 +106,7 @@
       <div class="modal-body">
         <form #registroForm="ngForm" (ngSubmit)="enviarFormulario()">
           <div class="mb-3">
-            <label for="numDocumento" class="form-label"
-              >Número de documento</label
-            >
+            <label for="numDocumento" class="form-label">Número de documento</label>
             <input
               type="text"
               class="form-control"
@@ -142,9 +144,7 @@
             />
           </div>
           <div class="mb-3">
-            <label for="confirmEmail" class="form-label"
-              >Confirmar correo electrónico</label
-            >
+            <label for="confirmEmail" class="form-label">Confirmar correo electrónico</label>
             <input
               type="email"
               class="form-control"
@@ -168,9 +168,7 @@
             />
           </div>
           <div class="mb-3">
-            <label for="confirmPassword" class="form-label"
-              >Confirmar contraseña</label
-            >
+            <label for="confirmPassword" class="form-label">Confirmar contraseña</label>
             <input
               type="password"
               class="form-control"

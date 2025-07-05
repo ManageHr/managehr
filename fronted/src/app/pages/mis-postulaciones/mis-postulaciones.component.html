@@ -9,7 +9,7 @@
     <!-- Barra de búsqueda -->
 
     <!-- Acordeón de postulaciones -->
-    <div *ngIf="usuarioCargado && [1, 3].includes(usuario.rol); else sinPermiso">
+    <div *ngIf="usuarioCargado && [1, 3, 5].includes(usuario.rol); else sinPermiso">
       <div *ngIf="postulaciones.length > 0; else sinPostulaciones">
         <div
           class="accordion-container-simple"
@@ -35,7 +35,7 @@
               <div class="accordion-row-simple">
                 <div class="row-label-simple">Estado:</div>
                 <div class="row-value-simple">
-                  <span class="badge" 
+                  <span class="badge"
                         [ngClass]="{
                           'badge-pendiente': p.estado === 1,
                           'badge-complete': p.estado === 2,
