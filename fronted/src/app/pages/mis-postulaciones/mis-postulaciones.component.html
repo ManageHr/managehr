@@ -37,8 +37,8 @@
                 <div class="row-value-simple">
                   <span class="badge"
                         [ngClass]="{
-                          'badge-pendiente': p.estado === 1,
-                          'badge-complete': p.estado === 2,
+                          'badge-pendiente': p.estado === 2,
+                          'badge-complete': p.estado === 1,
                           'badge-rechazado': p.estado === 3
                         }">
                     {{ getNombreEstado(p.estado) }}

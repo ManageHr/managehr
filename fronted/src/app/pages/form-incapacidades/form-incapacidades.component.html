@@ -55,7 +55,7 @@
       <p><strong>Fin:</strong> {{ solicitud.fechaFinal | date: 'yyyy-MM-dd' }}</p>
       <p *ngIf="solicitud.archivo">
         <strong>Archivo:</strong>
-        <a [href]="'http://localhost:8000/storage/' + solicitud.archivo" target="_blank">Ver archivo</a>
+        <a [href]="'http://localhost:8000/' + solicitud.archivo" target="_blank">Ver archivo</a>
       </p>
       <p *ngIf="!solicitud.archivo"><strong>Archivo:</strong> No adjunto</p>
     </div>

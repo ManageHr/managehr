@@ -6,6 +6,8 @@ import { NotificacionesService } from '../../services/notificaciones.service';
 import { Notificacion } from '../../services/notificaciones.service';
 import { Usuarios }from '../../services/usuarios.service';
 import { UsuariosService }from '../../services/usuarios.service';
+import { AreaService }from '../../services/area.service';
+import { Areas }from '../../services/area.service';
 import { Pipe, PipeTransform } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -22,6 +24,7 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
+
 import {
   Chart,
   BarController,
@@ -88,33 +91,103 @@ export class NotificacionesAdminComponent implements OnInit {
     contratoNombre: any = {};
     graficoUsuario: Chart | undefined;
     graficoArea: Chart | undefined;
-  
+  historialNotificaciones: Notificacion[] = [];
+notificacionSeleccionada: Notificacion | null = null;
+areas: any[] = [];
+
     totalPages1: number[] = [];
   constructor(
     private notificacionesService: NotificacionesService,
     private formBuilder: FormBuilder,
     private fb: FormBuilder,
+    private usuariosService: UsuariosService,
+    private areaService: AreaService,
+    private authService: AuthService,
   ) {}
   
   ngOnInit(): void {
     const userFromLocal = localStorage.getItem('usuario');
     if (userFromLocal) {
       this.usuario = JSON.parse(userFromLocal);
-      this.tienePermiso = [1, 4].includes(this.usuario?.rol);
-      console.log('Usuario logueado:', this.usuario);
     }
-    this.cargarNotificaciones();
-  }
-  cargarNotificaciones(): void {
-    this.notificacionesService.getAll().subscribe(response => {
-      const todas = response.Notificaciones;
-      this.notificacionesSinAutorizar = todas.filter(n => n.estado === 0);
-      this.notificacionesAutorizadas = todas.filter(n => n.estado !== 0);
+
+    forkJoin({
+      usuarios: this.usuariosService.obtenerUsuarios(),
+      areas: this.areaService.obtenerAreas(),
+      notificaciones: this.notificacionesService.getAll()
+    }).subscribe(({ usuarios, areas, notificaciones }) => {
+      this.usuarios = usuarios;
+      this.areas = areas;
+
+      const todas = notificaciones.Notificaciones;
+
+      // Rol 1 y 4: Admins - ven todo
+      if ([1, 4].includes(this.usuario.rol)) {
+        this.notificacionesSinAutorizar = todas.filter(n => n.estado === 1);
+        this.notificacionesAutorizadas = todas.filter(n => n.estado === 0);
+        this.historialNotificaciones = todas.filter(n => n.estado === 0);
+      }
+      // Rol 2: Solo del área
+      else if (this.usuario.rol === 2) {
+        this.notificacionesSinAutorizar = todas.filter(n => n.estado === 1 && n.areaId === this.usuario.areaId);
+        this.notificacionesAutorizadas = todas.filter(n => n.estado === 0 && n.areaId === this.usuario.areaId);
+        this.historialNotificaciones = todas.filter(n => n.estado === 0 && n.areaId === this.usuario.areaId);
+      }
+      // Rol 3, 5+: Solo sus propias
+      else {
+        this.notificacionesSinAutorizar = todas.filter(n => n.estado === 1 && n.usuarioId === this.usuario.id);
+        this.notificacionesAutorizadas = todas.filter(n => n.estado === 0 && n.usuarioId === this.usuario.id);
+        this.historialNotificaciones = todas.filter(n => n.estado === 0 && n.usuarioId === this.usuario.id);
+      }
+      this.cargarNotificaciones();
+      console.log('Usuarios cargados:', this.usuarios);
+      console.log('Áreas cargadas:', this.areas);
+      console.log('Notificaciones cargadas:', todas);
     });
   }
+
+
+
+  cargarNotificaciones(): void {
+  this.notificacionesService.getAll().subscribe(response => {
+    const todas = response.Notificaciones;
+    console.log('✅ Todas las notificaciones recibidas:', todas);
+    // Rol 1 y 4: Admins - ven todo
+    if ([1, 4].includes(this.usuario.rol)) {
+      this.notificacionesSinAutorizar = todas.filter(n => n.estado === 0);
+      this.notificacionesAutorizadas = todas.filter(n => n.estado === 1);
+      this.historialNotificaciones = todas.filter(n => n.estado === 0);
+    }
+
+    // Rol 2: Solo las del área del usuario
+    else if (this.usuario.rol === 2) {
+      this.notificacionesSinAutorizar = todas.filter(n => n.estado === 0 && n.areaId === this.usuario.areaId);
+      this.notificacionesAutorizadas = todas.filter(n => n.estado === 1 && n.areaId === this.usuario.areaId);
+      this.historialNotificaciones = todas.filter(n => n.estado === 0 && n.areaId === this.usuario.areaId);
+    }
+
+    // Rol 3, 5+: Solo sus propias notificaciones
+    else {
+      this.notificacionesSinAutorizar = todas.filter(n => n.estado === 0 && n.usuarioId === this.usuario.id);
+      this.notificacionesAutorizadas = todas.filter(n => n.estado === 1 && n.usuarioId === this.usuario.id);
+      this.historialNotificaciones = todas.filter(n => n.estado === 0 && n.usuarioId === this.usuario.id);
+    }
+    
+  });
+}
+
   aceptarNotificacion(n: Notificacion): void {
     this.notificacionesService.actualizarEstado(n.idNotificacion, 1).subscribe(() => {
       this.cargarNotificaciones();
+        Swal.fire({
+        icon: 'success',
+        title: 'Estado actualizado',
+        text: 'La notificación fue aceptada correctamente',
+        timer: 3000,
+        timerProgressBar: true,
+        showConfirmButton: false
+      });
+      
     });
   }
 
@@ -158,6 +231,137 @@ get notificacionesAutorizadasFiltradas() {
     n.detalle?.toLowerCase().includes(this.filtroExternos.toLowerCase())
   );
 }
+verNotificacion(n: Notificacion): void {
+  this.notificacionSeleccionada = n;
+  const modal = new bootstrap.Modal(document.getElementById('modalVerDetalle'));
+  modal.show();
+}
+abrirHistorial(): void {
+  const modal = new bootstrap.Modal(document.getElementById('modalHistorial'));
+  modal.show();
+}
+
+
+getDocumentoUsuario(id: number): string {
+  const usuario = this.usuarios.find(u => u.usersId === id);
+
+  console.log('usuario PERMISO',usuario)
+  return usuario?.numDocumento?.toString() || 'usuario ya no existe';
+}
+
+getNombreUsuario(id: number | undefined): string {
+  if (!id) return 'Desconocido';
+  const usuario = this.usuarios.find(u => u.usersId === id);
+  return usuario ? `${usuario.primerNombre ?? ''} ${usuario.primerApellido ?? ''}`.trim() : 'Desconocido';
+}
+
+
+getNombreArea(id: number | undefined): string {
+  if (!id) return 'Sin área';
+  const area = this.areas.find(a => a.idArea === id);
+  return area ? area.nombreArea : 'Sin área';
+}
+getNombreUsuarioDesdeContrato(n: Notificacion): string {
+  console.log('n',n)
+  const usuario = n?.contrato?.hoja_de_vida?.usuario;
+  if (!usuario) return 'Desconocido';
+  return `${usuario.primerNombre ?? ''} ${usuario.primerApellido ?? ''}`.trim();
+}
+getNombreAreaDesdeContrato(n: Notificacion): string {
+  console.log('contrato',n)  
+  const area = n?.contrato?.area;
+  return area?.nombreArea ?? 'Sin área';
+}
+getEstadoTexto(estado: number): string {
+  switch (estado) {
+    case 0: return 'Leída';
+    case 1: return 'Nueva';
+    case 2: return 'Rechazada';
+    default: return 'Desconocido';
+  }
+}
+
+getEstadoClase(estado: number): string {
+  switch (estado) {
+    case 0: return 'badge bg-secondary'; // gris
+    case 1: return 'badge bg-success';   // verde
+    case 2: return 'badge bg-danger';    // rojo
+    default: return 'badge bg-dark';     // negro
+  }
+}
+get notificacionesFiltradasPaginadas(): Notificacion[] {
+  // 1. Obtener la lista base según rol
+  let base: Notificacion[] = [];
+
+  const todas = [...this.notificacionesSinAutorizar, ...this.notificacionesAutorizadas, ...this.historialNotificaciones];
+
+  if ([1, 4].includes(this.usuario.rol)) {
+    // Admin o jefe, ven todo
+    base = todas;
+  } else if (this.usuario.rol === 2) {
+    // Solo notificaciones del área
+    base = todas.filter(n => n.areaId === this.usuario.areaId);
+  } else {
+    // Solo propias
+    base = todas.filter(n => n.usuarioId === this.usuario.id);
+  }
+
+  // 2. Aplica filtro por nombre, documento o área
+  const filtro = this.filtroNombre.toLowerCase();
+
+  return base.filter(n => {
+    // Obtener usuario y área para esta notificación
+    const usuario = this.usuarios.find(u => u.usersId === n.usuarioId);
+    const area = this.areas.find(a => a.idArea === n.areaId);
+
+    const nombreCompleto = usuario ? `${usuario.primerNombre ?? ''} ${usuario.primerApellido ?? ''}`.toLowerCase() : '';
+    const documento = usuario ? usuario.numDocumento?.toString() ?? '' : '';
+    const nombreArea = area ? area.nombreArea.toLowerCase() : '';
+
+    return (
+      nombreCompleto.includes(filtro) ||
+      documento.includes(filtro) ||
+      nombreArea.includes(filtro)
+    );
+  })
+  // 3. Finalmente paginamos
+  .slice((this.currentPage - 1) * this.itemsPerPage, this.currentPage * this.itemsPerPage);
+}
+
+get totalItems(): number {
+  // igual filtro pero sin slice para saber el total real
+  let base: Notificacion[] = [];
+
+  const todas = [...this.notificacionesSinAutorizar, ...this.notificacionesAutorizadas, ...this.historialNotificaciones];
+
+  if ([1, 4].includes(this.usuario.rol)) {
+    base = todas;
+  } else if (this.usuario.rol === 2) {
+    base = todas.filter(n => n.areaId === this.usuario.areaId);
+  } else {
+    base = todas.filter(n => n.usuarioId === this.usuario.id);
+  }
+
+  const filtro = this.filtroNombre.toLowerCase();
+
+  return base.filter(n => {
+    const usuario = this.usuarios.find(u => u.usersId === n.usuarioId);
+    const area = this.areas.find(a => a.idArea === n.areaId);
+
+    const nombreCompleto = usuario ? `${usuario.primerNombre ?? ''} ${usuario.primerApellido ?? ''}`.toLowerCase() : '';
+    const documento = usuario ? usuario.numDocumento?.toString() ?? '' : '';
+    const nombreArea = area ? area.nombreArea.toLowerCase() : '';
+
+    return (
+      nombreCompleto.includes(filtro) ||
+      documento.includes(filtro) ||
+      nombreArea.includes(filtro)
+    );
+  }).length;
+}
+
+
+
 
 
     

@@ -34,10 +34,10 @@ import { HorasextraAdminComponent } from './pages/horasextra-admin/horasextra-ad
 export const routes: Routes = [
   // Ruta para login
   { path: 'login', component: LoginComponent },
-
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   // Ruta para registro
   { path: 'register', component: RegisterComponent },
-
+  
   // Rutas protegidas por el AuthGuard
   {
     path: '',
@@ -72,11 +72,6 @@ export const routes: Routes = [
     ]
   },
 
-  // Redirección predeterminada a /login si no hay rutas coincidentes
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
-
-  // Ruta "catch-all" para redirigir a /login
-  { path: '**', redirectTo: 'login' }
 ];
 
 // Exportamos la configuración de rutas
