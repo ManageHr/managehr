@@ -7,13 +7,12 @@ import { TrazabilidadService, Trazabilidad } from 'src/app/services/trazabilidad
 import Swal from 'sweetalert2';
 import { MenuComponent } from '../../menu/menu.component';
 import { Observable } from 'rxjs';
-import { FilterNamePipe } from 'src/app/shared/filter-name.pipe';
 styleUrls: ['./trazabilidad.component.scss']
 
 @Component({
   selector: 'app-trazabilidad',
   standalone: true,
-  imports: [CommonModule,FilterNamePipe, FormsModule, NgxPaginationModule, MenuComponent],
+  imports: [CommonModule, FormsModule, NgxPaginationModule, MenuComponent],
   templateUrl: './trazabilidad.component.html',
   styleUrls: ['./trazabilidad.component.scss']
 })
