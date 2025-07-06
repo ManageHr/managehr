@@ -2,7 +2,7 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  overflow-y: auto; // Permite scroll global si es necesario
+  overflow-y: auto; 
 }
 
 .layout {
@@ -21,7 +21,7 @@ app-menu {
 
 .contenido-principal {
   padding: 20px;
-  margin: 10px 5% 20px 20%; // deja espacio al menú lateral
+  margin: 10px 5% 20px 20%; 
   display: flex;
   flex-direction: column;
   background-color: transparent;
@@ -62,14 +62,14 @@ app-menu {
 
 .purple-container {
   display: flex;
-  flex-direction: row; // Mantener formulario y solicitudes lado a lado
+  flex-direction: row; 
   gap: 20px;
   width: 100%;
   padding: 20px;
   border-radius: 8px;
   background-color: transparent;
   align-items: flex-start;
-  flex-wrap: nowrap; // No permitir apilamiento
+  flex-wrap: nowrap; 
 }
 
 .formulario-horas {
@@ -150,7 +150,7 @@ app-menu {
   font-size: 13px;
 }
 
-/* Estilos generales para los campos del formulario */
+
 .form-group {
   margin-bottom: 15px;
 
