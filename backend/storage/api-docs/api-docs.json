@@ -22,13 +22,417 @@
                 "operationId": "de5a6c590ae3c5b9aeed65506223c7ea",
                 "responses": {
                     "200": {
-                        "description": "Perfil encontrado con éxito"
+                        "description": "Perfil encontrado con éxito",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "nombre": {
+                                            "type": "string",
+                                            "example": "Sharón"
+                                        },
+                                        "apellido": {
+                                            "type": "string",
+                                            "example": "López"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "example": "sharon@example.com"
+                                        },
+                                        "tipoDocumento": {
+                                            "properties": {
+                                                "nombre": {
+                                                    "type": "string",
+                                                    "example": "Cédula de Ciudadanía"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "genero": {
+                                            "properties": {
+                                                "nombre": {
+                                                    "type": "string",
+                                                    "example": "Femenino"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "Usuario no autenticado"
                     },
                     "404": {
                         "description": "Perfil no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Perfil"
+                ],
+                "summary": "Actualizar el perfil del usuario autenticado",
+                "description": "Permite actualizar información básica del perfil del usuario.",
+                "operationId": "ddbd1b94f884c8776b0a5e9b831f0e39",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "usuario@example.com"
+                                    },
+                                    "direccion": {
+                                        "type": "string",
+                                        "example": "Calle 123 #45-67"
+                                    },
+                                    "telefono": {
+                                        "type": "string",
+                                        "example": "3001234567"
+                                    },
+                                    "numHijos": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "contactoEmergencia": {
+                                        "type": "string",
+                                        "example": "Juan Pérez"
+                                    },
+                                    "numContactoEmergencia": {
+                                        "type": "string",
+                                        "example": "3123456789"
+                                    },
+                                    "estadoCivilId": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Perfil actualizado con éxito"
+                    },
+                    "401": {
+                        "description": "Usuario no autenticado"
+                    },
+                    "404": {
+                        "description": "Perfil no encontrado"
+                    },
+                    "422": {
+                        "description": "Datos inválidos enviados"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/horasextra": {
+            "get": {
+                "tags": [
+                    "Horas Extra"
+                ],
+                "summary": "Listar todas las solicitudes de horas extra",
+                "description": "Retorna un listado de todas las horas extra con sus relaciones.",
+                "operationId": "7ac5641385d0ed59b1370aac3b05f96d",
+                "responses": {
+                    "200": {
+                        "description": "Listado obtenido con éxito"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Horas Extra"
+                ],
+                "summary": "Crear una nueva solicitud de horas extra",
+                "description": "Registra una nueva solicitud de horas extra.",
+                "operationId": "7640040408392c8efb7e377fd7fd8591",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "descrip",
+                                    "fecha",
+                                    "nHorasExtra",
+                                    "tipoHorasid",
+                                    "contratoId"
+                                ],
+                                "properties": {
+                                    "descrip": {
+                                        "type": "string",
+                                        "maxLength": 500,
+                                        "example": "Apoyo en evento institucional"
+                                    },
+                                    "fecha": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-07-06"
+                                    },
+                                    "nHorasExtra": {
+                                        "type": "number",
+                                        "example": 3
+                                    },
+                                    "tipoHorasid": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "contratoId": {
+                                        "type": "integer",
+                                        "example": 5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Horas extra creada correctamente"
+                    },
+                    "400": {
+                        "description": "Error de validación"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/horasextra/{id}": {
+            "get": {
+                "tags": [
+                    "Horas Extra"
+                ],
+                "summary": "Obtener una solicitud específica de horas extra",
+                "description": "Devuelve la información de una solicitud de horas extra según el ID.",
+                "operationId": "23ddda3e2202c0f4e1fe05c4fd83cd50",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la solicitud",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Solicitud encontrada"
+                    },
+                    "404": {
+                        "description": "Solicitud no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Horas Extra"
+                ],
+                "summary": "Actualizar una solicitud de horas extra",
+                "description": "Modifica completamente una solicitud existente.",
+                "operationId": "3a4491efde1cb43b85bd3afc4517ebda",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la solicitud",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "descrip",
+                                    "fecha",
+                                    "nHorasExtra",
+                                    "tipoHorasid",
+                                    "contratoId"
+                                ],
+                                "properties": {
+                                    "descrip": {
+                                        "type": "string",
+                                        "example": "Cambio de turno solicitado"
+                                    },
+                                    "fecha": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-07-10"
+                                    },
+                                    "nHorasExtra": {
+                                        "type": "number",
+                                        "example": 4
+                                    },
+                                    "tipoHorasid": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "contratoId": {
+                                        "type": "integer",
+                                        "example": 8
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Actualización exitosa"
+                    },
+                    "400": {
+                        "description": "Error de validación"
+                    },
+                    "404": {
+                        "description": "Solicitud no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Horas Extra"
+                ],
+                "summary": "Eliminar una solicitud de horas extra",
+                "description": "Elimina permanentemente una solicitud por ID.",
+                "operationId": "290a6ee8690a94209bab609c7974a2eb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la solicitud a eliminar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Solicitud eliminada correctamente"
+                    },
+                    "404": {
+                        "description": "Solicitud no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Horas Extra"
+                ],
+                "summary": "Actualizar parcialmente una solicitud de horas extra",
+                "description": "Modifica solo algunos campos de la solicitud.",
+                "operationId": "9f2ae6d69c4d4c617b61a8c28463df88",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la solicitud",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "descrip": {
+                                        "type": "string",
+                                        "example": "Nueva descripción"
+                                    },
+                                    "fecha": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-07-08"
+                                    },
+                                    "nHorasExtra": {
+                                        "type": "number",
+                                        "example": 2
+                                    },
+                                    "tipoHorasid": {
+                                        "type": "integer",
+                                        "example": 3
+                                    },
+                                    "contratoId": {
+                                        "type": "integer",
+                                        "example": 6
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Actualización parcial exitosa"
+                    },
+                    "400": {
+                        "description": "Error de validación"
+                    },
+                    "404": {
+                        "description": "Solicitud no encontrada"
                     }
                 },
                 "security": [
@@ -53,6 +457,10 @@
         {
             "name": "Perfil",
             "description": "Perfil"
+        },
+        {
+            "name": "Horas Extra",
+            "description": "Horas Extra"
         }
     ]
 }
