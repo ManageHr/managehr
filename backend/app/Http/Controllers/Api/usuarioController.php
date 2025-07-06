@@ -384,7 +384,7 @@ class usuarioController extends Controller
             }
 
             return response()->json([
-                'usuario' => $usuario,
+                'hojaDeVida' => $usuario,
                 'status' => 200,
                 'message' => 'Usuario obtenido correctamente'
             ], 200);

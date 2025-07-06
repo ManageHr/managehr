@@ -118,54 +118,54 @@ export class UsuariosComponent implements OnInit {
   totalPagesExternos: number = 1;
 
   ngOnInit(): void {
-  const token = localStorage.getItem('token');
-  const userFromLocal = localStorage.getItem('usuario');
+    const token = localStorage.getItem('token');
+    const userFromLocal = localStorage.getItem('usuario');
 
-  if (!token || !userFromLocal) {
-    this.router.navigate(['/login']);
-    return;
+    if (!token || !userFromLocal) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.usuario = JSON.parse(userFromLocal);
+
+    // Iniciar carga en paralelo
+    this.cargarUsuariosInicio();
+    this.cargarForaneas();
   }
 
-  this.usuario = JSON.parse(userFromLocal);
+  private cargarUsuariosInicio(): void {
+    const inicio = performance.now();
 
-  // Iniciar carga en paralelo
-  this.cargarUsuariosInicio();
-  this.cargarForaneas();
-}
+    this.usuariosService.obtenerUsuarios().subscribe({
+      next: (data: Usuarios[]) => {
+        this.usuarios = [];
+        this.usuariosRolCinco = [];
 
-private cargarUsuariosInicio(): void {
-  const inicio = performance.now();
+        for (const u of data) {
+          const rol =
+            typeof u.rol === 'number'
+              ? u.rol
+              : typeof u.user?.rol === 'object'
+              ? (u.user.rol as any)?.idRol
+              : u.user?.rol;
 
-  this.usuariosService.obtenerUsuarios().subscribe({
-    next: (data: Usuarios[]) => {
-      this.usuarios = [];
-      this.usuariosRolCinco = [];
-
-      for (const u of data) {
-        const rol =
-          typeof u.rol === 'number'
-            ? u.rol
-            : typeof u.user?.rol === 'object'
-            ? (u.user.rol as any)?.idRol
-            : u.user?.rol;
-
-        if (rol === 5) {
-          this.usuariosRolCinco.push(u);
-        } else {
-          this.usuarios.push(u);
+          if (rol === 5) {
+            this.usuariosRolCinco.push(u);
+          } else {
+            this.usuarios.push(u);
+          }
         }
-      }
 
-      this.totalPages = Math.ceil(this.usuarios.length / this.itemsPerPage);
-      this.totalPagesExternos = Math.ceil(this.usuariosRolCinco.length / this.itemsPerPage);
+        this.totalPages = Math.ceil(this.usuarios.length / this.itemsPerPage);
+        this.totalPagesExternos = Math.ceil(
+          this.usuariosRolCinco.length / this.itemsPerPage
+        );
 
-      const fin = performance.now();
-      console.log(`⏱️ Usuarios cargados en: ${(fin - inicio).toFixed(1)}ms`);
-    },
-    error: (err) => console.error('Error al cargar usuarios', err)
-  });
-}
-
+        const fin = performance.now();
+      },
+      error: (err) => console.error('Error al cargar usuarios', err),
+    });
+  }
 
   mostrarInfoPorDocumento(numDocumento: string): void {
     this.usuariosService.obtenerUsuarioPorDocumento(numDocumento).subscribe({
@@ -292,13 +292,10 @@ private cargarUsuariosInicio(): void {
     });
   }
   mostrarHojaVida(usuario: Usuarios): void {
-    console.log('usuario de HV ', usuario.numDocumento);
     this.usuariosService.obtenerHojadevida(usuario.numDocumento).subscribe({
       next: (res) => {
-        console.log('Respuesta Hoja de Vida:', res);
         if (res && res.hojaDeVida) {
           this.hojaDeVidaSeleccionada = res.hojaDeVida;
-          console.log(this.hojaDeVidaSeleccionada);
         } else {
           this.hojaDeVidaSeleccionada = null;
           Swal.fire(
@@ -307,10 +304,12 @@ private cargarUsuariosInicio(): void {
             'info'
           );
         }
-        this.abrirModalHojaVida();
+        setTimeout(() => {
+          this.abrirModalHojaVida();
+        }, 0);
       },
       error: (err) => {
-        console.error('Error al obtener la hoja de vida:', err);
+        this.hojaDeVidaSeleccionada = null;
         Swal.fire(
           'Error',
           'No tiene asociada una hoja de vida para el usuario.',
@@ -387,6 +386,9 @@ private cargarUsuariosInicio(): void {
     if (modalElement) {
       const modal = new bootstrap.Modal(modalElement);
       modal.show();
+      setTimeout(() => {
+        modalElement.setAttribute('aria-hidden', 'false');
+      }, 100);
     } else {
       console.error('No se encontró el modal de Hoja de Vida');
     }
