@@ -111,10 +111,14 @@
         <i class="fa-solid fa-heart-pulse"></i>
         <span>Incapacidades</span>
       </a>
-
+<!--
       <a class="nav-link" *ngIf="[2].includes(usuario?.rol)" (click)="navigateTo('/horas-extra')" [class.active]="isActive('/horas-extra')">
         <i class="fas fa-calendar-plus"></i>
         <span>Horas extra</span>
+      </a>-->
+      <a class="nav-link" *ngIf="[2].includes(usuario?.rol)" (click)="navigateTo('/horasextra-jefe')" [class.active]="isActive('/horasextra-jefe')">
+        <i class="fas fa-calendar-plus"></i>
+        <span>Horas Extra</span>
       </a>
       <a class="nav-link" *ngIf="[3].includes(usuario?.rol)" (click)="navigateTo('/form-horas')" [class.active]="isActive('/form-horas')">
         <i class="fas fa-calendar-plus"></i>
@@ -138,8 +142,6 @@
         <i class="fas fa-bell"></i>
         <span>Notificaciones</span>
       </a>
-
-
 
 
 

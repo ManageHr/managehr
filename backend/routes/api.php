@@ -31,6 +31,7 @@ use App\Http\Controllers\Api\MisPostulacionesController;
 use App\Http\Controllers\Api\jefePersonalController;
 use App\Http\Controllers\Api\VacacionesJefeController;
 use App\Http\Controllers\Api\IncapacidadesJefeController;
+use App\Http\Controllers\Api\HorasExtraJefeController;
 
 use App\Http\Controllers\Api\RolPermisoController;
 use App\Http\Controllers\api\tipoContratoController;
@@ -393,6 +394,15 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/{id}', [IncapacidadesJefeController::class, 'obtenerSolicitud']);
         Route::put('/{id}/aprobar', [IncapacidadesJefeController::class, 'aprobarSolicitud']);
         Route::put('/{id}/rechazar', [IncapacidadesJefeController::class, 'rechazarSolicitud']);
+    });
+
+    // Rutas para Horas Extra del Jefe de Personal
+    Route::prefix('solicitudes-horasextra-jefe')->group(function () {
+        Route::get('/', [HorasExtraJefeController::class, 'obtenerSolicitudesHorasExtra']);
+        Route::get('/estadisticas', [HorasExtraJefeController::class, 'obtenerEstadisticas']);
+        Route::get('/{id}', [HorasExtraJefeController::class, 'obtenerSolicitud']);
+        Route::put('/{id}/aprobar', [HorasExtraJefeController::class, 'aprobarSolicitud']);
+        Route::put('/{id}/rechazar', [HorasExtraJefeController::class, 'rechazarSolicitud']);
     });
 });
 
