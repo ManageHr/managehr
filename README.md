@@ -87,3 +87,8 @@ npm install --save-dev @types/file-saver
 
 Por si tiene errores
 npm install --save-dev @types/file-saver @types/jspdf @types/xlsx
+
+
+php documentacion
+
+composer require darkaonline/l5-swagger
