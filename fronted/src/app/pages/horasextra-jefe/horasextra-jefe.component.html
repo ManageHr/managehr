@@ -75,10 +75,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let solicitud of solicitudesFiltradas" 
-                [class.table-warning]="solicitud.estado === 'pendiente'"
-                [class.table-success]="solicitud.estado === 'aprobado'"
-                [class.table-danger]="solicitud.estado === 'rechazado'">
+            <tr *ngFor="let solicitud of solicitudesFiltradas">
               <td>
                 <strong>{{ solicitud.empleado?.nombre }} {{ solicitud.empleado?.apellido }}</strong>
               </td>
@@ -164,35 +161,29 @@
 </div>
 
 <!-- Modal para Aprobar/Rechazar -->
-<div class="modal fade" id="modalAccion" tabindex="-1" *ngIf="solicitudSeleccionada">
+<div class="modal-custom" *ngIf="solicitudSeleccionada">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">
-          <i class="fas fa-edit me-2"></i>
-          Gestionar Solicitud de Horas Extra
-        </h5>
+    <div class="modal-content custom-modal-content">
+      <div class="custom-modal-header">
+        <span><i class="fas fa-edit me-2"></i> Gestionar Solicitud de Horas Extra</span>
         <button type="button" class="btn-close" (click)="cancelarAccion()"></button>
       </div>
-      <div class="modal-body">
-        <div class="alert alert-info">
-          <strong>Empleado:</strong> {{ solicitudSeleccionada?.empleado?.nombre }} {{ solicitudSeleccionada?.empleado?.apellido }}<br>
-          <strong>Documento:</strong> {{ solicitudSeleccionada?.empleado?.numDocumento }}<br>
-          <strong>Fecha:</strong> {{ formatearFecha(solicitudSeleccionada?.fecha || '') }}<br>
-          <strong>N° Horas:</strong> {{ solicitudSeleccionada?.nHorasExtra }}
-        </div>
-        
-        <div class="mb-3">
-          <label for="comentario" class="form-label">Comentario (opcional):</label>
-          <textarea 
-            id="comentario" 
-            class="form-control" 
-            rows="3" 
-            placeholder="Agregue un comentario sobre su decisión..."
-            [(ngModel)]="comentario"></textarea>
-        </div>
+      <div class="custom-modal-block mb-3">
+        <div><strong>Empleado:</strong> {{ solicitudSeleccionada?.empleado?.nombre }} {{ solicitudSeleccionada?.empleado?.apellido }}</div>
+        <div><strong>Documento:</strong> {{ solicitudSeleccionada?.empleado?.numDocumento }}</div>
+        <div><strong>Fecha:</strong> {{ formatearFecha(solicitudSeleccionada?.fecha || '') }}</div>
+        <div><strong>N° Horas:</strong> {{ solicitudSeleccionada?.nHorasExtra }}</div>
       </div>
-      <div class="modal-footer">
+      <div class="modal-body">
+        <label for="comentario" class="form-label">Comentario (opcional):</label>
+        <textarea 
+          id="comentario" 
+          class="form-control" 
+          rows="3" 
+          placeholder="Agregue un comentario sobre su decisión..."
+          [(ngModel)]="comentario"></textarea>
+      </div>
+      <div class="modal-footer custom-modal-footer">
         <button type="button" class="btn btn-secondary" (click)="cancelarAccion()">
           <i class="fas fa-times me-1"></i>
           Cancelar
