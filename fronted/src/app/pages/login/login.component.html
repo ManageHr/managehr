@@ -42,7 +42,9 @@
           {{ errorMessage }}
         </div>
 
-        <a href="#" class="olvidar text-decoration-none small mb-3">¿Olvidaste tu contraseña?</a>
+        <a  (click)="mostrarAlerta()" class="olvidar text-decoration-none small mb-3">
+          ¿Olvidaste tu contraseña?
+        </a>
         <button type="submit" class="btn btn-primary px-4 py-2">Iniciar Sesión</button>
       </form>
     </div>
@@ -52,7 +54,7 @@
       <h2>¡Bienvenido!</h2>
       <p>Impulsa tu potencial, construye tu futuro con nosotros.</p>
       <!-- Botón que redirige a /register -->
-       
+
       <button class="btn btn-outline-light mt-3" [routerLink]="['/register']">
         Ver Ofertas Laborales
       </button>

@@ -94,22 +94,23 @@
 
 
 a.olvidar {
-  color: #ffffff; 
+  color: #ffffff;
   transition: 0.3s;
+  cursor: pointer;
 
   &:hover {
-    color: #a1d8ff; 
+    color: #a1d8ff;
     text-decoration: underline;
   }
 }
 
 .welcome-section p {
-  color: #ffffff7c; 
+  color: #ffffff7c;
   font-size: 1rem;
 }
 
 .welcome-section h2 {
-  color: #ffffff; 
+  color: #ffffff;
   font-size: 2.5rem;
 }
 
@@ -121,7 +122,7 @@ a.olvidar {
   border-radius: 30px;
   font-weight: bold;
   transition: 0.3s;
-  
+
 
   &:hover {
     background: linear-gradient(to right, #2360ff, #29c3fd);
@@ -135,7 +136,7 @@ span.text-muted {
   font-weight: 500; // Opcional, para que se vea más definido
   letter-spacing: 0.5px; // Ligero espaciado para más elegancia
   margin-top: -5px;
-  
+
 }
 
 
