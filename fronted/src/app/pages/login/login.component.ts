@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { RouterModule, Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -15,20 +16,16 @@ export class LoginComponent implements OnInit, OnDestroy {
   email: string = '';
   password: string = '';
   errorMessage: string = '';
-  user:any=null;
+  user: any = null;
 
   constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit(): void {
-    //  Aplica clase para fondo del login si se necesita
     document.body.classList.add('login-background');
-
-    // (Opcional) Limpiar token si ya hay uno
     localStorage.removeItem('token');
   }
 
   ngOnDestroy(): void {
-    //  Elimina la clase del fondo cuando el componente se destruye
     document.body.classList.remove('login-background');
   }
 
@@ -36,27 +33,35 @@ export class LoginComponent implements OnInit, OnDestroy {
     const data = { email: this.email, password: this.password };
 
     this.http.post<any>('http://localhost:8000/api/login', data).subscribe({
-        next: (res) => {
-            if (res.token) {
-                localStorage.setItem('token', res.token);
-                if (res.user) {
-                    localStorage.setItem('usuario', JSON.stringify(res.user));
-                }
-                if (res.user.rol == 1 || res.user.rol == 4 || res.user.rol == 2) {
-                    this.router.navigate(['/directorio/usuarios']);
-                } else {
-                    this.router.navigate(['/home']);
-                }
-                this.errorMessage = '';
-            } else {
-                this.errorMessage = 'Respuesta inválida del servidor.';
-            }
-        },
-        error: (err) => {
-            this.errorMessage = 'Correo o contraseña incorrectos.';
+      next: (res) => {
+        if (res.token) {
+          localStorage.setItem('token', res.token);
+          if (res.user) {
+            localStorage.setItem('usuario', JSON.stringify(res.user));
+          }
+          if (res.user.rol == 1 || res.user.rol == 4 || res.user.rol == 6) {
+            this.router.navigate(['/directorio/usuarios']);
+          } else {
+            this.router.navigate(['/home']);
+          }
+          this.errorMessage = '';
+        } else {
+          this.errorMessage = 'Respuesta inválida del servidor.';
         }
+      },
+      error: (err) => {
+        this.errorMessage = 'Correo o contraseña incorrectos.';
+      }
     });
   }
 
-
+  mostrarAlerta(): void {
+    Swal.fire({
+      icon: 'info',
+      title: '¿Olvidaste tu contraseña?',
+      text: 'Comunícate con el administrador para restablecerla.',
+      confirmButtonText: 'Entendido',
+      confirmButtonColor: '#2d54ce'
+    });
+  }
 }
