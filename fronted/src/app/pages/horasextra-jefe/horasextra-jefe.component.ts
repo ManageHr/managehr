@@ -30,7 +30,7 @@ export class HorasExtraJefeComponent implements OnInit {
     const userFromLocal = localStorage.getItem('usuario');
     if (userFromLocal) {
       this.usuario = JSON.parse(userFromLocal);
-      console.log('Usuario logueado:', this.usuario);
+      //console.log('Usuario logueado:', this.usuario);
     }
     this.cargarSolicitudes();
     this.cargarEstadisticas();

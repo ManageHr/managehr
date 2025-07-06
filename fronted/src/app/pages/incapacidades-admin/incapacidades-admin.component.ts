@@ -77,7 +77,7 @@ export class IncapacidadesAdminComponent implements OnInit {
     if (userFromLocal) {
       this.usuario = JSON.parse(userFromLocal);
       this.tienePermiso = [1, 4].includes(this.usuario?.rol);
-      console.log('Usuario logueado:', this.usuario);
+      //console.log('Usuario logueado:', this.usuario);
     }
     this.formIncapacidad = this.fb.group({
       descrip: ['', [Validators.required, Validators.maxLength(500)]],
