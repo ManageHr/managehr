@@ -441,6 +441,305 @@
                     }
                 ]
             }
+        },
+        "/api/incapacidades": {
+            "get": {
+                "tags": [
+                    "Incapacidades"
+                ],
+                "summary": "Listar todas las incapacidades",
+                "description": "Obtiene un listado de todas las incapacidades registradas con sus relaciones.",
+                "operationId": "de789aa9ccdde8d07ed550533c15e22f",
+                "responses": {
+                    "200": {
+                        "description": "Listado obtenido con éxito"
+                    },
+                    "500": {
+                        "description": "Error del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Incapacidades"
+                ],
+                "summary": "Registrar nueva incapacidad",
+                "description": "Crea una nueva incapacidad con descripción, fechas y archivo (opcional).",
+                "operationId": "46f357a669a24184123c4f5e7406db75",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "descrip",
+                                    "fechaInicio",
+                                    "fechaFinal",
+                                    "contratoId"
+                                ],
+                                "properties": {
+                                    "descrip": {
+                                        "type": "string",
+                                        "example": "Incapacidad médica general"
+                                    },
+                                    "archivo": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    },
+                                    "fechaInicio": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-07-06"
+                                    },
+                                    "fechaFinal": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-07-10"
+                                    },
+                                    "contratoId": {
+                                        "type": "integer",
+                                        "example": 12
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Incapacidad creada correctamente"
+                    },
+                    "400": {
+                        "description": "Error de validación"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/incapacidades/{id}": {
+            "get": {
+                "tags": [
+                    "Incapacidades"
+                ],
+                "summary": "Consultar incapacidad por ID",
+                "description": "Devuelve los datos de una incapacidad específica.",
+                "operationId": "3e13ece39bed6a7d48b521363b5e1765",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la incapacidad",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Incapacidad encontrada"
+                    },
+                    "404": {
+                        "description": "Incapacidad no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Incapacidades"
+                ],
+                "summary": "Actualizar incapacidad (total)",
+                "description": "Modifica todos los campos de una incapacidad existente.",
+                "operationId": "2d986728ad873a4a5472755ba8319456",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la incapacidad",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "descrip",
+                                    "fechaInicio",
+                                    "fechaFinal",
+                                    "contratoId"
+                                ],
+                                "properties": {
+                                    "descrip": {
+                                        "type": "string",
+                                        "example": "Incapacidad por cirugía"
+                                    },
+                                    "archivo": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    },
+                                    "fechaInicio": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-07-01"
+                                    },
+                                    "fechaFinal": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-07-05"
+                                    },
+                                    "contratoId": {
+                                        "type": "integer",
+                                        "example": 7
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Incapacidad actualizada con éxito"
+                    },
+                    "400": {
+                        "description": "Error de validación"
+                    },
+                    "404": {
+                        "description": "Incapacidad no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Incapacidades"
+                ],
+                "summary": "Eliminar incapacidad",
+                "description": "Elimina una incapacidad existente por su ID.",
+                "operationId": "191e5467b003b84b4625bca0b16fd168",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la incapacidad a eliminar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Incapacidad eliminada con éxito"
+                    },
+                    "404": {
+                        "description": "Incapacidad no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Incapacidades"
+                ],
+                "summary": "Actualizar incapacidad (parcial)",
+                "description": "Actualiza uno o varios campos de la incapacidad indicada.",
+                "operationId": "94e130ab4c7fef1dad63eb40c780bdfd",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la incapacidad",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "descrip": {
+                                        "type": "string",
+                                        "example": "Cambio de diagnóstico"
+                                    },
+                                    "archivo": {
+                                        "type": "string",
+                                        "example": "storage/Archivos/archivo.pdf"
+                                    },
+                                    "fechaInicio": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-07-01"
+                                    },
+                                    "fechaFinal": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-07-03"
+                                    },
+                                    "contratoId": {
+                                        "type": "integer",
+                                        "example": 15
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Actualización parcial exitosa"
+                    },
+                    "400": {
+                        "description": "Error de validación"
+                    },
+                    "404": {
+                        "description": "Incapacidad no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -461,6 +760,10 @@
         {
             "name": "Horas Extra",
             "description": "Horas Extra"
+        },
+        {
+            "name": "Incapacidades",
+            "description": "Incapacidades"
         }
     ]
 }
