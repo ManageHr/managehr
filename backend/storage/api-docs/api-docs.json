@@ -149,6 +149,77 @@
                 ]
             }
         },
+        "/api/mis-postulaciones": {
+            "get": {
+                "tags": [
+                    "Postulaciones"
+                ],
+                "summary": "Obtener postulaciones del usuario autenticado",
+                "description": "Devuelve las postulaciones realizadas por el usuario autenticado, incluyendo los datos de la vacante.",
+                "operationId": "ae4c328250661c7b80991190875d49d9",
+                "responses": {
+                    "200": {
+                        "description": "Postulaciones obtenidas correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Usuario no autenticado o sin número de documento",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Usuario no autenticado o sin número de documento."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno al obtener las postulaciones",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ocurrió un error al obtener tus postulaciones."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalle del error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/horasextra": {
             "get": {
                 "tags": [
@@ -740,6 +811,82 @@
                     }
                 ]
             }
+        },
+        "/api/jefes/{jefeId}/empleados": {
+            "get": {
+                "tags": [
+                    "Jefes"
+                ],
+                "summary": "Listar empleados por jefe de personal",
+                "description": "Obtiene una lista de empleados que pertenecen al área asignada al jefe de personal indicado.",
+                "operationId": "265b8c70745c1bb606e0ff8476a54716",
+                "parameters": [
+                    {
+                        "name": "jefeId",
+                        "in": "path",
+                        "description": "ID del jefe de personal",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de empleados obtenida correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "empleados": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "area": {
+                                            "type": "string",
+                                            "example": "Recursos Humanos"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Empleados obtenidos correctamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No se encontró área asignada para este jefe de personal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No se encontró área asignada para este jefe de personal"
+                                        },
+                                        "empleados": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -758,12 +905,20 @@
             "description": "Perfil"
         },
         {
+            "name": "Postulaciones",
+            "description": "Postulaciones"
+        },
+        {
             "name": "Horas Extra",
             "description": "Horas Extra"
         },
         {
             "name": "Incapacidades",
             "description": "Incapacidades"
+        },
+        {
+            "name": "Jefes",
+            "description": "Jefes"
         }
     ]
 }
