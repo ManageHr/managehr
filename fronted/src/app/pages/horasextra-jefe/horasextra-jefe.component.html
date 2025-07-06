@@ -3,7 +3,7 @@
 <div class="layout">
   <div class="contenido-principal">
     <div class="header-horas d-flex justify-content-between align-items-center">
-      <h3>Gestión de Vacaciones - Jefe de Personal</h3>
+      <h3>Gestión de Horas Extra - Jefe de Personal</h3>
       <button class="btn btn-light btn-sm agregar-btn" (click)="cargarSolicitudes()">
         <i class="fas fa-sync-alt"></i> Actualizar
       </button>
@@ -66,10 +66,10 @@
             <tr>
               <th>Empleado</th>
               <th>Documento</th>
-              <th>Motivo</th>
-              <th>Fecha Inicio</th>
-              <th>Fecha Fin</th>
-              <th>Días</th>
+              <th>Descripción</th>
+              <th>Fecha</th>
+              <th>Tipo Horas</th>
+              <th>N° Horas</th>
               <th>Estado</th>
               <th>Acciones</th>
             </tr>
@@ -82,14 +82,14 @@
               <td>{{ solicitud.empleado?.numDocumento }}</td>
               <td>
                 <span class="text-truncate d-inline-block" style="max-width: 200px;" 
-                      [title]="solicitud.motivo">
-                  {{ solicitud.motivo }}
+                      [title]="solicitud.descripcion">
+                  {{ solicitud.descripcion }}
                 </span>
               </td>
-              <td>{{ formatearFecha(solicitud.fechaInicio) }}</td>
-              <td>{{ formatearFecha(solicitud.fechaFinal) }}</td>
+              <td>{{ formatearFecha(solicitud.fecha) }}</td>
+              <td>{{ solicitud.tipoHorasId }}</td>
               <td>
-                <span class="badge bg-info">{{ calcularDias(solicitud.fechaInicio, solicitud.fechaFinal) }} días</span>
+                <span class="badge bg-info">{{ solicitud.nHorasExtra }} horas</span>
               </td>
               <td>
                 <span class="badge" [ngClass]="getEstadoClass(solicitud.estado)">
@@ -134,10 +134,10 @@
               <div class="card-body">
                 <p><strong>Empleado:</strong> {{ solicitud.empleado?.nombre }} {{ solicitud.empleado?.apellido }}</p>
                 <p><strong>Documento:</strong> {{ solicitud.empleado?.numDocumento }}</p>
-                <p><strong>Motivo:</strong> {{ solicitud.motivo }}</p>
-                <p><strong>Inicio:</strong> {{ formatearFecha(solicitud.fechaInicio) }}</p>
-                <p><strong>Fin:</strong> {{ formatearFecha(solicitud.fechaFinal) }}</p>
-                <p><strong>Días:</strong> {{ calcularDias(solicitud.fechaInicio, solicitud.fechaFinal) }}</p>
+                <p><strong>Descripción:</strong> {{ solicitud.descripcion }}</p>
+                <p><strong>Fecha:</strong> {{ formatearFecha(solicitud.fecha) }}</p>
+                <p><strong>Tipo Horas:</strong> {{ solicitud.tipoHorasId }}</p>
+                <p><strong>N° Horas:</strong> {{ solicitud.nHorasExtra }}</p>
                 <p><strong>Estado:</strong> 
                   <span class="badge" [ngClass]="getEstadoClass(solicitud.estado)">
                     {{ getEstadoText(solicitud.estado) }}
@@ -165,14 +165,14 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content custom-modal-content">
       <div class="custom-modal-header">
-        <span><i class="fas fa-edit me-2"></i> Gestionar Solicitud de Vacaciones</span>
+        <span><i class="fas fa-edit me-2"></i> Gestionar Solicitud de Horas Extra</span>
         <button type="button" class="btn-close" (click)="cancelarAccion()"></button>
       </div>
       <div class="custom-modal-block mb-3">
         <div><strong>Empleado:</strong> {{ solicitudSeleccionada?.empleado?.nombre }} {{ solicitudSeleccionada?.empleado?.apellido }}</div>
         <div><strong>Documento:</strong> {{ solicitudSeleccionada?.empleado?.numDocumento }}</div>
-        <div><strong>Período:</strong> {{ formatearFecha(solicitudSeleccionada?.fechaInicio || '') }} - {{ formatearFecha(solicitudSeleccionada?.fechaFinal || '') }}</div>
-        <div><strong>Días solicitados:</strong> {{ calcularDias(solicitudSeleccionada?.fechaInicio || '', solicitudSeleccionada?.fechaFinal || '') }}</div>
+        <div><strong>Fecha:</strong> {{ formatearFecha(solicitudSeleccionada?.fecha || '') }}</div>
+        <div><strong>N° Horas:</strong> {{ solicitudSeleccionada?.nHorasExtra }}</div>
       </div>
       <div class="modal-body">
         <label for="comentario" class="form-label">Comentario (opcional):</label>
@@ -205,4 +205,4 @@
       </div>
     </div>
   </div>
-</div>
+</div> 

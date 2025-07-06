@@ -3,7 +3,7 @@
 <div class="layout">
   <div class="contenido-principal">
     <div class="header-horas d-flex justify-content-between align-items-center">
-      <h3>Gestión de Vacaciones - Jefe de Personal</h3>
+      <h3>Gestión de Incapacidades - Jefe de Personal</h3>
       <button class="btn btn-light btn-sm agregar-btn" (click)="cargarSolicitudes()">
         <i class="fas fa-sync-alt"></i> Actualizar
       </button>
@@ -66,7 +66,7 @@
             <tr>
               <th>Empleado</th>
               <th>Documento</th>
-              <th>Motivo</th>
+              <th>Descripción</th>
               <th>Fecha Inicio</th>
               <th>Fecha Fin</th>
               <th>Días</th>
@@ -82,8 +82,8 @@
               <td>{{ solicitud.empleado?.numDocumento }}</td>
               <td>
                 <span class="text-truncate d-inline-block" style="max-width: 200px;" 
-                      [title]="solicitud.motivo">
-                  {{ solicitud.motivo }}
+                      [title]="solicitud.descrip">
+                  {{ solicitud.descrip }}
                 </span>
               </td>
               <td>{{ formatearFecha(solicitud.fechaInicio) }}</td>
@@ -134,7 +134,7 @@
               <div class="card-body">
                 <p><strong>Empleado:</strong> {{ solicitud.empleado?.nombre }} {{ solicitud.empleado?.apellido }}</p>
                 <p><strong>Documento:</strong> {{ solicitud.empleado?.numDocumento }}</p>
-                <p><strong>Motivo:</strong> {{ solicitud.motivo }}</p>
+                <p><strong>Descripción:</strong> {{ solicitud.descrip }}</p>
                 <p><strong>Inicio:</strong> {{ formatearFecha(solicitud.fechaInicio) }}</p>
                 <p><strong>Fin:</strong> {{ formatearFecha(solicitud.fechaFinal) }}</p>
                 <p><strong>Días:</strong> {{ calcularDias(solicitud.fechaInicio, solicitud.fechaFinal) }}</p>
@@ -165,7 +165,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content custom-modal-content">
       <div class="custom-modal-header">
-        <span><i class="fas fa-edit me-2"></i> Gestionar Solicitud de Vacaciones</span>
+        <span><i class="fas fa-edit me-2"></i> Gestionar Solicitud de Incapacidad</span>
         <button type="button" class="btn-close" (click)="cancelarAccion()"></button>
       </div>
       <div class="custom-modal-block mb-3">
@@ -205,4 +205,4 @@
       </div>
     </div>
   </div>
-</div>
+</div> 

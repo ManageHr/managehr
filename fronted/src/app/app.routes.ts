@@ -28,6 +28,8 @@ import { VacacionesJefeComponent } from './pages/vacaciones-jefe/vacaciones-jefe
 import { AuthGuard } from './guards/auth.guard';
 import { IncapacidadesAdminComponent } from './pages/incapacidades-admin/incapacidades-admin.component';
 import { HorasextraAdminComponent } from './pages/horasextra-admin/horasextra-admin.component';
+import { IncapacidadesJefeComponent } from './pages/incapacidades-jefe/incapacidades-jefe.component';
+import { HorasExtraJefeComponent } from './pages/horasextra-jefe/horasextra-jefe.component';
 
 
 
@@ -68,7 +70,8 @@ export const routes: Routes = [
       { path: 'vacaciones-jefe', component: VacacionesJefeComponent, canActivate: [AuthGuard] },
       { path: 'incapacidades-admin', component: IncapacidadesAdminComponent, canActivate: [AuthGuard] },
       { path: 'horasextra-admin', component: HorasextraAdminComponent, canActivate: [AuthGuard] },
-
+      { path: 'incapacidades-jefe', component: IncapacidadesJefeComponent, canActivate: [AuthGuard] },
+      { path: 'horasextra-jefe', component: HorasExtraJefeComponent, canActivate: [AuthGuard] },
     ]
   },
 

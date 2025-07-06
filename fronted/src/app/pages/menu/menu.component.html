@@ -95,10 +95,10 @@
         <i class="fas fa-suitcase"></i>
         <span>Vacaciones</span>
       </a>
-      <a class="nav-link" *ngIf="[2].includes(usuario?.rol)" (click)="navigateTo('/incapacidades')" [class.active]="isActive('/incapacidades')">
+      <!-- <a class="nav-link" *ngIf="[2].includes(usuario?.rol)" (click)="navigateTo('/incapacidades')" [class.active]="isActive('/incapacidades')">
         <i class="fa-solid fa-heart-pulse"></i>
         <span>Incapacidades</span>
-      </a>
+      </a> -->
       <a class="nav-link" *ngIf="[3].includes(usuario?.rol)" (click)="navigateTo('/form-incapacidades')" [class.active]="isActive('/form-incapacidades')">
         <i class="fa-solid fa-heart-pulse"></i>
         <span>Incapacidades</span>
@@ -107,10 +107,18 @@
         <i class="fa-solid fa-heart-pulse"></i>
         <span>Incapacidades</span>
       </a>
-
+      <a class="nav-link" *ngIf="[2].includes(usuario?.rol)" (click)="navigateTo('/incapacidades-jefe')" [class.active]="isActive('/incapacidades-jefe')">
+        <i class="fa-solid fa-heart-pulse"></i>
+        <span>Incapacidades</span>
+      </a>
+<!--
       <a class="nav-link" *ngIf="[2].includes(usuario?.rol)" (click)="navigateTo('/horas-extra')" [class.active]="isActive('/horas-extra')">
         <i class="fas fa-calendar-plus"></i>
         <span>Horas extra</span>
+      </a>-->
+      <a class="nav-link" *ngIf="[2].includes(usuario?.rol)" (click)="navigateTo('/horasextra-jefe')" [class.active]="isActive('/horasextra-jefe')">
+        <i class="fas fa-calendar-plus"></i>
+        <span>Horas Extra</span>
       </a>
       <a class="nav-link" *ngIf="[3].includes(usuario?.rol)" (click)="navigateTo('/form-horas')" [class.active]="isActive('/form-horas')">
         <i class="fas fa-calendar-plus"></i>
@@ -134,8 +142,6 @@
         <i class="fas fa-bell"></i>
         <span>Notificaciones</span>
       </a>
-
-
 
 
 
