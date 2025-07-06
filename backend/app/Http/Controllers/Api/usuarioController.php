@@ -457,30 +457,12 @@ class usuarioController extends Controller
 
     public function reporteRoles()
     {
-        $usuarios = Usuarios::with('user')->get();
-
-        $usuariosConRol = $usuarios->map(function ($usuario) {
-            $user = $usuario->user;
-
-            // Si no hay user, devuelve el usuario tal cual
-            if (!$user) return $usuario;
-
-            // Verificamos si 'rol' es un número (ID), no una colección
-            if (is_numeric($user->rol)) {
-                $rol = Rol::find($user->rol);
-                if ($rol) {
-                    $user->rol = [
-                        'idRol' => $rol->idRol,
-                        'nombreRol' => $rol->nombreRol,
-                    ];
-                }
-            }
-
-            return $usuario;
-        });
+        $usuarios = Usuarios::select('numDocumento', 'primerNombre', 'segundoNombre', 'primerApellido', 'segundoApellido', 'email', 'telefono', 'usersId')
+            ->with(['user:id,name,email,rol', 'user.rol:idRol,nombreRol'])
+            ->get();
 
         return response()->json([
-            "usuario" => $usuariosConRol,
+            "usuario" => $usuarios,
             "status" => 200
         ]);
     }

@@ -25,10 +25,10 @@ ngOnInit(): void {
   const usuarioGuardado = localStorage.getItem('usuario');
   if (usuarioGuardado) {
     this.usuario = JSON.parse(usuarioGuardado);
-    console.log('Usuario cargado:', this.usuario);
+    
 
     // NUEVO: asegúrate de que tenga numDocumento
-    console.log('🔍 numDocumento:', this.usuario.numDocumento);
+    
   } else {
     console.log('No hay usuario en localStorage');
   }

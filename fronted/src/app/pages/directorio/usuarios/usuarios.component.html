@@ -4,25 +4,25 @@
   <div class="contenido-principal">
     <div
       id="tituloTargetas1"
-      class="header-horas d-flex justify-content-between align-items-center"
+      class="contenedor-header-usuarios d-flex justify-content-between align-items-center"
     >
-      <h3>Directorio Usuarios</h3>
-      <button
-        class="btn btn-light btn-sm agregar-btn"
-        *ngIf="[1, 4].includes(usuario?.rol)"
-        data-bs-toggle="modal"
-        data-bs-target="#modalReporteUsuarios"
-        (click)="abrirModalReporte()"
-      >
-        <i class="fas fa-plus-circle"></i> Reporte Usuarios
-      </button>
-      <button
-        class="btn btn-light btn-sm agregar-btn"
-        *ngIf="[1, 4].includes(usuario?.rol)"
-        (click)="abrirModalAgregar()"
-      >
-        <i class="fas fa-plus-circle"></i> Agregar
-      </button>
+      <h3 class="titulo-usuarios">Directorio Usuarios</h3>
+
+      <div class="botones-usuarios">
+        <button
+          *ngIf="[1, 4].includes(usuario?.rol)"
+          (click)="abrirModalReporte()"
+        >
+          📊 Reporte Usuarios
+        </button>
+
+        <button
+          *ngIf="[1, 4].includes(usuario?.rol)"
+          (click)="abrirModalAgregar()"
+        >
+          ➕ Agregar Usuario
+        </button>
+      </div>
     </div>
 
     <div *ngIf="[1, 4].includes(usuario?.rol); else sinPermiso">
@@ -334,19 +334,28 @@
       <!-- Tarjetas: visible en pantallas pequeñas todos los usuarios -->
 
       <div class="d-md-none">
-        <div
-          id="tituloTargetas1Res"
-          class="header-horas d-flex justify-content-between align-items-center"
-        >
-          <h3>Directorio Usuarios</h3>
-          <button
-            class="btn btn-light btn-sm agregar-btn"
-            *ngIf="[1, 4].includes(usuario?.rol)"
-            (click)="abrirModalAgregar()"
-          >
-            <i class="fas fa-plus-circle"></i> Agregar
-          </button>
+        <div id="tituloTargetas1Res" class="contenedor-header-usuarios-res">
+          <div class="encabezado-texto">
+            <h3 class="titulo-usuarios">Directorio Usuarios</h3>
+          </div>
+
+          <div class="botones-usuarios-res">
+            <button
+              *ngIf="[1, 4].includes(usuario?.rol)"
+              (click)="abrirModalReporte()"
+            >
+              📊 Reporte Usuarios
+            </button>
+
+            <button
+              *ngIf="[1, 4].includes(usuario?.rol)"
+              (click)="abrirModalAgregar()"
+            >
+              ➕ Agregar Usuario
+            </button>
+          </div>
         </div>
+
         <input
           id="tituloTargetasfiltro1Res"
           type="text"
@@ -886,13 +895,6 @@
               >
                 Guardar
               </button>
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
-                Cancelar
-              </button>
             </div>
           </form>
         </div>
@@ -1289,8 +1291,9 @@
           name="rol"
           required
         >
-          <option value="0">Seleccione un rol</option>
-          <option *ngFor="let r of roles" [value]="r.idRol">
+          <option [ngValue]="null">Seleccione un rol</option>
+
+          <option *ngFor="let r of roles" [ngValue]="r.idRol">
             {{ r.nombreRol }}
           </option>
         </select>

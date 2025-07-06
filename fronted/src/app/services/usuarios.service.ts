@@ -53,13 +53,13 @@ export class UsuariosService {
   obtenerUsuarios(): Observable<any> {
     return this.http.get<any>(this.apiUrl).pipe(
       map(res => {
-        console.log('Respuesta del backend:', res);
+        
         return res.usuario;
       })
     );
   }
   agregarUsuario(usuario: any) {
-    console.log('Usuario que se enviará a Laravel:', usuario);
+    
 
     return this.http.post<any>('http://localhost:8000/api/usuarios', usuario);
   }

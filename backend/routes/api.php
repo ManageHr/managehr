@@ -248,9 +248,6 @@ Route::middleware('auth:api')->group(function () {
     Route::patch('/vacantes/{id}', [vacantesController::class, 'updatePartial']);
     Route::delete('/vacantes/{id}', [vacantesController::class, 'destroy']);
 
-    Route::get('/vacantesuser', [VacantesUserController::class, 'index']);
-    Route::post('/vacantesuser', [VacantesUserController::class, 'store']);
-
     Route::get('/contrato', [contratoController::class, 'index']);
     Route::patch('/contrato/{id}/actualizar', [contratoController::class, 'updatePartial']);
     Route::post('/contrato', [contratoController::class, 'store']);

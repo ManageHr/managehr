@@ -5,8 +5,7 @@ import { UsuariosService, Usuarios } from '../../../services/usuarios.service';
 import { AuthService } from '../../../services/auth.service';
 import { MenuComponent } from '../../menu/menu.component';
 import Swal from 'sweetalert2';
-import { AuthInterceptor } from 'src/app/interceptors/auth.interceptor';
-import { Route } from '@angular/router';
+
 import { NgxPaginationModule } from 'ngx-pagination';
 import { FilterNombre } from './filter-nombre';
 import { forkJoin } from 'rxjs';
@@ -15,7 +14,7 @@ import { Modal } from 'bootstrap';
 import { Router } from '@angular/router';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
+
 import { saveAs } from 'file-saver';
 import {
   Chart,
@@ -25,7 +24,7 @@ import {
   LinearScale,
   Title,
   Tooltip,
-  Legend
+  Legend,
 } from 'chart.js';
 
 Chart.register(
@@ -43,9 +42,15 @@ declare var bootstrap: any;
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  imports: [CommonModule, FormsModule, MenuComponent, NgxPaginationModule, FilterNombre],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MenuComponent,
+    NgxPaginationModule,
+    FilterNombre,
+  ],
   templateUrl: './usuarios.component.html',
-  styleUrls: ['./usuarios.component.scss']
+  styleUrls: ['./usuarios.component.scss'],
 })
 export class UsuariosComponent implements OnInit {
   agregarusuariosModal = false;
@@ -55,8 +60,8 @@ export class UsuariosComponent implements OnInit {
   usuariosRolCinco: Usuarios[] = [];
   hojaDeVidaSeleccionada: any = null;
 
-  filtroNombre: string = "";
-  filtroNombreExternos: string = "";
+  filtroNombre: string = '';
+  filtroNombreExternos: string = '';
   currentPage = 1;
   itemsPerPage = 5;
   nacionalidades: any[] = [];
@@ -72,7 +77,7 @@ export class UsuariosComponent implements OnInit {
     { idRol: 3, nombreRol: 'Empleado' },
     { idRol: 4, nombreRol: 'Recursos Humanos' },
     { idRol: 5, nombreRol: 'Externo' },
-    { idRol: 7, nombreRol: 'Para borrar nuevo MODEL' }
+    { idRol: 7, nombreRol: 'Para borrar nuevo MODEL' },
   ];
 
   mostrarModal: boolean = false;
@@ -87,103 +92,100 @@ export class UsuariosComponent implements OnInit {
     telefono: '',
     email: '',
     email_confirmation: '',
-    password: "",
-    password_confirmation: "",
+    password: '',
+    password_confirmation: '',
     direccion: '',
     numDocumento: 0,
     nacionalidadId: 0,
-    epsCodigo: "",
+    epsCodigo: '',
     generoId: 0,
     tipoDocumentoId: 0,
     estadoCivilId: 0,
-    pensionesCodigo: "",
+    pensionesCodigo: '',
     rol: 0,
     usersId: 0,
-    fechaNacimiento: ''
+    fechaNacimiento: '',
   };
 
   usuario: any = {};
   nuevoUsuario: any = {};
-  constructor(private router: Router,private usuariosService: UsuariosService, private authService: AuthService) { }
+  constructor(
+    private router: Router,
+    private usuariosService: UsuariosService,
+    private authService: AuthService
+  ) {}
 
   totalPagesExternos: number = 1;
 
   ngOnInit(): void {
-    const userFromLocal = localStorage.getItem('usuario');
-    const token = localStorage.getItem('token');
-    console.log('Token:', token);
-    console.log('Usuario local:', userFromLocal);
-     
+  const token = localStorage.getItem('token');
+  const userFromLocal = localStorage.getItem('usuario');
 
-   
-  
-    if (!token || !userFromLocal) {
-      this.router.navigate(['/login']);
-      return;
-    }
-    if (userFromLocal) {
-      this.usuario = JSON.parse(userFromLocal);
-      console.log('Usuario logueado:', this.usuario);
-    }
-
-    this.usuariosService.obtenerUsuarios().subscribe({
-      next: (data: Usuarios[]) => {
-        console.log('Todos los usuarios:', data);
-
-        this.usuarios = data.filter((u: Usuarios) => {
-          const rol =
-            typeof u.rol === 'number'
-              ? u.rol
-              : typeof u.user?.rol === 'object'
-              ? (u.user.rol as any)?.idRol
-              : u.user?.rol;
-          return rol !== 5;
-        });
-
-        this.usuariosRolCinco = data.filter((u: Usuarios) => {
-          const rol =
-            typeof u.rol === 'number'
-              ? u.rol
-              : typeof u.user?.rol === 'object'
-              ? (u.user.rol as any)?.idRol
-              : u.user?.rol;
-          return rol === 5;
-        });
-
-        this.totalPages = Math.ceil(this.usuarios.length / this.itemsPerPage);
-        this.totalPagesExternos = Math.ceil(this.usuariosRolCinco.length / this.itemsPerPage);
-        console.log('Externos:', this.usuariosRolCinco);
-        console.log('Usuarios normales:', this.usuarios);
-
-      },
-      error: (err) => console.error('Error al cargar usuarios', err)
-    });
-
-    this.cargarForaneas();
-
+  if (!token || !userFromLocal) {
+    this.router.navigate(['/login']);
+    return;
   }
+
+  this.usuario = JSON.parse(userFromLocal);
+
+  // Iniciar carga en paralelo
+  this.cargarUsuariosInicio();
+  this.cargarForaneas();
+}
+
+private cargarUsuariosInicio(): void {
+  const inicio = performance.now();
+
+  this.usuariosService.obtenerUsuarios().subscribe({
+    next: (data: Usuarios[]) => {
+      this.usuarios = [];
+      this.usuariosRolCinco = [];
+
+      for (const u of data) {
+        const rol =
+          typeof u.rol === 'number'
+            ? u.rol
+            : typeof u.user?.rol === 'object'
+            ? (u.user.rol as any)?.idRol
+            : u.user?.rol;
+
+        if (rol === 5) {
+          this.usuariosRolCinco.push(u);
+        } else {
+          this.usuarios.push(u);
+        }
+      }
+
+      this.totalPages = Math.ceil(this.usuarios.length / this.itemsPerPage);
+      this.totalPagesExternos = Math.ceil(this.usuariosRolCinco.length / this.itemsPerPage);
+
+      const fin = performance.now();
+      console.log(`⏱️ Usuarios cargados en: ${(fin - inicio).toFixed(1)}ms`);
+    },
+    error: (err) => console.error('Error al cargar usuarios', err)
+  });
+}
 
 
   mostrarInfoPorDocumento(numDocumento: string): void {
     this.usuariosService.obtenerUsuarioPorDocumento(numDocumento).subscribe({
       next: (res) => {
         this.usuarioSeleccionado = res.usuario;
-        this.rolNombreSeleccionado = res.usuario.user?.rol?.nombreRol || 'Sin rol asignado';
+        this.rolNombreSeleccionado =
+          res.usuario.user?.rol?.nombreRol || 'Sin rol asignado';
         this.mostrarModal = true;
       },
       error: (err) => {
         console.error('Error al cargar usuario por documento', err);
-      }
+      },
     });
   }
 
-
   mostrarInfoUsuario(usuarioId: any): void {
     // Buscar en ambas listas
-    const usuarioCompleto = this.usuarios.find(u => u.usersId === usuarioId)
-      || this.usuariosRolCinco.find(u => u.usersId === usuarioId);
-
-    console.log('Usuario encontrado:', usuarioCompleto);
+    const usuarioCompleto =
+      this.usuarios.find((u) => u.usersId === usuarioId) ||
+      this.usuariosRolCinco.find((u) => u.usersId === usuarioId);
 
     if (usuarioCompleto) {
       this.usuarioSeleccionado = usuarioCompleto;
@@ -193,28 +195,25 @@ export class UsuariosComponent implements OnInit {
           const user = response[0]?.usuario;
           this.usuarioSeleccionado.user = user;
 
-          const rolId = typeof user.rol === 'object' ? user.rol.idRol : user.rol;
-          const rol = this.roles.find(r => r.idRol === rolId);
+          const rolId =
+            typeof user.rol === 'object' ? user.rol.idRol : user.rol;
+          const rol = this.roles.find((r) => r.idRol === rolId);
           this.rolNombreSeleccionado = rol ? rol.nombreRol : 'Sin rol asignado';
 
           this.mostrarModal = true;
         },
         error: () => {
           console.error('Error al obtener los datos del usuario');
-        }
+        },
       });
-
     } else {
       console.log('Usuario no encontrado:', usuarioId);
     }
   }
 
-
-
   cerrarModal(): void {
     this.mostrarModal = false;
     this.rolNombreSeleccionado = '';
-
   }
 
   actualizarRolUserBase(): void {
@@ -223,16 +222,18 @@ export class UsuariosComponent implements OnInit {
       return;
     }
 
-    this.usuariosService.actualizarRolId(this.userBase.id, this.userBase.rol).subscribe({
-      next: () => {
-        Swal.fire('Éxito', 'Rol actualizado correctamente.', 'success');
-        this.cargarUsuarios(); // actualiza la tabla si quieres
-      },
-      error: (err) => {
-        console.error('Error al actualizar rol:', err);
-        Swal.fire('Error', 'No se pudo actualizar el rol.', 'error');
-      }
-    });
+    this.usuariosService
+      .actualizarRolId(this.userBase.id, this.userBase.rol)
+      .subscribe({
+        next: () => {
+          Swal.fire('Éxito', 'Rol actualizado correctamente.', 'success');
+          this.cargarUsuarios(); // actualiza la tabla si quieres
+        },
+        error: (err) => {
+          console.error('Error al actualizar rol:', err);
+          Swal.fire('Error', 'No se pudo actualizar el rol.', 'error');
+        },
+      });
   }
 
   abrirModalAgregar(): void {
@@ -244,10 +245,10 @@ export class UsuariosComponent implements OnInit {
       telefono: '',
       email: '',
       email_confirmation: '',
-      password: "",
-      repetirPassword: "",
+      password: '',
+      repetirPassword: '',
       direccion: '',
-      numDocumento: "",
+      numDocumento: '',
       nacionalidadId: null,
       epsCodigo: null,
       generoId: null,
@@ -255,7 +256,7 @@ export class UsuariosComponent implements OnInit {
       estadoCivilId: null,
       pensionesCodigo: null,
       rol: null,
-      fechaNacimiento:""
+      fechaNacimiento: '',
     };
     const modalElement = document.getElementById('agregarusuariosModal');
     if (modalElement) {
@@ -264,16 +265,13 @@ export class UsuariosComponent implements OnInit {
     } else {
       console.error('No se encontró el modal con ID agregarusuariosModal');
     }
-
   }
   cargarRoles() {
-    this.usuariosService.obtenerRoles().subscribe(data => {
+    this.usuariosService.obtenerRoles().subscribe((data) => {
       this.roles = data;
     });
   }
-  cambiarRol() {
-
-  }
+  cambiarRol() {}
   cargarForaneas() {
     forkJoin({
       nacionalidades: this.usuariosService.obtenerNacionalidades(),
@@ -282,8 +280,8 @@ export class UsuariosComponent implements OnInit {
       estadosCiviles: this.usuariosService.obtenerEstadosCiviles(),
       eps: this.usuariosService.obtenerEps(),
       pensiones: this.usuariosService.obtenerPensiones(),
-      roles: this.usuariosService.obtenerRoles()
-    }).subscribe(res => {
+      roles: this.usuariosService.obtenerRoles(),
+    }).subscribe((res) => {
       this.nacionalidades = res.nacionalidades;
       this.generos = res.generos;
       this.tiposDocumento = res.tiposDocumento;
@@ -294,7 +292,7 @@ export class UsuariosComponent implements OnInit {
     });
   }
   mostrarHojaVida(usuario: Usuarios): void {
-    console.log("usuario de HV ", usuario.numDocumento);
+    console.log('usuario de HV ', usuario.numDocumento);
     this.usuariosService.obtenerHojadevida(usuario.numDocumento).subscribe({
       next: (res) => {
         console.log('Respuesta Hoja de Vida:', res);
@@ -303,14 +301,22 @@ export class UsuariosComponent implements OnInit {
           console.log(this.hojaDeVidaSeleccionada);
         } else {
           this.hojaDeVidaSeleccionada = null;
-          Swal.fire('Atención', 'No se encontró hoja de vida para el usuario.', 'info');
+          Swal.fire(
+            'Atención',
+            'No se encontró hoja de vida para el usuario.',
+            'info'
+          );
         }
         this.abrirModalHojaVida();
       },
       error: (err) => {
         console.error('Error al obtener la hoja de vida:', err);
-        Swal.fire('Error', 'No tiene asociada una hoja de vida para el usuario.', 'error');
-      }
+        Swal.fire(
+          'Error',
+          'No tiene asociada una hoja de vida para el usuario.',
+          'error'
+        );
+      },
     });
   }
   trackByUsuario(index: number, usuario: Usuarios): number {
@@ -324,34 +330,33 @@ export class UsuariosComponent implements OnInit {
         this.totalPages = Math.ceil(this.usuarios.length / this.itemsPerPage);
 
         // Precargar roles para cada usuario
-        this.usuarios.forEach(usuario => {
+        this.usuarios.forEach((usuario) => {
           if (usuario.usersId) {
             this.usuariosService.obtenerUsersId(usuario.usersId).subscribe({
               next: (userData) => {
                 const idRol = userData?.rol;
                 this.usuariosService.obtenerRolId(idRol).subscribe({
                   next: (rolData) => {
-                    this.rolesPorUsuarioId[usuario.usersId] = rolData?.nombreRol || 'Sin rol';
+                    this.rolesPorUsuarioId[usuario.usersId] =
+                      rolData?.nombreRol || 'Sin rol';
                   },
                   error: () => {
                     this.rolesPorUsuarioId[usuario.usersId] = 'Sin rol';
-                  }
+                  },
                 });
               },
               error: () => {
                 this.rolesPorUsuarioId[usuario.usersId] = 'Sin rol';
-              }
+              },
             });
           }
         });
-
       },
       error: (err) => {
         console.error('Error al cargar usuarios', err);
-      }
+      },
     });
   }
-
 
   nombreCompleto(usuario: any): string {
     if (!usuario) return '';
@@ -359,66 +364,70 @@ export class UsuariosComponent implements OnInit {
   }
 
   editarusuarios(usuario: Usuarios, index: number): void {
-  this.usuarioSeleccionado = { ...usuario };
+    this.usuarioSeleccionado = { ...usuario };
 
-  this.usuariosService.obtenerUsersId(usuario.usersId).subscribe(user => {
-    // Asegurarte que usuarioSeleccionado.rol tenga el id del rol
-    this.usuarioSeleccionado.rol = typeof user.rol === 'object' ? user.rol.idRol : user.rol;
+    const roles$ = this.usuariosService.obtenerRoles();
+    const user$ = this.usuariosService.obtenerUsersId(usuario.usersId);
 
-    const modalElement = document.getElementById('editarusuariosModal');
+    forkJoin([roles$, user$]).subscribe(([roles, user]) => {
+      this.roles = roles;
+      this.usuarioSeleccionado.rol =
+        typeof user.rol === 'object' ? user.rol.idRol : Number(user.rol);
+
+      const modalElement = document.getElementById('editarusuariosModal');
+      if (modalElement) {
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+      }
+    });
+  }
+
+  abrirModalHojaVida(): void {
+    const modalElement = document.getElementById('hojaDeVidaModal');
     if (modalElement) {
       const modal = new bootstrap.Modal(modalElement);
       modal.show();
+    } else {
+      console.error('No se encontró el modal de Hoja de Vida');
     }
-  });
-}
-
-
-abrirModalHojaVida(): void {
-  const modalElement = document.getElementById('hojaDeVidaModal');
-  if (modalElement) {
-    const modal = new bootstrap.Modal(modalElement);
-    modal.show();
-  } else {
-    console.error('No se encontró el modal de Hoja de Vida');
   }
-}
 
-mostrarEstudios(usuario: Usuarios): void {
-  console.log(`Mostrar Estudios de: ${usuario.numDocumento}`);
-  // Lógica para abrir modal o redirigir
-}
+  mostrarEstudios(usuario: Usuarios): void {
+    console.log(`Mostrar Estudios de: ${usuario.numDocumento}`);
+    // Lógica para abrir modal o redirigir
+  }
 
-confirmDelete(usuario: Usuarios, index: number): void {
-  Swal.fire({
-    title: '¿Estás seguro?',
-    text: 'Esta acción eliminará al usuario de forma permanente '+ usuario.primerNombre + ' ' + usuario.primerApellido,
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Sí, eliminar',
-    cancelButtonText: 'Cancelar',
-  }).then((result) => {
-    if (result.isConfirmed) {
-
-      
-      this.usuariosService.eliminarUsuario(usuario.numDocumento).subscribe({
-        next: (res) => {
-          Swal.fire('Eliminado', 'El usuario ha sido eliminado', 'success');
-          this.cargarAmbasListasUsuarios();
-          
-        },
-        error: (err) => {
-          console.error(err);
-          Swal.fire('Error', 'No se pudo eliminar el usuario Ya que tiene contratos asosiados', 'error');
-        },
-      });
-      
-    }
-  });
-}
-
-
-
+  confirmDelete(usuario: Usuarios, index: number): void {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text:
+        'Esta acción eliminará al usuario de forma permanente ' +
+        usuario.primerNombre +
+        ' ' +
+        usuario.primerApellido,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.usuariosService.eliminarUsuario(usuario.numDocumento).subscribe({
+          next: (res) => {
+            Swal.fire('Eliminado', 'El usuario ha sido eliminado', 'success');
+            this.cargarAmbasListasUsuarios();
+          },
+          error: (err) => {
+            console.error(err);
+            Swal.fire(
+              'Error',
+              'No se pudo eliminar el usuario Ya que tiene contratos asosiados',
+              'error'
+            );
+          },
+        });
+      }
+    });
+  }
 
   rolesPorUsuario: { [userId: number]: string } = {};
 
@@ -430,11 +439,14 @@ confirmDelete(usuario: Usuarios, index: number): void {
       error: (err) => {
         console.error('Error al obtener el usuario:', err);
         this.rolesPorUsuario[id] = 'Sin rol';
-      }
+      },
     });
   }
   cambiarRoles(usuario: any) {
-    const nuevoRol = prompt('Ingrese el nuevo ID de rol para este usuario:', usuario.rol);
+    const nuevoRol = prompt(
+      'Ingrese el nuevo ID de rol para este usuario:',
+      usuario.rol
+    );
     const idRol = parseInt(nuevoRol || '', 10);
 
     if (!isNaN(idRol)) {
@@ -445,7 +457,7 @@ confirmDelete(usuario: Usuarios, index: number): void {
         },
         error: () => {
           Swal.fire('Error', 'No se pudo actualizar el rol.', 'error');
-        }
+        },
       });
     }
   }
@@ -473,12 +485,15 @@ confirmDelete(usuario: Usuarios, index: number): void {
         });
 
         this.totalPages = Math.ceil(this.usuarios.length / this.itemsPerPage);
-        this.totalPagesExternos = Math.ceil(this.usuariosRolCinco.length / this.itemsPerPage);
+        this.totalPagesExternos = Math.ceil(
+          this.usuariosRolCinco.length / this.itemsPerPage
+        );
 
         console.log('Usuarios normales:', this.usuarios);
         console.log('Usuarios externos:', this.usuariosRolCinco);
       },
-      error: (err) => console.error('Error al recargar ambas tablas de usuarios', err)
+      error: (err) =>
+        console.error('Error al recargar ambas tablas de usuarios', err),
     });
   }
 
@@ -493,7 +508,8 @@ confirmDelete(usuario: Usuarios, index: number): void {
     }
   }
   agregarUsuario(): void {
-    const { email, numDocumento, password, repetirPassword, rol } = this.nuevoUsuario;
+    const { email, numDocumento, password, repetirPassword, rol } =
+      this.nuevoUsuario;
 
     if (password !== repetirPassword) {
       Swal.fire('Error', 'Las contraseñas no coinciden.', 'error');
@@ -501,83 +517,100 @@ confirmDelete(usuario: Usuarios, index: number): void {
     }
 
     // 1. Validar en tabla usuarios si ya existe correo o documento
-    this.usuariosService.verificarExistenciaUsuario(email, numDocumento).subscribe((existe: boolean) => {
-      if (existe) {
-        Swal.fire('Error', 'Ya existe un usuario con ese correo o número de documento.', 'error');
-        return;
-      }
-      console.log('Resultado existencia:', existe);
-
-      // 2. Crear primero el user
-      const userData = {
-        name: `${this.nuevoUsuario.primerNombre} ${this.nuevoUsuario.primerApellido}`,
-        email: email,
-        email_confirmation: email,            // 👈 necesario
-        password: password,
-        password_confirmation: repetirPassword,
-        rol: Number(rol)
-      };
-      console.log('Datos que se envían a /register:', userData);
-      this.authService.register(userData).subscribe({
-        next: (res) => {
-          const userId = res.user?.id;
-
-          const usuarioFinal = {
-            numDocumento: Number(this.nuevoUsuario.numDocumento),
-            primerNombre: this.nuevoUsuario.primerNombre,
-            segundoNombre: this.nuevoUsuario.segundoNombre,
-            primerApellido: this.nuevoUsuario.primerApellido,
-            segundoApellido: this.nuevoUsuario.segundoApellido,
-            password: repetirPassword,
-            fechaNac: this.nuevoUsuario.fechaNacimiento,
-            numHijos: 0,
-            contactoEmergencia: 'NO REGISTRADO',
-            numContactoEmergencia: '0000000000',
-            email: this.nuevoUsuario.email,
-            direccion: this.nuevoUsuario.direccion,
-            telefono: this.nuevoUsuario.telefono,
-            nacionalidadId: Number(this.nuevoUsuario.nacionalidadId),
-            epsCodigo: this.nuevoUsuario.epsCodigo,
-            generoId: Number(this.nuevoUsuario.generoId),
-            tipoDocumentoId: Number(this.nuevoUsuario.tipoDocumentoId),
-            estadoCivilId: Number(this.nuevoUsuario.estadoCivilId),
-            pensionesCodigo: this.nuevoUsuario.pensionesCodigo,
-            usersId: userId,
-          };
-
-          this.usuariosService.agregarUsuario(usuarioFinal).subscribe({
-            next: () => {
-              Swal.fire('¡Éxito!', 'El usuario fue creado correctamente.', 'success');
-              this.nuevoUsuario = {};
-              this.cargarAmbasListasUsuarios();
-              const modalEl = document.getElementById('agregarusuariosModal');
-              if (modalEl) {
-                const modal = Modal.getInstance(modalEl) || new Modal(modalEl);
-                modal.hide();
-              }
-              return;
-            },
-            error: (err) => {
-              console.error('Error al guardar usuario:', err);
-              if (err.status === 400 && err.error?.errors) {
-                const errores = Object.values(err.error.errors).flat().join('\n');
-                Swal.fire('Validación', errores, 'warning');
-              } else {
-                Swal.fire('Error', 'No se pudo guardar el usuario.', 'error');
-              }
-            }
-          });
-        },
-        error: (err) => {
-          if (err.status === 422 && err.error?.errors) {
-            const errores = Object.values(err.error.errors).flat().join(' ');
-            Swal.fire('Error', errores, 'error');
-          } else {
-            Swal.fire('Error', err.error?.message || 'No se pudo crear el usuario base.', 'error');
-          }
+    this.usuariosService
+      .verificarExistenciaUsuario(email, numDocumento)
+      .subscribe((existe: boolean) => {
+        if (existe) {
+          Swal.fire(
+            'Error',
+            'Ya existe un usuario con ese correo o número de documento.',
+            'error'
+          );
+          return;
         }
+        console.log('Resultado existencia:', existe);
+
+        // 2. Crear primero el user
+        const userData = {
+          name: `${this.nuevoUsuario.primerNombre} ${this.nuevoUsuario.primerApellido}`,
+          email: email,
+          email_confirmation: email, // 👈 necesario
+          password: password,
+          password_confirmation: repetirPassword,
+          rol: Number(rol),
+        };
+        console.log('Datos que se envían a /register:', userData);
+        this.authService.register(userData).subscribe({
+          next: (res) => {
+            const userId = res.user?.id;
+
+            const usuarioFinal = {
+              numDocumento: Number(this.nuevoUsuario.numDocumento),
+              primerNombre: this.nuevoUsuario.primerNombre,
+              segundoNombre: this.nuevoUsuario.segundoNombre,
+              primerApellido: this.nuevoUsuario.primerApellido,
+              segundoApellido: this.nuevoUsuario.segundoApellido,
+              password: repetirPassword,
+              fechaNac: this.nuevoUsuario.fechaNacimiento,
+              numHijos: 0,
+              contactoEmergencia: 'NO REGISTRADO',
+              numContactoEmergencia: '0000000000',
+              email: this.nuevoUsuario.email,
+              direccion: this.nuevoUsuario.direccion,
+              telefono: this.nuevoUsuario.telefono,
+              nacionalidadId: Number(this.nuevoUsuario.nacionalidadId),
+              epsCodigo: this.nuevoUsuario.epsCodigo,
+              generoId: Number(this.nuevoUsuario.generoId),
+              tipoDocumentoId: Number(this.nuevoUsuario.tipoDocumentoId),
+              estadoCivilId: Number(this.nuevoUsuario.estadoCivilId),
+              pensionesCodigo: this.nuevoUsuario.pensionesCodigo,
+              usersId: userId,
+            };
+
+            this.usuariosService.agregarUsuario(usuarioFinal).subscribe({
+              next: () => {
+                Swal.fire(
+                  '¡Éxito!',
+                  'El usuario fue creado correctamente.',
+                  'success'
+                );
+                this.nuevoUsuario = {};
+                this.cargarAmbasListasUsuarios();
+                const modalEl = document.getElementById('agregarusuariosModal');
+                if (modalEl) {
+                  const modal =
+                    Modal.getInstance(modalEl) || new Modal(modalEl);
+                  modal.hide();
+                }
+                return;
+              },
+              error: (err) => {
+                console.error('Error al guardar usuario:', err);
+                if (err.status === 400 && err.error?.errors) {
+                  const errores = Object.values(err.error.errors)
+                    .flat()
+                    .join('\n');
+                  Swal.fire('Validación', errores, 'warning');
+                } else {
+                  Swal.fire('Error', 'No se pudo guardar el usuario.', 'error');
+                }
+              },
+            });
+          },
+          error: (err) => {
+            if (err.status === 422 && err.error?.errors) {
+              const errores = Object.values(err.error.errors).flat().join(' ');
+              Swal.fire('Error', errores, 'error');
+            } else {
+              Swal.fire(
+                'Error',
+                err.error?.message || 'No se pudo crear el usuario base.',
+                'error'
+              );
+            }
+          },
+        });
       });
-    });
   }
   soloLetras(event: KeyboardEvent): boolean {
     const input = event.key;
@@ -600,98 +633,111 @@ confirmDelete(usuario: Usuarios, index: number): void {
     return true;
   }
 
-
   actualizarUsuario(): void {
-    if (!this.usuarioSeleccionado || !this.usuarioSeleccionado.numDocumento) return;
+    if (!this.usuarioSeleccionado || !this.usuarioSeleccionado.numDocumento)
+      return;
 
-    this.usuariosService.actualizarUsuarioParcial(
-      this.usuarioSeleccionado.numDocumento,
-      this.usuarioSeleccionado
-    ).subscribe({
-      next: () => {
-        // Luego de actualizar el usuario, actualiza el rol en la tabla 'users'
-        this.usuariosService.actualizarRol(this.usuarioSeleccionado.usersId, this.usuarioSeleccionado.rol, this.usuarioSeleccionado.email).subscribe({
-          next: (res2) => {
-            console.log('Respuesta del backend:', res2);
-            Swal.fire({
-              title: '¡Actualizado!',
-              text: 'El usuario fue editado exitosamente.',
-              icon: 'success',
-              confirmButtonText: 'Aceptar'
-            }).then(() => location.reload());
-          },
-          error: (err2) => {
-            console.error('Error al actualizar el rol del usuario:', err2);
-            Swal.fire('Error', 'No se pudo actualizar el rol del usuario.', 'error');
-          }
-        });
-      },
-      error: (err) => {
-        console.error('Error al actualizar usuario:', err);
-        Swal.fire('Error', 'No se pudo actualizar el usuario.', 'error');
-      }
-    });
+    this.usuariosService
+      .actualizarUsuarioParcial(
+        this.usuarioSeleccionado.numDocumento,
+        this.usuarioSeleccionado
+      )
+      .subscribe({
+        next: () => {
+          // Luego de actualizar el usuario, actualiza el rol en la tabla 'users'
+          this.usuariosService
+            .actualizarRol(
+              this.usuarioSeleccionado.usersId,
+              this.usuarioSeleccionado.rol,
+              this.usuarioSeleccionado.email
+            )
+            .subscribe({
+              next: (res2) => {
+                console.log('Respuesta del backend:', res2);
+                Swal.fire({
+                  title: '¡Actualizado!',
+                  text: 'El usuario fue editado exitosamente.',
+                  icon: 'success',
+                  confirmButtonText: 'Aceptar',
+                }).then(() => location.reload());
+              },
+              error: (err2) => {
+                console.error('Error al actualizar el rol del usuario:', err2);
+                Swal.fire(
+                  'Error',
+                  'No se pudo actualizar el rol del usuario.',
+                  'error'
+                );
+              },
+            });
+        },
+        error: (err) => {
+          console.error('Error al actualizar usuario:', err);
+          Swal.fire('Error', 'No se pudo actualizar el usuario.', 'error');
+        },
+      });
   }
 
   rolesPorUsuarioId: { [userId: number]: string } = {};
 
   cargarRolDeUsuario(idUser: number): void {
-    console.log("Id obtenido " + idUser);
+    console.log('Id obtenido ' + idUser);
     this.usuariosService.obtenerUsersId(idUser).subscribe({
       next: (usuarioId) => {
-        console.log("ID= $ " + usuarioId);
+        console.log('ID= $ ' + usuarioId);
       },
-
     });
   }
 
   obtenerNombreRol(idRol: number): string {
-    const rol = this.roles.find(r => r.idRol === idRol);
+    const rol = this.roles.find((r) => r.idRol === idRol);
     return rol ? rol.nombreRol : 'Sin rol';
   }
 
   currentPageExternos: number = 1;
   verExperiencia(usuario: any): void {
-    this.usuariosService.obtenerExperienciaLaboral(usuario.numDocumento).subscribe({
-      next: (res) => {
-        const hoja = res.data?.hojaDeVida;
-        const experiencias = res.data?.experiencias;
-        console.log('Experiencias recibidas:', experiencias);
+    this.usuariosService
+      .obtenerExperienciaLaboral(usuario.numDocumento)
+      .subscribe({
+        next: (res) => {
+          const hoja = res.data?.hojaDeVida;
+          const experiencias = res.data?.experiencias;
+          console.log('Experiencias recibidas:', experiencias);
 
-        if (!hoja || !experiencias || experiencias.length === 0) {
-          this.alerta("Este usuario no tiene experiencias laborales registradas.");
-          this.usuarioSeleccionado = usuario;
-          this.experienciasLaborales = []; // Vaciar para prevenir residuos
+          if (!hoja || !experiencias || experiencias.length === 0) {
+            this.alerta(
+              'Este usuario no tiene experiencias laborales registradas.'
+            );
+            this.usuarioSeleccionado = usuario;
+            this.experienciasLaborales = []; // Vaciar para prevenir residuos
 
-          return;
-        }
+            return;
+          }
 
-        this.usuarioSeleccionado = res.data.usuario;
-        this.hojaDeVidaSeleccionada = hoja;
-        this.experienciasLaborales = experiencias;
-        this.abrirModalExperiencia();
-      },
-      error: (err) => {
-        if (err.status === 404 && err.error?.mensaje === "Hoja de vida no encontrada") {
-
-          this.usuarioSeleccionado = usuario;
-          this.experienciasLaborales = []; // Prevenir errores en el HTML
+          this.usuarioSeleccionado = res.data.usuario;
+          this.hojaDeVidaSeleccionada = hoja;
+          this.experienciasLaborales = experiencias;
           this.abrirModalExperiencia();
-
-        } else {
-          console.error('Error inesperado al obtener experiencia:', err);
-          this.alerta("Error inesperado al consultar experiencia.");
-        }
-      }
-    });
+        },
+        error: (err) => {
+          if (
+            err.status === 404 &&
+            err.error?.mensaje === 'Hoja de vida no encontrada'
+          ) {
+            this.usuarioSeleccionado = usuario;
+            this.experienciasLaborales = []; // Prevenir errores en el HTML
+            this.abrirModalExperiencia();
+          } else {
+            console.error('Error inesperado al obtener experiencia:', err);
+            this.alerta('Error inesperado al consultar experiencia.');
+          }
+        },
+      });
   }
 
   urlCertificado(nombreArchivo: string): string {
     return `http://localhost:8000/storage/experiencias/${nombreArchivo}`;
   }
-
-
-
 
   abrirModalExperiencia(): void {
     const modal = document.getElementById('modalExperiencia');
@@ -717,41 +763,44 @@ confirmDelete(usuario: Usuarios, index: number): void {
     }
   }
   get totalPagesFiltrados(): number {
-    const filtrados = this.usuarios.filter((u) =>
-      this.nombreCompleto(u).toLowerCase().includes(this.filtroNombre.toLowerCase()) ||
-      u.numDocumento.toString().includes(this.filtroNombre)
+    const filtrados = this.usuarios.filter(
+      (u) =>
+        this.nombreCompleto(u)
+          .toLowerCase()
+          .includes(this.filtroNombre.toLowerCase()) ||
+        u.numDocumento.toString().includes(this.filtroNombre)
     );
     return Math.ceil(filtrados.length / this.itemsPerPage);
   }
   get totalPagesExternosFiltrados(): number {
-    const filtrados = this.usuariosRolCinco.filter((u) =>
-      this.nombreCompleto(u).toLowerCase().includes(this.filtroNombreExternos.toLowerCase()) ||
-      u.numDocumento.toString().includes(this.filtroNombreExternos)
+    const filtrados = this.usuariosRolCinco.filter(
+      (u) =>
+        this.nombreCompleto(u)
+          .toLowerCase()
+          .includes(this.filtroNombreExternos.toLowerCase()) ||
+        u.numDocumento.toString().includes(this.filtroNombreExternos)
     );
     return Math.ceil(filtrados.length / this.itemsPerPage);
   }
 
-
   getPaginas(currentPage: number, totalPages: number): (number | string)[] {
-  const delta = 2;
-  const range: (number | string)[] = [];
-  const left = Math.max(2, currentPage - delta);
-  const right = Math.min(totalPages - 1, currentPage + delta);
+    const delta = 2;
+    const range: (number | string)[] = [];
+    const left = Math.max(2, currentPage - delta);
+    const right = Math.min(totalPages - 1, currentPage + delta);
 
-  range.push(1);
-  if (left > 2) range.push('...');
+    range.push(1);
+    if (left > 2) range.push('...');
 
-  for (let i = left; i <= right; i++) {
-    range.push(i);
+    for (let i = left; i <= right; i++) {
+      range.push(i);
+    }
+
+    if (right < totalPages - 1) range.push('...');
+    if (totalPages > 1) range.push(totalPages);
+
+    return range;
   }
-
-  if (right < totalPages - 1) range.push('...');
-  if (totalPages > 1) range.push(totalPages);
-
-  return range;
-}
-
-
 
   irAPaginaUsuarios(pagina: number | string): void {
     if (typeof pagina === 'number') {
@@ -773,7 +822,7 @@ confirmDelete(usuario: Usuarios, index: number): void {
         const estudios = res.data?.estudios;
 
         if (!hoja || !estudios || estudios.length === 0) {
-          this.alerta("Este usuario no tiene estudios registrados.");
+          this.alerta('Este usuario no tiene estudios registrados.');
           this.usuarioSeleccionado = usuario;
           this.estudios = [];
           return;
@@ -785,15 +834,18 @@ confirmDelete(usuario: Usuarios, index: number): void {
         this.abrirModalEstudios();
       },
       error: (err) => {
-        if (err.status === 404 && err.error?.mensaje === "Hoja de vida no encontrada") {
+        if (
+          err.status === 404 &&
+          err.error?.mensaje === 'Hoja de vida no encontrada'
+        ) {
           this.usuarioSeleccionado = usuario;
           this.estudios = [];
           this.abrirModalEstudios();
         } else {
           console.error('Error al obtener estudios:', err);
-          this.alerta("Error inesperado al consultar estudios.");
+          this.alerta('Error inesperado al consultar estudios.');
         }
-      }
+      },
     });
   }
   abrirModalEstudios(): void {
@@ -834,7 +886,13 @@ confirmDelete(usuario: Usuarios, index: number): void {
               {
                 label: 'Usuarios por Rol',
                 data,
-                backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'],
+                backgroundColor: [
+                  '#4e73df',
+                  '#1cc88a',
+                  '#36b9cc',
+                  '#f6c23e',
+                  '#e74a3b',
+                ],
               },
             ],
           },
@@ -849,7 +907,7 @@ confirmDelete(usuario: Usuarios, index: number): void {
       },
       error: (err) => {
         console.error('Error al obtener datos para el gráfico', err);
-      }
+      },
     });
   }
 
@@ -857,16 +915,13 @@ confirmDelete(usuario: Usuarios, index: number): void {
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet('Usuarios');
 
-
     sheet.addRow([]); // espacio
-
 
     sheet.columns = [
       { header: 'Documento', key: 'documento', width: 20 },
       { header: 'Nombre', key: 'nombre', width: 30 },
-      { header: 'Correo', key: 'correo', width: 30 }
+      { header: 'Correo', key: 'correo', width: 30 },
     ];
-
 
     const usuariosPorRol: { [rol: string]: any[] } = {};
     this.usuarios.forEach((u) => {
@@ -876,7 +931,6 @@ confirmDelete(usuario: Usuarios, index: number): void {
     });
 
     Object.entries(usuariosPorRol).forEach(([rol, usuarios]) => {
-
       const rolRow = sheet.addRow([`Rol: ${rol}`]);
       rolRow.font = { bold: true };
       rolRow.fill = {
@@ -885,7 +939,6 @@ confirmDelete(usuario: Usuarios, index: number): void {
         fgColor: { argb: 'FFD9D9D9' },
       };
       sheet.mergeCells(`A${rolRow.number}:C${rolRow.number}`);
-
 
       const encabezadoRow = sheet.addRow(['Documento', 'Nombre', 'Correo']);
       encabezadoRow.font = { bold: true };
@@ -904,14 +957,12 @@ confirmDelete(usuario: Usuarios, index: number): void {
         };
       });
 
-
       usuarios.forEach((u, index) => {
         const dataRow = sheet.addRow([
           u.numDocumento,
           `${u.primerNombre} ${u.primerApellido}`,
-          u.email
+          u.email,
         ]);
-
 
         if (index % 2 === 0) {
           dataRow.fill = {
@@ -934,17 +985,13 @@ confirmDelete(usuario: Usuarios, index: number): void {
       sheet.addRow([]);
     });
 
-
     workbook.xlsx.writeBuffer().then((buffer) => {
       const blob = new Blob([buffer], {
-        type:
-          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       });
       saveAs(blob, 'usuarios_reporte.xlsx');
     });
   }
-
-
 
   descargarPDF(): void {
     const doc = new jsPDF();
@@ -962,16 +1009,14 @@ confirmDelete(usuario: Usuarios, index: number): void {
 
       let startY = 35;
 
-
       const canvas: any = document.getElementById('graficaRoles');
       const graficaImg = canvas.toDataURL('image/png', 1.0);
       doc.addImage(graficaImg, 'PNG', 10, startY, 180, 80);
 
       startY += 90;
 
-
       const usuariosPorRol: { [rol: string]: any[] } = {};
-      this.usuarios.forEach(u => {
+      this.usuarios.forEach((u) => {
         const rol = (u.user?.rol as any)?.nombreRol || 'Sin Rol';
         if (!usuariosPorRol[rol]) usuariosPorRol[rol] = [];
         usuariosPorRol[rol].push(u);
@@ -995,13 +1040,13 @@ confirmDelete(usuario: Usuarios, index: number): void {
           theme: 'grid',
           styles: {
             halign: 'left',
-            fontSize: 10
+            fontSize: 10,
           },
           didParseCell: (data) => {
             if (data.section === 'body' && data.row.index % 2 === 0) {
               data.cell.styles.fillColor = [240, 240, 240];
             }
-          }
+          },
         });
 
         startY = (doc as any).lastAutoTable.finalY + 10;
@@ -1011,10 +1056,6 @@ confirmDelete(usuario: Usuarios, index: number): void {
     };
   }
 
-
-
-
-
   cerrarModalReporte(): void {
     const modalElement = document.getElementById('modalReporteUsuarios');
     if (modalElement) {
@@ -1022,11 +1063,15 @@ confirmDelete(usuario: Usuarios, index: number): void {
       if (modalInstance) {
         modalInstance.hide();
       } else {
-        console.warn('No se encontró una instancia activa del modal. Creando una nueva para cerrarla.');
+        console.warn(
+          'No se encontró una instancia activa del modal. Creando una nueva para cerrarla.'
+        );
         new bootstrap.Modal(modalElement).hide();
       }
     } else {
-      console.error('No se encontró el elemento modalReporteUsuarios en el DOM');
+      console.error(
+        'No se encontró el elemento modalReporteUsuarios en el DOM'
+      );
     }
   }
 
@@ -1039,13 +1084,4 @@ confirmDelete(usuario: Usuarios, index: number): void {
 
     this.generarGrafico();
   }
-
-
-
 }
-
-
-
-
-
-
