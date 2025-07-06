@@ -30,8 +30,6 @@ export interface Contratos {
   };
 }
 
-
-  
 export interface HojaDeVida {
   idHojaDeVida: number;
   usuarioNumDocumento: number;
