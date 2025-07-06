@@ -292,10 +292,20 @@ export class UsuariosComponent implements OnInit {
     });
   }
   mostrarHojaVida(usuario: Usuarios): void {
+    const inicio = performance.now();
+
     this.usuariosService.obtenerHojadevida(usuario.numDocumento).subscribe({
       next: (res) => {
         if (res && res.hojaDeVida) {
           this.hojaDeVidaSeleccionada = res.hojaDeVida;
+
+          setTimeout(() => {
+            this.abrirModalHojaVida();
+
+            setTimeout(() => {
+              const fin = performance.now();
+            }, 200);
+          }, 0);
         } else {
           this.hojaDeVidaSeleccionada = null;
           Swal.fire(
@@ -304,9 +314,6 @@ export class UsuariosComponent implements OnInit {
             'info'
           );
         }
-        setTimeout(() => {
-          this.abrirModalHojaVida();
-        }, 0);
       },
       error: (err) => {
         this.hojaDeVidaSeleccionada = null;
@@ -318,8 +325,12 @@ export class UsuariosComponent implements OnInit {
       },
     });
   }
+
   trackByUsuario(index: number, usuario: Usuarios): number {
     return usuario.usersId;
+  }
+  trackById(index: number, item: any): number {
+    return item.id;
   }
 
   cargarUsuarios(): void {
@@ -383,15 +394,25 @@ export class UsuariosComponent implements OnInit {
 
   abrirModalHojaVida(): void {
     const modalElement = document.getElementById('hojaDeVidaModal');
-    if (modalElement) {
-      const modal = new bootstrap.Modal(modalElement);
-      modal.show();
-      setTimeout(() => {
-        modalElement.setAttribute('aria-hidden', 'false');
-      }, 100);
-    } else {
+    if (!modalElement) {
       console.error('No se encontró el modal de Hoja de Vida');
+      return;
     }
+
+    // Limpieza anticipada
+    modalElement.removeAttribute('inert');
+    (document.activeElement as HTMLElement)?.blur();
+
+    const modal = new bootstrap.Modal(modalElement);
+
+    modal.show();
+
+    requestAnimationFrame(() => {
+      if (modalElement.getAttribute('aria-hidden') === 'true') {
+        console.warn(' Forzando eliminación de aria-hidden');
+        modalElement.setAttribute('aria-hidden', 'false');
+      }
+    });
   }
 
   mostrarEstudios(usuario: Usuarios): void {
@@ -518,7 +539,7 @@ export class UsuariosComponent implements OnInit {
       return;
     }
 
-    // 1. Validar en tabla usuarios si ya existe correo o documento
+    const inicio = performance.now();
     this.usuariosService
       .verificarExistenciaUsuario(email, numDocumento)
       .subscribe((existe: boolean) => {
@@ -532,11 +553,10 @@ export class UsuariosComponent implements OnInit {
         }
         console.log('Resultado existencia:', existe);
 
-        // 2. Crear primero el user
         const userData = {
           name: `${this.nuevoUsuario.primerNombre} ${this.nuevoUsuario.primerApellido}`,
           email: email,
-          email_confirmation: email, // 👈 necesario
+          email_confirmation: email,
           password: password,
           password_confirmation: repetirPassword,
           rol: Number(rol),
@@ -571,6 +591,10 @@ export class UsuariosComponent implements OnInit {
 
             this.usuariosService.agregarUsuario(usuarioFinal).subscribe({
               next: () => {
+                const llegada = performance.now();
+                console.log(
+                  ` Backend respondió en: ${(llegada - inicio).toFixed(2)} ms`
+                );
                 Swal.fire(
                   '¡Éxito!',
                   'El usuario fue creado correctamente.',
@@ -583,6 +607,16 @@ export class UsuariosComponent implements OnInit {
                   const modal =
                     Modal.getInstance(modalEl) || new Modal(modalEl);
                   modal.hide();
+                  setTimeout(() => {
+                    this.abrirModalHojaVida();
+
+                    const fin = performance.now();
+                    console.log(
+                      `⏱️ Total hasta abrir modal: ${(fin - inicio).toFixed(
+                        2
+                      )} ms`
+                    );
+                  }, 0);
                 }
                 return;
               },
@@ -704,7 +738,6 @@ export class UsuariosComponent implements OnInit {
         next: (res) => {
           const hoja = res.data?.hojaDeVida;
           const experiencias = res.data?.experiencias;
-          console.log('Experiencias recibidas:', experiencias);
 
           if (!hoja || !experiencias || experiencias.length === 0) {
             this.alerta(

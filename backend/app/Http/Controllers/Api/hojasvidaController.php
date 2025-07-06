@@ -230,4 +230,32 @@ class hojasvidaController extends Controller
 
         return response()->download($ruta);
     }
+    
+
+    public function obtenerHojaDeVida($numDocumento)
+    {
+        try {
+            $hoja = HojasVida::with(['usuario', 'experiencias', 'estudios'])
+                ->where('documento', $numDocumento)
+                ->first();
+
+            if (!$hoja) {
+                return response()->json([
+                    'message' => 'No se encontró hoja de vida',
+                    'status' => 404
+                ], 404);
+            }
+
+            return response()->json([
+                'hojaDeVida' => $hoja,
+                'status' => 200
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al obtener hoja de vida',
+                'error' => $e->getMessage(),
+                'status' => 500
+            ], 500);
+        }
+    }
 }
