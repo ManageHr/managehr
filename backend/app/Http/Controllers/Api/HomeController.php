@@ -8,10 +8,30 @@ use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
+
     /**
-     * Obtener el perfil del usuario autenticado desde la tabla 'usuarios'
-     * con las relaciones tipoDocumento y genero.
+     * @OA\Get(
+     *     path="/api/perfil",
+     *     summary="Obtener el perfil del usuario autenticado",
+     *     description="Retorna los datos del perfil con tipo de documento y género.",
+     *     tags={"Perfil"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Perfil encontrado con éxito"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Usuario no autenticado"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Perfil no encontrado"
+     *     )
+     * )
      */
+    
+    
     public function getProfile()
     {
         $user = Auth::user();
@@ -20,7 +40,7 @@ class HomeController extends Controller
             return response()->json(['message' => 'Usuario no autenticado'], 401);
         }
 
-        // Cargar perfil con relaciones
+       
         $perfil = $user->perfil()->with('tipoDocumento', 'genero')->first();
 
         if (!$perfil) {
@@ -30,9 +50,6 @@ class HomeController extends Controller
         return response()->json($perfil);
     }
 
-    /**
-     * Actualizar el perfil del usuario en la tabla 'usuarios'
-     */
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
@@ -47,7 +64,6 @@ class HomeController extends Controller
             return response()->json(['message' => 'Perfil no encontrado'], 404);
         }
 
-        // Validar únicamente los campos que realmente se pueden actualizar desde el frontend
         $validated = $request->validate([
             'email' => 'required|email|max:255',
             'direccion' => 'nullable|string|max:255',
