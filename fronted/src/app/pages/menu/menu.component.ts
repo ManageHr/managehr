@@ -9,9 +9,10 @@ import { RouterOutlet } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterOutlet],
   templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.scss'],
+  styleUrls: ['./menu.component.scss']
 })
 export class MenuComponent implements OnInit {
+
   isCollapsed = false;
   isSubmenuOpen = false; // Directorio
   isSubmenuVacantesOpen = false; // Vacantes
@@ -20,16 +21,19 @@ export class MenuComponent implements OnInit {
 
   constructor(private router: Router) {} // Si AuthService no se usa en este componente, puedes quitarlo del constructor
 
-  ngOnInit(): void {
-    const usuarioGuardado = localStorage.getItem('usuario');
-    if (usuarioGuardado) {
-      this.usuario = JSON.parse(usuarioGuardado);
+ngOnInit(): void {
+  const usuarioGuardado = localStorage.getItem('usuario');
+  if (usuarioGuardado) {
+    this.usuario = JSON.parse(usuarioGuardado);
+    
 
-      // NUEVO: asegúrate de que tenga numDocumento
-    } else {
-      console.log('No hay usuario en localStorage');
-    }
+    // NUEVO: asegúrate de que tenga numDocumento
+    
+  } else {
+    console.log('No hay usuario en localStorage');
   }
+}
+
 
   logout(): void {
     localStorage.removeItem('token');
@@ -49,7 +53,7 @@ export class MenuComponent implements OnInit {
   }
 
   isActive(path: string): boolean {
-    return this.router.url.includes(path);
+    return this.router.url === path;
   }
 
   // Función para alternar el submenú de Directorio

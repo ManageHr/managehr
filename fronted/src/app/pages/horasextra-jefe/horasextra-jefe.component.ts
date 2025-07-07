@@ -97,13 +97,7 @@ export class HorasExtraJefeComponent implements OnInit {
   aprobarSolicitud(solicitud: SolicitudHorasExtraJefe): void {
     if (!solicitud.idHorasExtra) return;
 
-    const respuesta: RespuestaSolicitudHorasExtra = {
-      idHorasExtra: solicitud.idHorasExtra,
-      estado: 'aprobado',
-      comentario: this.comentario
-    };
-
-    this.horasExtraJefeService.aprobarSolicitud(respuesta).subscribe({
+    this.horasExtraJefeService.actualizarEstado(solicitud.idHorasExtra, 'Aprobado').subscribe({
       next: () => {
         this.cargarSolicitudes();
         this.cargarEstadisticas();
@@ -120,13 +114,7 @@ export class HorasExtraJefeComponent implements OnInit {
   rechazarSolicitud(solicitud: SolicitudHorasExtraJefe): void {
     if (!solicitud.idHorasExtra) return;
 
-    const respuesta: RespuestaSolicitudHorasExtra = {
-      idHorasExtra: solicitud.idHorasExtra,
-      estado: 'rechazado',
-      comentario: this.comentario
-    };
-
-    this.horasExtraJefeService.rechazarSolicitud(respuesta).subscribe({
+    this.horasExtraJefeService.actualizarEstado(solicitud.idHorasExtra, 'Rechazado').subscribe({
       next: () => {
         this.cargarSolicitudes();
         this.cargarEstadisticas();
@@ -150,7 +138,7 @@ export class HorasExtraJefeComponent implements OnInit {
   }
 
   getEstadoClass(estado: string | undefined): string {
-    switch (estado) {
+    switch ((estado || '').toLowerCase()) {
       case 'pendiente': return 'badge-warning';
       case 'aprobado': return 'badge-success';
       case 'rechazado': return 'badge-danger';
@@ -159,7 +147,7 @@ export class HorasExtraJefeComponent implements OnInit {
   }
 
   getEstadoText(estado: string | undefined): string {
-    switch (estado) {
+    switch ((estado || '').toLowerCase()) {
       case 'pendiente': return 'Pendiente';
       case 'aprobado': return 'Aprobado';
       case 'rechazado': return 'Rechazado';
@@ -171,7 +159,7 @@ export class HorasExtraJefeComponent implements OnInit {
     return new Date(fecha).toLocaleDateString('es-ES');
   }
 
-  // Para horas extra, los días es siempre 1, pero podrías mostrar las horas
+
   getHoras(solicitud: SolicitudHorasExtraJefe): number {
     return solicitud.nHorasExtra;
   }

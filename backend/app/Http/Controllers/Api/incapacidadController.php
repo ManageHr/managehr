@@ -7,37 +7,15 @@ use Illuminate\Http\Request;
 use App\Models\Incapacidad;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use OpenApi\Annotations as OA;
 
 class incapacidadController extends Controller
 {
-
-    /**
-     * @OA\Get(
-     *     path="/api/incapacidades",
-     *     summary="Listar todas las incapacidades",
-     *     description="Obtiene un listado de todas las incapacidades registradas con sus relaciones.",
-     *     tags={"Incapacidades"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Listado obtenido con éxito"
-     *     ),
-     *     @OA\Response(
-     *         response=500,
-     *         description="Error del servidor"
-     *     )
-     * )
-     */
-
-
-
     public function index(Request $request)
     {
         try {
             $incapacidades = Incapacidad::with([
                 'contrato.hojaDeVida.usuario.user',
-                'contrato.area'  
+                'contrato.area'  // <-- Agregado para cargar área
             ])->get();
 
             return response()->json([
@@ -54,34 +32,18 @@ class incapacidadController extends Controller
     }
 
 
+
     /**
-     * @OA\Post(
-     *     path="/api/incapacidades",
-     *     summary="Registrar nueva incapacidad",
-     *     description="Crea una nueva incapacidad con descripción, fechas y archivo (opcional).",
-     *     tags={"Incapacidades"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\MediaType(
-     *             mediaType="multipart/form-data",
-     *             @OA\Schema(
-     *                 required={"descrip", "fechaInicio", "fechaFinal", "contratoId"},
-     *                 @OA\Property(property="descrip", type="string", example="Incapacidad médica general"),
-     *                 @OA\Property(property="archivo", type="string", format="binary", nullable=true),
-     *                 @OA\Property(property="fechaInicio", type="string", format="date", example="2025-07-06"),
-     *                 @OA\Property(property="fechaFinal", type="string", format="date", example="2025-07-10"),
-     *                 @OA\Property(property="contratoId", type="integer", example=12)
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=201, description="Incapacidad creada correctamente"),
-     *     @OA\Response(response=400, description="Error de validación"),
-     *     @OA\Response(response=500, description="Error interno del servidor")
-     * )
+     * Show the form for creating a new resource.
      */
+    public function create()
+    {
+        //
+    }
 
-
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -103,10 +65,13 @@ class incapacidadController extends Controller
             $file = $request->file('archivo');
             $folder = 'Archivos/' . $request->input('contratoId');
 
+            // crea carpeta si no existe, guarda archivo
+            //$path = $file->storeAs($folder, $file->getClientOriginalName(), 'public');
             $extension = $file->getClientOriginalExtension();
             $filename = $request->input('contratoId') . '.' . $extension;
             $path = $file->storeAs($folder, $filename, 'public');
 
+            // guardamos la URL relativa
             $validated['archivo'] = 'storage/' . $path;
         }
         try {
@@ -133,27 +98,9 @@ class incapacidadController extends Controller
         }
     }
 
-
     /**
-     * @OA\Get(
-     *     path="/api/incapacidades/{id}",
-     *     summary="Consultar incapacidad por ID",
-     *     description="Devuelve los datos de una incapacidad específica.",
-     *     tags={"Incapacidades"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID de la incapacidad",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(response=200, description="Incapacidad encontrada"),
-     *     @OA\Response(response=404, description="Incapacidad no encontrada")
-     * )
+     * Display the specified resource.
      */
-
-   
     public function show($id)
     {
         $incapacidad = Incapacidad::find($id);
@@ -164,27 +111,9 @@ class incapacidadController extends Controller
         return response()->json($data, 200);
     }
 
-     
-
     /**
-     * @OA\Delete(
-     *     path="/api/incapacidades/{id}",
-     *     summary="Eliminar incapacidad",
-     *     description="Elimina una incapacidad existente por su ID.",
-     *     tags={"Incapacidades"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID de la incapacidad a eliminar",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(response=200, description="Incapacidad eliminada con éxito"),
-     *     @OA\Response(response=404, description="Incapacidad no encontrada")
-     * )
+     * Show the form for editing the specified resource.
      */
-
     public function destroy($id)
     {
         $incapacidad = Incapacidad::find($id);
@@ -202,42 +131,6 @@ class incapacidadController extends Controller
         ];
         return response()->json([$data], 200);
     }
-
-
-    /**
-     * @OA\Put(
-     *     path="/api/incapacidades/{id}",
-     *     summary="Actualizar incapacidad (total)",
-     *     description="Modifica todos los campos de una incapacidad existente.",
-     *     tags={"Incapacidades"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID de la incapacidad",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\MediaType(
-     *             mediaType="multipart/form-data",
-     *             @OA\Schema(
-     *                 required={"descrip", "fechaInicio", "fechaFinal", "contratoId"},
-     *                 @OA\Property(property="descrip", type="string", example="Incapacidad por cirugía"),
-     *                 @OA\Property(property="archivo", type="string", format="binary", nullable=true),
-     *                 @OA\Property(property="fechaInicio", type="string", format="date", example="2025-07-01"),
-     *                 @OA\Property(property="fechaFinal", type="string", format="date", example="2025-07-05"),
-     *                 @OA\Property(property="contratoId", type="integer", example=7)
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Incapacidad actualizada con éxito"),
-     *     @OA\Response(response=400, description="Error de validación"),
-     *     @OA\Response(response=404, description="Incapacidad no encontrada")
-     * )
-     */
-
     public function update(Request $request, $id)
     {
         $incapacidad = Incapacidad::find($id);
@@ -267,10 +160,13 @@ class incapacidadController extends Controller
             $file = $request->file('archivo');
             $folder = 'Archivos/' . $request->input('numDocumento');
 
+            // crea carpeta si no existe, guarda archivo
+            //$path = $file->storeAs($folder, $file->getClientOriginalName(), 'public');
             $extension = $file->getClientOriginalExtension();
             $filename = $request->input('numDocumento') . '.' . $extension;
             $path = $file->storeAs($folder, $filename, 'public');
 
+            // guardamos la URL relativa
             $validated['archivo'] = 'storage/' . $path;
         }
 
@@ -295,37 +191,6 @@ class incapacidadController extends Controller
             ], 500);
         }
     }
-
- /**
-     * @OA\Patch(
-     *     path="/api/incapacidades/{id}",
-     *     summary="Actualizar incapacidad (parcial)",
-     *     description="Actualiza uno o varios campos de la incapacidad indicada.",
-     *     tags={"Incapacidades"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID de la incapacidad",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=false,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="descrip", type="string", example="Cambio de diagnóstico"),
-     *             @OA\Property(property="archivo", type="string", example="storage/Archivos/archivo.pdf"),
-     *             @OA\Property(property="fechaInicio", type="string", format="date", example="2025-07-01"),
-     *             @OA\Property(property="fechaFinal", type="string", format="date", example="2025-07-03"),
-     *             @OA\Property(property="contratoId", type="integer", example=15)
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Actualización parcial exitosa"),
-     *     @OA\Response(response=400, description="Error de validación"),
-     *     @OA\Response(response=404, description="Incapacidad no encontrada")
-     * )
-     */
-
     public function updatePartial(Request $request, $id)
     {
         $incapacidad = Incapacidad::find($id);
@@ -337,100 +202,38 @@ class incapacidadController extends Controller
             return response()->json([$data], 404);
         }
         $validator = Validator::make($request->all(), [
-
             'descrip' => 'string|max:500',
-            'archivo' => 'string|max:50',
+            'archivo' => 'nullable|file|max:5120',
             'fechaInicio' => 'date',
             'fechaFinal' => 'date',
-            'contratoId' => 'integer',
+            'contratoId' => 'integer'
         ]);
         if ($validator->fails()) {
             $data = [
-                "mesaje " => "Error al validar incapacidad",
                 "errors" => $validator->errors(),
                 "status" => 400
             ];
             return response()->json([$data], 400);
         }
-        if ($request->has("descrip")) {
-            $incapacidad->descrip = $request->descrip;
-        }
-        if ($request->has("archivo")) {
-            $incapacidad->archivo = $request->archivo;
-        }
-        if ($request->has("fechaInicio")) {
-            $incapacidad->fechaInicio = $request->fechaInicio;
-        }
-        if ($request->has("fechaFinal")) {
-            $incapacidad->fechaFinal = $request->fechaFinal;
-        }
-        if ($request->has("contratoId")) {
-            $incapacidad->contratoId = $request->contratoId;
+        if ($request->hasFile('archivo')) {
+            $file = $request->file('archivo');
+            $folder = 'Archivos/' . $request->input('numDocumento');
+            $extension = $file->getClientOriginalExtension();
+            $filename = $request->input('numDocumento') . '.' . $extension;
+            $path = $file->storeAs($folder, $filename, 'public');
+            $validated['archivo'] = 'storage/' . $path;
         }
 
-
-        $incapacidad->save();
-        $data = [
-            "incapacidad:" => $incapacidad,
-            "status" => 200
-        ];
-        return response()->json([$data], 200);
-    }
-    /**
-     * @OA\Patch(
-     *     path="/api/incapacidad/estado/{id}",
-     *     summary="Actualizar el estado de una incapacidad",
-     *     description="Actualiza el estado (0,1,2) de una incapacidad existente por su ID.",
-     *     tags={"Incapacidades"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID de la incapacidad",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"estado"},
-     *             @OA\Property(property="estado", type="integer", enum={0, 1}, example=1)
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Estado actualizado correctamente"),
-     *     @OA\Response(response=404, description="Incapacidad no encontrada"),
-     *     @OA\Response(response=400, description="Error en la validación")
-     * )
-     */
-
-    public function cambiarEstado(Request $request, $id)
-    {
-        $incapacidad = Incapacidad::find($id);
-
-        if (!$incapacidad) {
-            return response()->json([
-                'mensaje' => 'Incapacidad no encontrada',
-                'status' => 404
-            ], 404);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'estado' => 'required|integer|in:0,1,2'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'mensaje' => 'Error en la validación',
-                'errors' => $validator->errors(),
-                'status' => 400
-            ], 400);
-        }
-
-        $incapacidad->estado = $request->estado;
-        $incapacidad->save();
+        $incapacidad->update($request->only([
+            'descrip',
+            'archivo',
+            'fechaInicio',
+            'fechaFinal',
+            'contratoId'
+        ]));
 
         return response()->json([
-            'mensaje' => 'Estado de la incapacidad actualizado correctamente',
+            'mensaje' => 'Incapacidad actualizada parcialmente',
             'incapacidad' => $incapacidad,
             'status' => 200
         ]);

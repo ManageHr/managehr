@@ -7,23 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\Notificacion;
 use App\Models\Contrato;
 use Illuminate\Support\Facades\Validator;
-use OpenApi\Annotations as OA;
 
 class NotificacionesController extends Controller
 {
-
-      /**
-     * @OA\Get(
-     *     path="/api/notificaciones",
-     *     summary="Listar todas las notificaciones",
-     *     description="Obtiene una lista de todas las notificaciones con sus relaciones (área, usuario).",
-     *     tags={"Notificaciones"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Response(response=200, description="Listado obtenido correctamente")
-     * )
-     */
-
-
     public function index()
     {
         $notificaciones = Notificacion::with([
@@ -36,33 +22,6 @@ class NotificacionesController extends Controller
             'status' => 200
         ], 200);
     }
-
-
-     /**
-     * @OA\Patch(
-     *     path="/api/notificaciones/estado/{id}",
-     *     summary="Actualizar solo el estado de una notificación",
-     *     description="Modifica el campo 'estado' de una notificación específica.",
-     *     tags={"Notificaciones"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID de la notificación",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         @OA\JsonContent(
-     *             required={"estado"},
-     *             @OA\Property(property="estado", type="integer", example=1)
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Estado actualizado correctamente"),
-     *     @OA\Response(response=404, description="Notificación no encontrada")
-     * )
-     */
-
     public function actualizarEstado(Request $request, $id)
     {
         $notificacion = Notificacion::find($id);
@@ -96,30 +55,6 @@ class NotificacionesController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/notificaciones",
-     *     summary="Crear una nueva notificación",
-     *     description="Registra una nueva notificación para una acción específica.",
-     *     tags={"Notificaciones"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"tipo", "accion", "usuarioId", "referenciaId"},
-     *             @OA\Property(property="tipo", type="string", enum={"HorasExtra", "Vacaciones", "Permiso", "Postulacion", "Rol"}),
-     *             @OA\Property(property="accion", type="string", enum={"Creado", "Modificado", "Eliminado", "EstadoAceptado"}),
-     *             @OA\Property(property="fecha", type="string", format="date", nullable=true),
-     *             @OA\Property(property="detalle", type="string", nullable=true),
-     *             @OA\Property(property="usuarioId", type="integer"),
-     *             @OA\Property(property="areaId", type="integer", nullable=true),
-     *             @OA\Property(property="referenciaId", type="integer")
-     *         )
-     *     ),
-     *     @OA\Response(response=201, description="Notificación creada correctamente"),
-     *     @OA\Response(response=400, description="Error de validación")
-     * )
-     */
 
     public function store(Request $request)
     {
@@ -158,25 +93,6 @@ class NotificacionesController extends Controller
         }
     }
 
-     /**
-     * @OA\Get(
-     *     path="/api/notificaciones/{id}",
-     *     summary="Consultar notificación por ID",
-     *     description="Devuelve una notificación específica por su ID.",
-     *     tags={"Notificaciones"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID de la notificación",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(response=200, description="Notificación encontrada"),
-     *     @OA\Response(response=404, description="No encontrada")
-     * )
-     */
-
     public function show($id)
     {
         $notificacion = Notificacion::find($id);
@@ -193,32 +109,6 @@ class NotificacionesController extends Controller
             'status' => 200
         ], 200);
     }
-
-    /**
-     * @OA\Put(
-     *     path="/api/notificaciones/{id}",
-     *     summary="Actualizar notificación completamente",
-     *     description="Modifica todos los campos de una notificación existente.",
-     *     tags={"Notificaciones"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"tipo", "accion", "usuarioId", "referenciaId"},
-     *             @OA\Property(property="tipo", type="string", enum={"HorasExtra", "Vacaciones", "Permiso", "Postulacion", "Rol"}),
-     *             @OA\Property(property="accion", type="string", enum={"Creado", "Modificado", "Eliminado", "EstadoAceptado"}),
-     *             @OA\Property(property="fecha", type="string", format="date", nullable=true),
-     *             @OA\Property(property="detalle", type="string", nullable=true),
-     *             @OA\Property(property="usuarioId", type="integer"),
-     *             @OA\Property(property="areaId", type="integer", nullable=true),
-     *             @OA\Property(property="referenciaId", type="integer")
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Notificación actualizada correctamente"),
-     *     @OA\Response(response=400, description="Error de validación")
-     * )
-     */
 
     public function update(Request $request, $id)
     {
@@ -257,31 +147,6 @@ class NotificacionesController extends Controller
             'status' => 200
         ]);
     }
-
-    /**
-     * @OA\Patch(
-     *     path="/api/notificaciones/{id}",
-     *     summary="Actualizar notificación parcialmente",
-     *     description="Modifica uno o más campos de una notificación.",
-     *     tags={"Notificaciones"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
-     *     @OA\RequestBody(
-     *         @OA\JsonContent(
-     *             @OA\Property(property="tipo", type="string", enum={"HorasExtra", "Vacaciones", "Permiso", "Postulacion", "Rol"}),
-     *             @OA\Property(property="accion", type="string", enum={"Creado", "Modificado", "Eliminado", "EstadoAceptado"}),
-     *             @OA\Property(property="fecha", type="string", format="date"),
-     *             @OA\Property(property="detalle", type="string"),
-     *             @OA\Property(property="usuarioId", type="integer"),
-     *             @OA\Property(property="areaId", type="integer"),
-     *             @OA\Property(property="referenciaId", type="integer"),
-     *             @OA\Property(property="contratoId", type="integer", example=3)
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Actualización parcial exitosa"),
-     *     @OA\Response(response=404, description="No encontrada")
-     * )
-     */
 
     public function updatePartial(Request $request, $id)
     {
@@ -328,19 +193,6 @@ class NotificacionesController extends Controller
         ]);
     }
 
-     /**
-     * @OA\Delete(
-     *     path="/api/notificaciones/{id}",
-     *     summary="Eliminar notificación",
-     *     description="Elimina una notificación existente por su ID.",
-     *     tags={"Notificaciones"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
-     *     @OA\Response(response=200, description="Eliminación exitosa"),
-     *     @OA\Response(response=404, description="No encontrada")
-     * )
-     */
-    
     public function destroy($id)
     {
         $notificacion = Notificacion::find($id);

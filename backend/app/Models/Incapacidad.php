@@ -14,11 +14,11 @@ class Incapacidad extends Model
     protected $fillable = [
         "descrip",
         'archivo',
-        'estado',
         'fechaInicio',
         'fechaFinal',
         'contratoId'
     ];
+
     public function contrato()
     {
         return $this->belongsTo(Contrato::class, 'contratoId','idContrato');

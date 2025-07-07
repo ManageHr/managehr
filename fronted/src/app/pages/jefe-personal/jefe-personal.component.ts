@@ -28,7 +28,7 @@ export class JefePersonalComponent implements OnInit {
   hojaDeVidaSeleccionada: any = null;
   mostrarModalHojaVida = false;
   
-  // Nuevas propiedades para estudios y experiencias
+  // Propiedades para estudios y experiencias
   estudios: any[] = [];
   experiencias: any[] = [];
   mostrarModalEstudios = false;
@@ -82,12 +82,10 @@ export class JefePersonalComponent implements OnInit {
   }
 
   verEmpleado(empleado: any) {
-    // Aquí puedes navegar a la vista de detalle o mostrar un modal
     alert('Ver detalles de: ' + (empleado.name || empleado.perfil?.primerNombre));
   }
 
   editarEmpleado(empleado: any) {
-    // Aquí puedes navegar a la vista de edición o mostrar un modal
     alert('Editar empleado: ' + (empleado.name || empleado.perfil?.primerNombre));
   }
 
@@ -99,7 +97,6 @@ export class JefePersonalComponent implements OnInit {
     const numDocumento = empleado.perfil?.numDocumento;
     this.jefePersonalService.getHojaDeVidaPorDocumento(numDocumento).subscribe(
       (data) => {
-        // Si la respuesta es { hojaDeVida: {...}, status: 200 }
         this.hojaDeVidaSeleccionada = data.hojaDeVida;
         this.mostrarModalHojaVida = true;
       },
@@ -109,7 +106,7 @@ export class JefePersonalComponent implements OnInit {
     );
   }
 
-  // Nuevo método para mostrar estudios
+  // Método para mostrar estudios
   mostrarEstudios(empleado: any) {
     this.empleadoSeleccionado = empleado;
     const numDocumento = empleado.perfil?.numDocumento;
@@ -146,7 +143,7 @@ export class JefePersonalComponent implements OnInit {
     );
   }
 
-  // Nuevo método para mostrar experiencias laborales
+  // Método para mostrar experiencias laborales
   mostrarExperiencias(empleado: any) {
     this.empleadoSeleccionado = empleado;
     const numDocumento = empleado.perfil?.numDocumento;

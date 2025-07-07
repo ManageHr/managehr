@@ -36,13 +36,13 @@ export class AreaComponent {
     const userFromLocal = localStorage.getItem('usuario');
     if (userFromLocal) {
       this.usuario = JSON.parse(userFromLocal);
-      
+      console.log('usuario logueado:', this.usuario);
     }
     this.areaService.obtenerAreas().subscribe({
       next: (data) => {
         this.areas = data; 
         this.totalPages = Math.ceil(this.areas.length / this.itemsPerPage);
-       
+        console.log('area cargada:', this.areas);
       }
     });
     this.areaService.getJefesDePersonal().subscribe({

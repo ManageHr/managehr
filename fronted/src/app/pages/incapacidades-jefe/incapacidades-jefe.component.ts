@@ -97,13 +97,7 @@ export class IncapacidadesJefeComponent implements OnInit {
   aprobarSolicitud(solicitud: SolicitudIncapacidadJefe): void {
     if (!solicitud.idIncapacidad) return;
 
-    const respuesta: RespuestaSolicitudIncapacidad = {
-      idIncapacidad: solicitud.idIncapacidad,
-      estado: 'aprobado',
-      comentario: this.comentario
-    };
-
-    this.incapacidadesJefeService.aprobarSolicitud(respuesta).subscribe({
+    this.incapacidadesJefeService.actualizarEstado(solicitud.idIncapacidad, 'Aprobado').subscribe({
       next: () => {
         this.cargarSolicitudes();
         this.cargarEstadisticas();
@@ -120,13 +114,7 @@ export class IncapacidadesJefeComponent implements OnInit {
   rechazarSolicitud(solicitud: SolicitudIncapacidadJefe): void {
     if (!solicitud.idIncapacidad) return;
 
-    const respuesta: RespuestaSolicitudIncapacidad = {
-      idIncapacidad: solicitud.idIncapacidad,
-      estado: 'rechazado',
-      comentario: this.comentario
-    };
-
-    this.incapacidadesJefeService.rechazarSolicitud(respuesta).subscribe({
+    this.incapacidadesJefeService.actualizarEstado(solicitud.idIncapacidad, 'Rechazado').subscribe({
       next: () => {
         this.cargarSolicitudes();
         this.cargarEstadisticas();

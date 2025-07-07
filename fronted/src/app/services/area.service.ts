@@ -20,6 +20,7 @@ export class AreaService {
   obtenerAreas(): Observable<any> {
     return this.http.get<any>(this.apiUrl).pipe(
       map(res => {
+        console.log('Respuesta del backend:', res); 
         return res.areas;
       })
       

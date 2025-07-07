@@ -15,9 +15,9 @@ class HorasExtra extends Model
         'fecha',
         'tipoHorasId',
         'nHorasExtra',
-        'estado',
         'contratoId',
     ];
+
     public function tipoHoraExtra()
     {
         return $this->belongsTo(TipoHoras::class, 'tipoHorasId', 'idTipoHoras');
