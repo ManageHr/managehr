@@ -14,8 +14,32 @@ use App\Models\Usuarios;
 class usuarioController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/api/usuarios",
+     *     summary="Obtener lista de todos los usuarios",
+     *     description="Devuelve todos los usuarios registrados con su respectivo rol.",
+     *     tags={"Usuarios"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Usuarios obtenidos correctamente",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="usuario", type="array", @OA\Items(
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="primerNombre", type="string", example="Juan"),
+     *                 @OA\Property(property="email", type="string", example="juan@example.com"),
+     *                 @OA\Property(property="user", type="object",
+     *                     @OA\Property(property="rol", type="object",
+     *                         @OA\Property(property="nombreRol", type="string", example="Administrador")
+     *                     )
+     *                 )
+     *             )),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
+     *     )
+     * )
      */
+
     public function index()
     {
         $user = Usuarios::with('user.rol')->get();
@@ -33,7 +57,37 @@ class usuarioController extends Controller
     {
         //
     }
-    // ruta: GET /api/verificar-usuario?email=...&documento=...
+    
+        /**
+     * @OA\Get(
+     *     path="/api/verificar-usuario",
+     *     summary="Verificar existencia de usuario",
+     *     description="Valida si ya existe un usuario registrado con el correo electrónico o número de documento enviado.",
+     *     tags={"Usuarios"},
+     *     @OA\Parameter(
+     *         name="email",
+     *         in="query",
+     *         description="Correo electrónico del usuario",
+     *         required=false,
+     *         @OA\Schema(type="string", format="email", example="test@example.com")
+     *     ),
+     *     @OA\Parameter(
+     *         name="documento",
+     *         in="query",
+     *         description="Número de documento del usuario",
+     *         required=false,
+     *         @OA\Schema(type="string", example="123456789")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Resultado de la verificación",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="existe", type="boolean", example=true)
+     *         )
+     *     )
+     * )
+     */
+
     public function verificarExistencia(Request $request)
     {
         $email = $request->query('email');
@@ -47,9 +101,53 @@ class usuarioController extends Controller
     }
 
 
-    /**
-     * Store a newly created resource in storage.
+        /**
+     * @OA\Post(
+     *     path="/api/usuarios",
+     *     summary="Registrar nuevo usuario",
+     *     description="Crea un nuevo usuario con sus datos personales y lo asocia con un usuario base y su rol.",
+     *     tags={"Usuarios"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"numDocumento", "primerNombre", "primerApellido", "password", "fechaNac", "contactoEmergencia", "numContactoEmergencia", "email", "direccion", "telefono", "nacionalidadId", "epsCodigo", "generoId", "tipoDocumentoId", "estadoCivilId", "pensionesCodigo", "usersId"},
+     *             @OA\Property(property="numDocumento", type="string", example="123456789"),
+     *             @OA\Property(property="primerNombre", type="string", example="Ana"),
+     *             @OA\Property(property="segundoNombre", type="string", example="María"),
+     *             @OA\Property(property="primerApellido", type="string", example="Gómez"),
+     *             @OA\Property(property="segundoApellido", type="string", example="Pérez"),
+     *             @OA\Property(property="password", type="string", example="secret123"),
+     *             @OA\Property(property="fechaNac", type="string", format="date", example="1990-05-14"),
+     *             @OA\Property(property="numHijos", type="integer", example=2),
+     *             @OA\Property(property="contactoEmergencia", type="string", example="Carlos"),
+     *             @OA\Property(property="numContactoEmergencia", type="string", example="3011234567"),
+     *             @OA\Property(property="email", type="string", format="email", example="ana@example.com"),
+     *             @OA\Property(property="direccion", type="string", example="Calle 123 #45-67"),
+     *             @OA\Property(property="telefono", type="string", example="3109876543"),
+     *             @OA\Property(property="nacionalidadId", type="integer", example=1),
+     *             @OA\Property(property="epsCodigo", type="string", example="EPS123"),
+     *             @OA\Property(property="generoId", type="integer", example=1),
+     *             @OA\Property(property="tipoDocumentoId", type="integer", example=1),
+     *             @OA\Property(property="estadoCivilId", type="integer", example=2),
+     *             @OA\Property(property="pensionesCodigo", type="string", example="PEN456"),
+     *             @OA\Property(property="usersId", type="integer", example=3)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Usuario creado correctamente"
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Error de validación"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error del servidor"
+     *     )
+     * )
      */
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -121,9 +219,30 @@ class usuarioController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
+        /**
+     * @OA\Get(
+     *     path="/api/usuarios/{id}",
+     *     summary="Obtener usuario por ID",
+     *     description="Devuelve los datos de un usuario específico identificado por su ID.",
+     *     tags={"Usuarios"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del usuario",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Usuario encontrado correctamente"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Usuario no encontrado"
+     *     )
+     * )
      */
+
     public function show($id)
     {
         $user = Usuarios::find($id);
@@ -134,9 +253,30 @@ class usuarioController extends Controller
         return response()->json($data, 200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
+        /**
+     * @OA\Delete(
+     *     path="/api/usuarios/{id}",
+     *     summary="Eliminar un usuario",
+     *     description="Elimina el usuario, su hoja de vida asociada y su cuenta base.",
+     *     tags={"Usuarios"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del usuario a eliminar",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Usuario y datos relacionados eliminados correctamente"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Usuario no encontrado"
+     *     )
+     * )
      */
+
     public function destroy($id)
     {
         $usuario = Usuarios::find($id);
@@ -170,6 +310,37 @@ class usuarioController extends Controller
         ], 200);
     }
 
+        /**
+     * @OA\Put(
+     *     path="/api/usuarios/{id}",
+     *     summary="Actualizar un usuario por ID",
+     *     description="Modifica completamente los datos de un usuario existente identificado por su ID.",
+     *     tags={"Usuarios"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del usuario a actualizar",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/UsuarioInput")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Usuario actualizado correctamente"
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Error en los datos enviados"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Usuario no encontrado"
+     *     )
+     * )
+     */
 
 
     public function update(Request $request, $id)
@@ -246,6 +417,39 @@ class usuarioController extends Controller
             ], 500);
         }
     }
+
+        /**
+     * @OA\Patch(
+     *     path="/api/usuarios/{id}",
+     *     summary="Actualizar parcialmente un usuario",
+     *     description="Modifica uno o varios campos de un usuario existente identificado por su ID.",
+     *     tags={"Usuarios"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del usuario",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/UsuarioInput")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Usuario actualizado parcialmente con éxito"
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Error de validación"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Usuario no encontrado"
+     *     )
+     * )
+     */
+
     public function updatePartial(Request $request, $id)
     {
         $usuario = Usuarios::find($id);
@@ -363,6 +567,35 @@ class usuarioController extends Controller
         ];
         return response()->json([$data], 200);
     }
+
+        /**
+     * @OA\Get(
+     *     path="/api/usuarios/documento/{numDocumento}",
+     *     summary="Obtener usuario por número de documento",
+     *     description="Retorna los datos del usuario, incluyendo todas las relaciones (género, documento, EPS, pensión, etc.) basado en su número de documento.",
+     *     tags={"Usuarios"},
+     *     @OA\Parameter(
+     *         name="numDocumento",
+     *         in="path",
+     *         description="Número de documento del usuario",
+     *         required=true,
+     *         @OA\Schema(type="string", example="123456789")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Usuario encontrado correctamente"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Usuario no encontrado"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error del servidor"
+     *     )
+     * )
+     */
+
     public function obtenerUsuarioPorDocumento($numDocumento)
     {
         try {
@@ -397,6 +630,23 @@ class usuarioController extends Controller
         }
     }
 
+        /**
+     * @OA\Get(
+     *     path="/api/usuarios/detallado",
+     *     summary="Obtener todos los usuarios con información relacionada",
+     *     description="Devuelve todos los usuarios registrados junto con sus datos relacionados como género, documento, EPS, rol, etc.",
+     *     tags={"Usuarios"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Usuarios obtenidos con éxito"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error al obtener usuarios"
+     *     )
+     * )
+     */
+
     public function obtenerUsuariosConRelaciones()
     {
         try {
@@ -423,6 +673,23 @@ class usuarioController extends Controller
             ], 500);
         }
     }
+        /**
+     * @OA\Get(
+     *     path="/api/usuarios/jefes",
+     *     summary="Obtener jefes de personal",
+     *     description="Lista todos los usuarios con el rol de jefe de personal. Devuelve el nombre completo e ID del jefe.",
+     *     tags={"Usuarios"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de jefes obtenida correctamente"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error al obtener jefes de personal"
+     *     )
+     * )
+     */
+
     public function obtenerJefesDePersonal()
     {
         try {
@@ -453,6 +720,19 @@ class usuarioController extends Controller
             ], 500);
         }
     }
+
+        /**
+     * @OA\Get(
+     *     path="/api/usuarios/reporte-roles",
+     *     summary="Obtener reporte de usuarios con sus roles",
+     *     description="Devuelve un listado con los usuarios y los datos básicos de su usuario base y su rol asignado.",
+     *     tags={"Usuarios"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Reporte generado exitosamente"
+     *     )
+     * )
+     */
 
 
     public function reporteRoles()
