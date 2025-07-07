@@ -159,7 +159,7 @@ export class HorasExtraJefeComponent implements OnInit {
     return new Date(fecha).toLocaleDateString('es-ES');
   }
 
-  // Para horas extra, los días es siempre 1, pero podrías mostrar las horas
+
   getHoras(solicitud: SolicitudHorasExtraJefe): number {
     return solicitud.nHorasExtra;
   }
