@@ -46,6 +46,7 @@ class IncapacidadesJefeController extends Controller
                     'i.fechaInicio',
                     'i.fechaFinal',
                     'i.contratoId',
+                    'i.estado',
                     'u.numDocumento',
                     DB::raw("CONCAT(u.primerNombre, ' ', COALESCE(u.segundoNombre, '')) as nombre"),
                     DB::raw("CONCAT(u.primerApellido, ' ', COALESCE(u.segundoApellido, '')) as apellido")
@@ -55,13 +56,16 @@ class IncapacidadesJefeController extends Controller
 
             // Transformar los datos para el frontend
             $solicitudesFormateadas = $solicitudes->map(function ($solicitud) {
+                $estadoTexto = 'pendiente';
+                if ($solicitud->estado == 1) $estadoTexto = 'aprobado';
+                if ($solicitud->estado == 2) $estadoTexto = 'rechazado';
                 return [
                     'idIncapacidad' => $solicitud->idIncapacidad,
                     'archivo' => $solicitud->archivo,
                     'fechaInicio' => $solicitud->fechaInicio,
                     'fechaFinal' => $solicitud->fechaFinal,
                     'contratoId' => $solicitud->contratoId,
-                    'estado' => 'pendiente', // Por defecto pendiente ya que la tabla incapacidad no tiene estado
+                    'estado' => $estadoTexto,
                     'empleado' => [
                         'numDocumento' => $solicitud->numDocumento,
                         'nombre' => trim($solicitud->nombre),
@@ -97,6 +101,7 @@ class IncapacidadesJefeController extends Controller
                     'i.fechaInicio',
                     'i.fechaFinal',
                     'i.contratoId',
+                    'i.estado',
                     'u.numDocumento',
                     DB::raw("CONCAT(u.primerNombre, ' ', COALESCE(u.segundoNombre, '')) as nombre"),
                     DB::raw("CONCAT(u.primerApellido, ' ', COALESCE(u.segundoApellido, '')) as apellido")
@@ -107,13 +112,17 @@ class IncapacidadesJefeController extends Controller
                 return response()->json(['error' => 'Solicitud no encontrada'], 404);
             }
 
+            $estadoTexto = 'pendiente';
+            if ($solicitud->estado == 1) $estadoTexto = 'aprobado';
+            if ($solicitud->estado == 2) $estadoTexto = 'rechazado';
+
             $solicitudFormateada = [
                 'idIncapacidad' => $solicitud->idIncapacidad,
                 'archivo' => $solicitud->archivo,
                 'fechaInicio' => $solicitud->fechaInicio,
                 'fechaFinal' => $solicitud->fechaFinal,
                 'contratoId' => $solicitud->contratoId,
-                'estado' => 'pendiente',
+                'estado' => $estadoTexto,
                 'empleado' => [
                     'numDocumento' => $solicitud->numDocumento,
                     'nombre' => trim($solicitud->nombre),
@@ -152,13 +161,8 @@ class IncapacidadesJefeController extends Controller
                 return response()->json(['error' => 'No tiene permisos para gestionar esta solicitud'], 403);
             }
 
-            // Aquí podrías agregar lógica para actualizar el estado
-            // Por ahora solo retornamos éxito ya que la tabla incapacidad no tiene campo estado
-            // $solicitud->estado = 'Aprobado';
-            // $solicitud->save();
-
-            // Aquí podrías agregar lógica para enviar notificaciones
-            // $this->enviarNotificacionAprobacion($solicitud);
+            $solicitud->estado = 1; // Aprobado
+            $solicitud->save();
 
             return response()->json([
                 'message' => 'Solicitud aprobada exitosamente',
@@ -194,13 +198,8 @@ class IncapacidadesJefeController extends Controller
                 return response()->json(['error' => 'No tiene permisos para gestionar esta solicitud'], 403);
             }
 
-            // Aquí podrías agregar lógica para actualizar el estado
-            // Por ahora solo retornamos éxito ya que la tabla incapacidad no tiene campo estado
-            // $solicitud->estado = 'rechazado';
-            // $solicitud->save();
-
-            // Aquí podrías agregar lógica para enviar notificaciones
-            // $this->enviarNotificacionRechazo($solicitud);
+            $solicitud->estado = 2; // Rechazado
+            $solicitud->save();
 
             return response()->json([
                 'message' => 'Solicitud rechazada exitosamente',
@@ -274,6 +273,39 @@ class IncapacidadesJefeController extends Controller
 
         } catch (\Exception $e) {
             return false;
+        }
+    }
+
+    public function actualizarEstado(Request $request, $id): JsonResponse
+    {
+        try {
+            $estadoTexto = ucfirst(strtolower(trim($request->estado)));
+            $estados = ['Pendiente' => 0, 'Aprobado' => 1, 'Rechazado' => 2];
+            $estado = $estados[$estadoTexto] ?? 0;
+
+            $solicitud = Incapacidad::find($id);
+            if (!$solicitud) {
+                return response()->json(['error' => 'Solicitud no encontrada'], 404);
+            }
+
+            $tienePermisos = $this->verificarPermisosJefe($solicitud->contratoId);
+            if (!$tienePermisos) {
+                return response()->json(['error' => 'No tiene permisos para gestionar esta solicitud'], 403);
+            }
+
+            $solicitud->estado = $estado;
+            $solicitud->save();
+
+            return response()->json([
+                'mensaje' => 'Estado actualizado correctamente',
+                'solicitud' => $solicitud,
+                'status' => 200
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al actualizar el estado',
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 } 

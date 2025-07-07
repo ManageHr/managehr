@@ -312,9 +312,12 @@ body, html {
   background-color: #3a2323 !important;
   color: #fff;
 }
-.text-muted {
+.table .text-muted,
+.table .text-muted p {
+  color: #fff !important;
   font-style: italic;
 }
+
 @media (max-width: 768px) {
   .table-responsive {
     font-size: 0.875rem;
@@ -443,4 +446,14 @@ tr.table-warning:hover > td {
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
+}
+.table th, .table-dark th {
+  color: #fff !important;
+}
+
+th, td {
+  &.acciones-columna {
+    color: #fff !important;
+    font-weight: bold;
+  }
 }

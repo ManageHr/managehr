@@ -76,7 +76,7 @@ export class IncapacidadesJefeService {
 
   actualizarEstado(id: number, estado: string): Observable<any> {
     return this.http.put(
-      `${this.apiUrl}/incapacidad/${id}/estado`,
+      `${this.apiUrl}/solicitudes-incapacidades-jefe/${id}/estado`,
       { estado },
       { headers: this.getHeaders() }
     );

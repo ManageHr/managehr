@@ -71,8 +71,7 @@ class HorasextraController extends Controller
             'fecha' => 'required|date',
             'nHorasExtra' => 'required|numeric|min:0',
             'tipoHorasid' => 'required|integer',
-            'contratoId' => 'required|integer',
-            'estado' => 'sometimes',
+            'contratoId' => 'required|integer'
         ]);
 
         if ($validator->fails()) {
@@ -83,16 +82,8 @@ class HorasextraController extends Controller
             ], 400);
         }
 
-        $data = $request->all();
-        if (isset($data['estado'])) {
-            if (is_numeric($data['estado'])) {
-                $estados = [0 => 'Pendiente', 1 => 'Aprobado', 2 => 'Rechazado'];
-                $data['estado'] = $estados[$data['estado']] ?? 'Pendiente';
-            }
-        }
-
         try {
-            $horas = Horasextra::create($data);
+            $horas = Horasextra::create($request->all());
 
             return response()->json([
                 'mensaje' => 'Horas extra creada correctamente',
@@ -196,8 +187,7 @@ class HorasextraController extends Controller
             'fecha' => 'required|date',
             'nHorasExtra' => 'required|numeric|min:0',
             'tipoHorasid' => 'required|integer',
-            'contratoId' => 'required|integer',
-            'estado' => 'sometimes',
+            'contratoId' => 'required|integer'
         ]);
 
         if ($validator->fails()) {
@@ -208,15 +198,7 @@ class HorasextraController extends Controller
             ], 400);
         }
 
-        $data = $request->all();
-        if (isset($data['estado'])) {
-            if (is_numeric($data['estado'])) {
-                $estados = [0 => 'Pendiente', 1 => 'Aprobado', 2 => 'Rechazado'];
-                $data['estado'] = $estados[$data['estado']] ?? 'Pendiente';
-            }
-        }
-
-        $horas->update($data);
+        $horas->update($request->all());
 
         return response()->json([
             'mensaje' => 'Horas extra actualizada correctamente',
@@ -273,8 +255,7 @@ class HorasextraController extends Controller
             'fecha' => 'date',
             'nHorasExtra' => 'numeric|min:0',
             'tipoHorasid' => 'integer',
-            'contratoId' => 'integer',
-            'estado' => 'sometimes',
+            'contratoId' => 'integer'
         ]);
 
         if ($validator->fails()) {
@@ -285,22 +266,13 @@ class HorasextraController extends Controller
             ], 400);
         }
 
-        $data = $request->only([
+        $horas->update($request->only([
             'descrip',
             'fecha',
             'nHorasExtra',
             'tipoHorasid',
-            'contratoId',
-            'estado',
-        ]);
-        if (isset($data['estado'])) {
-            if (is_numeric($data['estado'])) {
-                $estados = [0 => 'Pendiente', 1 => 'Aprobado', 2 => 'Rechazado'];
-                $data['estado'] = $estados[$data['estado']] ?? 'Pendiente';
-            }
-        }
-
-        $horas->update($data);
+            'contratoId'
+        ]));
 
         return response()->json([
             'mensaje' => 'Horas extra actualizada parcialmente',
@@ -345,33 +317,6 @@ class HorasextraController extends Controller
 
         return response()->json([
             'mensaje' => 'Horas extra eliminada correctamente',
-            'status' => 200
-        ]);
-    }
-
-    /**
-     * Actualizar solo el estado de una solicitud de horas extra
-     */
-    public function actualizarEstado(Request $request, $id)
-    {
-        $estado = ucfirst(strtolower(trim($request->estado)));
-        $request->merge(['estado' => $estado]);
-
-        $request->validate([
-            'estado' => 'required|in:Pendiente,Aprobado,Rechazado'
-        ]);
-
-        $horas = Horasextra::find($id);
-        if (!$horas) {
-            return response()->json(['mensaje' => 'Horas extra no encontrada'], 404);
-        }
-
-        $horas->estado = $estado;
-        $horas->save();
-
-        return response()->json([
-            'mensaje' => 'Estado actualizado correctamente',
-            'horasextra' => $horas,
             'status' => 200
         ]);
     }

@@ -202,68 +202,38 @@ class incapacidadController extends Controller
             return response()->json([$data], 404);
         }
         $validator = Validator::make($request->all(), [
-
             'descrip' => 'string|max:500',
-            'archivo' => 'string|max:50',
+            'archivo' => 'nullable|file|max:5120',
             'fechaInicio' => 'date',
             'fechaFinal' => 'date',
-            'contratoId' => 'integer',
+            'contratoId' => 'integer'
         ]);
         if ($validator->fails()) {
             $data = [
-                "mesaje " => "Error al validar incapacidad",
                 "errors" => $validator->errors(),
                 "status" => 400
             ];
             return response()->json([$data], 400);
         }
-        if ($request->has("descrip")) {
-            $incapacidad->descrip = $request->descrip;
-        }
-        if ($request->has("archivo")) {
-            $incapacidad->archivo = $request->archivo;
-        }
-        if ($request->has("fechaInicio")) {
-            $incapacidad->fechaInicio = $request->fechaInicio;
-        }
-        if ($request->has("fechaFinal")) {
-            $incapacidad->fechaFinal = $request->fechaFinal;
-        }
-        if ($request->has("contratoId")) {
-            $incapacidad->contratoId = $request->contratoId;
+        if ($request->hasFile('archivo')) {
+            $file = $request->file('archivo');
+            $folder = 'Archivos/' . $request->input('numDocumento');
+            $extension = $file->getClientOriginalExtension();
+            $filename = $request->input('numDocumento') . '.' . $extension;
+            $path = $file->storeAs($folder, $filename, 'public');
+            $validated['archivo'] = 'storage/' . $path;
         }
 
-
-        $incapacidad->save();
-        $data = [
-            "incapacidad:" => $incapacidad,
-            "status" => 200
-        ];
-        return response()->json([$data], 200);
-    }
-
-    /**
-     * Actualizar solo el estado de una incapacidad
-     */
-    public function actualizarEstado(Request $request, $id)
-    {
-        $estado = ucfirst(strtolower(trim($request->estado)));
-        $request->merge(['estado' => $estado]);
-
-        $request->validate([
-            'estado' => 'required|in:Pendiente,Aprobado,Rechazado'
-        ]);
-
-        $incapacidad = Incapacidad::find($id);
-        if (!$incapacidad) {
-            return response()->json(['mensaje' => 'Incapacidad no encontrada'], 404);
-        }
-
-        $incapacidad->estado = $estado;
-        $incapacidad->save();
+        $incapacidad->update($request->only([
+            'descrip',
+            'archivo',
+            'fechaInicio',
+            'fechaFinal',
+            'contratoId'
+        ]));
 
         return response()->json([
-            'mensaje' => 'Estado actualizado correctamente',
+            'mensaje' => 'Incapacidad actualizada parcialmente',
             'incapacidad' => $incapacidad,
             'status' => 200
         ]);

@@ -169,7 +169,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/incapacidad/{id}', [incapacidadController::class, 'show']);
     Route::patch('/incapacidad/{id}/actualizar', [incapacidadController::class, 'updatePartial']);
     Route::delete('/incapacidad/{id}', [incapacidadController::class, 'destroy']);
-    Route::put('/incapacidad/{id}/estado', [incapacidadController::class, 'actualizarEstado']);
 
     Route::get('/pazysalvo', [pazysalvoController::class, 'index']);
     Route::post('/pazysalvo', [pazysalvoController::class, 'store']);
@@ -310,7 +309,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/horasextra/{id}', [horasextraController::class, 'show']);
     Route::patch('/horasextra/{id}', [horasextraController::class, 'updatePartial']);
     Route::delete('/horasextra/{id}', [horasextraController::class, 'destroy']);
-    Route::put('/horasextra/{id}/estado', [horasextraController::class, 'actualizarEstado']);
 
     Route::get('/tipos-horas', [tipohorasController::class, 'index']);
 
@@ -396,6 +394,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/{id}', [IncapacidadesJefeController::class, 'obtenerSolicitud']);
         Route::put('/{id}/aprobar', [IncapacidadesJefeController::class, 'aprobarSolicitud']);
         Route::put('/{id}/rechazar', [IncapacidadesJefeController::class, 'rechazarSolicitud']);
+        Route::put('/{id}/estado', [IncapacidadesJefeController::class, 'actualizarEstado']);
     });
 
     // Rutas para Horas Extra del Jefe de Personal
@@ -405,6 +404,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/{id}', [HorasExtraJefeController::class, 'obtenerSolicitud']);
         Route::put('/{id}/aprobar', [HorasExtraJefeController::class, 'aprobarSolicitud']);
         Route::put('/{id}/rechazar', [HorasExtraJefeController::class, 'rechazarSolicitud']);
+        Route::put('/{id}/estado', [HorasExtraJefeController::class, 'actualizarEstado']);
     });
 });
 

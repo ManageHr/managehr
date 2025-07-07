@@ -37,6 +37,7 @@ class HorasExtraJefeController extends Controller
                     'h.tipoHorasId',
                     'h.nHorasExtra',
                     'h.contratoId',
+                    'h.estado',
                     'u.numDocumento',
                     DB::raw("CONCAT(u.primerNombre, ' ', COALESCE(u.segundoNombre, '')) as nombre"),
                     DB::raw("CONCAT(u.primerApellido, ' ', COALESCE(u.segundoApellido, '')) as apellido")
@@ -44,6 +45,9 @@ class HorasExtraJefeController extends Controller
                 ->orderBy('h.fecha', 'desc')
                 ->get();
             $solicitudesFormateadas = $solicitudes->map(function ($solicitud) {
+                $estadoTexto = 'pendiente';
+                if ($solicitud->estado == 1) $estadoTexto = 'aprobado';
+                if ($solicitud->estado == 2) $estadoTexto = 'rechazado';
                 return [
                     'idHorasExtra' => $solicitud->idHorasExtra,
                     'descripcion' => $solicitud->descripcion,
@@ -51,7 +55,7 @@ class HorasExtraJefeController extends Controller
                     'tipoHorasId' => $solicitud->tipoHorasId,
                     'nHorasExtra' => $solicitud->nHorasExtra,
                     'contratoId' => $solicitud->contratoId,
-                    'estado' => 'pendiente',
+                    'estado' => $estadoTexto,
                     'empleado' => [
                         'numDocumento' => $solicitud->numDocumento,
                         'nombre' => trim($solicitud->nombre),
@@ -83,6 +87,7 @@ class HorasExtraJefeController extends Controller
                     'h.tipoHorasId',
                     'h.nHorasExtra',
                     'h.contratoId',
+                    'h.estado',
                     'u.numDocumento',
                     DB::raw("CONCAT(u.primerNombre, ' ', COALESCE(u.segundoNombre, '')) as nombre"),
                     DB::raw("CONCAT(u.primerApellido, ' ', COALESCE(u.segundoApellido, '')) as apellido")
@@ -91,6 +96,9 @@ class HorasExtraJefeController extends Controller
             if (!$solicitud) {
                 return response()->json(['error' => 'Solicitud no encontrada'], 404);
             }
+            $estadoTexto = 'pendiente';
+            if ($solicitud->estado == 1) $estadoTexto = 'aprobado';
+            if ($solicitud->estado == 2) $estadoTexto = 'rechazado';
             $solicitudFormateada = [
                 'idHorasExtra' => $solicitud->idHorasExtra,
                 'descripcion' => $solicitud->descripcion,
@@ -98,7 +106,7 @@ class HorasExtraJefeController extends Controller
                 'tipoHorasId' => $solicitud->tipoHorasId,
                 'nHorasExtra' => $solicitud->nHorasExtra,
                 'contratoId' => $solicitud->contratoId,
-                'estado' => 'pendiente',
+                'estado' => $estadoTexto,
                 'empleado' => [
                     'numDocumento' => $solicitud->numDocumento,
                     'nombre' => trim($solicitud->nombre),
@@ -128,9 +136,8 @@ class HorasExtraJefeController extends Controller
             if (!$tienePermisos) {
                 return response()->json(['error' => 'No tiene permisos para gestionar esta solicitud'], 403);
             }
-            // Aquí podrías agregar lógica para actualizar el estado
-            // $solicitud->estado = 'Aprobado';
-            // $solicitud->save();
+            $solicitud->estado = 1; // Aprobado
+            $solicitud->save();
             return response()->json([
                 'message' => 'Solicitud aprobada exitosamente',
                 'solicitud' => $solicitud
@@ -157,9 +164,8 @@ class HorasExtraJefeController extends Controller
             if (!$tienePermisos) {
                 return response()->json(['error' => 'No tiene permisos para gestionar esta solicitud'], 403);
             }
-            // Aquí podrías agregar lógica para actualizar el estado
-            // $solicitud->estado = 'rechazado';
-            // $solicitud->save();
+            $solicitud->estado = 2; // Rechazado
+            $solicitud->save();
             return response()->json([
                 'message' => 'Solicitud rechazada exitosamente',
                 'solicitud' => $solicitud
@@ -197,6 +203,39 @@ class HorasExtraJefeController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Error al obtener estadísticas',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function actualizarEstado(Request $request, $id): JsonResponse
+    {
+        try {
+            $estadoTexto = ucfirst(strtolower(trim($request->estado)));
+            $estados = ['Pendiente' => 0, 'Aprobado' => 1, 'Rechazado' => 2];
+            $estado = $estados[$estadoTexto] ?? 0;
+
+            $solicitud = Horasextra::find($id);
+            if (!$solicitud) {
+                return response()->json(['error' => 'Solicitud no encontrada'], 404);
+            }
+
+            $tienePermisos = $this->verificarPermisosJefe($solicitud->contratoId);
+            if (!$tienePermisos) {
+                return response()->json(['error' => 'No tiene permisos para gestionar esta solicitud'], 403);
+            }
+
+            $solicitud->estado = $estado;
+            $solicitud->save();
+
+            return response()->json([
+                'mensaje' => 'Estado actualizado correctamente',
+                'solicitud' => $solicitud,
+                'status' => 200
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al actualizar el estado',
                 'message' => $e->getMessage()
             ], 500);
         }

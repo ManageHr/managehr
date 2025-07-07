@@ -6,6 +6,8 @@
   background-color: #202940;
 }
 
+
+
 app-menu {
   box-sizing: border-box;
   position: fixed;
@@ -387,9 +389,12 @@ body, html {
 }
 
 // Estilos para el estado vacío
-.text-muted {
+.table .text-muted,
+.table .text-muted p {
+  color: #fff !important;
   font-style: italic;
 }
+
 
 // Responsive adjustments
 @media (max-width: 768px) {
@@ -546,4 +551,15 @@ tr.table-warning:hover > td {
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
+}
+
+.table th, .table-dark th {
+  color: #fff !important;
+}
+
+th, td {
+  &.acciones-columna {
+    color: #fff !important;
+    font-weight: bold;
+  }
 }
