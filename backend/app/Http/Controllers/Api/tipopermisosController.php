@@ -9,6 +9,29 @@ use Illuminate\Support\Facades\Validator;
 
 class tipopermisosController extends Controller
 {
+
+        /**
+     * @OA\Get(
+     *     path="/api/tipopermisos",
+     *     summary="Listar todos los tipos de permisos",
+     *     description="Devuelve una lista completa de los tipos de permisos registrados en el sistema.",
+     *     tags={"Tipos de Permisos"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de tipos de permisos obtenida correctamente",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="tipopermisos", type="array", @OA\Items(
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="nombre", type="string", example="Permiso de salida"),
+     *                 @OA\Property(property="descripcion", type="string", example="Permiso para salida personal")
+     *             )),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
+     *     )
+     * )
+     */
+
     public function index()
     {
         $tipopermiso = Tipopermisos::all();
@@ -22,17 +45,23 @@ class tipopermisosController extends Controller
 
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         //
     }
-
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/api/tipopermisos",
+     *     summary="Crear nuevo tipo de permiso (No permitido)",
+     *     description="Este endpoint está deshabilitado. Solo el administrador de base de datos puede crear registros.",
+     *     tags={"Tipos de Permisos"},
+     *     @OA\Response(
+     *         response=400,
+     *         description="Operación no permitida para el usuario"
+     *     )
+     * )
      */
+
     public function store(Request $request)
     {
         $data = [
@@ -42,9 +71,41 @@ class tipopermisosController extends Controller
         return response()->json([$data], 400);
     }
 
-    /**
-     * Display the specified resource.
+
+
+        /**
+     * @OA\Get(
+     *     path="/api/tipopermisos/{id}",
+     *     summary="Obtener tipo de permiso por ID",
+     *     description="Devuelve un tipo de permiso específico por su identificador único.",
+     *     tags={"Tipos de Permisos"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del tipo de permiso",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Tipo de permiso encontrado",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="tipopermisos", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="nombre", type="string", example="Permiso médico"),
+     *                 @OA\Property(property="descripcion", type="string", example="Permiso por cita médica")
+     *             ),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Tipo de permiso no encontrado"
+     *     )
+     * )
      */
+
     public function show(string $id)
     {
         $tipopermiso = Tipopermisos::find($id);
@@ -71,8 +132,25 @@ class tipopermisosController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Put(
+     *     path="/api/tipopermisos/{id}",
+     *     summary="Actualizar tipo de permiso (No permitido)",
+     *     description="Este endpoint está deshabilitado. Solo el administrador de base de datos puede actualizar registros.",
+     *     tags={"Tipos de Permisos"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del tipo de permiso",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Operación no permitida para el usuario"
+     *     )
+     * )
      */
+
     public function update(Request $request, string $id)
     {
         $data = [
@@ -81,6 +159,27 @@ class tipopermisosController extends Controller
         ];
         return response()->json([$data], 400);
     }
+
+        /**
+     * @OA\Patch(
+     *     path="/api/tipopermisos/{id}",
+     *     summary="Actualización parcial de tipo de permiso (No permitido)",
+     *     description="Este endpoint está deshabilitado. Solo el administrador de base de datos puede actualizar registros.",
+     *     tags={"Tipos de Permisos"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del tipo de permiso",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Operación no permitida para el usuario"
+     *     )
+     * )
+     */
+
     public function updatePartial(Request $request, $id)
     {
         $data = [
@@ -91,8 +190,25 @@ class tipopermisosController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/api/tipopermisos/{id}",
+     *     summary="Eliminar tipo de permiso (No permitido)",
+     *     description="Este endpoint está deshabilitado. Solo el administrador de base de datos puede eliminar registros.",
+     *     tags={"Tipos de Permisos"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del tipo de permiso",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Operación no permitida para el usuario"
+     *     )
+     * )
      */
+
     public function destroy(string $id)
     {
         $data = [
