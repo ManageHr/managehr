@@ -66,7 +66,6 @@
             <tr>
               <th>Empleado</th>
               <th>Documento</th>
-              <th>Descripción</th>
               <th>Fecha Inicio</th>
               <th>Fecha Fin</th>
               <th>Días</th>
@@ -80,12 +79,6 @@
                 <strong>{{ solicitud.empleado?.nombre }} {{ solicitud.empleado?.apellido }}</strong>
               </td>
               <td>{{ solicitud.empleado?.numDocumento }}</td>
-              <td>
-                <span class="text-truncate d-inline-block" style="max-width: 200px;" 
-                      [title]="solicitud.descrip">
-                  {{ solicitud.descrip }}
-                </span>
-              </td>
               <td>{{ formatearFecha(solicitud.fechaInicio) }}</td>
               <td>{{ formatearFecha(solicitud.fechaFinal) }}</td>
               <td>

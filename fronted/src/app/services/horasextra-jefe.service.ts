@@ -66,4 +66,12 @@ export class HorasExtraJefeService {
       { headers: this.getHeaders() }
     );
   }
+
+  actualizarEstado(id: number, estado: string): Observable<any> {
+    return this.http.put(
+      `${this.apiUrl}/horasextra/${id}/estado`,
+      { estado },
+      { headers: this.getHeaders() }
+    );
+  }
 } 

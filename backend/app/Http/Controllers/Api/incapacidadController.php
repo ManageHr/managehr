@@ -241,4 +241,31 @@ class incapacidadController extends Controller
         ];
         return response()->json([$data], 200);
     }
+
+    /**
+     * Actualizar solo el estado de una incapacidad
+     */
+    public function actualizarEstado(Request $request, $id)
+    {
+        $estado = ucfirst(strtolower(trim($request->estado)));
+        $request->merge(['estado' => $estado]);
+
+        $request->validate([
+            'estado' => 'required|in:Pendiente,Aprobado,Rechazado'
+        ]);
+
+        $incapacidad = Incapacidad::find($id);
+        if (!$incapacidad) {
+            return response()->json(['mensaje' => 'Incapacidad no encontrada'], 404);
+        }
+
+        $incapacidad->estado = $estado;
+        $incapacidad->save();
+
+        return response()->json([
+            'mensaje' => 'Estado actualizado correctamente',
+            'incapacidad' => $incapacidad,
+            'status' => 200
+        ]);
+    }
 }
