@@ -310,7 +310,37 @@ class usuarioController extends Controller
         ], 200);
     }
 
-     
+    /**
+     * @OA\Put(
+     *     path="/api/usuarios/{id}",
+     *     summary="Actualizar un usuario por ID",
+     *     description="Modifica completamente los datos de un usuario existente identificado por su ID.",
+     *     tags={"Usuarios"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del usuario a actualizar",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/UsuarioInput")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Usuario actualizado correctamente"
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Error en los datos enviados"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Usuario no encontrado"
+     *     )
+     * )
+     */
 
 
     public function update(Request $request, $id)
