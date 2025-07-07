@@ -10,11 +10,59 @@ use Illuminate\Support\Facades\Validator;
 
 class vacantesController extends Controller
 {
+        /**
+     * @OA\Get(
+     *     path="/api/vacantes",
+     *     summary="Obtener todas las vacantes",
+     *     description="Devuelve un listado de todas las vacantes disponibles.",
+     *     tags={"Vacantes"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de vacantes obtenida correctamente"
+     *     )
+     * )
+     */
+
     public function index()
     {
         $vacantes = Vacantes::all();
         return response()->json($vacantes, Response::HTTP_OK);
     }
+
+        /**
+     * @OA\Post(
+     *     path="/api/vacantes",
+     *     summary="Crear una nueva vacante",
+     *     description="Crea una nueva vacante con los datos proporcionados.",
+     *     tags={"Vacantes"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"nomVacante"},
+     *             @OA\Property(property="nomVacante", type="string", example="Desarrollador Backend"),
+     *             @OA\Property(property="descripVacante", type="string", example="Responsable del desarrollo de APIs."),
+     *             @OA\Property(property="salario", type="number", example=4000000),
+     *             @OA\Property(property="expMinima", type="string", example="2 años"),
+     *             @OA\Property(property="cargoVacante", type="string", example="Programador"),
+     *             @OA\Property(property="catVacId", type="integer", example=1)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Vacante creada correctamente"
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Error de validación"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor"
+     *     )
+     * )
+     */
 
     public function store(Request $request)
     {
@@ -45,6 +93,31 @@ class vacantesController extends Controller
         }
     }
 
+        /**
+     * @OA\Get(
+     *     path="/api/vacantes/{id}",
+     *     summary="Obtener una vacante por ID",
+     *     description="Devuelve la información de una vacante específica.",
+     *     tags={"Vacantes"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la vacante",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Vacante encontrada correctamente"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Vacante no encontrada"
+     *     )
+     * )
+     */
+
     public function show($id)
     {
         $vacante = Vacantes::find($id);
@@ -55,6 +128,48 @@ class vacantesController extends Controller
             return response()->json(['message' => 'Vacante no encontrada'], Response::HTTP_NOT_FOUND);
         }
     }
+
+        /**
+     * @OA\Put(
+     *     path="/api/vacantes/{id}",
+     *     summary="Actualizar vacante",
+     *     description="Actualiza una vacante existente con los datos proporcionados.",
+     *     tags={"Vacantes"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la vacante",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=2)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"nomVacante"},
+     *             @OA\Property(property="nomVacante", type="string", example="Analista de Datos"),
+     *             @OA\Property(property="descripVacante", type="string", example="Análisis y procesamiento de datos."),
+     *             @OA\Property(property="salario", type="number", example=3500000)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Vacante actualizada correctamente"
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Error de validación"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Vacante no encontrada"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor"
+     *     )
+     * )
+     */
 
     public function update(Request $request, $id)
     {
@@ -87,6 +202,36 @@ class vacantesController extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+        /**
+     * @OA\Delete(
+     *     path="/api/vacantes/{id}",
+     *     summary="Eliminar una vacante",
+     *     description="Elimina una vacante existente por su ID.",
+     *     tags={"Vacantes"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la vacante",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=3)
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="Vacante eliminada correctamente"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Vacante no encontrada"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor"
+     *     )
+     * )
+     */
+
 
     public function destroy($id)
     {
