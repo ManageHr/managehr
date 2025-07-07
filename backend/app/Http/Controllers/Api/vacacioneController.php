@@ -17,6 +17,7 @@ class vacacioneController extends Controller
      *     summary="Obtener todas las vacaciones",
      *     description="Retorna todas las solicitudes de vacaciones con la información relacionada del contrato, área y usuario.",
      *     tags={"Vacaciones"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Response(
      *         response=200,
      *         description="Lista de vacaciones obtenida exitosamente"
@@ -44,6 +45,7 @@ class vacacioneController extends Controller
      *     summary="Registrar una nueva solicitud de vacaciones",
      *     description="Crea una nueva solicitud de vacaciones para un contrato específico.",
      *     tags={"Vacaciones"},
+     * security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -118,6 +120,7 @@ class vacacioneController extends Controller
      *     summary="Obtener una solicitud de vacaciones",
      *     description="Devuelve los detalles de una solicitud de vacaciones incluyendo el contrato y la información del usuario.",
      *     tags={"Vacaciones"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -163,6 +166,7 @@ class vacacioneController extends Controller
      *     summary="Actualizar una solicitud de vacaciones",
      *     description="Actualiza completamente la información de una solicitud de vacaciones.",
      *     tags={"Vacaciones"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -241,6 +245,7 @@ class vacacioneController extends Controller
      *     summary="Actualizar parcialmente una solicitud de vacaciones",
      *     description="Permite modificar solo algunos campos de una solicitud de vacaciones.",
      *     tags={"Vacaciones"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -319,6 +324,7 @@ class vacacioneController extends Controller
      *     summary="Eliminar una solicitud de vacaciones",
      *     description="Elimina una solicitud de vacaciones por su ID.",
      *     tags={"Vacaciones"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -361,6 +367,7 @@ class vacacioneController extends Controller
      *     summary="Actualizar estado de la vacación",
      *     description="Permite cambiar el estado de la solicitud de vacaciones (Pendiente, Aprobado, Rechazado).",
      *     tags={"Vacaciones"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",

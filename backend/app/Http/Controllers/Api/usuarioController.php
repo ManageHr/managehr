@@ -316,6 +316,7 @@ class usuarioController extends Controller
      *     summary="Actualizar un usuario por ID",
      *     description="Modifica completamente los datos de un usuario existente identificado por su ID.",
      *     tags={"Usuarios"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -325,7 +326,6 @@ class usuarioController extends Controller
      *     ),
      *     @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/UsuarioInput")
      *     ),
      *     @OA\Response(
      *         response=200,
