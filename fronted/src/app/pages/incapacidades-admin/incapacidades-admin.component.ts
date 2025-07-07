@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IncapacidadService } from 'src/app/services/incapacidad.service';
+import { IncapacidadService } from 'src/app/services/incapacidad.service'; 
 import { AuthService } from 'src/app/services/auth.service';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -8,12 +8,7 @@ import { saveAs } from 'file-saver';
 import { MenuComponent } from '../menu/menu.component';
 import { CommonModule } from '@angular/common';
 import { FilterNamePipe } from 'src/app/shared/filter-name.pipe';
-import {
-  FormsModule,
-  FormBuilder,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormsModule,FormBuilder,FormGroup,Validators } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { Incapacidad } from 'src/app/services/incapacidad.service';
 import { forkJoin } from 'rxjs';
@@ -32,7 +27,7 @@ import {
   Title,
   Tooltip,
   Legend,
-  registerables,
+  registerables
 } from 'chart.js';
 
 Chart.register(
@@ -52,42 +47,30 @@ declare var bootstrap: any;
   templateUrl: './incapacidades-admin.component.html',
   standalone: true,
   styleUrls: ['./incapacidades-admin.component.scss'],
-  imports: [
-    MenuComponent,
-    CommonModule,
-    FormsModule,
-    NgxPaginationModule,
-    ReactiveFormsModule,
-    SafeUrlPipe,
-  ],
+  imports: [MenuComponent,CommonModule,FormsModule,NgxPaginationModule,ReactiveFormsModule,SafeUrlPipe]
+  
 })
 export class IncapacidadesAdminComponent implements OnInit {
+  
   graficoEstado: any;
   usuario: any = {};
-  filtroNombre: string = '';
+  filtroNombre: string = "";
   itemsPerPage: number = 5;
   currentPage: number = 1;
-  incapacidades: Incapacidad[] = [];
+  incapacidades: Incapacidad [] = [];
   formIncapacidad!: FormGroup;
   archivoSeleccionado!: File | null;
-  contratos: any[] = [];
+  contratos: any []= [];
   contratoId: any = {};
   contratoNombre: any = {};
   graficoUsuario: Chart | undefined;
   graficoArea: Chart | undefined;
+
   totalPages1: number[] = [];
   tienePermiso: boolean = false;
   archivoActual: string | null = null;
-  estado: number = 0;
-  idIncapacidadSeleccionada: number | null = null;
-  nuevoEstadoSeleccionado: number = 0;
-  postulacionesPorEstado: any[] = []; // Aquí guardaremos las agrupadas
-  chartEstados: any;
 
-  constructor(
-    private incapacidadService: IncapacidadService,
-    private fb: FormBuilder
-  ) {}
+  constructor(private incapacidadService: IncapacidadService,private fb: FormBuilder,) {}
 
   ngOnInit(): void {
     const userFromLocal = localStorage.getItem('usuario');
@@ -103,42 +86,27 @@ export class IncapacidadesAdminComponent implements OnInit {
       contratoId: ['', Validators.required],
     });
     this.cargarIncapacidades();
+    console.log('Incapacidad', this.incapacidades); 
   }
   get incapacidadesFiltradas() {
     const filtroLower = this.filtroNombre.toLowerCase();
 
-    return this.incapacidades.filter((incapacidad) => {
+    return this.incapacidades.filter(incapacidad => {
       const usuario = incapacidad?.contrato?.hoja_de_vida?.usuario;
       if (!usuario) return false;
 
-      const nombreCompleto = `${usuario.primerNombre ?? ''} ${
-        usuario.segundoNombre ?? ''
-      } ${usuario.primerApellido ?? ''} ${
-        usuario.segundoApellido ?? ''
-      }`.toLowerCase();
+      const nombreCompleto = `${usuario.primerNombre ?? ''} ${usuario.segundoNombre ?? ''} ${usuario.primerApellido ?? ''} ${usuario.segundoApellido ?? ''}`.toLowerCase();
       const documento = usuario.numDocumento.toString();
 
       return (
-        nombreCompleto.includes(filtroLower) || documento.includes(filtroLower)
+        nombreCompleto.includes(filtroLower) ||
+        documento.includes(filtroLower)
       );
     });
   }
-  getNombreEstado(estado: number): string {
-    switch (estado) {
-      case 0:
-        return 'Pendiente';
-      case 1:
-        return 'Aprobado';
-      case 2:
-        return 'Rechazado';
-      default:
-        return 'Desconocido';
-    }
-  }
-
-  onArchivoSeleccionado(event: any): void {
-    this.archivoSeleccionado = event.target.files[0] ?? null;
-  }
+onArchivoSeleccionado(event: any): void {
+  this.archivoSeleccionado = event.target.files[0] ?? null;
+}
 
   crearIncapacidad(): void {
     if (this.formIncapacidad.invalid) return;
@@ -157,6 +125,7 @@ export class IncapacidadesAdminComponent implements OnInit {
 
     this.incapacidadService.crear(formData).subscribe({
       next: (res) => {
+        console.log('Incapacidad registrada', res);
         this.cargarIncapacidades(); // actualiza la tabla
         this.formIncapacidad.reset();
         this.archivoSeleccionado = null;
@@ -164,460 +133,394 @@ export class IncapacidadesAdminComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al crear incapacidad', err);
-      },
+      }
     });
   }
-  generarGraficoPorEstado(): void {
-    this.agruparIncapacidadesPorEstado();
+  get paginatedIncapacidades(): Incapacidad[] {
+  const filtro = this.filtroNombre?.toLowerCase() || '';
 
-    const labels = this.postulacionesPorEstado.map((e) =>
-      this.getNombreEstado(e.estado)
-    );
-    const data = this.postulacionesPorEstado.map((e) => e.total);
+  // 1. Filtrar primero por nombre o documento
+  const filtradas = this.incapacidades.filter(i => {
+    const usuario = i.contrato?.hoja_de_vida?.usuario;
+    const nombre = `${usuario?.primerNombre ?? ''} ${usuario?.primerApellido ?? ''}`.toLowerCase();
+    const documento = `${usuario?.numDocumento ?? ''}`;
+    return nombre.includes(filtro) || documento.includes(filtro);
+  });
 
-    if (this.chartEstados) this.chartEstados.destroy();
+  // 2. Luego calcular total de páginas para el paginador
+  this.totalPages1 = Array(Math.ceil(filtradas.length / this.itemsPerPage)).fill(0).map((_, i) => i + 1);
 
-    this.chartEstados = new Chart('graficoEstado', {
+  // 3. Aplicar paginación
+  const inicio = (this.currentPage - 1) * this.itemsPerPage;
+  const fin = inicio + this.itemsPerPage;
+  return filtradas.slice(inicio, fin);
+}
+
+abrirModalReporteUsuarios(): void {
+  const modalEl = document.getElementById('modalReporteUsuario');
+  if (modalEl) {
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+  }
+  this.dibujarGraficoUsuario();
+}
+verificarPermiso(): boolean {
+  return [1, 4].includes(this.usuario?.rol);
+}
+
+abrirModalReporteArea(): void {
+  const modalEl = document.getElementById('modalReporteArea');
+  if (modalEl) {
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+  }
+  this.dibujarGraficoPorArea();
+}
+dibujarGraficoUsuario() {
+  if (this.graficoUsuario) {
+    this.graficoUsuario.destroy(); // destruir si ya existe para evitar duplicados
+  }
+
+  // Agrupar incapacidades por usuario y contar
+  const conteoUsuarios: { [key: string]: number } = {};
+
+  this.incapacidadesFiltradas.forEach(inc => {
+    const nombre = inc.contrato?.hoja_de_vida?.usuario?.primerNombre + ' ' + (inc.contrato?.hoja_de_vida?.usuario?.primerApellido || '');
+    if (nombre) {
+      conteoUsuarios[nombre] = (conteoUsuarios[nombre] || 0) + 1;
+    }
+  });
+
+  const labels = Object.keys(conteoUsuarios);
+  const data = Object.values(conteoUsuarios);
+
+  // Generar colores aleatorios para cada barra
+  const backgroundColors = data.map(() => this.generarColorAleatorio());
+
+  const ctx = (document.getElementById('graficoUsuario') as HTMLCanvasElement).getContext('2d');
+
+  if (ctx) {
+    this.graficoUsuario = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels,
-        datasets: [
-          {
-            label: 'Cantidad de Incapacidades',
-            data,
-            backgroundColor: ['#FFC107', '#28A745', '#DC3545'],
-          },
-        ],
+        labels: labels,
+        datasets: [{
+          label: 'Cantidad de Incapacidades',
+          data: data,
+          backgroundColor: backgroundColors
+        }]
       },
       options: {
         responsive: true,
-        plugins: {
-          legend: { display: false },
-          title: {
-            display: true,
-            text: 'Incapacidades por Estado',
-          },
-        },
-      },
-    });
-  }
-
-  get paginatedIncapacidades(): Incapacidad[] {
-    const filtro = this.filtroNombre?.toLowerCase() || '';
-
-    // 1. Filtrar primero por nombre o documento
-    const filtradas = this.incapacidades.filter((i) => {
-      const usuario = i.contrato?.hoja_de_vida?.usuario;
-      const nombre = `${usuario?.primerNombre ?? ''} ${
-        usuario?.primerApellido ?? ''
-      }`.toLowerCase();
-      const documento = `${usuario?.numDocumento ?? ''}`;
-      return nombre.includes(filtro) || documento.includes(filtro);
-    });
-
-    // 2. Luego calcular total de páginas para el paginador
-    this.totalPages1 = Array(Math.ceil(filtradas.length / this.itemsPerPage))
-      .fill(0)
-      .map((_, i) => i + 1);
-
-    // 3. Aplicar paginación
-    const inicio = (this.currentPage - 1) * this.itemsPerPage;
-    const fin = inicio + this.itemsPerPage;
-    return filtradas.slice(inicio, fin);
-  }
-
-  abrirModalReporteUsuarios(): void {
-    const modalEl = document.getElementById('modalReporteUsuario');
-    if (modalEl) {
-      const modal = new bootstrap.Modal(modalEl);
-      modal.show();
-    }
-    this.dibujarGraficoUsuario();
-  }
-  verificarPermiso(): boolean {
-    return [1, 4].includes(this.usuario?.rol);
-  }
-
-  abrirModalReporteArea(): void {
-    const modalEl = document.getElementById('modalReporteArea');
-    if (modalEl) {
-      const modal = new bootstrap.Modal(modalEl);
-      modal.show();
-    }
-    this.dibujarGraficoPorArea();
-  }
-  dibujarGraficoUsuario() {
-    if (this.graficoUsuario) {
-      this.graficoUsuario.destroy(); // destruir si ya existe para evitar duplicados
-    }
-
-    // Agrupar incapacidades por usuario y contar
-    const conteoUsuarios: { [key: string]: number } = {};
-
-    this.incapacidadesFiltradas.forEach((inc) => {
-      const nombre =
-        inc.contrato?.hoja_de_vida?.usuario?.primerNombre +
-        ' ' +
-        (inc.contrato?.hoja_de_vida?.usuario?.primerApellido || '');
-      if (nombre) {
-        conteoUsuarios[nombre] = (conteoUsuarios[nombre] || 0) + 1;
+        scales: {
+          y: { beginAtZero: true }
+        }
       }
     });
+  }
+}
 
-    const labels = Object.keys(conteoUsuarios);
-    const data = Object.values(conteoUsuarios);
-
-    // Generar colores aleatorios para cada barra
-    const backgroundColors = data.map(() => this.generarColorAleatorio());
-
-    const ctx = (
-      document.getElementById('graficoUsuario') as HTMLCanvasElement
-    ).getContext('2d');
-
-    if (ctx) {
-      this.graficoUsuario = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [
-            {
-              label: 'Cantidad de Incapacidades',
-              data: data,
-              backgroundColor: backgroundColors,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          scales: {
-            y: { beginAtZero: true },
-          },
-        },
-      });
-    }
+dibujarGraficoPorArea() {
+  if (this.graficoArea) {
+    this.graficoArea.destroy();
   }
 
-  dibujarGraficoPorArea() {
-    if (this.graficoArea) {
-      this.graficoArea.destroy();
-    }
+  const conteoPorArea: { [key: string]: number } = {};
 
-    const conteoPorArea: { [key: string]: number } = {};
+  this.incapacidades.forEach(inc => {
+    const area = inc.contrato?.area;
+    const nombreArea =
+      typeof area === 'object' && area !== null && 'nombreArea' in area
+        ? (area as any).nombreArea
+        : 'Sin área';
 
-    this.incapacidades.forEach((inc) => {
-      const area = inc.contrato?.area;
-      const nombreArea =
-        typeof area === 'object' && area !== null && 'nombreArea' in area
-          ? (area as any).nombreArea
-          : 'Sin área';
+    conteoPorArea[nombreArea] = (conteoPorArea[nombreArea] || 0) + 1;
+  });
 
-      conteoPorArea[nombreArea] = (conteoPorArea[nombreArea] || 0) + 1;
+  const labels = Object.keys(conteoPorArea);
+  const data = Object.values(conteoPorArea);
+
+  const ctx = (document.getElementById('graficoArea') as HTMLCanvasElement)?.getContext('2d');
+
+  if (ctx) {
+    this.graficoArea = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Cantidad de Incapacidades por Área',
+          data,
+          backgroundColor: labels.map(() => this.generarColorAleatorio())
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
     });
-
-    const labels = Object.keys(conteoPorArea);
-    const data = Object.values(conteoPorArea);
-
-    const ctx = (
-      document.getElementById('graficoArea') as HTMLCanvasElement
-    )?.getContext('2d');
-
-    if (ctx) {
-      this.graficoArea = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [
-            {
-              label: 'Cantidad de Incapacidades por Área',
-              data,
-              backgroundColor: labels.map(() => this.generarColorAleatorio()),
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          scales: {
-            y: { beginAtZero: true },
-          },
-        },
-      });
-    }
   }
+}
+
+
 
   get totalPages(): number[] {
     const filtro = this.filtroNombre?.toLowerCase() || '';
-    const filtradas = this.incapacidades.filter((i) => {
+    const filtradas = this.incapacidades.filter(i => {
       const usuario = i.contrato?.hoja_de_vida?.usuario;
-      const nombre = `${usuario?.primerNombre ?? ''} ${
-        usuario?.primerApellido ?? ''
-      }`.toLowerCase();
+      const nombre = `${usuario?.primerNombre ?? ''} ${usuario?.primerApellido ?? ''}`.toLowerCase();
       const documento = `${usuario?.numDocumento ?? ''}`;
       return nombre.includes(filtro) || documento.includes(filtro);
     });
 
     const total = Math.ceil(filtradas.length / this.itemsPerPage);
-    return Array(total)
-      .fill(0)
-      .map((_, i) => i + 1);
+    return Array(total).fill(0).map((_, i) => i + 1);
   }
+
 
   get paginadas(): Incapacidad[] {
     const start = (this.currentPage - 1) * this.itemsPerPage;
     return this.incapacidadesFiltradas.slice(start, start + this.itemsPerPage);
   }
   cargarIncapacidades(): void {
-    this.incapacidadService.obtenerTodas().subscribe({
-      next: (res: Incapacidad[]) => {
-        this.incapacidades = res || [];
-      },
-      error: (err) => console.error('Error al cargar incapacidades', err),
-    });
-  }
+  this.incapacidadService.obtenerTodas().subscribe({
+    next: (res: Incapacidad[]) => {
+      console.log('Incapacidad', res); // debe mostrar el array
+      this.incapacidades = res || [];
+    },
+    error: (err) => console.error('Error al cargar incapacidades', err)
+  });
+}
 
-  eliminarIncapacidad(id: number): void {
-    this.incapacidadService.eliminar(id).subscribe({
-      next: () => {
-        this.incapacidades = this.incapacidades.filter(
-          (i) => i.idIncapacidad !== id
-        );
-        // si usas paginador dinámico
-        Swal.fire({
-          icon: 'success',
-          title: 'Eliminado',
-          text: 'La incapacidad ha sido eliminada correctamente.',
-          timer: 2000,
-          showConfirmButton: false,
-        });
-      },
-      error: (err) => {
-        console.error('Error al eliminar la incapacidad', err);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Ocurrió un error al eliminar la incapacidad.',
-        });
-      },
-    });
-  }
-
-  calcularDias(fechaInicio: string, fechaFinal: string): number {
-    const inicio = new Date(fechaInicio);
-    const final = new Date(fechaFinal);
-    const diferencia = final.getTime() - inicio.getTime();
-    return Math.ceil(diferencia / (1000 * 60 * 60 * 24)) + 1; // incluye ambos días
-  }
-  anteriorPagina() {
-    if (this.currentPage > 1) {
-      this.currentPage--;
+ eliminarIncapacidad(id: number): void {
+  this.incapacidadService.eliminar(id).subscribe({
+    next: () => {
+      this.incapacidades = this.incapacidades.filter(i => i.idIncapacidad !== id);
+       // si usas paginador dinámico
+      Swal.fire({
+        icon: 'success',
+        title: 'Eliminado',
+        text: 'La incapacidad ha sido eliminada correctamente.',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    },
+    error: (err) => {
+      console.error('Error al eliminar la incapacidad', err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Ocurrió un error al eliminar la incapacidad.',
+      });
     }
-  }
+  });
+}
 
-  siguientePagina() {
-    if (this.currentPage < this.totalPages.length) {
-      this.currentPage++;
+
+
+calcularDias(fechaInicio: string, fechaFinal: string): number {
+  const inicio = new Date(fechaInicio);
+  const final = new Date(fechaFinal);
+  const diferencia = final.getTime() - inicio.getTime();
+  return Math.ceil(diferencia / (1000 * 60 * 60 * 24)) + 1; // incluye ambos días
+}
+anteriorPagina() {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+  }
+}
+
+siguientePagina() {
+  if (this.currentPage < this.totalPages.length) {
+    this.currentPage++;
+  }
+}
+confirmarEliminacion(id: number, nombre: string): void {
+  Swal.fire({
+    title: '¿Estás seguro?',
+    text: 'Esta acción eliminará la incapacidad de .'+nombre+'.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#6c757d',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.eliminarIncapacidad(id);
     }
-  }
-  confirmarEliminacion(id: number, nombre: string): void {
-    Swal.fire({
-      title: '¿Estás seguro?',
-      text: 'Esta acción eliminará la incapacidad de .' + nombre + '.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.eliminarIncapacidad(id);
-      }
-    });
-  }
+  });
+}
 
-  descargarPDFPorUsuario() {
-    const doc = new jsPDF();
-    const imgLogo = new Image();
-    imgLogo.src = 'https://i.postimg.cc/BnHG09W1/logo.png';
+descargarPDFPorUsuario() {
+  const doc = new jsPDF();
+  const imgLogo = new Image();
+  imgLogo.src = 'https://i.postimg.cc/BnHG09W1/logo.png';
 
-    imgLogo.onload = () => {
-      // Encabezado
-      doc.setFillColor(4, 26, 43);
-      doc.rect(0, 0, 210, 30, 'F');
-      doc.addImage(imgLogo, 'PNG', 10, 5, 20, 20);
-      doc.setFontSize(16);
-      doc.setTextColor(200);
-      doc.text('ManageHR - Reporte de Incapacidades por Usuario', 35, 15);
+  imgLogo.onload = () => {
+    // Encabezado
+    doc.setFillColor(4, 26, 43);
+    doc.rect(0, 0, 210, 30, 'F');
+    doc.addImage(imgLogo, 'PNG', 10, 5, 20, 20);
+    doc.setFontSize(16);
+    doc.setTextColor(200);
+    doc.text('ManageHR - Reporte de Incapacidades por Usuario', 35, 15);
 
-      let startY = 35;
+    let startY = 35;
 
-      // Insertar gráfica si existe el canvas
-      const canvas: any = document.getElementById('graficoUsuario');
-      if (canvas) {
-        const graficoImg = canvas.toDataURL('image/png', 1.0);
-        doc.addImage(graficoImg, 'PNG', 10, startY, 180, 80);
-        startY += 90;
-      }
+    // Insertar gráfica si existe el canvas
+    const canvas: any = document.getElementById('graficoUsuario');
+    if (canvas) {
+      const graficoImg = canvas.toDataURL('image/png', 1.0);
+      doc.addImage(graficoImg, 'PNG', 10, startY, 180, 80);
+      startY += 90;
+    }
 
-      // Agrupar incapacidades por usuario (nombre completo)
-      const agrupadoPorUsuario = this.incapacidadesFiltradas.reduce(
-        (acc: any, inc: any) => {
-          const u = inc.contrato?.hoja_de_vida?.usuario || {};
-          const nombreCompleto = `${u.primerNombre || ''} ${
-            u.segundoNombre || ''
-          } ${u.primerApellido || ''} ${u.segundoApellido || ''}`.trim();
-          if (!acc[nombreCompleto]) acc[nombreCompleto] = [];
-          acc[nombreCompleto].push(inc);
-          return acc;
-        },
-        {}
-      );
+    // Agrupar incapacidades por usuario (nombre completo)
+    const agrupadoPorUsuario = this.incapacidadesFiltradas.reduce((acc: any, inc: any) => {
+      const u = inc.contrato?.hoja_de_vida?.usuario || {};
+      const nombreCompleto = `${u.primerNombre || ''} ${u.segundoNombre || ''} ${u.primerApellido || ''} ${u.segundoApellido || ''}`.trim();
+      if (!acc[nombreCompleto]) acc[nombreCompleto] = [];
+      acc[nombreCompleto].push(inc);
+      return acc;
+    }, {});
 
-      // Para cada usuario generar tabla con incapacidades
-      Object.entries(agrupadoPorUsuario).forEach(([usuario, lista]: any) => {
-        doc.setFontSize(12);
-        doc.setTextColor(0);
-        doc.text(`Usuario: ${usuario}`, 10, startY);
+    // Para cada usuario generar tabla con incapacidades
+    Object.entries(agrupadoPorUsuario).forEach(([usuario, lista]: any) => {
+      doc.setFontSize(12);
+      doc.setTextColor(0);
+      doc.text(`Usuario: ${usuario}`, 10, startY);
 
-        const body = lista.map((inc: any) => {
-          return [
-            inc.fechaInicio || 'N/A',
-            inc.fechaFinal || 'N/A',
-            inc.archivo ? 'Sí' : 'No',
-          ];
-        });
-
-        autoTable(doc, {
-          head: [['Fecha Inicio', 'Fecha Final', 'Archivo']],
-          body,
-          startY: startY + 5,
-          theme: 'grid',
-          styles: { halign: 'left', fontSize: 10 },
-          headStyles: { fillColor: [4, 26, 43], textColor: 255 },
-          didParseCell: (data) => {
-            if (data.section === 'body' && data.row.index % 2 === 0) {
-              data.cell.styles.fillColor = [240, 240, 240];
-            }
-          },
-        });
-
-        startY = (doc as any).lastAutoTable.finalY + 10;
+      const body = lista.map((inc: any) => {
+        return [
+          inc.fechaInicio || 'N/A',
+          inc.fechaFinal || 'N/A',
+          inc.archivo ? 'Sí' : 'No',
+        ];
       });
 
-      doc.save('incapacidades_por_usuario.pdf');
-    };
-  }
-
-  descargarExcelPorUsuario() {
-    const workbook = new ExcelJS.Workbook();
-    const sheet = workbook.addWorksheet('Incapacidades por Usuario');
-
-    // Agrupar incapacidades por usuario (usando documento como clave)
-    const incapacidadesAgrupadas = this.incapacidadesFiltradas.reduce(
-      (acc: any, inc: any) => {
-        const usuario = inc.contrato?.hoja_de_vida?.usuario || {};
-        const documento = usuario?.numDocumento || 'N/A';
-        if (!acc[documento]) acc[documento] = { usuario, registros: [] };
-        acc[documento].registros.push(inc);
-        return acc;
-      },
-      {}
-    );
-
-    // Recorrer cada usuario para agregar filas
-    Object.values(incapacidadesAgrupadas).forEach(
-      ({ usuario, registros }: any) => {
-        // Fila título usuario con merge y estilo
-        const tituloRow = sheet.addRow([
-          `Usuario: ${usuario?.primerNombre || 'Sin nombre'} ${
-            usuario?.primerApellido || ''
-          }`,
-        ]);
-        tituloRow.font = { bold: true };
-        tituloRow.fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: 'FFD9D9D9' },
-        };
-        sheet.mergeCells(`A${tituloRow.number}:F${tituloRow.number}`);
-
-        // Fila encabezado con estilo
-        const encabezadoRow = sheet.addRow([
-          'Documento',
-          'Correo',
-          'Fecha Inicio',
-          'Fecha Final',
-          'Días',
-          'Archivo',
-        ]);
-        encabezadoRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-        encabezadoRow.fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: 'FF2E7D32' }, // Verde institucional
-        };
-        encabezadoRow.eachCell((cell) => {
-          cell.border = {
-            top: { style: 'thin' },
-            bottom: { style: 'thin' },
-            left: { style: 'thin' },
-            right: { style: 'thin' },
-          };
-        });
-
-        // Filas de datos por incapacidad
-        registros.forEach((inc: any, index: number) => {
-          const dias = this.calcularDias(inc.fechaInicio, inc.fechaFinal); // O calcula tú mismo la cantidad de días
-          const row = sheet.addRow([
-            usuario?.numDocumento || 'N/A',
-            usuario?.email || 'N/A',
-            inc.fechaInicio,
-            inc.fechaFinal,
-            dias,
-            inc.archivo ? 'Sí' : 'No',
-          ]);
-
-          // Color alterno en filas
-          if (index % 2 === 0) {
-            row.fill = {
-              type: 'pattern',
-              pattern: 'solid',
-              fgColor: { argb: 'FFF2F2F2' },
-            };
+      autoTable(doc, {
+        head: [['Fecha Inicio', 'Fecha Final', 'Archivo']],
+        body,
+        startY: startY + 5,
+        theme: 'grid',
+        styles: { halign: 'left', fontSize: 10 },
+        headStyles: { fillColor: [4, 26, 43], textColor: 255 },
+        didParseCell: (data) => {
+          if (data.section === 'body' && data.row.index % 2 === 0) {
+            data.cell.styles.fillColor = [240, 240, 240];
           }
-
-          row.eachCell((cell) => {
-            cell.border = {
-              top: { style: 'thin' },
-              bottom: { style: 'thin' },
-              left: { style: 'thin' },
-              right: { style: 'thin' },
-            };
-          });
-        });
-
-        sheet.addRow([]); // fila vacía para separación
-      }
-    );
-
-    // Ajustar anchos de columnas
-    sheet.columns = [
-      { key: 'documento', width: 20 },
-      { key: 'correo', width: 30 },
-      { key: 'fechaInicio', width: 15 },
-      { key: 'fechaFinal', width: 15 },
-      { key: 'dias', width: 10 },
-      { key: 'archivo', width: 10 },
-    ];
-
-    // Guardar archivo Excel
-    workbook.xlsx.writeBuffer().then((buffer) => {
-      const blob = new Blob([buffer], {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        }
       });
-      saveAs(blob, 'incapacidades_por_usuario.xlsx');
+
+      startY = (doc as any).lastAutoTable.finalY + 10;
     });
-  }
-  generarColorAleatorio(): string {
+
+    doc.save('incapacidades_por_usuario.pdf');
+  };
+
+}
+
+
+descargarExcelPorUsuario() {
+  const workbook = new ExcelJS.Workbook();
+  const sheet = workbook.addWorksheet('Incapacidades por Usuario');
+
+  // Agrupar incapacidades por usuario (usando documento como clave)
+  const incapacidadesAgrupadas = this.incapacidadesFiltradas.reduce((acc: any, inc: any) => {
+    const usuario = inc.contrato?.hoja_de_vida?.usuario || {};
+    const documento = usuario?.numDocumento || 'N/A';
+    if (!acc[documento]) acc[documento] = { usuario, registros: [] };
+    acc[documento].registros.push(inc);
+    return acc;
+  }, {});
+
+  // Recorrer cada usuario para agregar filas
+  Object.values(incapacidadesAgrupadas).forEach(({ usuario, registros }: any) => {
+    // Fila título usuario con merge y estilo
+    const tituloRow = sheet.addRow([`Usuario: ${usuario?.primerNombre || 'Sin nombre'} ${usuario?.primerApellido || ''}`]);
+    tituloRow.font = { bold: true };
+    tituloRow.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFD9D9D9' },
+    };
+    sheet.mergeCells(`A${tituloRow.number}:F${tituloRow.number}`);
+
+    // Fila encabezado con estilo
+    const encabezadoRow = sheet.addRow([
+      'Documento', 'Correo', 'Fecha Inicio', 'Fecha Final', 'Días', 'Archivo'
+    ]);
+    encabezadoRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    encabezadoRow.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FF2E7D32' }, // Verde institucional
+    };
+    encabezadoRow.eachCell(cell => {
+      cell.border = {
+        top: { style: 'thin' },
+        bottom: { style: 'thin' },
+        left: { style: 'thin' },
+        right: { style: 'thin' },
+      };
+    });
+
+    // Filas de datos por incapacidad
+    registros.forEach((inc: any, index: number) => {
+      const dias = this.calcularDias(inc.fechaInicio, inc.fechaFinal); // O calcula tú mismo la cantidad de días
+      const row = sheet.addRow([
+        usuario?.numDocumento || 'N/A',
+        usuario?.email || 'N/A',
+        inc.fechaInicio,
+        inc.fechaFinal,
+        dias,
+        inc.archivo ? 'Sí' : 'No'
+      ]);
+
+      // Color alterno en filas
+      if (index % 2 === 0) {
+        row.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFF2F2F2' },
+        };
+      }
+
+      row.eachCell(cell => {
+        cell.border = {
+          top: { style: 'thin' },
+          bottom: { style: 'thin' },
+          left: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      });
+    });
+
+    sheet.addRow([]); // fila vacía para separación
+  });
+
+  // Ajustar anchos de columnas
+  sheet.columns = [
+    { key: 'documento', width: 20 },
+    { key: 'correo', width: 30 },
+    { key: 'fechaInicio', width: 15 },
+    { key: 'fechaFinal', width: 15 },
+    { key: 'dias', width: 10 },
+    { key: 'archivo', width: 10 }
+  ];
+
+  // Guardar archivo Excel
+  workbook.xlsx.writeBuffer().then((buffer) => {
+    const blob = new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+    saveAs(blob, 'incapacidades_por_usuario.xlsx');
+  });
+
+}
+generarColorAleatorio(): string {
     const letras = '0123456789ABCDEF';
     let color = '#';
     for (let i = 0; i < 6; i++) {
@@ -625,128 +528,139 @@ export class IncapacidadesAdminComponent implements OnInit {
     }
     return color;
   }
-  descargarPDFPorArea() {
-    const doc = new jsPDF();
-    const imgLogo = new Image();
-    imgLogo.src = 'https://i.postimg.cc/BnHG09W1/logo.png';
+descargarPDFPorArea() {
+  const doc = new jsPDF();
+  const imgLogo = new Image();
+  imgLogo.src = 'https://i.postimg.cc/BnHG09W1/logo.png';
 
-    imgLogo.onload = () => {
-      // Encabezado
-      doc.setFillColor(4, 26, 43);
-      doc.rect(0, 0, 210, 30, 'F');
-      doc.addImage(imgLogo, 'PNG', 10, 5, 20, 20);
-      doc.setFontSize(16);
-      doc.setTextColor(200);
-      doc.text('ManageHR - Reporte de Incapacidades por Área', 35, 15);
+  imgLogo.onload = () => {
+    // Encabezado
+    doc.setFillColor(4, 26, 43);
+    doc.rect(0, 0, 210, 30, 'F');
+    doc.addImage(imgLogo, 'PNG', 10, 5, 20, 20);
+    doc.setFontSize(16);
+    doc.setTextColor(200);
+    doc.text('ManageHR - Reporte de Incapacidades por Área', 35, 15);
 
-      let startY = 35;
+    let startY = 35;
 
-      // Insertar gráfica del canvas correcto
-      const canvas: any = document.getElementById('graficoArea');
-      if (canvas) {
-        const graficoImg = canvas.toDataURL('image/png', 1.0);
-        doc.addImage(graficoImg, 'PNG', 10, startY, 180, 80);
-        startY += 90;
-      }
-
-      const agrupadoPorArea = this.incapacidades.reduce(
-        (acc: any, inc: any) => {
-          const nombreArea = inc.contrato?.area?.nombreArea || 'Sin área';
-          if (!acc[nombreArea]) acc[nombreArea] = [];
-          acc[nombreArea].push(inc);
-          return acc;
-        },
-        {}
-      );
-
-      Object.entries(agrupadoPorArea).forEach(([area, lista]: any) => {
-        doc.setFontSize(12);
-        doc.setTextColor(0);
-        doc.text(`Área: ${area}`, 10, startY);
-
-        const body = lista.map((inc: any) => {
-          const u = inc.contrato?.hoja_de_vida?.usuario || {};
-          const nombreCompleto = `${u.primerNombre || ''} ${
-            u.segundoNombre || ''
-          } ${u.primerApellido || ''} ${u.segundoApellido || ''}`.trim();
-          return [
-            u.numDocumento || 'N/A',
-            nombreCompleto || 'Sin nombre',
-            inc.fechaInicio || 'N/A',
-            inc.fechaFinal || 'N/A',
-            inc.archivo ? 'Sí' : 'No',
-          ];
-        });
-
-        autoTable(doc, {
-          head: [
-            [
-              'Documento',
-              'Nombre Usuario',
-              'Fecha Inicio',
-              'Fecha Final',
-              'Archivo',
-            ],
-          ],
-          body,
-          startY: startY + 5,
-          theme: 'grid',
-          styles: { halign: 'left', fontSize: 10 },
-          headStyles: { fillColor: [4, 26, 43], textColor: 255 },
-          didParseCell: (data) => {
-            if (data.section === 'body' && data.row.index % 2 === 0) {
-              data.cell.styles.fillColor = [240, 240, 240];
-            }
-          },
-        });
-
-        startY = (doc as any).lastAutoTable.finalY + 10;
-      });
-
-      const numDocumento =
-        this.incapacidades?.[0]?.contrato?.hoja_de_vida?.usuario
-          ?.numDocumento || 'sin_documento';
-      doc.save(`incapacidades_por_area_${numDocumento}.pdf`);
-    };
-  }
-
-  descargarExcelPorArea() {
-    const workbook = new ExcelJS.Workbook();
-    const sheet = workbook.addWorksheet('Incapacidades por Área');
+    // Insertar gráfica del canvas correcto
+    const canvas: any = document.getElementById('graficoArea');
+    if (canvas) {
+      const graficoImg = canvas.toDataURL('image/png', 1.0);
+      doc.addImage(graficoImg, 'PNG', 10, startY, 180, 80);
+      startY += 90;
+    }
 
     const agrupadoPorArea = this.incapacidades.reduce((acc: any, inc: any) => {
-      const area = inc.contrato?.area?.nombreArea || 'Sin área';
-      if (!acc[area]) acc[area] = [];
-      acc[area].push(inc);
+      const nombreArea = inc.contrato?.area?.nombreArea || 'Sin área';
+      if (!acc[nombreArea]) acc[nombreArea] = [];
+      acc[nombreArea].push(inc);
       return acc;
     }, {});
 
-    Object.entries(agrupadoPorArea).forEach(([area, registros]: any) => {
-      const tituloRow = sheet.addRow([`Área: ${area}`]);
-      tituloRow.font = { bold: true };
-      tituloRow.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'FFD9D9D9' },
-      };
-      sheet.mergeCells(`A${tituloRow.number}:G${tituloRow.number}`);
+    Object.entries(agrupadoPorArea).forEach(([area, lista]: any) => {
+      doc.setFontSize(12);
+      doc.setTextColor(0);
+      doc.text(`Área: ${area}`, 10, startY);
 
-      const encabezadoRow = sheet.addRow([
-        'Documento',
-        'Nombre Usuario',
-        'Correo',
-        'Fecha Inicio',
-        'Fecha Final',
-        'Días',
-        'Archivo',
-      ]);
-      encabezadoRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-      encabezadoRow.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'FF2E7D32' },
+      const body = lista.map((inc: any) => {
+        const u = inc.contrato?.hoja_de_vida?.usuario || {};
+        const nombreCompleto = `${u.primerNombre || ''} ${u.segundoNombre || ''} ${u.primerApellido || ''} ${u.segundoApellido || ''}`.trim();
+        return [
+          u.numDocumento || 'N/A',
+          nombreCompleto || 'Sin nombre',
+          inc.fechaInicio || 'N/A',
+          inc.fechaFinal || 'N/A',
+          inc.archivo ? 'Sí' : 'No',
+        ];
+      });
+
+      autoTable(doc, {
+        head: [['Documento', 'Nombre Usuario', 'Fecha Inicio', 'Fecha Final', 'Archivo']],
+        body,
+        startY: startY + 5,
+        theme: 'grid',
+        styles: { halign: 'left', fontSize: 10 },
+        headStyles: { fillColor: [4, 26, 43], textColor: 255 },
+        didParseCell: (data) => {
+          if (data.section === 'body' && data.row.index % 2 === 0) {
+            data.cell.styles.fillColor = [240, 240, 240];
+          }
+        }
+      });
+
+      startY = (doc as any).lastAutoTable.finalY + 10;
+    });
+
+    const numDocumento = this.incapacidades?.[0]?.contrato?.hoja_de_vida?.usuario?.numDocumento || 'sin_documento';
+    doc.save(`incapacidades_por_area_${numDocumento}.pdf`);
+  };
+}
+
+descargarExcelPorArea() {
+  const workbook = new ExcelJS.Workbook();
+  const sheet = workbook.addWorksheet('Incapacidades por Área');
+
+  const agrupadoPorArea = this.incapacidades.reduce((acc: any, inc: any) => {
+    const area = inc.contrato?.area?.nombreArea || 'Sin área';
+    if (!acc[area]) acc[area] = [];
+    acc[area].push(inc);
+    return acc;
+  }, {});
+
+  Object.entries(agrupadoPorArea).forEach(([area, registros]: any) => {
+    const tituloRow = sheet.addRow([`Área: ${area}`]);
+    tituloRow.font = { bold: true };
+    tituloRow.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFD9D9D9' },
+    };
+    sheet.mergeCells(`A${tituloRow.number}:G${tituloRow.number}`);
+
+    const encabezadoRow = sheet.addRow([
+      'Documento', 'Nombre Usuario', 'Correo', 'Fecha Inicio', 'Fecha Final', 'Días', 'Archivo'
+    ]);
+    encabezadoRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    encabezadoRow.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FF2E7D32' },
+    };
+    encabezadoRow.eachCell(cell => {
+      cell.border = {
+        top: { style: 'thin' },
+        bottom: { style: 'thin' },
+        left: { style: 'thin' },
+        right: { style: 'thin' },
       };
-      encabezadoRow.eachCell((cell) => {
+    });
+
+    registros.forEach((inc: any, index: number) => {
+      const u = inc.contrato?.hoja_de_vida?.usuario || {};
+      const nombreCompleto = `${u.primerNombre || ''} ${u.segundoNombre || ''} ${u.primerApellido || ''} ${u.segundoApellido || ''}`.trim();
+      const dias = this.calcularDias(inc.fechaInicio, inc.fechaFinal);
+
+      const row = sheet.addRow([
+        u.numDocumento || 'N/A',
+        nombreCompleto || 'Sin nombre',
+        u.email || 'N/A',
+        inc.fechaInicio,
+        inc.fechaFinal,
+        dias,
+        inc.archivo ? 'Sí' : 'No'
+      ]);
+
+      if (index % 2 === 0) {
+        row.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFF2F2F2' },
+        };
+      }
+
+      row.eachCell(cell => {
         cell.border = {
           top: { style: 'thin' },
           bottom: { style: 'thin' },
@@ -754,365 +668,72 @@ export class IncapacidadesAdminComponent implements OnInit {
           right: { style: 'thin' },
         };
       });
-
-      registros.forEach((inc: any, index: number) => {
-        const u = inc.contrato?.hoja_de_vida?.usuario || {};
-        const nombreCompleto = `${u.primerNombre || ''} ${
-          u.segundoNombre || ''
-        } ${u.primerApellido || ''} ${u.segundoApellido || ''}`.trim();
-        const dias = this.calcularDias(inc.fechaInicio, inc.fechaFinal);
-
-        const row = sheet.addRow([
-          u.numDocumento || 'N/A',
-          nombreCompleto || 'Sin nombre',
-          u.email || 'N/A',
-          inc.fechaInicio,
-          inc.fechaFinal,
-          dias,
-          inc.archivo ? 'Sí' : 'No',
-        ]);
-
-        if (index % 2 === 0) {
-          row.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'FFF2F2F2' },
-          };
-        }
-
-        row.eachCell((cell) => {
-          cell.border = {
-            top: { style: 'thin' },
-            bottom: { style: 'thin' },
-            left: { style: 'thin' },
-            right: { style: 'thin' },
-          };
-        });
-      });
-
-      sheet.addRow([]);
     });
 
-    sheet.columns = [
-      { key: 'documento', width: 15 },
-      { key: 'nombre', width: 30 },
-      { key: 'correo', width: 30 },
-      { key: 'fechaInicio', width: 15 },
-      { key: 'fechaFinal', width: 15 },
-      { key: 'dias', width: 10 },
-      { key: 'archivo', width: 10 },
-    ];
+    sheet.addRow([]);
+  });
 
-    const numDocumento =
-      this.incapacidades?.[0]?.contrato?.hoja_de_vida?.usuario?.numDocumento ||
-      'sin_documento';
-    workbook.xlsx.writeBuffer().then((buffer) => {
-      const blob = new Blob([buffer], {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      });
-      saveAs(blob, `incapacidades_por_area_${numDocumento}.xlsx`);
+  sheet.columns = [
+    { key: 'documento', width: 15 },
+    { key: 'nombre', width: 30 },
+    { key: 'correo', width: 30 },
+    { key: 'fechaInicio', width: 15 },
+    { key: 'fechaFinal', width: 15 },
+    { key: 'dias', width: 10 },
+    { key: 'archivo', width: 10 }
+  ];
+
+  const numDocumento = this.incapacidades?.[0]?.contrato?.hoja_de_vida?.usuario?.numDocumento || 'sin_documento';
+  workbook.xlsx.writeBuffer().then((buffer) => {
+    const blob = new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
-  }
-  verArchivoEnModal(ruta: string) {
-    this.archivoActual = `http://localhost:8000/${ruta}`;
-    const modal = new bootstrap.Modal(
-      document.getElementById('modalVerArchivo')
-    );
-    modal.show();
-  }
+    saveAs(blob, `incapacidades_por_area_${numDocumento}.xlsx`);
+  });
+}
+verArchivoEnModal(ruta: string) {
+  this.archivoActual = `http://localhost:8000/${ruta}`;
+  const modal = new bootstrap.Modal(document.getElementById('modalVerArchivo'));
+  modal.show();
+}
 
-  esPDF(ruta: string): boolean {
-    return ruta.toLowerCase().endsWith('.pdf');
-  }
-  abrirArchivo(archivo: string) {
-    if (!archivo) return;
+esPDF(ruta: string): boolean {
+  return ruta.toLowerCase().endsWith('.pdf');
+}
+abrirArchivo(archivo: string) {
+  if (!archivo) return;
 
-    if (archivo.startsWith('http')) {
-      this.archivoActual = archivo;
-    } else {
-      const rutaNormalizada = archivo.startsWith('storage/')
-        ? archivo
-        : `storage/${archivo.replace(/^\/?/, '')}`;
-      this.archivoActual = `http://localhost:8000/${rutaNormalizada}`;
-    }
+  console.log('archivoOriginal:', archivo);
+  alert('archivoOriginal: ' + archivo);
 
-    // Mostrar modal correctamente
-    setTimeout(() => {
-      const modalEl = document.getElementById('modalVerArchivo');
-      if (modalEl) {
-        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-        modal.show();
-      }
-    }, 100);
+  // Si ya empieza con "http", no lo toques
+  if (archivo.startsWith('http')) {
+    this.archivoActual = archivo;
+  } else {
+    // Asegurarse de que comience con "storage/"
+    const rutaNormalizada = archivo.startsWith('storage/')
+      ? archivo
+      : `storage/${archivo.replace(/^\/?/, '')}`;
+
+    this.archivoActual = `http://localhost:8000/${rutaNormalizada}`;
   }
 
-  abrirModalCambiarEstado(id: number, estadoActual: number): void {
-    this.idIncapacidadSeleccionada = id;
-    this.nuevoEstadoSeleccionado = estadoActual;
+  console.log('archivoActual:', this.archivoActual);
+  alert('archivoActual: ' + this.archivoActual);
 
-    const modalEl = document.getElementById('modalCambiarEstado');
+  // Mostrar modal
+  setTimeout(() => {
+    const modalEl = document.getElementById('modalVerArchivo');
     if (modalEl) {
       const modal = new bootstrap.Modal(modalEl);
       modal.show();
     }
-  }
-  cambiarEstado(incapacidad: Incapacidad): void {
-    const nuevoEstado = (incapacidad.estado + 1) % 3;
-    const confirmText = this.getNombreEstado(nuevoEstado);
+  }, 100);
+}
 
-    Swal.fire({
-      title: '¿Cambiar estado?',
-      text: `¿Deseas cambiar el estado de la incapacidad ID: "${incapacidad.idIncapacidad}" a "${confirmText}"?`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, cambiar',
-      cancelButtonText: 'Cancelar',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.incapacidadService
-          .actualizarEstado(incapacidad.idIncapacidad, nuevoEstado)
-          .subscribe({
-            next: () => {
-              incapacidad.estado = nuevoEstado;
-              Swal.fire(
-                'Actualizado',
-                'Estado cambiado correctamente',
-                'success'
-              );
-            },
-            error: (err) => {
-              console.error('Error al cambiar estado', err);
-              Swal.fire('Error', 'No se pudo cambiar el estado', 'error');
-            },
-          });
-      }
-    });
-  }
 
-  confirmarCambioEstado(): void {
-    if (this.idIncapacidadSeleccionada === null) return;
 
-    this.incapacidadService
-      .actualizarEstado(
-        this.idIncapacidadSeleccionada,
-        this.nuevoEstadoSeleccionado
-      )
-      .subscribe({
-        next: () => {
-          Swal.fire('Éxito', 'Estado actualizado correctamente.', 'success');
-          this.cargarIncapacidades(); // Refrescar la tabla
-          const modalEl = document.getElementById('modalCambiarEstado');
-          if (modalEl) bootstrap.Modal.getInstance(modalEl)?.hide();
-        },
-        error: () => {
-          Swal.fire('Error', 'No se pudo actualizar el estado.', 'error');
-        },
-      });
-  }
-  abrirModalAgregarIncapacidad(): void {
-    const modal = new bootstrap.Modal(
-      document.getElementById('modalAgregarIncapacidad')!
-    );
-    modal.show();
-  }
 
-  abrirModalReporteEstado(): void {
-    if (this.incapacidades.length === 0) {
-      console.warn('No hay incapacidades cargadas aún.');
-      return;
-    }
 
-    const modal = new bootstrap.Modal(
-      document.getElementById('modalReporteEstado')!
-    );
-    modal.show();
-    setTimeout(() => this.generarGraficoPorEstado(), 300);
-  }
 
-  agruparIncapacidadesPorEstado(): void {
-    console.log('Incapacidades:', this.incapacidades); // Verifica si hay datos
-
-    const agrupado: any = {};
-
-    this.incapacidades.forEach((incapacidad: any) => {
-      const estado = incapacidad.estado;
-
-      if (!agrupado[estado]) {
-        agrupado[estado] = {
-          estado: estado,
-          total: 0,
-          incapacidades: [],
-        };
-      }
-
-      agrupado[estado].total++;
-      agrupado[estado].incapacidades.push({
-        documento: incapacidad.contrato?.hoja_de_vida?.usuario?.numDocumento,
-        nombre:
-          incapacidad.contrato?.hoja_de_vida?.usuario?.primerNombre +
-          ' ' +
-          incapacidad.contrato?.hoja_de_vida?.usuario?.primerApellido,
-        correo: incapacidad.contrato?.hoja_de_vida?.usuario?.email,
-        fechaInicio: incapacidad.fechaInicio,
-        fechaFinal: incapacidad.fechaFinal,
-        dias: this.calcularDias(
-          incapacidad.fechaInicio,
-          incapacidad.fechaFinal
-        ),
-      });
-    });
-
-    this.postulacionesPorEstado = Object.values(agrupado);
-    console.log('Agrupado:', this.postulacionesPorEstado); // Verifica si se agrupó correctamente
-  }
-
-  descargarExcelPorEstado(): void {
-    const workbook = new ExcelJS.Workbook();
-    const sheet = workbook.addWorksheet('Incapacidades por Estado');
-
-    this.postulacionesPorEstado.forEach((estadoObj) => {
-      const estadoTexto = estadoObj.estado === 1 ? 'Aprobada' : 'Pendiente';
-      const estadoRow = sheet.addRow([`Estado: ${estadoTexto}`]);
-      estadoRow.font = { bold: true };
-      estadoRow.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'FFD9D9D9' },
-      };
-      sheet.mergeCells(`A${estadoRow.number}:F${estadoRow.number}`);
-
-      const encabezadoRow = sheet.addRow([
-        'Documento',
-        'Nombre',
-        'Correo',
-        'Fecha Inicio',
-        'Fecha Final',
-        'Días',
-      ]);
-
-      encabezadoRow.font = { bold: true };
-      encabezadoRow.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'FFB0C4DE' },
-      };
-
-      encabezadoRow.eachCell((cell) => {
-        cell.border = {
-          top: { style: 'thin' },
-          bottom: { style: 'thin' },
-          left: { style: 'thin' },
-          right: { style: 'thin' },
-        };
-      });
-
-      estadoObj.incapacidades.forEach((i: any, index: number) => {
-        const dias = this.calcularDias(i.fechaInicio, i.fechaFinal);
-        const dataRow = sheet.addRow([
-          i.documento,
-          i.nombre,
-          i.correo,
-          i.fechaInicio,
-          i.fechaFinal,
-          dias,
-        ]);
-
-        if (index % 2 === 0) {
-          dataRow.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'FFF7F7F7' },
-          };
-        }
-
-        dataRow.eachCell((cell) => {
-          cell.border = {
-            top: { style: 'thin' },
-            bottom: { style: 'thin' },
-            left: { style: 'thin' },
-            right: { style: 'thin' },
-          };
-        });
-      });
-
-      sheet.addRow([]);
-    });
-
-    workbook.xlsx.writeBuffer().then((buffer) => {
-      const blob = new Blob([buffer], {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      });
-      saveAs(blob, 'reporte_incapacidades_por_estado.xlsx');
-    });
-  }
-
-  descargarPDFPorEstado(): void {
-    const doc = new jsPDF();
-    const imgLogo = new Image();
-    imgLogo.src = 'https://i.postimg.cc/BnHG09W1/logo.png';
-
-    imgLogo.onload = () => {
-      doc.setFillColor(4, 26, 43);
-      doc.rect(0, 0, 210, 30, 'F');
-      doc.addImage(imgLogo, 'PNG', 10, 5, 20, 20);
-      doc.setFontSize(16);
-      doc.setTextColor(200);
-      doc.text('ManageHR - Reporte de Incapacidades por Estado', 35, 15);
-
-      let startY = 35;
-
-      const canvas: any = document.getElementById('graficoEstado');
-      if (canvas) {
-        const graficoImg = canvas.toDataURL('image/png', 1.0);
-        doc.addImage(graficoImg, 'PNG', 10, startY, 180, 80);
-        startY += 90;
-      }
-
-      this.postulacionesPorEstado.forEach((estadoObj) => {
-        const estadoTexto = estadoObj.estado === 1 ? 'Aprobada' : 'Pendiente';
-        doc.setFontSize(12);
-        doc.setTextColor(0);
-        doc.text(`Estado: ${estadoTexto}`, 10, startY);
-
-        const body = estadoObj.incapacidades.map((i: any) => {
-          const dias = this.calcularDias(i.fechaInicio, i.fechaFinal);
-          return [
-            i.documento,
-            i.nombre,
-            i.correo,
-            i.fechaInicio,
-            i.fechaFinal,
-            dias,
-          ];
-        });
-
-        autoTable(doc, {
-          head: [
-            ['Documento', 'Nombre', 'Correo', 'Inicio', 'Finalización', 'Días'],
-          ],
-          body,
-          startY: startY + 5,
-          theme: 'grid',
-          styles: {
-            fontSize: 10,
-            halign: 'left',
-          },
-          headStyles: {
-            fillColor: [41, 128, 185],
-            textColor: 255,
-            fontStyle: 'bold',
-          },
-          didParseCell: (data) => {
-            if (data.section === 'body' && data.row.index % 2 === 0) {
-              data.cell.styles.fillColor = [245, 245, 245];
-            }
-          },
-        });
-
-        startY = (doc as any).lastAutoTable.finalY + 10;
-      });
-
-      doc.save('reporte_incapacidades_por_estado.pdf');
-    };
-  }
 }

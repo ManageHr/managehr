@@ -20,7 +20,7 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { catchError } from 'rxjs/operators';
 import { throwError, Observable } from 'rxjs';
-
+import * as bootstrap from 'bootstrap';
 
 
 @Component({

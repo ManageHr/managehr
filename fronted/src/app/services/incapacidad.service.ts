@@ -8,7 +8,7 @@ export interface Incapacidad {
   fechaInicio: string;
   fechaFinal: string;
   contratoId: number;
-
+  estado: number;
   contrato?: {
     idContrato: number;
     tipoContratoId: number;
