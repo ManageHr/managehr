@@ -16,6 +16,7 @@ class HorasExtra extends Model
         'tipoHorasId',
         'nHorasExtra',
         'contratoId',
+        'estado'
     ];
 
     public function tipoHoraExtra()
