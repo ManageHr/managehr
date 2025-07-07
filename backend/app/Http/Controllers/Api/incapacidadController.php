@@ -238,4 +238,59 @@ class incapacidadController extends Controller
             'status' => 200
         ]);
     }
+    /**
+     * @OA\Put(
+     *     path="/api/incapacidad/estado/{id}",
+     *     summary="Actualizar estado de una incapacidad",
+     *     description="Permite modificar el estado de una incapacidad específica.",
+     *     tags={"Incapacidades"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la incapacidad",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"estado"},
+     *             @OA\Property(property="estado", type="integer", example=1, description="0: Pendiente, 1: Aprobado, 2: Rechazado")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Estado de la incapacidad actualizado correctamente"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Incapacidad no encontrada"
+     *     )
+     * )
+     */
+    public function cambiarEstado(Request $request, $id)
+    {
+        $incapacidad = Incapacidad::find($id);
+
+        if (!$incapacidad) {
+            return response()->json([
+                'mensaje' => 'Incapacidad no encontrada',
+                'status' => 404
+            ], 404);
+        }
+
+        $request->validate([
+            'estado' => 'required|integer|in:0,1,2'
+        ]);
+
+        $incapacidad->estado = $request->estado;
+        $incapacidad->save();
+
+        return response()->json([
+            'mensaje' => 'Estado actualizado correctamente',
+            'estado' => $incapacidad->estado,
+            'status' => 200
+        ]);
+    }
 }

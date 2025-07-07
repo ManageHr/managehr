@@ -169,6 +169,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/incapacidad/{id}', [incapacidadController::class, 'show']);
     Route::patch('/incapacidad/{id}/actualizar', [incapacidadController::class, 'updatePartial']);
     Route::delete('/incapacidad/{id}', [incapacidadController::class, 'destroy']);
+    Route::put('/incapacidad/estado/{id}', [incapacidadController::class, 'cambiarEstado']);
 
     Route::get('/pazysalvo', [pazysalvoController::class, 'index']);
     Route::post('/pazysalvo', [pazysalvoController::class, 'store']);
@@ -309,6 +310,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/horasextra/{id}', [horasextraController::class, 'show']);
     Route::patch('/horasextra/{id}', [horasextraController::class, 'updatePartial']);
     Route::delete('/horasextra/{id}', [horasextraController::class, 'destroy']);
+    Route::put('/horasextra/estado/{id}', [horasextraController::class, 'cambiarEstado']);
 
     Route::get('/tipos-horas', [tipohorasController::class, 'index']);
 

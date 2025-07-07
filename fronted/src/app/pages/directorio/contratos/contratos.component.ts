@@ -83,12 +83,12 @@ export class ContratosComponent implements OnInit {
     const userFromLocal = localStorage.getItem('usuario');
     if (userFromLocal) {
       this.usuario = JSON.parse(userFromLocal);
-      console.log('usuario logueado:', this.usuario);
+      
     }
 
     this.contratosService.obtenerContratos().subscribe({
       next: (data) => {
-        console.log('contrato cargado:', data);
+        
         this.contratos = data;
         this.totalPages = Math.ceil(this.contratos.length / this.itemsPerPage);
       },
@@ -98,7 +98,7 @@ export class ContratosComponent implements OnInit {
     });
     this.contratosService.obtenerAreas().subscribe({
       next: res => {
-        console.log('Áreas cargadas:', res); 
+        
         this.areas = res;
       },
       error: () => Swal.fire('Error', 'No se pudieron cargar las áreas', 'error')
@@ -126,7 +126,7 @@ export class ContratosComponent implements OnInit {
     this.contratosService.obtenerTiposContrato().subscribe({
       next: (data) => {
         this.tiposContrato = data;
-        console.log('Tipos de documento cargados:', this.tiposContrato);
+        
       },
       error: (error) => {
         console.error('Error al cargar tipos de documento', error);
@@ -142,7 +142,7 @@ export class ContratosComponent implements OnInit {
     this.contratosService.obtenerContratos().subscribe({
       next: (data) => {
         this.contratos = data;
-        console.log('contratos cargados:', this.contratos);
+        
       },
       error: (err) => {
         console.error('Error al cargar contratos', err);
