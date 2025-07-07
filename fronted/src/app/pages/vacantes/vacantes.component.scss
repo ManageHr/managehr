@@ -1,5 +1,3 @@
-/* src/app/components/vacantes/vacantes.component.scss */
-
 .layout {
   display: flex;
   min-height: 100vh;
@@ -126,7 +124,7 @@ app-menu {
     }
   }
 
-  // Estilos para el botón "Postularme" dentro del panel
+
   button.btn {
     background: linear-gradient(90deg, var(--color-principal), var(--active-color));
     color: white;
@@ -138,14 +136,12 @@ app-menu {
 
     &:hover {
       cursor: pointer;
-      // Puedes agregar un efecto hover para el gradiente si lo deseas
+     
     }
   }
 }
 
 
-// >>>>>>>> ESTILOS GENERALES PARA MODALES (EXISTENTES) <<<<<<<<
-// Estos estilos se aplican a .modal-content a menos que sean sobrescritos
 .modal-content {
   background: var(--sidebar-bg);
   border: 1px solid var(--border-color);
@@ -162,7 +158,7 @@ app-menu {
     }
 
     .btn-close {
-      filter: invert(1); // Invierte el color del icono de cerrar para fondos oscuros
+      filter: invert(1); 
     }
   }
 
@@ -231,56 +227,34 @@ app-menu {
   }
 }
 
-// >>>>>>>> ESTILOS ESPECÍFICOS PARA EL MODAL DE CONFIRMACIÓN <<<<<<<<
-// Estos estilos sobrescriben los estilos generales de .modal-content para #confirmacionModal
+
 #confirmacionModal {
   .modal-content {
-    background-color: #fff; // Fondo blanco
-    border: 1px solid #ccc; // Borde más claro
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); // Sombra suave
+    background-color: #fff; 
+    border: 1px solid #ccc; 
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); 
 
     .modal-header {
-      border-bottom: 1px solid #dee2e6; // Borde estándar de Bootstrap
+      border-bottom: 1px solid #dee2e6; 
       .modal-title {
-        color: #333; // Texto oscuro
+        color: #333; 
       }
       .btn-close {
-         filter: none; // Asegura que el icono de cerrar no esté invertido en fondo blanco
+         filter: none; 
       }
     }
 
     .modal-body {
-      color: #333; // Texto oscuro en el cuerpo
-      // Puedes ajustar el tamaño del texto o peso si quieres
-      // font-size: 1rem;
-      // font-weight: 400;
+      color: #333; 
+      
     }
 
     .modal-footer {
-      border-top: 1px solid #dee2e6; // Borde estándar de Bootstrap
-      // Los estilos de los botones (btn-secondary, btn-primary) dentro del footer
-      // seguirán los estilos generales que ya tienes definidos para .modal-footer .btn
-      // Puedes sobrescribirlos aquí si quieres botones diferentes solo para este modal.
+      border-top: 1px solid #dee2e6; 
     }
   }
 
-  // Si quieres ajustar específicamente los botones de este modal:
-  /*
-  .modal-footer {
-     .btn-secondary {
-       // Estilos para el botón "No, Cancelar" en este modal
-     }
-     .btn-primary {
-       // Estilos para el botón "Sí, Postularme" en este modal
-       background-color: green; // Ejemplo: botón verde para confirmar
-       border-color: green;
-       &:hover {
-         background-color: darkgreen;
-         border-color: darkgreen;
-       }
-     }
-  }
-  */
+ 
 }
 
 

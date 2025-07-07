@@ -169,10 +169,10 @@
         <button type="button" class="btn-close" (click)="cancelarAccion()"></button>
       </div>
       <div class="custom-modal-block mb-3">
-        <div><strong>Empleado:</strong> {{ solicitudSeleccionada?.empleado?.nombre }} {{ solicitudSeleccionada?.empleado?.apellido }}</div>
-        <div><strong>Documento:</strong> {{ solicitudSeleccionada?.empleado?.numDocumento }}</div>
-        <div><strong>Período:</strong> {{ formatearFecha(solicitudSeleccionada?.fechaInicio || '') }} - {{ formatearFecha(solicitudSeleccionada?.fechaFinal || '') }}</div>
-        <div><strong>Días solicitados:</strong> {{ calcularDias(solicitudSeleccionada?.fechaInicio || '', solicitudSeleccionada?.fechaFinal || '') }}</div>
+        <div><strong>Empleado:</strong> {{ solicitudSeleccionada.empleado?.nombre }} {{ solicitudSeleccionada.empleado?.apellido }}</div>
+        <div><strong>Documento:</strong> {{ solicitudSeleccionada.empleado?.numDocumento }}</div>
+        <div><strong>Período:</strong> {{ formatearFecha(solicitudSeleccionada.fechaInicio) }} - {{ formatearFecha(solicitudSeleccionada.fechaFinal) }}</div>
+        <div><strong>Días solicitados:</strong> {{ calcularDias(solicitudSeleccionada.fechaInicio, solicitudSeleccionada.fechaFinal) }}</div>
       </div>
       <div class="modal-body">
         <label for="comentario" class="form-label">Comentario (opcional):</label>

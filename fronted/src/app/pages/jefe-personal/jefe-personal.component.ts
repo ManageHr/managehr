@@ -39,18 +39,18 @@ export class JefePersonalComponent implements OnInit {
 
   ngOnInit() {
     const userFromLocal = localStorage.getItem('usuario');
-    console.log('userFromLocal:', userFromLocal);
+    //console.log('userFromLocal:', userFromLocal);
     if (userFromLocal) {
       const usuario = JSON.parse(userFromLocal);
       const jefeId = usuario.id || usuario.idUsuario;
-      console.log('Jefe ID:', jefeId);
+      //console.log('Jefe ID:', jefeId);
       this.jefePersonalService.getEmpleadosPorJefe(jefeId).subscribe(
         (response: EmpleadosResponse) => {
-          console.log('Respuesta del backend:', response);
+          //console.log('Respuesta del backend:', response);
           this.empleados = response.empleados || [];
           this.areaNombre = response.area || '';
           this.filtrarEmpleados();
-          console.log('Empleados cargados:', this.empleados);
+          //console.log('Empleados cargados:', this.empleados);
         },
         (error) => {
           console.error('Error al obtener empleados:', error);

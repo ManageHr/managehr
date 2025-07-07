@@ -149,6 +149,223 @@
                 ]
             }
         },
+        "/api/mis-postulaciones": {
+            "get": {
+                "tags": [
+                    "Postulaciones"
+                ],
+                "summary": "Obtener postulaciones del usuario autenticado",
+                "description": "Devuelve las postulaciones realizadas por el usuario autenticado, incluyendo los datos de la vacante.",
+                "operationId": "ae4c328250661c7b80991190875d49d9",
+                "responses": {
+                    "200": {
+                        "description": "Postulaciones obtenidas correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Usuario no autenticado o sin número de documento",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Usuario no autenticado o sin número de documento."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno al obtener las postulaciones",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ocurrió un error al obtener tus postulaciones."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalle del error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/nacionalidad": {
+            "get": {
+                "tags": [
+                    "Nacionalidad"
+                ],
+                "summary": "Listar todas las nacionalidades",
+                "description": "Obtiene una lista de todas las nacionalidades ordenadas alfabéticamente.",
+                "operationId": "e8cb8f8cc4734294b98f7997f9c4031e",
+                "responses": {
+                    "200": {
+                        "description": "Listado obtenido exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "Nacionalidad": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Nacionalidad"
+                ],
+                "summary": "Crear nacionalidad (no permitido)",
+                "description": "Este módulo no permite crear nacionalidades, solo el administrador de base de datos puede hacerlo.",
+                "operationId": "fc50e3404ebdf84e3785ee9973cd8cf0",
+                "responses": {
+                    "400": {
+                        "description": "Operación no permitida"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/nacionalidad/{id}": {
+            "put": {
+                "tags": [
+                    "Nacionalidad"
+                ],
+                "summary": "Actualizar nacionalidad (no permitido)",
+                "description": "Este módulo no permite actualizar nacionalidades, solo el administrador de base de datos puede hacerlo.",
+                "operationId": "2711e872fe2c4c0eb6144dcad324ac15",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la nacionalidad a actualizar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Operación no permitida"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Nacionalidad"
+                ],
+                "summary": "Eliminar nacionalidad (no permitido)",
+                "description": "Este módulo no permite eliminar nacionalidades, solo el administrador de base de datos puede hacerlo.",
+                "operationId": "6529fa1f523569d08c43ac9b6b35c0c9",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la nacionalidad a eliminar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Operación no permitida"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Nacionalidad"
+                ],
+                "summary": "Actualizar nacionalidad parcialmente (no permitido)",
+                "description": "Este módulo no permite actualización parcial, solo el administrador de base de datos puede hacerlo.",
+                "operationId": "a6ff89d7592726fca0a98d4a68fe96e1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la nacionalidad",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Operación no permitida"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/horasextra": {
             "get": {
                 "tags": [
@@ -442,6 +659,7 @@
                 ]
             }
         },
+<<<<<<< HEAD
         "/api/horasextra/{id}/estado": {
             "patch": {
                 "tags": [
@@ -478,6 +696,71 @@
                                             1,
                                             2
                                         ]
+=======
+        "/api/incapacidades": {
+            "get": {
+                "tags": [
+                    "Incapacidades"
+                ],
+                "summary": "Listar todas las incapacidades",
+                "description": "Obtiene un listado de todas las incapacidades registradas con sus relaciones.",
+                "operationId": "de789aa9ccdde8d07ed550533c15e22f",
+                "responses": {
+                    "200": {
+                        "description": "Listado obtenido con éxito"
+                    },
+                    "500": {
+                        "description": "Error del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Incapacidades"
+                ],
+                "summary": "Registrar nueva incapacidad",
+                "description": "Crea una nueva incapacidad con descripción, fechas y archivo (opcional).",
+                "operationId": "46f357a669a24184123c4f5e7406db75",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "descrip",
+                                    "fechaInicio",
+                                    "fechaFinal",
+                                    "contratoId"
+                                ],
+                                "properties": {
+                                    "descrip": {
+                                        "type": "string",
+                                        "example": "Incapacidad médica general"
+                                    },
+                                    "archivo": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    },
+                                    "fechaInicio": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-07-06"
+                                    },
+                                    "fechaFinal": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-07-10"
+                                    },
+                                    "contratoId": {
+                                        "type": "integer",
+                                        "example": 12
+>>>>>>> e024b9d8c2e3fd7fb44a07fcc0ab197da4d8c9d9
                                     }
                                 },
                                 "type": "object"
@@ -486,6 +769,7 @@
                     }
                 },
                 "responses": {
+<<<<<<< HEAD
                     "200": {
                         "description": "Estado actualizado correctamente"
                     },
@@ -494,6 +778,16 @@
                     },
                     "404": {
                         "description": "Horas extra no encontrada"
+=======
+                    "201": {
+                        "description": "Incapacidad creada correctamente"
+                    },
+                    "400": {
+                        "description": "Error de validación"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+>>>>>>> e024b9d8c2e3fd7fb44a07fcc0ab197da4d8c9d9
                     }
                 },
                 "security": [
@@ -503,6 +797,7 @@
                 ]
             }
         },
+<<<<<<< HEAD
         "/api/incapacidad/estado/{id}": {
             "patch": {
                 "tags": [
@@ -511,6 +806,48 @@
                 "summary": "Actualizar el estado de una incapacidad",
                 "description": "Actualiza el estado (0,1,2) de una incapacidad existente por su ID.",
                 "operationId": "3272c4f672c072c6fac958aa057033dd",
+=======
+        "/api/incapacidades/{id}": {
+            "get": {
+                "tags": [
+                    "Incapacidades"
+                ],
+                "summary": "Consultar incapacidad por ID",
+                "description": "Devuelve los datos de una incapacidad específica.",
+                "operationId": "3e13ece39bed6a7d48b521363b5e1765",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la incapacidad",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Incapacidad encontrada"
+                    },
+                    "404": {
+                        "description": "Incapacidad no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Incapacidades"
+                ],
+                "summary": "Actualizar incapacidad (total)",
+                "description": "Modifica todos los campos de una incapacidad existente.",
+                "operationId": "2d986728ad873a4a5472755ba8319456",
+>>>>>>> e024b9d8c2e3fd7fb44a07fcc0ab197da4d8c9d9
                 "parameters": [
                     {
                         "name": "id",
@@ -525,6 +862,360 @@
                 "requestBody": {
                     "required": true,
                     "content": {
+<<<<<<< HEAD
+=======
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "descrip",
+                                    "fechaInicio",
+                                    "fechaFinal",
+                                    "contratoId"
+                                ],
+                                "properties": {
+                                    "descrip": {
+                                        "type": "string",
+                                        "example": "Incapacidad por cirugía"
+                                    },
+                                    "archivo": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    },
+                                    "fechaInicio": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-07-01"
+                                    },
+                                    "fechaFinal": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-07-05"
+                                    },
+                                    "contratoId": {
+                                        "type": "integer",
+                                        "example": 7
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Incapacidad actualizada con éxito"
+                    },
+                    "400": {
+                        "description": "Error de validación"
+                    },
+                    "404": {
+                        "description": "Incapacidad no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Incapacidades"
+                ],
+                "summary": "Eliminar incapacidad",
+                "description": "Elimina una incapacidad existente por su ID.",
+                "operationId": "191e5467b003b84b4625bca0b16fd168",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la incapacidad a eliminar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Incapacidad eliminada con éxito"
+                    },
+                    "404": {
+                        "description": "Incapacidad no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Incapacidades"
+                ],
+                "summary": "Actualizar incapacidad (parcial)",
+                "description": "Actualiza uno o varios campos de la incapacidad indicada.",
+                "operationId": "94e130ab4c7fef1dad63eb40c780bdfd",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la incapacidad",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "descrip": {
+                                        "type": "string",
+                                        "example": "Cambio de diagnóstico"
+                                    },
+                                    "archivo": {
+                                        "type": "string",
+                                        "example": "storage/Archivos/archivo.pdf"
+                                    },
+                                    "fechaInicio": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-07-01"
+                                    },
+                                    "fechaFinal": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-07-03"
+                                    },
+                                    "contratoId": {
+                                        "type": "integer",
+                                        "example": 15
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Actualización parcial exitosa"
+                    },
+                    "400": {
+                        "description": "Error de validación"
+                    },
+                    "404": {
+                        "description": "Incapacidad no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/jefes/{jefeId}/empleados": {
+            "get": {
+                "tags": [
+                    "Jefes"
+                ],
+                "summary": "Listar empleados por jefe de personal",
+                "description": "Obtiene una lista de empleados que pertenecen al área asignada al jefe de personal indicado.",
+                "operationId": "265b8c70745c1bb606e0ff8476a54716",
+                "parameters": [
+                    {
+                        "name": "jefeId",
+                        "in": "path",
+                        "description": "ID del jefe de personal",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de empleados obtenida correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "empleados": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "area": {
+                                            "type": "string",
+                                            "example": "Recursos Humanos"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Empleados obtenidos correctamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No se encontró área asignada para este jefe de personal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No se encontró área asignada para este jefe de personal"
+                                        },
+                                        "empleados": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/notificaciones": {
+            "get": {
+                "tags": [
+                    "Notificaciones"
+                ],
+                "summary": "Listar todas las notificaciones",
+                "description": "Obtiene una lista de todas las notificaciones con sus relaciones (área, usuario).",
+                "operationId": "6edd3ef3574b4d6e15bd269856f471a2",
+                "responses": {
+                    "200": {
+                        "description": "Listado obtenido correctamente"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Notificaciones"
+                ],
+                "summary": "Crear una nueva notificación",
+                "description": "Registra una nueva notificación para una acción específica.",
+                "operationId": "8db40ed9d8d43424d8a539ee4517f178",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "tipo",
+                                    "accion",
+                                    "usuarioId",
+                                    "referenciaId"
+                                ],
+                                "properties": {
+                                    "tipo": {
+                                        "type": "string",
+                                        "enum": [
+                                            "HorasExtra",
+                                            "Vacaciones",
+                                            "Permiso",
+                                            "Postulacion",
+                                            "Rol"
+                                        ]
+                                    },
+                                    "accion": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Creado",
+                                            "Modificado",
+                                            "Eliminado",
+                                            "EstadoAceptado"
+                                        ]
+                                    },
+                                    "fecha": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "nullable": true
+                                    },
+                                    "detalle": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "usuarioId": {
+                                        "type": "integer"
+                                    },
+                                    "areaId": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "referenciaId": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Notificación creada correctamente"
+                    },
+                    "400": {
+                        "description": "Error de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/notificaciones/estado/{id}": {
+            "patch": {
+                "tags": [
+                    "Notificaciones"
+                ],
+                "summary": "Actualizar solo el estado de una notificación",
+                "description": "Modifica el campo 'estado' de una notificación específica.",
+                "operationId": "ce3b8ab0ade04b2e60221a2810c7b032",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la notificación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+>>>>>>> e024b9d8c2e3fd7fb44a07fcc0ab197da4d8c9d9
                         "application/json": {
                             "schema": {
                                 "required": [
@@ -533,10 +1224,13 @@
                                 "properties": {
                                     "estado": {
                                         "type": "integer",
+<<<<<<< HEAD
                                         "enum": [
                                             0,
                                             1
                                         ],
+=======
+>>>>>>> e024b9d8c2e3fd7fb44a07fcc0ab197da4d8c9d9
                                         "example": 1
                                     }
                                 },
@@ -550,10 +1244,247 @@
                         "description": "Estado actualizado correctamente"
                     },
                     "404": {
+<<<<<<< HEAD
                         "description": "Incapacidad no encontrada"
                     },
                     "400": {
                         "description": "Error en la validación"
+=======
+                        "description": "Notificación no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/notificaciones/{id}": {
+            "get": {
+                "tags": [
+                    "Notificaciones"
+                ],
+                "summary": "Consultar notificación por ID",
+                "description": "Devuelve una notificación específica por su ID.",
+                "operationId": "cc60bbc28117f5eee3d1242684958585",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la notificación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Notificación encontrada"
+                    },
+                    "404": {
+                        "description": "No encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Notificaciones"
+                ],
+                "summary": "Actualizar notificación completamente",
+                "description": "Modifica todos los campos de una notificación existente.",
+                "operationId": "ecdd69703acf1dd8e721d01860e7319a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "tipo",
+                                    "accion",
+                                    "usuarioId",
+                                    "referenciaId"
+                                ],
+                                "properties": {
+                                    "tipo": {
+                                        "type": "string",
+                                        "enum": [
+                                            "HorasExtra",
+                                            "Vacaciones",
+                                            "Permiso",
+                                            "Postulacion",
+                                            "Rol"
+                                        ]
+                                    },
+                                    "accion": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Creado",
+                                            "Modificado",
+                                            "Eliminado",
+                                            "EstadoAceptado"
+                                        ]
+                                    },
+                                    "fecha": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "nullable": true
+                                    },
+                                    "detalle": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "usuarioId": {
+                                        "type": "integer"
+                                    },
+                                    "areaId": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "referenciaId": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Notificación actualizada correctamente"
+                    },
+                    "400": {
+                        "description": "Error de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Notificaciones"
+                ],
+                "summary": "Eliminar notificación",
+                "description": "Elimina una notificación existente por su ID.",
+                "operationId": "ca2181310e1c0ee9278b42cd78dc180b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Eliminación exitosa"
+                    },
+                    "404": {
+                        "description": "No encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Notificaciones"
+                ],
+                "summary": "Actualizar notificación parcialmente",
+                "description": "Modifica uno o más campos de una notificación.",
+                "operationId": "f87c43330105876d2afb89aa8b1ddce8",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "tipo": {
+                                        "type": "string",
+                                        "enum": [
+                                            "HorasExtra",
+                                            "Vacaciones",
+                                            "Permiso",
+                                            "Postulacion",
+                                            "Rol"
+                                        ]
+                                    },
+                                    "accion": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Creado",
+                                            "Modificado",
+                                            "Eliminado",
+                                            "EstadoAceptado"
+                                        ]
+                                    },
+                                    "fecha": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "detalle": {
+                                        "type": "string"
+                                    },
+                                    "usuarioId": {
+                                        "type": "integer"
+                                    },
+                                    "areaId": {
+                                        "type": "integer"
+                                    },
+                                    "referenciaId": {
+                                        "type": "integer"
+                                    },
+                                    "contratoId": {
+                                        "type": "integer",
+                                        "example": 3
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Actualización parcial exitosa"
+                    },
+                    "404": {
+                        "description": "No encontrada"
+>>>>>>> e024b9d8c2e3fd7fb44a07fcc0ab197da4d8c9d9
                     }
                 },
                 "security": [
@@ -580,12 +1511,31 @@
             "description": "Perfil"
         },
         {
+            "name": "Postulaciones",
+            "description": "Postulaciones"
+        },
+        {
+            "name": "Nacionalidad",
+            "description": "Nacionalidad"
+        },
+        {
             "name": "Horas Extra",
             "description": "Horas Extra"
         },
         {
             "name": "Incapacidades",
             "description": "Incapacidades"
+<<<<<<< HEAD
+=======
+        },
+        {
+            "name": "Jefes",
+            "description": "Jefes"
+        },
+        {
+            "name": "Notificaciones",
+            "description": "Notificaciones"
+>>>>>>> e024b9d8c2e3fd7fb44a07fcc0ab197da4d8c9d9
         }
     ]
 }

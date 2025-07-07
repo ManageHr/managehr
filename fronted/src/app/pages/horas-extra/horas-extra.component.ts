@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MenuComponent } from '../menu/menu.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { HorasextraService } from '../../services/horasextra.service';  // Ruta correcta para el servicio
+import { HorasextraService } from '../../services/horasextra.service';  
 
 interface HoraExtra {
   id: number;
@@ -36,7 +36,7 @@ export class HorasExtraComponent implements OnInit {
   mostrarAgregarModalHorasExtra: boolean = false;
   isLargeScreen: boolean = true;
 
-  constructor(private horasExtraService: HorasextraService) { }  // Inyección del servicio
+  constructor(private horasExtraService: HorasextraService) { }  
 
   ngOnInit(): void {
     this.horasExtras = this.horasExtras.map(item => ({
@@ -70,8 +70,8 @@ export class HorasExtraComponent implements OnInit {
       descrip: 'Horas extra registradas desde frontend',
       fecha: this.nuevaHoraExtra.fecha,
       nHorasExtra: this.nuevaHoraExtra.totalHoras,
-      tipoHorasid: 1,          // Cambia esto si tienes select
-      contratoId: 1            // Cambia esto si tienes usuario logueado o select
+      tipoHorasid: 1,        
+      contratoId: 1          
     };
 
     this.horasExtraService.create(data).subscribe({
