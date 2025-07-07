@@ -264,7 +264,13 @@ export class GestionComponent implements OnInit {
       )
       .subscribe({
         next: (responseVacante) => {
-          Swal.fire(successMessage, `La vacante ha sido guardada.`, 'success');
+          Swal.fire(
+            successMessage,
+            `La vacante ha sido guardada.`,
+            'success'
+          ).then(() => {
+            location.reload(); // Recarga toda la página
+          });
 
           if (
             this.vacanteSeleccionada.idVacantes === undefined ||
@@ -279,11 +285,6 @@ export class GestionComponent implements OnInit {
               cargoVacante: '',
               catVacId: undefined, // Reinicializa catVacId también
             };
-          }
-          const modalElement = document.getElementById('agregarVacanteModal');
-          if (modalElement) {
-            const modalInstance = bootstrap.Modal.getInstance(modalElement);
-            modalInstance?.hide();
           }
 
           this.cargarVacantes();

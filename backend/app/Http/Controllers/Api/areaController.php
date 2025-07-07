@@ -7,14 +7,52 @@ use App\Models\Area;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * @OA\Tag(
+ *     name="Área",
+ *     description="Operaciones relacionadas con Áreas"
+ * )
+ */
 class areaController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/api/areas",
+     *     tags={"Área"},
+     *     summary="Listar todas las áreas",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Listado de áreas exitoso"
+     *     )
+     * )
+     */
     public function index()
     {
         $areas = Area::all();
         return response()->json(["areas" => $areas, "status" => 200], 200);
     }
-
+    /**
+     * @OA\Post(
+     *     path="/api/areas",
+     *     tags={"Área"},
+     *     summary="Crear nueva área",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"nombreArea", "jefePersonal", "idJefe", "estado"},
+     *             @OA\Property(property="nombreArea", type="string", example="Finanzas"),
+     *             @OA\Property(property="jefePersonal", type="string", example="Carlos Pérez"),
+     *             @OA\Property(property="idJefe", type="integer", example=3),
+     *             @OA\Property(property="estado", type="integer", example=1)
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Área creada correctamente"),
+     *     @OA\Response(response=400, description="Error de validación"),
+     *     @OA\Response(response=500, description="Error interno")
+     * )
+     */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -47,7 +85,23 @@ class areaController extends Controller
             ], 500);
         }
     }
-
+    /**
+     * @OA\Get(
+     *     path="/api/areas/{id}",
+     *     tags={"Área"},
+     *     summary="Obtener área por ID",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID del área",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Área encontrada"),
+     *     @OA\Response(response=404, description="Área no encontrada")
+     * )
+     */
     public function show($id)
     {
         $area = Area::find($id);
@@ -59,6 +113,23 @@ class areaController extends Controller
         }
         return response()->json(["area" => $area, "status" => 200], 200);
     }
+    /**
+     * @OA\Get(
+     *     path="/api/areas/nombre/{nombre}",
+     *     tags={"Área"},
+     *     summary="Buscar área por nombre",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="nombre",
+     *         in="path",
+     *         required=true,
+     *         description="Nombre del área",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(response=200, description="Área encontrada"),
+     *     @OA\Response(response=404, description="Área no encontrada")
+     * )
+     */
     public function showNombre($id)
     {
         $area = Area::where('nombreArea', $id)->get();
@@ -71,7 +142,34 @@ class areaController extends Controller
         }
         return response()->json(["area" => $area, "status" => 200], 200);
     }
-
+    /**
+     * @OA\Put(
+     *     path="/api/areas/{id}",
+     *     tags={"Área"},
+     *     summary="Actualizar área completamente",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID del área a actualizar",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"nombreArea", "jefePersonal", "idJefe", "estado"},
+     *             @OA\Property(property="nombreArea", type="string", example="Finanzas"),
+     *             @OA\Property(property="jefePersonal", type="string", example="Carlos Pérez"),
+     *             @OA\Property(property="idJefe", type="integer", example=3),
+     *             @OA\Property(property="estado", type="integer", example=1)
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Área actualizada correctamente"),
+     *     @OA\Response(response=400, description="Error de validación"),
+     *     @OA\Response(response=404, description="Área no encontrada")
+     * )
+     */
     public function update(Request $request, $id)
     {
         $area = Area::find($id);
@@ -109,7 +207,24 @@ class areaController extends Controller
             ], 500);
         }
     }
-
+    /**
+     * @OA\Delete(
+     *     path="/api/areas/{id}",
+     *     tags={"Área"},
+     *     summary="Eliminar un área",
+     *     security={{"bearerAuth":{}}},
+     *     description="Eliminar un área por su ID",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID del área a eliminar",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Área eliminada correctamente"),
+     *     @OA\Response(response=404, description="Área no encontrada")
+     * )
+     */
     public function destroy($id)
     {
         $area = Area::find($id);
@@ -126,7 +241,32 @@ class areaController extends Controller
             "status" => 200
         ], 200);
     }
-    
+    /**
+     * @OA\Patch(
+     *     path="/api/areas/{id}",
+     *     tags={"Área"},
+     *     summary="Actualizar parcialmente un área",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID del área",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         @OA\JsonContent(
+     *             @OA\Property(property="nombreArea", type="string", example="Logística"),
+     *             @OA\Property(property="jefePersonal", type="string", example="María León"),
+     *             @OA\Property(property="idJefe", type="integer", example=5),
+     *             @OA\Property(property="estado", type="integer", example=1)
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Área actualizada parcialmente"),
+     *     @OA\Response(response=400, description="Error de validación"),
+     *     @OA\Response(response=404, description="Área no encontrada")
+     * )
+     */
     public function updatePartial(Request $request, $id)
     {
         $area = Area::find($id);

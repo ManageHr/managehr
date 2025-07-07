@@ -9,8 +9,29 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * @OA\Tag(
+ *     name="Categorías de Vacantes",
+ *     description="Gestión de categorías para vacantes laborales"
+ * )
+ */
 class CategoriaVacantesController extends Controller
 {
+     /**
+     * @OA\Get(
+     *     path="/api/categoriavacantes",
+     *     tags={"Categorías de Vacantes"},
+     *     summary="Listar todas las categorías de vacantes",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Listado obtenido correctamente"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor"
+     *     )
+     * )
+     */
     public function index()
     {
         try {
@@ -25,6 +46,23 @@ class CategoriaVacantesController extends Controller
             return response()->json(['message' => 'Ocurrió un error al obtener las categorías.', 'error' => $e->getMessage()], 500);
         }
     }
+     /**
+     * @OA\Post(
+     *     path="/api/categoriavacantes",
+     *     tags={"Categorías de Vacantes"},
+     *     summary="Crear una nueva categoría de vacante",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"nomCategoria"},
+     *             @OA\Property(property="nomCategoria", type="string", maxLength=45, example="Tecnología")
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Categoría creada exitosamente"),
+     *     @OA\Response(response=400, description="Error de validación"),
+     *     @OA\Response(response=500, description="Error interno del servidor")
+     * )
+     */
 
     public function store(Request $request)
     {
@@ -51,7 +89,23 @@ class CategoriaVacantesController extends Controller
             return response()->json(['message' => 'Ocurrió un error al crear la categoría.', 'error' => $e->getMessage()], 500);
         }
     }
-
+    /**
+     * @OA\Get(
+     *     path="/api/categoriavacantes/{id}",
+     *     tags={"Categorías de Vacantes"},
+     *     summary="Obtener una categoría por su ID",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la categoría",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Categoría encontrada"),
+     *     @OA\Response(response=404, description="Categoría no encontrada"),
+     *     @OA\Response(response=500, description="Error interno del servidor")
+     * )
+     */
     public function show($id)
     {
         try {
@@ -68,7 +122,31 @@ class CategoriaVacantesController extends Controller
             return response()->json(['message' => 'Ocurrió un error al obtener la categoría.', 'error' => $e->getMessage()], 500);
         }
     }
-
+    /**
+     * @OA\Put(
+     *     path="/api/categoriavacantes/{id}",
+     *     tags={"Categorías de Vacantes"},
+     *     summary="Actualizar una categoría existente",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la categoría a actualizar",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"nomCategoria"},
+     *             @OA\Property(property="nomCategoria", type="string", maxLength=45, example="Administración")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Categoría actualizada con éxito"),
+     *     @OA\Response(response=400, description="Error de validación"),
+     *     @OA\Response(response=404, description="Categoría no encontrada"),
+     *     @OA\Response(response=500, description="Error interno del servidor")
+     * )
+     */
     public function update(Request $request, $id)
     {
         $categoria = CategoriaVacantes::find($id);
@@ -101,7 +179,24 @@ class CategoriaVacantesController extends Controller
             return response()->json(['message' => 'Ocurrió un error al actualizar la categoría.', 'error' => $e->getMessage()], 500);
         }
     }
-
+    /**
+     * @OA\Delete(
+     *     path="/api/categoriavacantes/{id}",
+     *     tags={"Categorías de Vacantes"},
+     *     summary="Eliminar una categoría de vacante",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la categoría",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Categoría eliminada con éxito"),
+     *     @OA\Response(response=404, description="Categoría no encontrada"),
+     *     @OA\Response(response=409, description="No se puede eliminar la categoría si está asociada a vacantes"),
+     *     @OA\Response(response=500, description="Error interno del servidor")
+     * )
+     */
     public function destroy($id)
     {
         $categoria = CategoriaVacantes::find($id);

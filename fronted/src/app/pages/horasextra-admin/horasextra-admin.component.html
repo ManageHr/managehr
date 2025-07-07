@@ -4,26 +4,37 @@
     <!-- Encabezado y botones -->
     <div
       id="tituloTargetas1"
-      class="header-horas d-flex justify-content-between align-items-center"
+      class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center flex-wrap gap-2 mb-3"
     >
-      <h3>Horas Extras</h3>
-      <div class="d-flex gap-2">
+      <h3 class="mb-2 mb-md-0">Incapacidades</h3>
+
+      <div
+        class="d-flex flex-wrap gap-2 justify-content-start justify-content-md-end"
+      >
         <button
-          class="btn btn-light btn-sm agregar-btn"
+          class="btn btn-warning btn-sm d-flex align-items-center"
           *ngIf="[1, 4].includes(usuario?.rol)"
           (click)="abrirModalReporteUsuarios()"
         >
-          <i class="fas fa-chart-bar"></i> Reporte Usuarios
+          <i class="fas fa-chart-bar me-1"></i> Reporte Usuarios
         </button>
         <button
-          class="btn btn-light btn-sm agregar-btn"
+          class="btn btn-success btn-sm d-flex align-items-center"
           *ngIf="[1, 4].includes(usuario?.rol)"
           (click)="abrirModalReporteArea()"
         >
-          <i class="fas fa-chart-bar"></i> Reporte Área
+          <i class="fas fa-chart-bar me-1"></i> Reporte Área
+        </button>
+        <button
+          class="btn btn-info btn-sm d-flex align-items-center"
+          *ngIf="[1, 4].includes(usuario?.rol)"
+          (click)="abrirModalReporteEstado()"
+        >
+          <i class="fas fa-chart-bar me-1"></i> Reporte Estado
         </button>
       </div>
     </div>
+
     <div *ngIf="[1, 4].includes(usuario?.rol); else sinPermiso">
       <div id="tituloTargetasfiltro1" class="mb-3">
         <input
@@ -55,6 +66,7 @@
             <th>Cantidad</th>
             <th>Área</th>
             <th>Rol</th>
+            <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -77,9 +89,30 @@
             <td>{{ i.tipo_hora_extra?.nombreTipoHoras }}</td>
             <td>{{ i.nHorasExtra }}</td>
             <td>{{ i.contrato?.area?.nombreArea }}</td>
-            <td>{{ i.contrato?.hoja_de_vida?.usuario?.user?.rol?.nombreRol }}</td>
-            
             <td>
+              {{ i.contrato?.hoja_de_vida?.usuario?.user?.rol?.nombreRol }}
+            </td>
+            <td>
+              <button
+                class="btn btn-warning btn-sm"
+                [ngClass]="{
+                  'btn-warning': i.estado === 0,
+                  'btn-success': i.estado === 1,
+                  'btn-danger': i.estado === 2
+                }"
+              >
+                {{ getNombreEstado(i.estado) }}
+              </button>
+            </td>
+
+            <td>
+              <button
+                class="btn btn-warning btn-sm me-1"
+                (click)="abrirModalCambiarEstado(i.idHorasExtra, i.estado)"
+                title="Cambiar Estado"
+              >
+                <i class="fas fa-exchange-alt"></i>
+              </button>
               <button
                 class="btn btn-danger btn-sm"
                 (click)="
@@ -130,15 +163,34 @@
             <strong>Teléfono:</strong>
             {{ i.contrato?.hoja_de_vida?.usuario?.telefono }}<br />
             <strong>Fecha:</strong> {{ i.fecha }}<br />
-            <strong>Tipo Hora:</strong> {{ i.tipo_hora_extra?.nombreTipoHoras }}<br />
+            <strong>Tipo Hora:</strong> {{ i.tipo_hora_extra?.nombreTipoHoras
+            }}<br />
             <strong>Cantidad:</strong>
-            {{ i.nHorasExtra }}<br/>
+            {{ i.nHorasExtra }}<br />
             <strong>Área:</strong>
-            {{ i.contrato?.area?.nombreArea }}<br/>
+            {{ i.contrato?.area?.nombreArea }}<br />
             <strong>Rol:</strong>
-            {{ i.contrato?.hoja_de_vida?.usuario?.user?.rol?.nombreRol }}<br/>
+            {{ i.contrato?.hoja_de_vida?.usuario?.user?.rol?.nombreRol }}<br />
+            <strong>Estado: </strong>
+            <button
+                class="btn btn-warning btn-sm"
+                [ngClass]="{
+                  'btn-warning': i.estado === 0,
+                  'btn-success': i.estado === 1,
+                  'btn-danger': i.estado === 2
+                }"
+              >
+                {{ getNombreEstado(i.estado) }}
+              </button><br />
           </p>
           <div class="card-footer d-flex justify-content-end gap-2">
+            <button
+                class="btn btn-warning btn-sm me-1"
+                (click)="abrirModalCambiarEstado(i.idHorasExtra, i.estado)"
+                title="Cambiar Estado"
+              >
+                <i class="fas fa-exchange-alt"></i>
+              </button>
             <button
               class="btn btn-outline-danger btn-sm"
               (click)="eliminarhorasextra(i.idHorasExtra)"
@@ -156,8 +208,6 @@
       [autoHide]="true"
       class="d-flex justify-content-center mt-3 d-md-none"
     ></pagination-controls>
-
-    
 
     <!-- Permiso denegado -->
     <ng-template #sinPermiso>
@@ -252,6 +302,51 @@
     </div>
   </div>
 </div>
+<!-- Modal Reporte por Estado -->
+<div
+  class="modal fade"
+  id="modalReporteEstado"
+  tabindex="-1"
+  aria-labelledby="modalReporteEstadoLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title" id="modalReporteEstadoLabel">
+          Reporte de Horas Extras por Estado
+        </h5>
+        <button
+          type="button"
+          class="btn-close bg-white"
+          data-bs-dismiss="modal"
+          aria-label="Cerrar"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <canvas id="graficoEstado" height="100"></canvas>
+      </div>
+      <div class="modal-footer">
+        <button
+          class="btn btn-outline-danger"
+          (click)="descargarPDFPorEstado()"
+        >
+          <i class="bi bi-file-earmark-pdf"></i> PDF
+        </button>
+        <button
+          class="btn btn-outline-success"
+          (click)="descargarExcelPorEstado()"
+        >
+          <i class="bi bi-file-earmark-excel"></i> Excel
+        </button>
+        <button class="btn btn-secondary" data-bs-dismiss="modal">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Modal para ver archivo PDF o imagen -->
 <div
   class="modal fade"
@@ -290,6 +385,56 @@
             class="img-fluid w-100"
           />
         </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal Cambiar Estado Horas Extra -->
+<div
+  class="modal fade"
+  id="modalCambiarEstado"
+  tabindex="-1"
+  aria-labelledby="modalCambiarEstadoLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-warning text-dark">
+        <h5 class="modal-title" id="modalCambiarEstadoLabel">
+          Cambiar Estado de Hora Extra
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Cerrar"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <label for="selectEstadoHorasExtra" class="form-label"
+          >Nuevo Estado:</label
+        >
+        <select
+          id="selectEstadoHorasExtra"
+          class="form-select"
+          [(ngModel)]="nuevoEstadoSeleccionado"
+        >
+          <option [value]="0">🟡 Pendiente</option>
+          <option [value]="1">✅ Aprobado</option>
+          <option [value]="2">❌ Rechazado</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn btn-success"
+          (click)="confirmarCambioEstado()"
+        >
+          Guardar Cambios
+        </button>
       </div>
     </div>
   </div>

@@ -12,7 +12,6 @@
       <div
         class="d-flex flex-wrap gap-2 justify-content-start justify-content-md-end"
       >
-
         <button
           class="btn btn-secondary btn-sm d-flex align-items-center"
           *ngIf="[1, 4].includes(usuario?.rol)"
@@ -108,13 +107,14 @@
             </td>
 
             <td>
-              <a
-                target="_blank"
+              <button
                 class="btn btn-outline-primary btn-sm"
-                (click)="abrirModalCambiarEstado(i.idIncapacidad, i.estado)"
+                (click)="abrirArchivo(i.archivo)"
+                data-bs-toggle="modal"
+                data-bs-target="#modalVerArchivo"
               >
                 Ver archivo
-              </a>
+              </button>
             </td>
             <td>
               <button
@@ -150,7 +150,6 @@
         class="d-flex justify-content-center mt-3 custom-paginator"
       ></pagination-controls>
     </div>
-
 
     <!-- Tarjetas para pantallas pequeñas -->
     <div class="d-md-none">

@@ -10,8 +10,44 @@ use App\Models\HojasVida;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * @OA\Tag(
+ *     name="Horas Extra",
+ *     description="Gestión de horas extra por parte de usuarios autenticados"
+ * )
+ */
+
 class FormHorasController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/api/formhoras",
+     *     summary="Registrar horas extra",
+     *     tags={"Horas Extra"},
+     *     security={{ "bearerAuth": {} }},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"fecha", "tipoHorasId", "nHorasExtra"},
+     *             @OA\Property(property="descripcion", type="string", example="Soporte en servidor de emergencia"),
+     *             @OA\Property(property="fecha", type="string", format="date", example="2025-07-01"),
+     *             @OA\Property(property="tipoHorasId", type="integer", example=2),
+     *             @OA\Property(property="nHorasExtra", type="integer", minimum=1, example=3)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Solicitud enviada correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=422, description="Error de validación"),
+     *     @OA\Response(response=500, description="Error interno del servidor")
+     * )
+     */
+
     public function store(Request $request)
     {
         // Aquí ya no esperas contratoId desde el frontend
@@ -59,7 +95,6 @@ class FormHorasController extends Controller
                 'message' => 'Solicitud enviada correctamente.',
                 'data' => $hora
             ], 201);
-
         } catch (\Exception $e) {
             Log::error('Error al guardar horas extra', ['error' => $e->getMessage()]);
             return response()->json([
@@ -68,6 +103,32 @@ class FormHorasController extends Controller
             ], 500);
         }
     }
+    /**
+     * @OA\Get(
+     *     path="/api/formhoras",
+     *     summary="Listar horas extra del usuario autenticado",
+     *     tags={"Horas Extra"},
+     *     security={{ "bearerAuth": {} }},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Listado de horas extra exitoso",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="descripcion", type="string"),
+     *                 @OA\Property(property="fecha", type="string", format="date"),
+     *                 @OA\Property(property="tipoHorasId", type="integer"),
+     *                 @OA\Property(property="nHorasExtra", type="integer"),
+     *                 @OA\Property(property="contratoId", type="integer"),
+     *                 @OA\Property(property="created_at", type="string", format="date-time"),
+     *                 @OA\Property(property="updated_at", type="string", format="date-time")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=500, description="Error al obtener las horas extra")
+     * )
+     */
 
     public function index(Request $request)
     {
@@ -94,7 +155,6 @@ class FormHorasController extends Controller
                 ->get();
 
             return response()->json($horas, 200);
-
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error al obtener las horas extra',

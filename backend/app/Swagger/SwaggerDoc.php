@@ -10,8 +10,8 @@ namespace App\Swagger;
  * )
  *
  * @OA\Server(
- *     url=L5_SWAGGER_CONST_HOST,
- *     description="Servidor principal"
+ *     url="http://localhost:8000",
+ *     description="Servidor local"
  * )
  *
  * @OA\SecurityScheme(

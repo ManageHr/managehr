@@ -172,7 +172,7 @@ convertirNumeroAEstado(estado: number): string {
 }
 
 obtenerNombreEstado(estado: number): string {
-  console.log("Numero estado = ",estado);
+  
   switch (estado) {
     case 1: return 'Aceptado';
     case 2: return 'Pendiente';
@@ -251,7 +251,7 @@ obtenerNombreEstado(estado: number): string {
           datasets: [{
             label: 'Postulantes por Vacante',
             data,
-            backgroundColor: colores, // 🎨 cada barra con color distinto
+            backgroundColor: colores, // cada barra con color distinto
             borderWidth: 1
           }]
         },

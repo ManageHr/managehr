@@ -343,5 +343,19 @@
   color: white !important;
   border-color: #007bff !important;
 } 
-  
+#tituloTargetas1 {
+  background-color: #0d6efd; /* azul primario */
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+}
+#tituloTargetas1 button {
+  height: 45px;
+  min-width: 150px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
   

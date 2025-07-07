@@ -7,10 +7,33 @@ use Illuminate\Http\Request;
 use App\Models\Estadocivil;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * @OA\Tag(
+ *     name="Estado Civil",
+ *     description="Gestión del estado civil (solo lectura pública) ya que se cargan todos los estados civiles. "
+ * )
+ */
 class estadocivilController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/api/estadocivil",
+     *     summary="Listar todos los estados civiles",
+     *     tags={"Estado Civil"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Listado de estados civiles obtenido correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=200),
+     *             @OA\Property(property="estadocivil", type="array", 
+     *                 @OA\Items(
+     *                     @OA\Property(property="idEstadocivil", type="integer", example=1),
+     *                     @OA\Property(property="nombreEstado", type="string", example="Soltero")
+     *                 )
+     *             )
+     *         )
+     *     )
+     * )
      */
     public function index()
     {
@@ -46,7 +69,33 @@ class estadocivilController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/api/estadocivil/{id}",
+     *     summary="Obtener un estado civil por ID",
+     *     tags={"Estado Civil"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del estado civil",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Estado civil encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=200),
+     *             @OA\Property(property="estadocivil", type="object",
+     *                 @OA\Property(property="idEstadocivil", type="integer", example=1),
+     *                 @OA\Property(property="nombreEstado", type="string", example="Casado")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Estado civil no encontrado"
+     *     )
+     * )
      */
     public function show(string $id)
     {
@@ -93,9 +142,7 @@ class estadocivilController extends Controller
         return response()->json([$data], 400);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    
     public function destroy(string $id)
     {
         $data = [

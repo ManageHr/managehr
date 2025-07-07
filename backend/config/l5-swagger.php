@@ -105,7 +105,7 @@ return [
         ],
 
         'constants' => [
-            'L5_SWAGGER_CONST_HOST' => env('APP_URL', 'http://localhost'),
+            'L5_SWAGGER_CONST_HOST' => env('APP_URL', 'http://localhost:8000'),
         ],
     ],
 ];

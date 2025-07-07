@@ -103,7 +103,6 @@ export class IncapacidadesAdminComponent implements OnInit {
       contratoId: ['', Validators.required],
     });
     this.cargarIncapacidades();
-    console.log('Incapacidad', this.incapacidades);
   }
   get incapacidadesFiltradas() {
     const filtroLower = this.filtroNombre.toLowerCase();
@@ -158,7 +157,6 @@ export class IncapacidadesAdminComponent implements OnInit {
 
     this.incapacidadService.crear(formData).subscribe({
       next: (res) => {
-        console.log('Incapacidad registrada', res);
         this.cargarIncapacidades(); // actualiza la tabla
         this.formIncapacidad.reset();
         this.archivoSeleccionado = null;
@@ -370,7 +368,6 @@ export class IncapacidadesAdminComponent implements OnInit {
   cargarIncapacidades(): void {
     this.incapacidadService.obtenerTodas().subscribe({
       next: (res: Incapacidad[]) => {
-        console.log('Incapacidad', res); // debe mostrar el array
         this.incapacidades = res || [];
       },
       error: (err) => console.error('Error al cargar incapacidades', err),
@@ -830,33 +827,25 @@ export class IncapacidadesAdminComponent implements OnInit {
   abrirArchivo(archivo: string) {
     if (!archivo) return;
 
-    console.log('archivoOriginal:', archivo);
-    alert('archivoOriginal: ' + archivo);
-
-    // Si ya empieza con "http", no lo toques
     if (archivo.startsWith('http')) {
       this.archivoActual = archivo;
     } else {
-      // Asegurarse de que comience con "storage/"
       const rutaNormalizada = archivo.startsWith('storage/')
         ? archivo
         : `storage/${archivo.replace(/^\/?/, '')}`;
-
       this.archivoActual = `http://localhost:8000/${rutaNormalizada}`;
     }
 
-    console.log('archivoActual:', this.archivoActual);
-    alert('archivoActual: ' + this.archivoActual);
-
-    // Mostrar modal
+    // Mostrar modal correctamente
     setTimeout(() => {
       const modalEl = document.getElementById('modalVerArchivo');
       if (modalEl) {
-        const modal = new bootstrap.Modal(modalEl);
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
         modal.show();
       }
     }, 100);
   }
+
   abrirModalCambiarEstado(id: number, estadoActual: number): void {
     this.idIncapacidadSeleccionada = id;
     this.nuevoEstadoSeleccionado = estadoActual;
@@ -966,7 +955,10 @@ export class IncapacidadesAdminComponent implements OnInit {
         correo: incapacidad.contrato?.hoja_de_vida?.usuario?.email,
         fechaInicio: incapacidad.fechaInicio,
         fechaFinal: incapacidad.fechaFinal,
-        dias: this.calcularDias(incapacidad.fechaInicio, incapacidad.fechaFinal),
+        dias: this.calcularDias(
+          incapacidad.fechaInicio,
+          incapacidad.fechaFinal
+        ),
       });
     });
 
@@ -1069,7 +1061,7 @@ export class IncapacidadesAdminComponent implements OnInit {
 
       let startY = 35;
 
-      const canvas: any = document.getElementById('graficoEstados');
+      const canvas: any = document.getElementById('graficoEstado');
       if (canvas) {
         const graficoImg = canvas.toDataURL('image/png', 1.0);
         doc.addImage(graficoImg, 'PNG', 10, startY, 180, 80);

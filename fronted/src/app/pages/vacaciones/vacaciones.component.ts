@@ -118,7 +118,6 @@ export class VacacionesComponent implements OnInit {
     this.vacacionesService.getVacaciones().subscribe({
       next: (data) => {
         this.vacaciones = data; 
-        console.log('Vacaciones cargadas:', this.vacaciones);
         this.totalPages = Math.ceil(this.vacaciones.length / this.itemsPerPage);
       },
       error: (err) => {

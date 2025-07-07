@@ -108,6 +108,7 @@ export interface Horasextra {
   contratoId: number;
   tipo_hora_extra?: TipoHoraExtra;
   contrato?: Contrato;
+  estado: number;
 }
 @Injectable({ providedIn: 'root' })
 export class HorasextraService {
@@ -162,4 +163,10 @@ export class HorasextraService {
     buscarPorDocumento(documento: string): Observable<any> {
       return this.http.get<any>(`${this.apiUrl}/buscar/${documento}`);
     }
+    cambiarEstado(id: number, nuevoEstado: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/estado/${id}`, {
+      estado: nuevoEstado,
+    });
+}
+
 }

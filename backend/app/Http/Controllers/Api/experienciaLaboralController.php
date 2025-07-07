@@ -9,8 +9,27 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * @OA\Tag(
+ *     name="Experiencia Laboral",
+ *     description="Gestión de las experiencias laborales registradas de los empleados "
+ * )
+ */
+
 class experienciaLaboralController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/api/experienciaLaboral",
+     *     summary="Listar todas las experiencias laborales",
+     *     tags={"Experiencia Laboral"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Listado de experiencias laborales de los empleados "
+     *     )
+     * )
+     */
+
     public function index()
     {
         $experiencias = ExperienciaLaboral::all();
@@ -19,7 +38,28 @@ class experienciaLaboralController extends Controller
             "status" => 200
         ]);
     }
-
+    /**
+     * @OA\Post(
+     *     path="/api/experienciaLaboral",
+     *     summary="Crear nueva experiencia laboral",
+     *     tags={"Experiencia Laboral"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"nomEmpresa", "nomJefe", "telefono", "cargo", "actividades", "fechaInicio", "fechaFinalizacion"},
+     *             @OA\Property(property="nomEmpresa", type="string", maxLength=45),
+     *             @OA\Property(property="nomJefe", type="string", maxLength=45),
+     *             @OA\Property(property="telefono", type="integer"),
+     *             @OA\Property(property="cargo", type="string", maxLength=20),
+     *             @OA\Property(property="actividades", type="string"),
+     *             @OA\Property(property="fechaInicio", type="string", format="date"),
+     *             @OA\Property(property="fechaFinalizacion", type="string", format="date")
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Experiencia creada"),
+     *     @OA\Response(response=400, description="Error de validación")
+     * )
+     */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -55,6 +95,33 @@ class experienciaLaboralController extends Controller
             ], 500);
         }
     }
+    /**
+     * @OA\Post(
+     *     path="/api/experienciaLaboral/archivo",
+     *     summary="Registrar experiencia laboral con archivo y relación con hoja de vida",
+     *     tags={"Experiencia Laboral"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 required={"nomEmpresa", "nomJefe", "telefono", "cargo", "fechaInicio", "fechaFinalizacion", "idHojaDevida"},
+     *                 @OA\Property(property="nomEmpresa", type="string"),
+     *                 @OA\Property(property="nomJefe", type="string"),
+     *                 @OA\Property(property="telefono", type="number"),
+     *                 @OA\Property(property="cargo", type="string"),
+     *                 @OA\Property(property="actividades", type="string"),
+     *                 @OA\Property(property="fechaInicio", type="string", format="date"),
+     *                 @OA\Property(property="fechaFinalizacion", type="string", format="date"),
+     *                 @OA\Property(property="idHojaDevida", type="integer"),
+     *                 @OA\Property(property="archivo", type="string", format="binary")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Experiencia con archivo registrada correctamente"),
+     *     @OA\Response(response=400, description="Error de validación")
+     * )
+     */
 
     public function storeConArchivo(Request $request)
     {
@@ -81,7 +148,13 @@ class experienciaLaboralController extends Controller
         try {
             // 1. Crear la experiencia
             $experiencia = ExperienciaLaboral::create($request->only([
-                'nomEmpresa', 'nomJefe', 'telefono', 'cargo', 'actividades', 'fechaInicio', 'fechaFinalizacion'
+                'nomEmpresa',
+                'nomJefe',
+                'telefono',
+                'cargo',
+                'actividades',
+                'fechaInicio',
+                'fechaFinalizacion'
             ]));
 
             // 2. Manejar archivo si viene
@@ -111,6 +184,22 @@ class experienciaLaboralController extends Controller
             ], 500);
         }
     }
+    /**
+     * @OA\Get(
+     *     path="/api/experienciaLaboral/{id}",
+     *     summary="Obtener una experiencia laboral por ID",
+     *     tags={"Experiencia Laboral"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la experiencia",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Experiencia encontrada"),
+     *     @OA\Response(response=404, description="Experiencia no encontrada")
+     * )
+     */
 
     public function show($id)
     {
@@ -127,6 +216,36 @@ class experienciaLaboralController extends Controller
             'status' => 200
         ]);
     }
+    /**
+     * @OA\Put(
+     *     path="/api/experienciaLaboral/{id}",
+     *     summary="Actualizar una experiencia laboral",
+     *     tags={"Experiencia Laboral"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la experiencia",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"nomEmpresa", "nombJefe", "telefono", "cargo", "actividades", "fechaInicio", "fechaFinalizacion"},
+     *             @OA\Property(property="nomEmpresa", type="string"),
+     *             @OA\Property(property="nombJefe", type="string"),
+     *             @OA\Property(property="telefono", type="number"),
+     *             @OA\Property(property="cargo", type="string"),
+     *             @OA\Property(property="actividades", type="string"),
+     *             @OA\Property(property="fechaInicio", type="string", format="date"),
+     *             @OA\Property(property="fechaFinalizacion", type="string", format="date")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Experiencia actualizada correctamente"),
+     *     @OA\Response(response=400, description="Error de validación")
+     * )
+     */
+
 
     public function update(Request $request, $id)
     {
@@ -164,6 +283,23 @@ class experienciaLaboralController extends Controller
             'status' => 200
         ]);
     }
+    /**
+     * @OA\Delete(
+     *     path="/api/experienciaLaboral/{id}",
+     *     summary="Eliminar una experiencia laboral",
+     *     tags={"Experiencia Laboral"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la experiencia",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Experiencia eliminada correctamente"),
+     *     @OA\Response(response=404, description="Experiencia no encontrada")
+     * )
+     */
+
 
     public function destroy($id)
     {
@@ -181,6 +317,34 @@ class experienciaLaboralController extends Controller
             'status' => 200
         ]);
     }
+    /**
+     * @OA\Patch(
+     *     path="/api/experienciaLaboral/{id}",
+     *     summary="Actualizar parcialmente una experiencia laboral",
+     *     tags={"Experiencia Laboral"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la experiencia",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=false,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="nomEmpresa", type="string"),
+     *             @OA\Property(property="nombJefe", type="string"),
+     *             @OA\Property(property="telefono", type="number"),
+     *             @OA\Property(property="cargo", type="string"),
+     *             @OA\Property(property="actividades", type="string"),
+     *             @OA\Property(property="fechaInicio", type="string", format="date"),
+     *             @OA\Property(property="fechaFinalizacion", type="string", format="date")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Experiencia actualizada parcialmente"),
+     *     @OA\Response(response=400, description="Error en la validación parcial")
+     * )
+     */
 
     public function updatePartial(Request $request, $id)
     {
