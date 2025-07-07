@@ -241,4 +241,63 @@ class incapacidadController extends Controller
         ];
         return response()->json([$data], 200);
     }
+    /**
+     * @OA\Patch(
+     *     path="/api/incapacidad/estado/{id}",
+     *     summary="Actualizar el estado de una incapacidad",
+     *     description="Actualiza el estado (0,1,2) de una incapacidad existente por su ID.",
+     *     tags={"Incapacidades"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la incapacidad",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"estado"},
+     *             @OA\Property(property="estado", type="integer", enum={0, 1}, example=1)
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Estado actualizado correctamente"),
+     *     @OA\Response(response=404, description="Incapacidad no encontrada"),
+     *     @OA\Response(response=400, description="Error en la validación")
+     * )
+     */
+
+    public function cambiarEstado(Request $request, $id)
+    {
+        $incapacidad = Incapacidad::find($id);
+
+        if (!$incapacidad) {
+            return response()->json([
+                'mensaje' => 'Incapacidad no encontrada',
+                'status' => 404
+            ], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'estado' => 'required|integer|in:0,1,2'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'mensaje' => 'Error en la validación',
+                'errors' => $validator->errors(),
+                'status' => 400
+            ], 400);
+        }
+
+        $incapacidad->estado = $request->estado;
+        $incapacidad->save();
+
+        return response()->json([
+            'mensaje' => 'Estado de la incapacidad actualizado correctamente',
+            'incapacidad' => $incapacidad,
+            'status' => 200
+        ]);
+    }
 }

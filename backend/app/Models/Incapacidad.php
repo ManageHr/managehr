@@ -14,6 +14,7 @@ class Incapacidad extends Model
     protected $fillable = [
         "descrip",
         'archivo',
+        'estado',
         'fechaInicio',
         'fechaFinal',
         'contratoId'

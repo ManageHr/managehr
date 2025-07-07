@@ -441,6 +441,127 @@
                     }
                 ]
             }
+        },
+        "/api/horasextra/{id}/estado": {
+            "patch": {
+                "tags": [
+                    "Horas Extra"
+                ],
+                "summary": "Actualizar el estado de una solicitud de horas extra",
+                "description": "Actualiza solo el campo 'estado' de una solicitud de horas extra.",
+                "operationId": "c58cc40277c12308af38e02228a59d5b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la solicitud a actualizar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "estado": {
+                                        "description": "Nuevo estado: 0 (Pendiente), 1 (Aprobado), 2 (Rechazado}",
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1,
+                                            2
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Estado actualizado correctamente"
+                    },
+                    "400": {
+                        "description": "Error en la validación de datos"
+                    },
+                    "404": {
+                        "description": "Horas extra no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/incapacidad/estado/{id}": {
+            "patch": {
+                "tags": [
+                    "Incapacidades"
+                ],
+                "summary": "Actualizar el estado de una incapacidad",
+                "description": "Actualiza el estado (0,1,2) de una incapacidad existente por su ID.",
+                "operationId": "3272c4f672c072c6fac958aa057033dd",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la incapacidad",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "estado": {
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1
+                                        ],
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Estado actualizado correctamente"
+                    },
+                    "404": {
+                        "description": "Incapacidad no encontrada"
+                    },
+                    "400": {
+                        "description": "Error en la validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -461,6 +582,10 @@
         {
             "name": "Horas Extra",
             "description": "Horas Extra"
+        },
+        {
+            "name": "Incapacidades",
+            "description": "Incapacidades"
         }
     ]
 }

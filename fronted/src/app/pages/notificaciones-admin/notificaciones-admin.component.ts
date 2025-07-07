@@ -70,7 +70,6 @@ interface NotificationItem {
     MenuComponent,
     FontAwesomeModule,
     NgxPaginationModule,
-    FiltroPersonalizadoPipe,
   ],
   templateUrl: './notificaciones-admin.component.html',
   styleUrls: ['./notificaciones-admin.component.scss'],

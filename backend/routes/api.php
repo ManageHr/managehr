@@ -47,6 +47,7 @@ use App\Http\Controllers\Api\HojasvidahasestudiosController;
 use App\Http\Controllers\Api\HojasvidahasexperienciaController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\notificacionesController;
+use App\Models\Usuarios;
 
 Route::middleware('auth:api')->post('/rols/{rol}/permisos', [RolPermisoController::class, 'asignarPermisos']);
 
@@ -169,6 +170,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/incapacidad/{id}', [incapacidadController::class, 'show']);
     Route::patch('/incapacidad/{id}/actualizar', [incapacidadController::class, 'updatePartial']);
     Route::delete('/incapacidad/{id}', [incapacidadController::class, 'destroy']);
+    Route::put('/incapacidad/estado/{id}', [IncapacidadController::class, 'cambiarEstado']);
 
     Route::get('/pazysalvo', [pazysalvoController::class, 'index']);
     Route::post('/pazysalvo', [pazysalvoController::class, 'store']);
@@ -309,6 +311,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/horasextra/{id}', [horasextraController::class, 'show']);
     Route::patch('/horasextra/{id}', [horasextraController::class, 'updatePartial']);
     Route::delete('/horasextra/{id}', [horasextraController::class, 'destroy']);
+    Route::put('/horasextra/estado/{id}', [horasextraController::class, 'cambiarEstado']);
 
     Route::get('/tipos-horas', [tipohorasController::class, 'index']);
 
@@ -377,6 +380,7 @@ Route::middleware('auth:api')->group(function () {
     });
 
     Route::get('jefe-personal/empleados/{jefeId}', [JefePersonalController::class, 'empleadosPorJefe']);
+    Route::get('jefespersonal/', [UsuarioController::class, 'obtenerJefesDePersonal']);
 
     // Rutas para Vacaciones del Jefe de Personal
     Route::prefix('solicitudes-vacaciones-jefe')->group(function () {
