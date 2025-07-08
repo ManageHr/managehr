@@ -314,6 +314,7 @@ class areaController extends Controller
  *     summary="Obtener todos los jefes de personal",
  *     description="Este endpoint retorna todos los usuarios que tienen el rol igual a 2 (jefes de personal).",
  *     operationId="obtenerJefes",
+ *     security={{"bearerAuth":{}}},
  *     tags={"Jefes de Personal"},
  *     @OA\Response(
  *         response=200,

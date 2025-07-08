@@ -16,16 +16,8 @@ use Illuminate\Support\Facades\DB;
  *     name="Postulaciones",
  *     description="Operaciones relacionadas con postulaciones de usuarios a vacantes"
  * )
- *
- * @OA\SecurityScheme(
- *     securityScheme="bearerAuth",
- *     type="http",
- *     scheme="bearer",
- *     bearerFormat="JWT",
- *     in="header",
- *     name="Authorization"
- * )
  */
+ 
 
 class PostulacionesController extends Controller
 {

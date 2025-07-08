@@ -20,6 +20,7 @@ class estadocivilController extends Controller
      *     path="/api/estadocivil",
      *     summary="Listar todos los estados civiles",
      *     tags={"Estado Civil"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Response(
      *         response=200,
      *         description="Listado de estados civiles obtenido correctamente",
@@ -72,6 +73,7 @@ class estadocivilController extends Controller
      * @OA\Get(
      *     path="/api/estadocivil/{id}",
      *     summary="Obtener un estado civil por ID",
+     *     security={{"bearerAuth":{}}},
      *     tags={"Estado Civil"},
      *     @OA\Parameter(
      *         name="id",

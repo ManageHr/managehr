@@ -22,6 +22,7 @@ class CategoriaVacantesController extends Controller
      *     path="/api/categoriavacantes",
      *     tags={"Categorías de Vacantes"},
      *     summary="Listar todas las categorías de vacantes",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Response(
      *         response=200,
      *         description="Listado obtenido correctamente"
@@ -51,6 +52,7 @@ class CategoriaVacantesController extends Controller
      *     path="/api/categoriavacantes",
      *     tags={"Categorías de Vacantes"},
      *     summary="Crear una nueva categoría de vacante",
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -94,6 +96,7 @@ class CategoriaVacantesController extends Controller
      *     path="/api/categoriavacantes/{id}",
      *     tags={"Categorías de Vacantes"},
      *     summary="Obtener una categoría por su ID",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -127,6 +130,7 @@ class CategoriaVacantesController extends Controller
      *     path="/api/categoriavacantes/{id}",
      *     tags={"Categorías de Vacantes"},
      *     summary="Actualizar una categoría existente",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -184,6 +188,7 @@ class CategoriaVacantesController extends Controller
      *     path="/api/categoriavacantes/{id}",
      *     tags={"Categorías de Vacantes"},
      *     summary="Eliminar una categoría de vacante",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",

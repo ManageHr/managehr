@@ -7,19 +7,67 @@ use Illuminate\Http\Request;
 use App\Models\HorasExtra;
 use App\Models\Contrato;
 use App\Models\HojasVida;
+use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
-
+/**
+ * @OA\Tag(
+ *     name="Horas-Extra",
+ *     description="Gestión de solicitudes de horas extra")
+ */
 
 class FormHorasController extends Controller
 {
-   
+    /**
+     * @OA\Post(
+     *     path="/api/horas-extra",
+     *     summary="Registrar una nueva solicitud de horas extra",
+     *     description="Permite a un usuario autenticado registrar una solicitud de horas extra asociada a su contrato actual.",
+     *     tags={"HorasExtra"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"fecha", "tipoHorasId", "nHorasExtra"},
+     *             @OA\Property(property="descripcion", type="string", example="Trabajo fuera de horario"),
+     *             @OA\Property(property="fecha", type="string", format="date", example="2025-07-08"),
+     *             @OA\Property(property="tipoHorasId", type="integer", example=1),
+     *             @OA\Property(property="nHorasExtra", type="integer", example=3)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Solicitud enviada correctamente.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Solicitud enviada correctamente."),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Error de validación o falta de hoja de vida/contrato.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="No se encontró la hoja de vida."),
+     *             @OA\Property(property="errors", type="object", nullable=true)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Error al guardar la solicitud."),
+     *             @OA\Property(property="error", type="string")
+     *         )
+     *     )
+     * )
+     */
 
     public function store(Request $request)
     {
-        
-        $usuario = auth()->user();
+
+        $usuario = Auth::auth()->user();
         $documento = optional($usuario->perfil)['numDocumento'];
 
         if (!$documento) {
@@ -71,12 +119,36 @@ class FormHorasController extends Controller
             ], 500);
         }
     }
-    
 
+    /**
+     * @OA\Get(
+     *     path="/api/horas-extra",
+     *     summary="Obtener solicitudes de horas extra del usuario autenticado",
+     *     description="Retorna todas las solicitudes de horas extra asociadas al contrato del usuario autenticado.",
+     *     tags={"HorasExtra"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Listado de horas extra",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error al obtener las horas extra",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Error al obtener las horas extra"),
+     *             @OA\Property(property="error", type="string")
+     *         )
+     *     )
+     * )
+     */
     public function index(Request $request)
     {
         try {
-            $usuario = auth()->user();
+            $usuario = Auth::auth()->user();
             $documento = optional($usuario->perfil)['numDocumento'];
 
             if (!$documento) {

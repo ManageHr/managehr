@@ -11,14 +11,8 @@ use Illuminate\Http\Request;
  *     name="Tipos de Contrato",
  *     description="Gestión de Tipos de Contrato"
  * )
- *
- * @OA\SecurityScheme(
- *     securityScheme="bearerAuth",
- *     type="http",
- *     scheme="bearer",
- *     bearerFormat="JWT"
- * )
  */
+
 
 class tipoContratoController extends Controller
 {

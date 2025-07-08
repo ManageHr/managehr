@@ -12,13 +12,6 @@ use Illuminate\Support\Facades\Validator;
  *     name="Tipos de Horas",
  *     description="Gestión de Tipos de Horas Extra"
  * )
- *
- * @OA\SecurityScheme(
- *     securityScheme="bearerAuth",
- *     type="http",
- *     scheme="bearer",
- *     bearerFormat="JWT"
- * )
  */
 
 

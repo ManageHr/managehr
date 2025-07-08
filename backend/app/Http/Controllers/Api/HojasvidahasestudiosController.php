@@ -10,8 +10,26 @@ use App\Models\Hojasvidahasestudios;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * @OA\Tag(
+ *     name="HojasVidaHasEstudios",
+ *     description="Gestión de estudios en hojas de vida")
+ */
+
 class HojasvidahasestudiosController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/api/hojasvidahasestudios",
+     *     summary="Listar todos los estudios asignados a hojas de vida",
+     *     tags={"HojasVidaHasEstudios"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de estudios relacionados con hojas de vida"
+     *     )
+     * )
+     */
     public function index()
     {
         $registros = Hojasvidahasestudios::all();
@@ -21,7 +39,30 @@ class HojasvidahasestudiosController extends Controller
             "status" => 200
         ], 200);
     }
-
+    /**
+     * @OA\Post(
+     *     path="/api/hojasvidahasestudios",
+     *     summary="Crear una nueva relación entre hoja de vida y estudio",
+     *     tags={"HojasVidaHasEstudios"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 required={"numDocumento", "idEstudios", "estado"},
+     *                 @OA\Property(property="numDocumento", type="integer"),
+     *                 @OA\Property(property="idEstudios", type="integer"),
+     *                 @OA\Property(property="estado", type="boolean"),
+     *                 @OA\Property(property="archivo", type="string", format="binary")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Estudio creado correctamente"),
+     *     @OA\Response(response=400, description="Error de validación"),
+     *     @OA\Response(response=404, description="Hoja de vida o estudio no encontrado")
+     * )
+     */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -97,7 +138,23 @@ class HojasvidahasestudiosController extends Controller
         }
     }
 
-
+    /**
+     * @OA\Get(
+     *     path="/api/hojasvidahasestudios/{id}",
+     *     summary="Obtener un estudio relacionado por su ID",
+     *     tags={"HojasVidaHasEstudios"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID del estudio relacionado",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Estudio encontrado"),
+     *     @OA\Response(response=404, description="Estudio no encontrado")
+     * )
+     */
     public function show($id)
     {
         $registro = Hojasvidahasestudios::with('estudio')->find($id);
@@ -114,7 +171,31 @@ class HojasvidahasestudiosController extends Controller
             "status" => 200
         ], 200);
     }
-
+    /**
+     * @OA\Put(
+     *     path="/api/hojasvidahasestudios/{id}",
+     *     summary="Actualizar relación de estudio en hoja de vida",
+     *     tags={"HojasVidaHasEstudios"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 required={"idHojaDeVida", "idEstudios", "estado"},
+     *                 @OA\Property(property="idHojaDeVida", type="integer"),
+     *                 @OA\Property(property="idEstudios", type="integer"),
+     *                 @OA\Property(property="estado", type="boolean"),
+     *                 @OA\Property(property="archivo", type="string", format="binary")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Estudio actualizado correctamente"),
+     *     @OA\Response(response=400, description="Error de validación"),
+     *     @OA\Response(response=404, description="Registro no encontrado")
+     * )
+     */
     public function update(Request $request, $id)
     {
         $registro = Hojasvidahasestudios::find($id);
@@ -189,7 +270,17 @@ class HojasvidahasestudiosController extends Controller
 
 
 
-
+    /**
+     * @OA\Delete(
+     *     path="/api/hojasvidahasestudios/{id}",
+     *     summary="Eliminar estudio de hoja de vida",
+     *     tags={"HojasVidaHasEstudios"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Response(response=200, description="Relación eliminada"),
+     *     @OA\Response(response=404, description="Relación no encontrada")
+     * )
+     */
 
 
     public function destroy($id)
@@ -202,6 +293,18 @@ class HojasvidahasestudiosController extends Controller
         $relacion->delete();
         return response()->json(['mensaje' => 'Relación eliminada correctamente'], 200);
     }
+    /**
+     * @OA\Get(
+     *     path="/api/estudios/documento/{numDocumento}",
+     *     summary="Buscar estudios por número de documento del usuario",
+     *     tags={"HojasVidaHasEstudios"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="numDocumento", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Response(response=200, description="Estudios encontrados"),
+     *     @OA\Response(response=404, description="Hoja de vida no encontrada")
+     * )
+     */
+
     public function buscarPorDocumento($numDocumento)
     {
         // Buscar la hoja de vida por número de documento
@@ -228,7 +331,17 @@ class HojasvidahasestudiosController extends Controller
             "status" => 200
         ]);
     }
-
+    /**
+     * @OA\Get(
+     *     path="/api/estudios/hoja/{idHojaDeVida}",
+     *     summary="Obtener estudios por ID de hoja de vida",
+     *     tags={"HojasVidaHasEstudios"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="idHojaDeVida", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Response(response=200, description="Estudios encontrados"),
+     *     @OA\Response(response=404, description="No se encontraron estudios")
+     * )
+     */
 
     // Obtener todos los estudios por ID de hoja de vida
     public function buscarPorHojaDeVida($idHojaDeVida)

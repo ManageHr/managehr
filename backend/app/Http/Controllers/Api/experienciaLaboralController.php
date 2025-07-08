@@ -23,6 +23,7 @@ class experienciaLaboralController extends Controller
      *     path="/api/experienciaLaboral",
      *     summary="Listar todas las experiencias laborales",
      *     tags={"Experiencia Laboral"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Response(
      *         response=200,
      *         description="Listado de experiencias laborales de los empleados "
@@ -43,6 +44,7 @@ class experienciaLaboralController extends Controller
      *     path="/api/experienciaLaboral",
      *     summary="Crear nueva experiencia laboral",
      *     tags={"Experiencia Laboral"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -100,6 +102,7 @@ class experienciaLaboralController extends Controller
      *     path="/api/experienciaLaboral/archivo",
      *     summary="Registrar experiencia laboral con archivo y relación con hoja de vida",
      *     tags={"Experiencia Laboral"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\MediaType(
@@ -189,6 +192,7 @@ class experienciaLaboralController extends Controller
      *     path="/api/experienciaLaboral/{id}",
      *     summary="Obtener una experiencia laboral por ID",
      *     tags={"Experiencia Laboral"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -221,6 +225,7 @@ class experienciaLaboralController extends Controller
      *     path="/api/experienciaLaboral/{id}",
      *     summary="Actualizar una experiencia laboral",
      *     tags={"Experiencia Laboral"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -288,6 +293,7 @@ class experienciaLaboralController extends Controller
      *     path="/api/experienciaLaboral/{id}",
      *     summary="Eliminar una experiencia laboral",
      *     tags={"Experiencia Laboral"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -322,6 +328,7 @@ class experienciaLaboralController extends Controller
      *     path="/api/experienciaLaboral/{id}",
      *     summary="Actualizar parcialmente una experiencia laboral",
      *     tags={"Experiencia Laboral"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",

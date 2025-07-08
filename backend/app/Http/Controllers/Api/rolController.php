@@ -12,13 +12,6 @@ use Illuminate\Support\Facades\Validator;
  *     name="Roles",
  *     description="Gestión de roles de usuario"
  * )
- *
- * @OA\SecurityScheme(
- *     securityScheme="bearerAuth",
- *     type="http",
- *     scheme="bearer",
- *     bearerFormat="JWT"
- * )
  */
 
 class rolController extends Controller

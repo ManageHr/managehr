@@ -10,6 +10,12 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+/**
+ * @OA\Tag(
+ *     name="Vacaciones-Form",
+ *     description="Gestión de solicitudes de vacaciones"
+ * )
+ */
 
 class formvacationController extends Controller
 {
@@ -18,6 +24,31 @@ class formvacationController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
+        /**
+     * @OA\Get(
+     *     path="/api/solicitudes-vacaciones-con-archivo",
+     *     summary="Obtener solicitudes de vacaciones del usuario autenticado",
+     *     tags={"Vacaciones"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de solicitudes de vacaciones",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Usuario no autenticado"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No se encontró contrato para el usuario"
+     *     )
+     * )
+     */
+
     public function index()
     {
         if (! $usuario = Auth::user()) {
@@ -48,12 +79,45 @@ class formvacationController extends Controller
         return response()->json($solicitudes, 200);
     }
 
-    /**
-     * Store a newly created vacation request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
+        /**
+     * @OA\Post(
+     *     path="/api/solicitudes-vacaciones-con-archivo",
+     *     summary="Registrar una nueva solicitud de vacaciones",
+     *     tags={"Vacaciones"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"motivo", "fechaInicio", "fechaFinal", "contratoId"},
+     *             @OA\Property(property="motivo", type="string", example="Motivo de la solicitud"),
+     *             @OA\Property(property="fechaInicio", type="string", format="date", example="2025-07-01"),
+     *             @OA\Property(property="fechaFinal", type="string", format="date", example="2025-07-10"),
+     *             @OA\Property(property="contratoId", type="integer", example=15)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Solicitud de vacaciones registrada correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Error de validación"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Usuario no autenticado"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno al guardar la solicitud"
+     *     )
+     * )
      */
+
     public function store(Request $request)
     {
         Log::info('Solicitud recibida:', $request->all());

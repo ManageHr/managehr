@@ -11,13 +11,6 @@ use Illuminate\Http\Request;
  *     name="Tipos de Documento",
  *     description="Gestión de Tipos de Documento"
  * )
- *
- * @OA\SecurityScheme(
- *     securityScheme="bearerAuth",
- *     type="http",
- *     scheme="bearer",
- *     bearerFormat="JWT"
- * )
  */
 
 class tipodocumentoController extends Controller

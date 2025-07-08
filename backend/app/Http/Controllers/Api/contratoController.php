@@ -60,6 +60,7 @@ class contratoController extends Controller
      *     path="/api/contrato",
      *     summary="Crear un nuevo contrato",
      *     tags={"Contratos"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -131,6 +132,7 @@ class contratoController extends Controller
      *     path="/api/contrato/{id}",
      *     summary="Obtener detalles de un contrato",
      *     tags={"Contratos"},
+     *   security={{"bearerAuth":{}}}, 
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -163,6 +165,7 @@ class contratoController extends Controller
      *     path="/api/contrato/{id}",
      *     summary="Eliminar un contrato",
      *     tags={"Contratos"},
+     *     security={{"bearerAuth":{}}}, 
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -198,6 +201,7 @@ class contratoController extends Controller
      *     path="/api/contrato/{id}",
      *     summary="Actualizar un contrato",
      *     tags={"Contratos"},
+     *     security={{"bearerAuth":{}}}, 
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -296,6 +300,7 @@ class contratoController extends Controller
      *     path="/api/contrato/updatePartial/{id}",
      *     summary="Actualizar parcialmente un contrato",
      *     tags={"Contratos"},
+     *     security={{"bearerAuth":{}}}, 
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -410,6 +415,7 @@ class contratoController extends Controller
      *     path="/api/contrato/documento/{numDocumento}",
      *     summary="Buscar contrato por número de documento del usuario",
      *     tags={"Contratos"},
+     *     security={{"bearerAuth":{}}}, 
      *     @OA\Parameter(
      *         name="numDocumento",
      *         in="path",
@@ -464,6 +470,7 @@ class contratoController extends Controller
      *     path="/api/contrato/area",
      *     summary="Obtener todos los contratos con detalle de área, tipo y usuario",
      *     tags={"Contratos"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Response(
      *         response=200,
      *         description="Listado de contratos con relaciones",

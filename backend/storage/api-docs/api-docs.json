@@ -12,6 +12,785 @@
         }
     ],
     "paths": {
+        "/api/horas-extra": {
+            "get": {
+                "tags": [
+                    "HorasExtra"
+                ],
+                "summary": "Obtener solicitudes de horas extra del usuario autenticado",
+                "description": "Retorna todas las solicitudes de horas extra asociadas al contrato del usuario autenticado.",
+                "operationId": "8d2934349fbc1cebf11cd38a5e81fbbb",
+                "responses": {
+                    "200": {
+                        "description": "Listado de horas extra",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error al obtener las horas extra",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error al obtener las horas extra"
+                                        },
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "HorasExtra"
+                ],
+                "summary": "Registrar una nueva solicitud de horas extra",
+                "description": "Permite a un usuario autenticado registrar una solicitud de horas extra asociada a su contrato actual.",
+                "operationId": "2544efa76dbfde77ce766d399a5a7aab",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "fecha",
+                                    "tipoHorasId",
+                                    "nHorasExtra"
+                                ],
+                                "properties": {
+                                    "descripcion": {
+                                        "type": "string",
+                                        "example": "Trabajo fuera de horario"
+                                    },
+                                    "fecha": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-07-08"
+                                    },
+                                    "tipoHorasId": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "nHorasExtra": {
+                                        "type": "integer",
+                                        "example": 3
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Solicitud enviada correctamente.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Solicitud enviada correctamente."
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error de validación o falta de hoja de vida/contrato.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No se encontró la hoja de vida."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error al guardar la solicitud."
+                                        },
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/hojasvidahasestudios": {
+            "get": {
+                "tags": [
+                    "HojasVidaHasEstudios"
+                ],
+                "summary": "Listar todos los estudios asignados a hojas de vida",
+                "operationId": "ffdc912b095b5b3154b103c2a94cbaaa",
+                "responses": {
+                    "200": {
+                        "description": "Lista de estudios relacionados con hojas de vida"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "HojasVidaHasEstudios"
+                ],
+                "summary": "Crear una nueva relación entre hoja de vida y estudio",
+                "operationId": "f925fb9d2ee53bbf6d5d525e07c0bbc2",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "numDocumento",
+                                    "idEstudios",
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "numDocumento": {
+                                        "type": "integer"
+                                    },
+                                    "idEstudios": {
+                                        "type": "integer"
+                                    },
+                                    "estado": {
+                                        "type": "boolean"
+                                    },
+                                    "archivo": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Estudio creado correctamente"
+                    },
+                    "400": {
+                        "description": "Error de validación"
+                    },
+                    "404": {
+                        "description": "Hoja de vida o estudio no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/hojasvidahasestudios/{id}": {
+            "get": {
+                "tags": [
+                    "HojasVidaHasEstudios"
+                ],
+                "summary": "Obtener un estudio relacionado por su ID",
+                "operationId": "8c85602af66474f2f8827ae183b15ac5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del estudio relacionado",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Estudio encontrado"
+                    },
+                    "404": {
+                        "description": "Estudio no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "HojasVidaHasEstudios"
+                ],
+                "summary": "Actualizar relación de estudio en hoja de vida",
+                "operationId": "93ac57922b1cf2816dc7f70269b046f6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "idHojaDeVida",
+                                    "idEstudios",
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "idHojaDeVida": {
+                                        "type": "integer"
+                                    },
+                                    "idEstudios": {
+                                        "type": "integer"
+                                    },
+                                    "estado": {
+                                        "type": "boolean"
+                                    },
+                                    "archivo": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Estudio actualizado correctamente"
+                    },
+                    "400": {
+                        "description": "Error de validación"
+                    },
+                    "404": {
+                        "description": "Registro no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "HojasVidaHasEstudios"
+                ],
+                "summary": "Eliminar estudio de hoja de vida",
+                "operationId": "ca3cd836528b96ed97eb991031f16421",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Relación eliminada"
+                    },
+                    "404": {
+                        "description": "Relación no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/estudios/documento/{numDocumento}": {
+            "get": {
+                "tags": [
+                    "HojasVidaHasEstudios"
+                ],
+                "summary": "Buscar estudios por número de documento del usuario",
+                "operationId": "c65545422c8cc80255f1125a176822bf",
+                "parameters": [
+                    {
+                        "name": "numDocumento",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Estudios encontrados"
+                    },
+                    "404": {
+                        "description": "Hoja de vida no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/estudios/hoja/{idHojaDeVida}": {
+            "get": {
+                "tags": [
+                    "HojasVidaHasEstudios"
+                ],
+                "summary": "Obtener estudios por ID de hoja de vida",
+                "operationId": "95d38e9415601ca887b24d2188ad3618",
+                "parameters": [
+                    {
+                        "name": "idHojaDeVida",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Estudios encontrados"
+                    },
+                    "404": {
+                        "description": "No se encontraron estudios"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/hojasvidahasexperiencia": {
+            "get": {
+                "tags": [
+                    "Experiencias en Hojas de Vida"
+                ],
+                "summary": "Listar todas las experiencias en hojas de vida",
+                "operationId": "adaa3645b628cfd4804e69b689ef5486",
+                "responses": {
+                    "200": {
+                        "description": "Listado de relaciones experiencia-hoja de vida"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Experiencias en Hojas de Vida"
+                ],
+                "summary": "Asociar experiencia a una hoja de vida",
+                "operationId": "de339ce88865c94b9ff1928de80fd315",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "idHojaDevida",
+                                    "idExperiencia",
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "idHojaDevida": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "idExperiencia": {
+                                        "type": "integer",
+                                        "example": 5
+                                    },
+                                    "estado": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "archivo": {
+                                        "type": "string",
+                                        "example": "ruta/archivo.pdf",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Relación creada correctamente"
+                    },
+                    "400": {
+                        "description": "Error de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/hojasvidahasexperiencia/{id}": {
+            "get": {
+                "tags": [
+                    "Experiencias en Hojas de Vida"
+                ],
+                "summary": "Obtener detalle de experiencia en hoja de vida por ID",
+                "operationId": "188bc969ae1e3d6fb84325b7043222ee",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la relación experiencia-hoja de vida",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalle encontrado"
+                    },
+                    "404": {
+                        "description": "No encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Experiencias en Hojas de Vida"
+                ],
+                "summary": "Actualizar una experiencia laboral en hoja de vida",
+                "operationId": "dde78f250bf70e1aede8342828f4ef2a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la experiencia",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "cargoEmpresa",
+                                    "empresa",
+                                    "tiempoExperiencia",
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "cargoEmpresa": {
+                                        "type": "string",
+                                        "example": "Desarrollador"
+                                    },
+                                    "empresa": {
+                                        "type": "string",
+                                        "example": "Empresa XYZ"
+                                    },
+                                    "tiempoExperiencia": {
+                                        "type": "string",
+                                        "example": "1 año"
+                                    },
+                                    "estado": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Experiencia actualizada correctamente"
+                    },
+                    "404": {
+                        "description": "No se encontró la experiencia"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Experiencias en Hojas de Vida"
+                ],
+                "summary": "Eliminar relación experiencia-hoja de vida",
+                "operationId": "7292f727f339b65f06c9d06b88c5a893",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la relación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Eliminado correctamente"
+                    },
+                    "404": {
+                        "description": "No encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Experiencias en Hojas de Vida"
+                ],
+                "summary": "Actualizar parcialmente una experiencia laboral",
+                "operationId": "242c6e063e3f851a1cf38f13b475c4b4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la experiencia",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "cargoEmpresa": {
+                                        "type": "string",
+                                        "example": "Auxiliar"
+                                    },
+                                    "empresa": {
+                                        "type": "string",
+                                        "example": "Empresa ABC"
+                                    },
+                                    "tiempoExperiencia": {
+                                        "type": "string",
+                                        "example": "2 años"
+                                    },
+                                    "estado": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Actualización parcial exitosa"
+                    },
+                    "404": {
+                        "description": "Experiencia no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/hojasvidahasexperiencia/documento/{numDocumento}": {
+            "get": {
+                "tags": [
+                    "Experiencias en Hojas de Vida"
+                ],
+                "summary": "Buscar experiencias laborales por número de documento",
+                "operationId": "7d29c7dd21baa62d525bd434b4f25333",
+                "parameters": [
+                    {
+                        "name": "numDocumento",
+                        "in": "path",
+                        "description": "Número de documento del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1234567890
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Experiencias encontradas"
+                    },
+                    "404": {
+                        "description": "Hoja de vida no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/hojasvidahasexperiencia/descargar/{id}": {
+            "get": {
+                "tags": [
+                    "Experiencias en Hojas de Vida"
+                ],
+                "summary": "Descargar archivo adjunto de experiencia laboral",
+                "operationId": "bd3f945dadab58bc171a19e5b9c767bb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del archivo de experiencia",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Archivo descargado con éxito",
+                        "content": {
+                            "application/octet-stream": {}
+                        }
+                    },
+                    "404": {
+                        "description": "Archivo no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/hojasvidahasexperiencia/hoja/{idHojaDeVida}": {
+            "get": {
+                "tags": [
+                    "Experiencias en Hojas de Vida"
+                ],
+                "summary": "Buscar experiencias por hoja de vida",
+                "operationId": "2eb213ce5fd8e14d82a2f3b17d6639e2",
+                "parameters": [
+                    {
+                        "name": "idHojaDeVida",
+                        "in": "path",
+                        "description": "ID de la hoja de vida",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Listado de experiencias encontradas"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/perfil": {
             "get": {
                 "tags": [
@@ -140,6 +919,119 @@
                     },
                     "422": {
                         "description": "Datos inválidos enviados"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/nacionalidades": {
+            "get": {
+                "tags": [
+                    "Nacionalidades"
+                ],
+                "summary": "Listar todas las nacionalidades",
+                "description": "Devuelve un listado ordenado alfabéticamente de todas las nacionalidades registradas.",
+                "operationId": "b6f82c99ebf153cc0b575520abd7e3cb",
+                "responses": {
+                    "200": {
+                        "description": "Listado obtenido correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "Nacionalidad": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/rol/{rol_id}/permisos": {
+            "post": {
+                "tags": [
+                    "Roles y Permisos"
+                ],
+                "summary": "Asignar permisos a un rol",
+                "description": "Reemplaza los permisos actuales del rol con los proporcionados.",
+                "operationId": "18ba0dc0dcca2a3ed3601da25ee066ab",
+                "parameters": [
+                    {
+                        "name": "rol_id",
+                        "in": "path",
+                        "description": "ID del rol al que se le asignarán los permisos",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Lista de IDs de permisos",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "permisos"
+                                ],
+                                "properties": {
+                                    "permisos": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "example": 2
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Permisos asignados correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Permisos asignados correctamente 🎉"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    },
+                    "404": {
+                        "description": "Rol no encontrado"
                     }
                 },
                 "security": [
@@ -513,7 +1405,12 @@
                     "500": {
                         "description": "Error interno del servidor"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/categoriavacantes": {
@@ -530,7 +1427,12 @@
                     "500": {
                         "description": "Error interno del servidor"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -568,7 +1470,12 @@
                     "500": {
                         "description": "Error interno del servidor"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/categoriavacantes/{id}": {
@@ -599,7 +1506,12 @@
                     "500": {
                         "description": "Error interno del servidor"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -651,7 +1563,12 @@
                     "500": {
                         "description": "Error interno del servidor"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -683,7 +1600,12 @@
                     "500": {
                         "description": "Error interno del servidor"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/contrato": {
@@ -769,7 +1691,12 @@
                     "400": {
                         "description": "Error de validación"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/contrato/{id}": {
@@ -797,7 +1724,12 @@
                     "404": {
                         "description": "Contrato no encontrado"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -863,7 +1795,12 @@
                     "400": {
                         "description": "Error de validación"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -889,7 +1826,12 @@
                     "404": {
                         "description": "Contrato no encontrado"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/contrato/updatePartial/{id}": {
@@ -963,7 +1905,12 @@
                     "404": {
                         "description": "Contrato no encontrado"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/contrato/documento/{numDocumento}": {
@@ -1007,7 +1954,12 @@
                     "404": {
                         "description": "Hoja de vida o contrato no encontrado"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/contrato/area": {
@@ -1042,7 +1994,12 @@
                     "500": {
                         "description": "Error interno al obtener contratos"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/epss": {
@@ -1229,7 +2186,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/estadocivil/{id}": {
@@ -1284,7 +2246,12 @@
                     "201": {
                         "description": "Estado civil no encontrado"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/estudios": {
@@ -1298,7 +2265,12 @@
                     "200": {
                         "description": "Listado de estudios exitoso"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -1349,7 +2321,12 @@
                     "400": {
                         "description": "Error de validación"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/estudios/{id}": {
@@ -1376,7 +2353,12 @@
                     "404": {
                         "description": "Estudio no encontrado"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -1430,7 +2412,12 @@
                     "400": {
                         "description": "Error de validación"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -1455,7 +2442,12 @@
                     "404": {
                         "description": "Estudio no encontrado"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/experienciaLaboral": {
@@ -1469,7 +2461,12 @@
                     "200": {
                         "description": "Listado de experiencias laborales de los empleados "
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -1531,7 +2528,12 @@
                     "400": {
                         "description": "Error de validación"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/experienciaLaboral/archivo": {
@@ -1599,7 +2601,12 @@
                     "400": {
                         "description": "Error de validación"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/experienciaLaboral/{id}": {
@@ -1627,7 +2634,12 @@
                     "404": {
                         "description": "Experiencia no encontrada"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -1697,7 +2709,12 @@
                     "400": {
                         "description": "Error de validación"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -1723,7 +2740,12 @@
                     "404": {
                         "description": "Experiencia no encontrada"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "patch": {
                 "tags": [
@@ -1784,7 +2806,674 @@
                     "400": {
                         "description": "Error en la validación parcial"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/solicitudes-incapacidades": {
+            "get": {
+                "tags": [
+                    "Incapacidades"
+                ],
+                "summary": "Obtener solicitudes de incapacidad del usuario autenticado",
+                "operationId": "e4fa03a260f935a05387d40f1e006352",
+                "responses": {
+                    "200": {
+                        "description": "Listado de solicitudes",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error al consultar las solicitudes"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Incapacidades"
+                ],
+                "summary": "Registrar una nueva solicitud de incapacidad",
+                "operationId": "3b421660674ba8f68d9156529523a711",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "fechaInicio",
+                                    "fechaFinal",
+                                    "contratoId"
+                                ],
+                                "properties": {
+                                    "archivo": {
+                                        "description": "Archivo adjunto",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "fechaInicio": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-07-08"
+                                    },
+                                    "fechaFinal": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-07-10"
+                                    },
+                                    "contratoId": {
+                                        "type": "integer",
+                                        "example": 12
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Solicitud registrada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    },
+                    "500": {
+                        "description": "Error al guardar la solicitud"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/solicitudes-vacaciones-con-archivo": {
+            "get": {
+                "tags": [
+                    "Vacaciones"
+                ],
+                "summary": "Obtener solicitudes de vacaciones del usuario autenticado",
+                "operationId": "d32949f50d0e4656d4177d6fe5f318f3",
+                "responses": {
+                    "200": {
+                        "description": "Lista de solicitudes de vacaciones",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Usuario no autenticado"
+                    },
+                    "404": {
+                        "description": "No se encontró contrato para el usuario"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Vacaciones"
+                ],
+                "summary": "Registrar una nueva solicitud de vacaciones",
+                "operationId": "faa79c614fe8311edd65e005e9bc8c75",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "motivo",
+                                    "fechaInicio",
+                                    "fechaFinal",
+                                    "contratoId"
+                                ],
+                                "properties": {
+                                    "motivo": {
+                                        "type": "string",
+                                        "example": "Motivo de la solicitud"
+                                    },
+                                    "fechaInicio": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-07-01"
+                                    },
+                                    "fechaFinal": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-07-10"
+                                    },
+                                    "contratoId": {
+                                        "type": "integer",
+                                        "example": 15
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Solicitud de vacaciones registrada correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    },
+                    "401": {
+                        "description": "Usuario no autenticado"
+                    },
+                    "500": {
+                        "description": "Error interno al guardar la solicitud"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/genero": {
+            "get": {
+                "tags": [
+                    "Género"
+                ],
+                "summary": "Obtener todos los géneros",
+                "operationId": "9977d77fef60533a1435e2a88ea1644e",
+                "responses": {
+                    "200": {
+                        "description": "Lista de géneros",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "genero": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/genero/{id}": {
+            "get": {
+                "tags": [
+                    "Género"
+                ],
+                "summary": "Mostrar un género específico",
+                "operationId": "4f3bae06e659bfb5c163ca59e941902e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del género",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Género encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "genero": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "No se encontró el género"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/hojasvida": {
+            "get": {
+                "tags": [
+                    "Hojas de Vida"
+                ],
+                "summary": "Listar todas las hojas de vida",
+                "operationId": "f12e976fb15bcaec81258d87908da2d1",
+                "responses": {
+                    "200": {
+                        "description": "Lista completa de hojas de vida",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Hojas de Vida"
+                ],
+                "summary": "Crear una hoja de vida",
+                "operationId": "07d3161b6d597e427c5fde40cfce9039",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "claseLibretaMilitar",
+                                    "numeroLibretaMilitar",
+                                    "usuarioNumDocumento"
+                                ],
+                                "properties": {
+                                    "claseLibretaMilitar": {
+                                        "type": "string",
+                                        "maxLength": 45
+                                    },
+                                    "numeroLibretaMilitar": {
+                                        "type": "string",
+                                        "maxLength": 45
+                                    },
+                                    "usuarioNumDocumento": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Hoja de vida creada correctamente"
+                    },
+                    "400": {
+                        "description": "Error de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/hojasvida/{id}": {
+            "get": {
+                "tags": [
+                    "Hojas de Vida"
+                ],
+                "summary": "Obtener una hoja de vida por ID",
+                "operationId": "65b2529e95e33643b3fa040e548160a4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la hoja de vida",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Hoja de vida encontrada"
+                    },
+                    "201": {
+                        "description": "Hoja de vida no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Hojas de Vida"
+                ],
+                "summary": "Actualizar completamente una hoja de vida",
+                "operationId": "461fab02265f92c6e0d803881ab800ce",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la hoja de vida",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "claseLibretaMilitar",
+                                    "numeroLibretaMilitar",
+                                    "usuarioNumDocumento"
+                                ],
+                                "properties": {
+                                    "claseLibretaMilitar": {
+                                        "type": "string"
+                                    },
+                                    "numeroLibretaMilitar": {
+                                        "type": "string"
+                                    },
+                                    "usuarioNumDocumento": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Hoja de vida actualizada correctamente"
+                    },
+                    "404": {
+                        "description": "Hoja de vida no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Hojas de Vida"
+                ],
+                "summary": "Eliminar una hoja de vida por ID",
+                "operationId": "56bb3d552479b4205548170d473d6f43",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la hoja de vida",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Hoja de vida eliminada"
+                    },
+                    "404": {
+                        "description": "Hoja de vida no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Hojas de Vida"
+                ],
+                "summary": "Actualizar parcialmente una hoja de vida",
+                "operationId": "eaf1cba0abf30e283168eba12cfc4a4f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la hoja de vida",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "claseLibretaMilitar": {
+                                        "type": "string"
+                                    },
+                                    "numeroLibretaMilitar": {
+                                        "type": "string"
+                                    },
+                                    "usuarioNumDocumento": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Hoja de vida actualizada parcialmente"
+                    },
+                    "404": {
+                        "description": "Hoja de vida no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/hojasvida/documento/{numDocumento}": {
+            "get": {
+                "tags": [
+                    "Hojas de Vida"
+                ],
+                "summary": "Buscar hoja de vida por número de documento",
+                "operationId": "38df9b6a0c3654d54a47969de285053f",
+                "parameters": [
+                    {
+                        "name": "numDocumento",
+                        "in": "path",
+                        "description": "Número de documento del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Hoja de vida encontrada"
+                    },
+                    "404": {
+                        "description": "Hoja de vida no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/hojasvida/archivo/{id}": {
+            "get": {
+                "tags": [
+                    "Hojas de Vida"
+                ],
+                "summary": "Descargar archivo de hoja de vida por ID",
+                "operationId": "52542ab327ec4202bce70999b054e3cc",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del archivo relacionado con la hoja de vida",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Archivo descargado"
+                    },
+                    "404": {
+                        "description": "Archivo no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/hojasvida/obtener/{numDocumento}": {
+            "get": {
+                "tags": [
+                    "Hojas de Vida"
+                ],
+                "summary": "Obtener hoja de vida detallada por número de documento",
+                "operationId": "276e527f293f7ce5b3b7e24366806cd0",
+                "parameters": [
+                    {
+                        "name": "numDocumento",
+                        "in": "path",
+                        "description": "Número de documento del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Hoja de vida encontrada"
+                    },
+                    "404": {
+                        "description": "Hoja de vida no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/horasextra": {
@@ -2181,6 +3870,1022 @@
                     },
                     "404": {
                         "description": "Incapacidad no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/pensiones": {
+            "get": {
+                "tags": [
+                    "Pensiones"
+                ],
+                "summary": "Listar todas las pensiones",
+                "operationId": "35804abd2bfc9d9542de020c63cb7b7b",
+                "responses": {
+                    "200": {
+                        "description": "Lista de pensiones",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "pensiones": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/pensiones/{id}": {
+            "patch": {
+                "tags": [
+                    "Pensiones"
+                ],
+                "summary": "Intentar actualización parcial (no permitido)",
+                "operationId": "b8071c8a5f2cc450d9cdb7d9f97fc898",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la pensión",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Actualización no permitida"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/postulaciones": {
+            "get": {
+                "tags": [
+                    "Postulaciones"
+                ],
+                "summary": "Listar todas las postulaciones",
+                "operationId": "cde31c5aa3cac055b1020172acd3e63c",
+                "parameters": [
+                    {
+                        "name": "vacantesId",
+                        "in": "query",
+                        "description": "Filtrar por ID de vacante",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de postulaciones"
+                    },
+                    "500": {
+                        "description": "Error interno"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Postulaciones"
+                ],
+                "summary": "Registrar nueva postulación",
+                "operationId": "6aabaa993a5e9c76240d6988daff064e",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "vacantesId"
+                                ],
+                                "properties": {
+                                    "vacantesId": {
+                                        "type": "integer",
+                                        "example": 5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Postulación registrada"
+                    },
+                    "401": {
+                        "description": "Usuario no válido"
+                    },
+                    "409": {
+                        "description": "Postulación duplicada"
+                    },
+                    "500": {
+                        "description": "Error al registrar"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/postulaciones/{id}": {
+            "get": {
+                "tags": [
+                    "Postulaciones"
+                ],
+                "summary": "Obtener una postulación por ID",
+                "operationId": "ee203d0d2b74c37aa51c74a952859750",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la postulación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Postulación encontrada"
+                    },
+                    "404": {
+                        "description": "Postulación no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/postulaciones/vacante/{vacantesId}": {
+            "get": {
+                "tags": [
+                    "Postulaciones"
+                ],
+                "summary": "Buscar postulaciones por vacante",
+                "operationId": "66d25c9ef51c888bbfac51f6b8067c11",
+                "parameters": [
+                    {
+                        "name": "vacantesId",
+                        "in": "path",
+                        "description": "ID de la vacante",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Resultados encontrados"
+                    },
+                    "400": {
+                        "description": "ID inválido"
+                    },
+                    "500": {
+                        "description": "Error al buscar"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/postulaciones/{id}/estado": {
+            "put": {
+                "tags": [
+                    "Postulaciones"
+                ],
+                "summary": "Actualizar el estado de una postulación",
+                "operationId": "dd3502b3a24865833720acb00790f2d2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la postulación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "estado"
+                                ],
+                                "properties": {
+                                    "estado": {
+                                        "type": "integer",
+                                        "example": 2
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Estado actualizado"
+                    },
+                    "404": {
+                        "description": "Postulación no encontrada"
+                    },
+                    "500": {
+                        "description": "Error al actualizar"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/postulaciones/reporte/vacantes": {
+            "get": {
+                "tags": [
+                    "Postulaciones"
+                ],
+                "summary": "Reporte por vacante",
+                "operationId": "1431c8df86901b55fd5bb277b6a8361b",
+                "responses": {
+                    "200": {
+                        "description": "Reporte generado"
+                    },
+                    "500": {
+                        "description": "Error en reporte"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/postulaciones/reporte/estado": {
+            "get": {
+                "tags": [
+                    "Postulaciones"
+                ],
+                "summary": "Reporte por estado",
+                "operationId": "b1d595c9233cd3c5916e117d2effa37b",
+                "responses": {
+                    "200": {
+                        "description": "Reporte generado"
+                    },
+                    "500": {
+                        "description": "Error en reporte"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/postulaciones/reporte/empleado": {
+            "get": {
+                "tags": [
+                    "Postulaciones"
+                ],
+                "summary": "Reporte de empleados internos",
+                "operationId": "48f74edcaa05a92af11b0ab8d034486b",
+                "responses": {
+                    "200": {
+                        "description": "Reporte generado"
+                    },
+                    "500": {
+                        "description": "Error en reporte"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/rol": {
+            "get": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Listar todos los roles",
+                "operationId": "378fe0e9575cb8388a029dca91a85f14",
+                "responses": {
+                    "200": {
+                        "description": "Lista de roles"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Crear un nuevo rol",
+                "operationId": "9887247c198fdd813cea9e141f5cd1fc",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nombreRol"
+                                ],
+                                "properties": {
+                                    "nombreRol": {
+                                        "type": "string",
+                                        "example": "Administrador"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Rol creado correctamente"
+                    },
+                    "400": {
+                        "description": "Error de validación"
+                    },
+                    "500": {
+                        "description": "Error interno"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/rol/{id}": {
+            "get": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Mostrar un rol por ID",
+                "operationId": "2cf8c75ed887b76391a9f43e43296e56",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del rol",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rol encontrado"
+                    },
+                    "201": {
+                        "description": "Rol no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Actualizar un rol",
+                "operationId": "be608dd1c8cd9feba003ae3b9e626a15",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del rol a actualizar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nombreRol"
+                                ],
+                                "properties": {
+                                    "nombreRol": {
+                                        "type": "string",
+                                        "example": "Coordinador"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Rol actualizado"
+                    },
+                    "400": {
+                        "description": "Error de validación"
+                    },
+                    "404": {
+                        "description": "Rol no encontrado"
+                    },
+                    "500": {
+                        "description": "Error interno"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Eliminar un rol",
+                "operationId": "1e560a4753080e23cc4ef623342bb1e1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del rol a eliminar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rol eliminado"
+                    },
+                    "404": {
+                        "description": "Rol no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Actualizar parcialmente un rol",
+                "operationId": "71227492ba4ee1096f1ace483364e58b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del rol a actualizar parcialmente",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nombreRol": {
+                                        "type": "string",
+                                        "example": "Analista"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Rol actualizado parcialmente"
+                    },
+                    "400": {
+                        "description": "Error de validación"
+                    },
+                    "404": {
+                        "description": "Rol no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/tipoContrato": {
+            "get": {
+                "tags": [
+                    "Tipos de Contrato"
+                ],
+                "summary": "Listar todos los tipos de contrato",
+                "operationId": "20f7f75599bd4ee83bf3028223928744",
+                "responses": {
+                    "200": {
+                        "description": "Lista completa de tipos de contrato",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "tipocontrato": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Tipos de Contrato"
+                ],
+                "summary": "Intento de creación de tipo de contrato (no permitido)",
+                "operationId": "4b96b911f2c23531edda48cb47eb48b3",
+                "responses": {
+                    "400": {
+                        "description": "Este módulo no permite crear registros"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/tipoContrato/{id}": {
+            "get": {
+                "tags": [
+                    "Tipos de Contrato"
+                ],
+                "summary": "Obtener un tipo de contrato por ID",
+                "operationId": "371408f070cd68a02df98b77dc5ce522",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del tipo de contrato",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tipo de contrato encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "tipocontrato": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Tipo de contrato no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Tipos de Contrato"
+                ],
+                "summary": "Intento de actualización de tipo de contrato (no permitido)",
+                "operationId": "c3ebf30c3723a623c2813b48b1737732",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del tipo de contrato",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Este módulo no permite actualizar registros"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Tipos de Contrato"
+                ],
+                "summary": "Intento de eliminación de tipo de contrato (no permitido)",
+                "operationId": "5db77533be7547c965fce49a9c247f9e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del tipo de contrato",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Este módulo no permite eliminar registros"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Tipos de Contrato"
+                ],
+                "summary": "Intento de actualización parcial de tipo de contrato (no permitido)",
+                "operationId": "05b2539db315840bbffd9dda44277a01",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del tipo de contrato",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Este módulo no permite actualizar registros"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/tipodocumento": {
+            "get": {
+                "tags": [
+                    "Tipos de Documento"
+                ],
+                "summary": "Listar todos los tipos de documento",
+                "operationId": "1acb2d56d59e322b958da47f5d36b592",
+                "responses": {
+                    "200": {
+                        "description": "Lista completa de tipos de documento",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "tipodocumento": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Tipos de Documento"
+                ],
+                "summary": "Intento de creación de tipo de documento (no permitido)",
+                "operationId": "196c901860c198fec79e8010f2771d6d",
+                "responses": {
+                    "400": {
+                        "description": "Este módulo no permite crear registros"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/tipodocumento/{id}": {
+            "get": {
+                "tags": [
+                    "Tipos de Documento"
+                ],
+                "summary": "Obtener un tipo de documento por ID",
+                "operationId": "19813fb75a1fae317c2014e1e43f60c7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del tipo de documento",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tipo de documento encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "tipodocumento": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Tipo de documento no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Tipos de Documento"
+                ],
+                "summary": "Intento de actualización de tipo de documento (no permitido)",
+                "operationId": "b439237c8e3c259219385fb6c8b0262f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del tipo de documento",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Este módulo no permite actualizar registros"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Tipos de Documento"
+                ],
+                "summary": "Intento de eliminación de tipo de documento (no permitido)",
+                "operationId": "4c52275a928fff80835aef8df7b9846e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del tipo de documento",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Este módulo no permite eliminar registros"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Tipos de Documento"
+                ],
+                "summary": "Intento de actualización parcial de tipo de documento (no permitido)",
+                "operationId": "733eb6eac5b9c9650280298e60d33f2d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del tipo de documento",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Este módulo no permite actualizar registros"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/tipohoras": {
+            "get": {
+                "tags": [
+                    "Tipos de Horas"
+                ],
+                "summary": "Listar todos los tipos de horas extra",
+                "operationId": "c91d032121e3eafa37cf9f08fb2a2e11",
+                "responses": {
+                    "200": {
+                        "description": "Lista completa de tipos de horas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "tipohoras": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/tipohoras/{id}": {
+            "patch": {
+                "tags": [
+                    "Tipos de Horas"
+                ],
+                "summary": "Intento de actualización parcial (no permitido)",
+                "operationId": "d17e5dcd2ff8271fe68cf29b6ea833ec",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del tipo de hora",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Este módulo no permite actualizar"
                     }
                 },
                 "security": [
@@ -3740,6 +6445,18 @@
     },
     "tags": [
         {
+            "name": "HojasVidaHasEstudios",
+            "description": "Gestión de estudios en hojas de vida"
+        },
+        {
+            "name": "Experiencias en Hojas de Vida",
+            "description": "Operaciones relacionadas con la experiencia laboral del usuario"
+        },
+        {
+            "name": "Roles y Permisos",
+            "description": "Gestión de asignación de permisos a roles"
+        },
+        {
             "name": "Área",
             "description": "Operaciones relacionadas con Áreas"
         },
@@ -3768,20 +6485,64 @@
             "description": "Gestión de las experiencias laborales registradas de los empleados "
         },
         {
+            "name": "Incapacidades",
+            "description": "Gestión de solicitudes de incapacidades"
+        },
+        {
+            "name": "Género",
+            "description": "Gestión de géneros (masculino, femenino, etc.)"
+        },
+        {
+            "name": "Hojas de Vida",
+            "description": "Gestión de hojas de vida de los empleados y personal externo loguados"
+        },
+        {
+            "name": "Postulaciones",
+            "description": "Operaciones relacionadas con postulaciones de usuarios a vacantes"
+        },
+        {
+            "name": "Roles",
+            "description": "Gestión de roles de usuario"
+        },
+        {
+            "name": "Tipos de Contrato",
+            "description": "Gestión de Tipos de Contrato"
+        },
+        {
+            "name": "Tipos de Documento",
+            "description": "Gestión de Tipos de Documento"
+        },
+        {
+            "name": "Tipos de Horas",
+            "description": "Gestión de Tipos de Horas Extra"
+        },
+        {
+            "name": "HorasExtra",
+            "description": "HorasExtra"
+        },
+        {
             "name": "Perfil",
             "description": "Perfil"
+        },
+        {
+            "name": "Nacionalidades",
+            "description": "Nacionalidades"
         },
         {
             "name": "Jefes de Personal",
             "description": "Jefes de Personal"
         },
         {
+            "name": "Vacaciones",
+            "description": "Vacaciones"
+        },
+        {
             "name": "Horas Extra",
             "description": "Horas Extra"
         },
         {
-            "name": "Incapacidades",
-            "description": "Incapacidades"
+            "name": "Pensiones",
+            "description": "Pensiones"
         },
         {
             "name": "Tipos de Permisos",
@@ -3794,10 +6555,6 @@
         {
             "name": "Usuarios",
             "description": "Usuarios"
-        },
-        {
-            "name": "Vacaciones",
-            "description": "Vacaciones"
         },
         {
             "name": "Vacantes",

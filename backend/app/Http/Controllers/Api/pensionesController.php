@@ -8,23 +8,7 @@ use App\Models\Pensiones;
 use Illuminate\Support\Facades\Validator;
 
 
-/**
- * @OA\Tag(
- *     name="Pensiones",
- *     description="Gestión de las entidades de pensiones"
- */
 
-/**
- * @OA\SecurityScheme(
- *     type="http",
- *     description="Autenticación mediante JWT. Agrega 'Bearer {token}'",
- *     name="Authorization",
- *     in="header",
- *     scheme="bearer",
- *     bearerFormat="JWT",
- *     securityScheme="bearerAuth"
- * )
- */
 
 class pensionesController extends Controller
 {

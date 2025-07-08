@@ -133,6 +133,7 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/hojasvida/{id}', [hojasvidaController::class, 'destroy']);
     Route::get('/hojasvida/documento/{numDocumento}', [hojasvidaController::class, 'buscarPorDocumento']);
     Route::put('/hojasvida/{id}', [hojasvidaController::class, 'update']);
+    
     Route::get('estudios/hoja/{idHojaDeVida}', [HojasvidahasestudiosController::class, 'buscarPorHojaDeVida']);
     Route::delete('/hojasvidahasestudios/{id}', [HojasvidahasestudiosController::class, 'destroy']);
     Route::delete('/hojasvidahasexperiencia/{id}', [HojasvidahasexperienciaController::class, 'destroy']);
@@ -344,7 +345,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/solicitudes-vacaciones-con-archivo', [formvacationController::class, 'index']);
     Route::post('/solicitudes-vacaciones-con-archivo', [formvacationController::class, 'store']);
 
-    // Solicitudes de Incapacidades
+    // Solicitudes de Incapacidades 
     Route::get('/solicitudes-incapacidades', [formincapacidadController::class, 'index']);
     Route::post('/solicitudes-incapacidades', [formincapacidadController::class, 'store']);
 

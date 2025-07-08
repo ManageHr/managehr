@@ -20,6 +20,7 @@ class estudiosController extends Controller
      *     path="/api/estudios",
      *     summary="Listar todos los estudios",
      *     tags={"Estudios"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Response(
      *         response=200,
      *         description="Listado de estudios exitoso"
@@ -39,6 +40,7 @@ class estudiosController extends Controller
      *     path="/api/estudios",
      *     summary="Crear un nuevo estudio",
      *     tags={"Estudios"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -98,6 +100,7 @@ class estudiosController extends Controller
      *     path="/api/estudios/{id}",
      *     summary="Obtener un estudio por ID",
      *     tags={"Estudios"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
      *     @OA\Response(response=200, description="Estudio encontrado"),
      *     @OA\Response(response=404, description="Estudio no encontrado")
@@ -122,6 +125,7 @@ class estudiosController extends Controller
      * @OA\Put(
      *     path="/api/estudios/{id}",
      *     summary="Actualizar un estudio",
+     *     security={{"bearerAuth":{}}},
      *     tags={"Estudios"},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
      *     @OA\RequestBody(
@@ -184,6 +188,7 @@ class estudiosController extends Controller
      *     path="/api/estudios/{id}",
      *     summary="Eliminar un estudio",
      *     tags={"Estudios"},
+     *     security={{"bearerAuth":{}}},  
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
      *     @OA\Response(response=200, description="Estudio eliminado correctamente"),
      *     @OA\Response(response=404, description="Estudio no encontrado")
