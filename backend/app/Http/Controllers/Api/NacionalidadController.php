@@ -10,6 +10,25 @@ use Illuminate\Support\Facades\Validator;
 
 class NacionalidadController extends Controller
 {
+
+     /**
+     * @OA\Get(
+     *     path="/api/nacionalidades",
+     *     summary="Listar todas las nacionalidades",
+     *     description="Devuelve un listado ordenado alfabéticamente de todas las nacionalidades registradas.",
+     *     tags={"Nacionalidades"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Listado obtenido correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="Nacionalidad", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
+     *     )
+     * )
+     */
+
     public function index(){
         $nacionalidad = Nacionalidad::orderBy('nombre', 'asc')->get();
 
@@ -19,7 +38,8 @@ class NacionalidadController extends Controller
             "status" => 200
         ];
         return response()->json($data,200);
-        //return "Obteniendo lista de Nacionalidads del contNacionalidadador";
+       
+
 
     }
     public function store(Request $request){
@@ -28,7 +48,10 @@ class NacionalidadController extends Controller
             "status" => 400
         ];
         return response()->json([$data],400);
-        
+    
+
+
+
     }
     public function show($id){
         $Nacionalidad=Nacionalidad::find($id);
@@ -45,6 +68,7 @@ class NacionalidadController extends Controller
         ];
         return response()->json([$data],200);
 
+
     }
     public function destroy($id){
         $data=[
@@ -52,6 +76,8 @@ class NacionalidadController extends Controller
             "status" => 400
         ];
         return response()->json([$data],400);
+
+
     }
     public function update(Request $request,$id){
         $data=[
@@ -61,6 +87,9 @@ class NacionalidadController extends Controller
         return response()->json([$data],400);
         
     }
+
+
+
     public function updatePartial(Request $request,$id){
         $data=[
             "mesaje " => "este modulo no permite actualizar, solo el administrador de base de datos lo puede hacer",

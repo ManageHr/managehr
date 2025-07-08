@@ -18,7 +18,7 @@ class FormHorasController extends Controller
 
     public function store(Request $request)
     {
-        // Aquí ya no esperas contratoId desde el frontend
+        
         $usuario = auth()->user();
         $documento = optional($usuario->perfil)['numDocumento'];
 

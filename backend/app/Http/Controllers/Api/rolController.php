@@ -7,8 +7,33 @@ use Illuminate\Http\Request;
 use App\Models\Rol;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * @OA\Tag(
+ *     name="Roles",
+ *     description="Gestión de roles de usuario"
+ * )
+ *
+ * @OA\SecurityScheme(
+ *     securityScheme="bearerAuth",
+ *     type="http",
+ *     scheme="bearer",
+ *     bearerFormat="JWT"
+ * )
+ */
+
 class rolController extends Controller
 {
+
+    /**
+     * @OA\Get(
+     *     path="/api/rol",
+     *     summary="Listar todos los roles",
+     *     tags={"Roles"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(response=200, description="Lista de roles")
+     * )
+     */
+
     public function index(){
         $rols=Rol::all();
         $data=[
@@ -17,6 +42,27 @@ class rolController extends Controller
         ];
         return response()->json($data,200);
     }
+
+    /**
+     * @OA\Post(
+     *     path="/api/rol",
+     *     summary="Crear un nuevo rol",
+     *     tags={"Roles"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"nombreRol"},
+     *             @OA\Property(property="nombreRol", type="string", example="Administrador")
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Rol creado correctamente"),
+     *     @OA\Response(response=400, description="Error de validación"),
+     *     @OA\Response(response=500, description="Error interno")
+     * )
+     */
+
+
     public function store(Request $request){
         $validator=Validator::make($request->all(),[
             "nombreRol" => "required|min:3|max:30"
@@ -33,23 +79,43 @@ class rolController extends Controller
             $rol = Rol::create([
                 "nombreRol" => $request->nombreRol
             ]);
-    
+
             return response()->json([
                 "mensaje" => "Rol creado correctamente",
                 "rol" => $rol,
                 "status" => 201
             ], 201);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 "mensaje" => "Error al crear el rol",
                 "error" => $e->getMessage(),
                 "status" => 500
             ], 500);
-            
+
         }
-        
+
     }
+
+
+    /**
+     * @OA\Get(
+     *     path="/api/rol/{id}",
+     *     summary="Mostrar un rol por ID",
+     *     tags={"Roles"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID del rol",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Rol encontrado"),
+     *     @OA\Response(response=201, description="Rol no encontrado")
+     * )
+     */
+
     public function show($id){
         $rol=Rol::find($id);
         if(!$rol){
@@ -66,6 +132,26 @@ class rolController extends Controller
         return response()->json([$data],200);
 
     }
+
+    /**
+     * @OA\Delete(
+     *     path="/api/rol/{id}",
+     *     summary="Eliminar un rol",
+     *     tags={"Roles"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID del rol a eliminar",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Rol eliminado"),
+     *     @OA\Response(response=404, description="Rol no encontrado")
+     * )
+     */
+
+
     public function destroy($id){
         $rol=Rol::find($id);
         if(!$rol){
@@ -82,6 +168,35 @@ class rolController extends Controller
         ];
         return response()->json([$data],200);
     }
+
+    /**
+     * @OA\Put(
+     *     path="/api/rol/{id}",
+     *     summary="Actualizar un rol",
+     *     tags={"Roles"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID del rol a actualizar",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"nombreRol"},
+     *             @OA\Property(property="nombreRol", type="string", example="Coordinador")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Rol actualizado"),
+     *     @OA\Response(response=400, description="Error de validación"),
+     *     @OA\Response(response=404, description="Rol no encontrado"),
+     *     @OA\Response(response=500, description="Error interno")
+     * )
+     */
+
+
     public function update(Request $request,$id){
         $rol=Rol::find($id);
         if(!$rol){
@@ -95,7 +210,7 @@ class rolController extends Controller
             "nombreRol" => "required|min:3|max:30"
         ]);
         if($validator->fails()){
-            $data=[ 
+            $data=[
                 "errors" => $validator->errors(),
                 "status" => 400
             ];
@@ -115,10 +230,36 @@ class rolController extends Controller
                 "error" => $e->getMessage(),
                 "status" => 500
             ], 500);
-            
+
         }
-        
+
     }
+
+    /**
+     * @OA\Patch(
+     *     path="/api/rol/{id}",
+     *     summary="Actualizar parcialmente un rol",
+     *     tags={"Roles"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID del rol a actualizar parcialmente",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         @OA\JsonContent(
+     *             @OA\Property(property="nombreRol", type="string", example="Analista")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Rol actualizado parcialmente"),
+     *     @OA\Response(response=400, description="Error de validación"),
+     *     @OA\Response(response=404, description="Rol no encontrado")
+     * )
+     */
+
+     
     public function updatePartial(Request $request,$id){
         $rol=Rol::find($id);
         if(!$rol){

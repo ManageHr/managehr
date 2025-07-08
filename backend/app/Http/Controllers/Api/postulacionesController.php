@@ -11,8 +11,50 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * @OA\Tag(
+ *     name="Postulaciones",
+ *     description="Operaciones relacionadas con postulaciones de usuarios a vacantes"
+ * )
+ *
+ * @OA\SecurityScheme(
+ *     securityScheme="bearerAuth",
+ *     type="http",
+ *     scheme="bearer",
+ *     bearerFormat="JWT",
+ *     in="header",
+ *     name="Authorization"
+ * )
+ */
+
 class PostulacionesController extends Controller
 {
+
+     /**
+     * @OA\Get(
+     *     path="/api/postulaciones",
+     *     summary="Listar todas las postulaciones",
+     *     tags={"Postulaciones"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="vacantesId",
+     *         in="query",
+     *         required=false,
+     *         description="Filtrar por ID de vacante",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de postulaciones"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno"
+     *     )
+     * )
+     */
+
+
     public function index(Request $request)
     {
         try {
@@ -37,7 +79,23 @@ class PostulacionesController extends Controller
     }
 
 
-
+     /**
+     * @OA\Get(
+     *     path="/api/postulaciones/{id}",
+     *     summary="Obtener una postulación por ID",
+     *     tags={"Postulaciones"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la postulación",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Postulación encontrada"),
+     *     @OA\Response(response=404, description="Postulación no encontrada")
+     * )
+     */
 
     public function show($idPostulaciones)
     {
@@ -59,6 +117,25 @@ class PostulacionesController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * @OA\Get(
+     *     path="/api/postulaciones/vacante/{vacantesId}",
+     *     summary="Buscar postulaciones por vacante",
+     *     tags={"Postulaciones"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="vacantesId",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la vacante",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Resultados encontrados"),
+     *     @OA\Response(response=400, description="ID inválido"),
+     *     @OA\Response(response=500, description="Error al buscar")
+     * )
+     */
 
     public function searchByVacantesId($vacantesId)
     {
@@ -85,6 +162,31 @@ class PostulacionesController extends Controller
         }
     }
 
+    /**
+     * @OA\Put(
+     *     path="/api/postulaciones/{id}/estado",
+     *     summary="Actualizar el estado de una postulación",
+     *     tags={"Postulaciones"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la postulación",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         @OA\JsonContent(
+     *             required={"estado"},
+     *             @OA\Property(property="estado", type="integer", example=2)
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Estado actualizado"),
+     *     @OA\Response(response=404, description="Postulación no encontrada"),
+     *     @OA\Response(response=500, description="Error al actualizar")
+     * )
+     */
+
     public function updateStatus(Request $request, $idPostulaciones)
     {
         try {
@@ -109,6 +211,27 @@ class PostulacionesController extends Controller
             ], 500);
         }
     }
+
+
+    /**
+     * @OA\Post(
+     *     path="/api/postulaciones",
+     *     summary="Registrar nueva postulación",
+     *     tags={"Postulaciones"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         @OA\JsonContent(
+     *             required={"vacantesId"},
+     *             @OA\Property(property="vacantesId", type="integer", example=5)
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Postulación registrada"),
+     *     @OA\Response(response=401, description="Usuario no válido"),
+     *     @OA\Response(response=409, description="Postulación duplicada"),
+     *     @OA\Response(response=500, description="Error al registrar")
+     * )
+     */
+
 
     public function store(Request $request)
     {
@@ -157,6 +280,19 @@ class PostulacionesController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * @OA\Get(
+     *     path="/api/postulaciones/reporte/vacantes",
+     *     summary="Reporte por vacante",
+     *     tags={"Postulaciones"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(response=200, description="Reporte generado"),
+     *     @OA\Response(response=500, description="Error en reporte")
+     * )
+     */
+
+
     public function porVacante()
     {
         try {
@@ -185,7 +321,16 @@ class PostulacionesController extends Controller
         }
     }
 
-
+    /**
+     * @OA\Get(
+     *     path="/api/postulaciones/reporte/estado",
+     *     summary="Reporte por estado",
+     *     tags={"Postulaciones"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(response=200, description="Reporte generado"),
+     *     @OA\Response(response=500, description="Error en reporte")
+     * )
+     */
 
     // 2. Por estado (aceptado, rechazado, pendiente)
     public function porEstado()
@@ -215,6 +360,17 @@ class PostulacionesController extends Controller
             return response()->json(['message' => 'Error al generar el reporte por estado.', 'error' => $e->getMessage()], 500);
         }
     }
+
+    /**
+     * @OA\Get(
+     *     path="/api/postulaciones/reporte/empleado",
+     *     summary="Reporte de empleados internos",
+     *     tags={"Postulaciones"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(response=200, description="Reporte generado"),
+     *     @OA\Response(response=500, description="Error en reporte")
+     * )
+     */
 
     // 3. Por empleados internos (usuarios con rol ≠ 5)
     public function porEmpleado()
