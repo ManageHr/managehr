@@ -110,7 +110,7 @@ export class VacacionesComponent implements OnInit {
     const userFromLocal = localStorage.getItem('usuario');
     if (userFromLocal) {
       this.usuario = JSON.parse(userFromLocal);
-      console.log('Usuario logueado:', this.usuario);
+      
     }
     this.cargarVacaciones();
   }
@@ -256,7 +256,7 @@ export class VacacionesComponent implements OnInit {
       return pages;
     }
     verDetalles(id: number): void {
-      console.log('Obteniendo detalles de ID:', id);
+      
       this.vacacionesService.getVacacionPorId(id).subscribe({
         next: (resp) => {
           this.detalleVacacion = resp.vacaciones;

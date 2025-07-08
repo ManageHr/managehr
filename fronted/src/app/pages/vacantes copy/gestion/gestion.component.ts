@@ -123,7 +123,7 @@ export class GestionComponent implements OnInit {
     .subscribe({
       next: (data) => {
         this.categorias = data; // Asigna los datos recibidos a la propiedad categorias
-        console.log('Categorías de vacante cargadas con éxito:', data); // Opcional para depurar
+        
       },
       error: (error) => {
         console.error('La carga de categorías falló completamente después del catch.', error);
@@ -139,22 +139,20 @@ export class GestionComponent implements OnInit {
         idVacantes: undefined,
         nomVacante: '',
         descripVacante: '',
-        salario: 0,   // O undefined, dependiendo si es number o number | undefined en tu interfaz
+        salario: 0,   
         expMinima: '',
         cargoVacante: '',
-        catVacId: undefined, // O null, dependiendo si es number | null | undefined en tu interfaz
-        // Reinicializa aquí el resto de propiedades si las usas en el formulario
+        catVacId: undefined, 
+        
     };
-     // Opcional: Si quieres que las categorías se refrezquen cada vez que abres el modal, llama aquí:
-     // this.cargarCategoriasForaneas();
+     
   }
 
   // Recibe vacante (que ahora tiene las nuevas propiedades)
   editarVacante(vacante: Vacante): void {
-     // Copia vacante (con las nuevas propiedades)
+     
      this.vacanteSeleccionada = { ...vacante };
-     // Opcional: Si quieres que las categorías se refrezquen cada vez que abres el modal de edición, llama aquí:
-     // this.cargarCategoriasForaneas();
+     
   }
 
   // Recibe vacante (que ahora tiene las nuevas propiedades)
@@ -196,14 +194,13 @@ export class GestionComponent implements OnInit {
 
   // Guarda (crear o actualizar) vacante
   guardarVacante(): void {
-    // --- Validar: Usa los NUEVOS nombres de propiedades que sean obligatorios ---
-    // Aquí asumimos nomVacante y catVacId son obligatorios para guardar una vacante válida
+    
     if (!this.vacanteSeleccionada.nomVacante || this.vacanteSeleccionada.catVacId === undefined || this.vacanteSeleccionada.catVacId === null) {
-      Swal.fire('Error', 'El nombre de la vacante y la categoría son obligatorios.', 'error'); // Mensaje de validación
+      Swal.fire('Error', 'El nombre de la vacante y la categoría son obligatorios.', 'error'); 
       return;
     }
 
-    let request$; // Observable de la petición al servicio
+    let request$; 
     let successMessage = '';
     let errorMessage = '';
 
