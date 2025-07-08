@@ -49,6 +49,7 @@
                 let n of notificacionesSinAutorizadasFiltradas
                   | paginate
                     : {
+                        id: 'tablaPrincipal',
                         itemsPerPage: itemsPerPage,
                         currentPage: paginaSinAutorizadas
                       }
@@ -101,10 +102,9 @@
       </div>
       <!-- Paginador tabla -->
       <pagination-controls
+        [id]="'tablaPrincipal'"
         (pageChange)="paginaSinAutorizadas = $event"
         [autoHide]="true"
-        previousLabel="Anterior"
-        nextLabel="Siguiente"
         class="d-flex justify-content-center mt-3 custom-paginator"
       ></pagination-controls>
 
@@ -157,6 +157,7 @@
   </div>
 </div>
 <!-- Modal Historial -->
+<!-- HTML: historial (estado 1) con paginacion y sin filtros avanzados -->
 <div
   class="modal fade"
   id="modalHistorial"
@@ -164,16 +165,17 @@
   aria-labelledby="modalHistorialLabel"
   aria-hidden="true"
 >
-  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable modal-ancho-grande">
     <div class="modal-content bg-dark text-white">
       <div class="modal-header">
-        <h5 class="modal-title">Historial de Notificaciones (Estado 0)</h5>
+        <h5 class="modal-title">Historial de Notificaciones (Estado 1)</h5>
         <button
           type="button"
           class="btn-close btn-close-white"
           data-bs-dismiss="modal"
         ></button>
       </div>
+
       <div class="modal-body">
         <table class="table table-bordered table-sm table-dark">
           <thead>
@@ -187,20 +189,55 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let h of historialNotificaciones">
+            <tr
+  *ngFor="
+    let h of historialNotificaciones
+      | paginate : {
+          id: 'tablaHistorial',
+          itemsPerPage: itemsPorPaginaHistorial,
+          currentPage: paginaHistorial
+        }
+  "
+>
+
               <td>{{ h.tipo }}</td>
               <td>{{ h.detalle }}</td>
               <td>{{ getNombreUsuarioDesdeContrato(h) }}</td>
               <td>{{ h.fecha }}</td>
               <td>{{ getNombreAreaDesdeContrato(h) }}</td>
               <td>
-                <span class="btn btn-primary" [ngClass]="getEstadoClase(h.estado)">
+                <span
+                  class="btn btn-primary btn-sm"
+                  [ngClass]="getEstadoClase(h.estado)"
+                >
                   {{ getEstadoTexto(h.estado) }}
                 </span>
               </td>
             </tr>
+            <tr
+              *ngIf="
+                (
+                  historialNotificaciones
+                  | paginate : { itemsPerPage: 5, currentPage: paginaHistorial }
+                ).length === 0
+              "
+            >
+              <td colspan="6" class="text-center">
+                No hay registros para mostrar
+              </td>
+            </tr>
           </tbody>
         </table>
+
+        <pagination-controls
+  [id]="'tablaHistorial'"
+  [autoHide]="false"
+  (pageChange)="paginaHistorial = $event"
+  previousLabel="Anterior"
+  nextLabel="Siguiente"
+  class="d-flex justify-content-center mt-3 custom-paginator"
+></pagination-controls>
+
       </div>
     </div>
   </div>

@@ -4,23 +4,33 @@
     <!-- Encabezado y botones -->
     <div
       id="tituloTargetas1"
-      class="header-horas d-flex justify-content-between align-items-center"
+      class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center flex-wrap gap-2 mb-3"
     >
-      <h3>Incapacidades</h3>
-      <div class="d-flex gap-2">
+      <h3 class="mb-2 mb-md-0">Incapacidades</h3>
+
+      <div
+        class="d-flex flex-wrap gap-2 justify-content-start justify-content-md-end"
+      >
         <button
-          class="btn btn-light btn-sm agregar-btn"
+          class="btn btn-warning btn-sm d-flex align-items-center"
           *ngIf="[1, 4].includes(usuario?.rol)"
           (click)="abrirModalReporteUsuarios()"
         >
-          <i class="fas fa-chart-bar"></i> Reporte Usuarios
+          <i class="fas fa-chart-bar me-1"></i> Reporte Usuarios
         </button>
         <button
-          class="btn btn-light btn-sm agregar-btn"
+          class="btn btn-success btn-sm d-flex align-items-center"
           *ngIf="[1, 4].includes(usuario?.rol)"
           (click)="abrirModalReporteArea()"
         >
-          <i class="fas fa-chart-bar"></i> Reporte Área
+          <i class="fas fa-chart-bar me-1"></i> Reporte Área
+        </button>
+        <button
+          class="btn btn-info btn-sm d-flex align-items-center"
+          *ngIf="[1, 4].includes(usuario?.rol)"
+          (click)="abrirModalReporteEstado()"
+        >
+          <i class="fas fa-chart-bar me-1"></i> Reporte Estado
         </button>
       </div>
     </div>
@@ -55,6 +65,7 @@
             <th>Inicio</th>
             <th>Final</th>
             <th>Días</th>
+            <th>Estado</th>
             <th>Archivo</th>
             <th>Acciones</th>
           </tr>
@@ -78,6 +89,12 @@
             <td>{{ i.fechaFinal }}</td>
             <td>{{ calcularDias(i.fechaInicio, i.fechaFinal) }}</td>
             <td>
+              <span [ngClass]="getClaseEstado(i.estado)">
+                {{ getNombreEstado(i.estado) }}
+              </span>
+            </td>
+
+            <td>
               <a
                 target="_blank"
                 class="btn btn-outline-primary btn-sm"
@@ -88,7 +105,15 @@
             </td>
             <td>
               <button
+                class="btn btn-info btn-sm mt-1"
+                (click)="abrirModalEstado(i)"
+                title="Cambiar Estado"
+              >
+                <i class="fas fa-exchange-alt"></i>
+              </button>
+              <button
                 class="btn btn-danger btn-sm"
+                title="eliminar"
                 (click)="
                   confirmarEliminacion(
                     i.idIncapacidad,
@@ -100,7 +125,6 @@
                 <i class="fas fa-trash"></i>
               </button>
             </td>
-            
           </tr>
         </tbody>
       </table>
@@ -142,10 +166,21 @@
             <strong>Días:</strong>
             {{ calcularDias(i.fechaInicio, i.fechaFinal) }}
           </p>
+          <p class="card-text">
+            <strong>Estado:</strong>
+            <span [ngClass]="getClaseEstado(i.estado)">
+              {{ getNombreEstado(i.estado) }}
+            </span>
+          </p>
+
           <div class="card-footer d-flex justify-content-end gap-2">
+            <button
+              class="btn btn-outline-info btn-sm"
+              (click)="abrirModalEstado(i)"
+            >
+              Cambiar Estado
+            </button>
             <a
-              
-              
               class="btn btn-outline-primary btn-sm"
               (click)="abrirArchivo(i.archivo)"
             >
@@ -163,11 +198,11 @@
     </div>
     <!-- Paginador para tarjetas móviles -->
     <pagination-controls
-  *ngIf="incapacidadesFiltradas.length > itemsPerPage"
-  (pageChange)="currentPage = $event"
-  [autoHide]="true"
-  class="d-flex justify-content-center mt-3 d-md-none"
-></pagination-controls>
+      *ngIf="incapacidadesFiltradas.length > itemsPerPage"
+      (pageChange)="currentPage = $event"
+      [autoHide]="true"
+      class="d-flex justify-content-center mt-3 d-md-none"
+    ></pagination-controls>
 
     <!-- Modal para agregar Incapacidad -->
     <div
@@ -363,10 +398,7 @@
         <canvas id="graficoArea" height="100"></canvas>
       </div>
       <div class="modal-footer">
-        <button
-          class="btn btn-outline-danger"
-          (click)="descargarPDFPorArea()"
-        >
+        <button class="btn btn-outline-danger" (click)="descargarPDFPorArea()">
           <i class="bi bi-file-earmark-pdf"></i> PDF
         </button>
         <button
@@ -424,4 +456,106 @@
     </div>
   </div>
 </div>
+<div
+  class="modal fade"
+  id="modalCambiarEstado"
+  tabindex="-1"
+  aria-labelledby="modalCambiarEstadoLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form (ngSubmit)="actualizarEstado()">
+        <div class="modal-header">
+          <h5 class="modal-title">Cambiar Estado</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <p>
+            <strong>Usuario:</strong>
+            {{
+              incapacidadSeleccionada?.contrato?.hoja_de_vida?.usuario
+                ?.primerNombre
+            }}
+            {{
+              incapacidadSeleccionada?.contrato?.hoja_de_vida?.usuario
+                ?.primerApellido
+            }}
+          </p>
 
+          <div class="mb-3">
+            <label class="form-label">Nuevo Estado</label>
+            <select
+              class="form-control"
+              [(ngModel)]="nuevoEstado"
+              name="estado"
+              required
+            >
+              <option [ngValue]="0">Pendiente</option>
+              <option [ngValue]="1">Aceptado</option>
+              <option [ngValue]="2">Rechazado</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" type="submit">Guardar</button>
+          <button
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+            type="button"
+          >
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Modal Reporte por Estado -->
+<div
+  class="modal fade"
+  id="modalReporteEstado"
+  tabindex="-1"
+  aria-labelledby="modalReporteEstadoLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title" id="modalReporteEstadoLabel">
+          Reporte de Incapacidades por Estado
+        </h5>
+        <button
+          type="button"
+          class="btn-close bg-white"
+          data-bs-dismiss="modal"
+          aria-label="Cerrar"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <canvas id="graficoEstado" height="100"></canvas>
+      </div>
+      <div class="modal-footer">
+        <button
+          class="btn btn-outline-danger"
+          (click)="descargarPDFPorEstado()"
+        >
+          <i class="bi bi-file-earmark-pdf"></i> PDF
+        </button>
+        <button
+          class="btn btn-outline-success"
+          (click)="descargarExcelPorEstado()"
+        >
+          <i class="bi bi-file-earmark-excel"></i> Excel
+        </button>
+        <button class="btn btn-secondary" data-bs-dismiss="modal">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

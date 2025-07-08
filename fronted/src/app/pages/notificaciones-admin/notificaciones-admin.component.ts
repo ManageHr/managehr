@@ -103,6 +103,9 @@ export class NotificacionesAdminComponent implements OnInit {
   historialNotificaciones: Notificacion[] = [];
   notificacionSeleccionada: Notificacion | null = null;
   areas: any[] = [];
+  paginaHistorial = 1;
+  itemsPorPaginaHistorial: number = 5;
+
 
   totalPages1: number[] = [];
   constructor(
@@ -113,6 +116,7 @@ export class NotificacionesAdminComponent implements OnInit {
     private areaService: AreaService,
     private authService: AuthService
   ) {}
+
 
   ngOnInit(): void {
     const userFromLocal = localStorage.getItem('usuario');
@@ -243,16 +247,17 @@ export class NotificacionesAdminComponent implements OnInit {
     modal.show();
   }
   abrirHistorial(): void {
-    const modal = new bootstrap.Modal(
-      document.getElementById('modalHistorial')
-    );
-    modal.show();
-  }
+  this.paginaHistorial = 1; // ← esto es clave
+  const modal = new bootstrap.Modal(
+    document.getElementById('modalHistorial')
+  );
+  modal.show();
+}
 
   getDocumentoUsuario(id: number): string {
     const usuario = this.usuarios.find((u) => u.usersId === id);
 
-    console.log('usuario PERMISO', usuario);
+    
     return usuario?.numDocumento?.toString() || 'usuario ya no existe';
   }
 
@@ -270,7 +275,7 @@ export class NotificacionesAdminComponent implements OnInit {
     return area ? area.nombreArea : 'Sin área';
   }
   getNombreUsuarioDesdeContrato(n: Notificacion): string {
-    console.log('n', n);
+   
     const usuario = n?.contrato?.hoja_de_vida?.usuario;
     if (!usuario) return 'Desconocido';
     return `${usuario.primerNombre ?? ''} ${
@@ -278,7 +283,7 @@ export class NotificacionesAdminComponent implements OnInit {
     }`.trim();
   }
   getNombreAreaDesdeContrato(n: Notificacion): string {
-    console.log('contrato', n);
+    
     const area = n?.contrato?.area;
     return area?.nombreArea ?? 'Sin área';
   }

@@ -86,7 +86,7 @@ export interface Incapacidad {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class IncapacidadService {
   private apiUrl = 'http://localhost:8000/api/incapacidad'; // Ajusta si usas otra ruta
@@ -94,11 +94,10 @@ export class IncapacidadService {
   constructor(private http: HttpClient) {}
 
   obtenerTodas(): Observable<Incapacidad[]> {
-    return this.http.get<{ data: Incapacidad[] }>(this.apiUrl).pipe(
-      map(response => response.data)
-    );
+    return this.http
+      .get<{ data: Incapacidad[] }>(this.apiUrl)
+      .pipe(map((response) => response.data));
   }
-
 
   obtenerPorId(id: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${id}`);
@@ -119,5 +118,11 @@ export class IncapacidadService {
   // Si necesitas buscar por documento, podrías agregar:
   buscarPorDocumento(documento: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/buscar/${documento}`);
+  }
+  cambiarEstado(id: number,estado: number) {
+   
+    return this.http.put(`${this.apiUrl}/estado/${id}`, {
+      estado,
+    });
   }
 }
