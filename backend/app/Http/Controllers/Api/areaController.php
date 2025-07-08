@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Area;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -306,5 +307,51 @@ class areaController extends Controller
             "status" => 200
         ];
         return response()->json([$data], 200);
+    }
+    /**
+ * @OA\Get(
+ *     path="/api/jefepersonal/all",
+ *     summary="Obtener todos los jefes de personal",
+ *     description="Este endpoint retorna todos los usuarios que tienen el rol igual a 2 (jefes de personal).",
+ *     operationId="obtenerJefes",
+ *     tags={"Jefes de Personal"},
+ *     @OA\Response(
+ *         response=200,
+ *         description="Lista de jefes obtenida exitosamente",
+ *         @OA\JsonContent(
+ *             type="object",
+ *             @OA\Property(
+ *                 property="jefes",
+ *                 type="array",
+ *                 @OA\Items(
+ *                     type="object",
+ *                     @OA\Property(property="id", type="integer"),
+ *                     @OA\Property(property="name", type="string"),
+ *                     @OA\Property(property="email", type="string"),
+ *                     @OA\Property(property="email_verified_at", type="string", nullable=true, format="date-time"),
+ *                     @OA\Property(property="rol", type="integer"),
+ *                     @OA\Property(property="created_at", type="string", format="date-time"),
+ *                     @OA\Property(property="updated_at", type="string", format="date-time")
+ *                 )
+ *             ),
+ *             @OA\Property(property="status", type="integer", example=200)
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Error interno del servidor"
+ *     )
+ * )
+ */
+
+    public function obtenerJefes()
+    {
+        $jefes = User::where('rol', 2)->get();  
+
+
+        return response()->json([
+            'jefes' => $jefes,
+            'status' => 200
+        ]);
     }
 }

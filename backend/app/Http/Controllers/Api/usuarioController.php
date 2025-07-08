@@ -57,8 +57,8 @@ class usuarioController extends Controller
     {
         //
     }
-    
-        /**
+
+    /**
      * @OA\Get(
      *     path="/api/verificar-usuario",
      *     summary="Verificar existencia de usuario",
@@ -101,7 +101,7 @@ class usuarioController extends Controller
     }
 
 
-        /**
+    /**
      * @OA\Post(
      *     path="/api/usuarios",
      *     summary="Registrar nuevo usuario",
@@ -219,7 +219,7 @@ class usuarioController extends Controller
         }
     }
 
-        /**
+    /**
      * @OA\Get(
      *     path="/api/usuarios/{id}",
      *     summary="Obtener usuario por ID",
@@ -253,7 +253,7 @@ class usuarioController extends Controller
         return response()->json($data, 200);
     }
 
-        /**
+    /**
      * @OA\Delete(
      *     path="/api/usuarios/{id}",
      *     summary="Eliminar un usuario",
@@ -309,12 +309,11 @@ class usuarioController extends Controller
             "status" => 200
         ], 200);
     }
-
-    /**
+/**
      * @OA\Put(
      *     path="/api/usuarios/{id}",
-     *     summary="Actualizar un usuario por ID",
-     *     description="Modifica completamente los datos de un usuario existente identificado por su ID.",
+     *     summary="Actualizar datos de un usuario",
+     *     description="Actualiza los datos de un usuario existente.",
      *     tags={"Usuarios"},
      *     @OA\Parameter(
      *         name="id",
@@ -325,23 +324,41 @@ class usuarioController extends Controller
      *     ),
      *     @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/UsuarioInput")
+     *        @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="primerNombre", type="string", example="Juan"),
+     *             @OA\Property(property="segundoNombre", type="string", example="Pérez"),
+     *             @OA\Property(property="primerApellido", type="string", example="González"),
+     *             @OA\Property(property="segundoApellido", type="string", example="Rodríguez"),
+     *             @OA\Property(property="email", type="string", example="juan@example.com"),
+     *             @OA\Property(property="password", type="string", example="password123"),
+     *             @OA\Property(property="fechaNac", type="string", format="date", example="1990-01-01"),
+     *             @OA\Property(property="numHijos", type="integer", example=2),
+     *             @OA\Property(property="numDocumento", type="string", example="123456789"),
+     *             @OA\Property(property="rol", type="integer", example=1),
+     *             @OA\Property(property="usersId", type="integer", example=1)
+     *         )
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Usuario actualizado correctamente"
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Error en los datos enviados"
+     *         description="Usuario actualizado correctamente",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="mensaje", type="string", example="Usuario actualizado correctamente"),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Usuario no encontrado"
+     *         description="Usuario no encontrado",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="mensaje", type="string", example="Usuario no encontrado"),
+     *             @OA\Property(property="status", type="integer", example=404)
+     *         )
      *     )
      * )
      */
-
 
     public function update(Request $request, $id)
     {
@@ -418,7 +435,7 @@ class usuarioController extends Controller
         }
     }
 
-     
+
 
     public function updatePartial(Request $request, $id)
     {
@@ -538,7 +555,7 @@ class usuarioController extends Controller
         return response()->json([$data], 200);
     }
 
-        /**
+    /**
      * @OA\Get(
      *     path="/api/usuarios/documento/{numDocumento}",
      *     summary="Obtener usuario por número de documento",
@@ -600,7 +617,7 @@ class usuarioController extends Controller
         }
     }
 
-        /**
+    /**
      * @OA\Get(
      *     path="/api/usuarios/detallado",
      *     summary="Obtener todos los usuarios con información relacionada",
@@ -643,22 +660,42 @@ class usuarioController extends Controller
             ], 500);
         }
     }
-        /**
-     * @OA\Get(
-     *     path="/api/usuarios/jefes",
-     *     summary="Obtener jefes de personal",
-     *     description="Lista todos los usuarios con el rol de jefe de personal. Devuelve el nombre completo e ID del jefe.",
-     *     tags={"Usuarios"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Lista de jefes obtenida correctamente"
-     *     ),
-     *     @OA\Response(
-     *         response=500,
-     *         description="Error al obtener jefes de personal"
-     *     )
-     * )
-     */
+    /**
+ * @OA\Get(
+ *     path="/api/usuarios/jefes",
+ *     operationId="obtenerJefesDePersonal",
+ *     tags={"Usuarios"},
+ *     summary="Obtener jefes de personal",
+ *     description="Retorna una lista de usuarios con rol de jefe de área (rol = 2), incluyendo su ID y nombre completo.",
+ *     @OA\Response(
+ *         response=200,
+ *         description="Lista de jefes obtenida correctamente",
+ *         @OA\JsonContent(
+ *             type="object",
+ *             @OA\Property(
+ *                 property="jefes",
+ *                 type="array",
+ *                 @OA\Items(
+ *                     type="object",
+ *                     @OA\Property(property="idJefe", type="integer", example=3),
+ *                     @OA\Property(property="nombreCompleto", type="string", example="Juan Pérez")
+ *                 )
+ *             ),
+ *             @OA\Property(property="status", type="integer", example=200)
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Error interno del servidor",
+ *         @OA\JsonContent(
+ *             type="object",
+ *             @OA\Property(property="message", type="string", example="Error al obtener jefes de personal"),
+ *             @OA\Property(property="error", type="string", example="Detalles del error"),
+ *             @OA\Property(property="status", type="integer", example=500)
+ *         )
+ *     )
+ * )
+ */
 
     public function obtenerJefesDePersonal()
     {
@@ -691,7 +728,7 @@ class usuarioController extends Controller
         }
     }
 
-        /**
+    /**
      * @OA\Get(
      *     path="/api/usuarios/reporte-roles",
      *     summary="Obtener reporte de usuarios con sus roles",

@@ -54,31 +54,27 @@ class epsController extends Controller
 
     }
     /**
-     * @OA\Post(
-     *     path="/api/epss",
-     *     summary="Crear EPS (deshabilitado)",
-     *     tags={"EPS"},
-     *     security={{ "bearerAuth": {} }},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\MediaType(
-     *             mediaType="application/json",
-     *             @OA\Schema(
-     *                 @OA\Property(property="codigoEps", type="integer", example=1),
-     *                 @OA\Property(property="nombreEps", type="string", example="Salud Total EPS")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="EPS creada correctamente",
-     *         @OA\Json 
-     *     @OA\Response(
-     *         response=400,
-     *         description="Este módulo no permite crear EPS. Solo el DB tiene acceso."
-     *     )
-     * )
-     */
+ * @OA\Post(
+ *     path="/api/epss",
+ *     summary="Crear nueva EPS",
+ *     tags={"EPS"},
+ *      security={{"bearerAuth":{}}},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             @OA\Property(property="nombreEps", type="string", example="Nueva EPS")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=201,
+ *         description="EPS creada correctamente"
+ *     ),
+ *     @OA\Response(
+ *         response=400,
+ *         description="Error de validación"
+ *     )
+ * )
+ */
     public function store(Request $request)
     {
         $data = [

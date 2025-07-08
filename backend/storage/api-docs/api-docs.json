@@ -12,140 +12,6 @@
         }
     ],
     "paths": {
-        "/api/formhoras": {
-            "get": {
-                "tags": [
-                    "Horas Extra"
-                ],
-                "summary": "Listar horas extra del usuario autenticado",
-                "operationId": "086375dd0a208cd624315fc6b06559f1",
-                "responses": {
-                    "200": {
-                        "description": "Listado de horas extra exitoso",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "properties": {
-                                            "id": {
-                                                "type": "integer"
-                                            },
-                                            "descripcion": {
-                                                "type": "string"
-                                            },
-                                            "fecha": {
-                                                "type": "string",
-                                                "format": "date"
-                                            },
-                                            "tipoHorasId": {
-                                                "type": "integer"
-                                            },
-                                            "nHorasExtra": {
-                                                "type": "integer"
-                                            },
-                                            "contratoId": {
-                                                "type": "integer"
-                                            },
-                                            "created_at": {
-                                                "type": "string",
-                                                "format": "date-time"
-                                            },
-                                            "updated_at": {
-                                                "type": "string",
-                                                "format": "date-time"
-                                            }
-                                        },
-                                        "type": "object"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error al obtener las horas extra"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            },
-            "post": {
-                "tags": [
-                    "Horas Extra"
-                ],
-                "summary": "Registrar horas extra",
-                "operationId": "f79299e4d80c8649492b688440093d34",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "fecha",
-                                    "tipoHorasId",
-                                    "nHorasExtra"
-                                ],
-                                "properties": {
-                                    "descripcion": {
-                                        "type": "string",
-                                        "example": "Soporte en servidor de emergencia"
-                                    },
-                                    "fecha": {
-                                        "type": "string",
-                                        "format": "date",
-                                        "example": "2025-07-01"
-                                    },
-                                    "tipoHorasId": {
-                                        "type": "integer",
-                                        "example": 2
-                                    },
-                                    "nHorasExtra": {
-                                        "type": "integer",
-                                        "minimum": 1,
-                                        "example": 3
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Solicitud enviada correctamente",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string"
-                                        },
-                                        "data": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Error de validación"
-                    },
-                    "500": {
-                        "description": "Error interno del servidor"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
         "/api/perfil": {
             "get": {
                 "tags": [
@@ -584,6 +450,70 @@
                         "bearerAuth": []
                     }
                 ]
+            }
+        },
+        "/api/jefepersonal/all": {
+            "get": {
+                "tags": [
+                    "Jefes de Personal"
+                ],
+                "summary": "Obtener todos los jefes de personal",
+                "description": "Este endpoint retorna todos los usuarios que tienen el rol igual a 2 (jefes de personal).",
+                "operationId": "obtenerJefes",
+                "responses": {
+                    "200": {
+                        "description": "Lista de jefes obtenida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "jefes": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "email": {
+                                                        "type": "string"
+                                                    },
+                                                    "email_verified_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "nullable": true
+                                                    },
+                                                    "rol": {
+                                                        "type": "integer"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                }
             }
         },
         "/api/categoriavacantes": {
@@ -1166,13 +1096,37 @@
                 "tags": [
                     "EPS"
                 ],
-                "summary": "Crear EPS (deshabilitado)",
+                "summary": "Crear nueva EPS",
                 "operationId": "31428a8c2b05ac44b6a242ff4519e615",
-                "responses": {
-                    "400": {
-                        "description": "Este módulo no permite crear EPS. Solo el DB tiene acceso."
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nombreEps": {
+                                        "type": "string",
+                                        "example": "Nueva EPS"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
                     }
-                }
+                },
+                "responses": {
+                    "201": {
+                        "description": "EPS creada correctamente"
+                    },
+                    "400": {
+                        "description": "Error de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/epss/{codigoEps}": {
@@ -2916,6 +2870,125 @@
                     }
                 }
             },
+            "put": {
+                "tags": [
+                    "Usuarios"
+                ],
+                "summary": "Actualizar datos de un usuario",
+                "description": "Actualiza los datos de un usuario existente.",
+                "operationId": "4f4dcacd40d38f93f4b4a1b047c8bae4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del usuario a actualizar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "primerNombre": {
+                                        "type": "string",
+                                        "example": "Juan"
+                                    },
+                                    "segundoNombre": {
+                                        "type": "string",
+                                        "example": "Pérez"
+                                    },
+                                    "primerApellido": {
+                                        "type": "string",
+                                        "example": "González"
+                                    },
+                                    "segundoApellido": {
+                                        "type": "string",
+                                        "example": "Rodríguez"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "juan@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    },
+                                    "fechaNac": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1990-01-01"
+                                    },
+                                    "numHijos": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "numDocumento": {
+                                        "type": "string",
+                                        "example": "123456789"
+                                    },
+                                    "rol": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "usersId": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Usuario actualizado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Usuario actualizado correctamente"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Usuario no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Usuario no encontrado"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 404
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "delete": {
                 "tags": [
                     "Usuarios"
@@ -3002,14 +3075,64 @@
                     "Usuarios"
                 ],
                 "summary": "Obtener jefes de personal",
-                "description": "Lista todos los usuarios con el rol de jefe de personal. Devuelve el nombre completo e ID del jefe.",
-                "operationId": "40d26ab7922ccf9bcfa46968aad47409",
+                "description": "Retorna una lista de usuarios con rol de jefe de área (rol = 2), incluyendo su ID y nombre completo.",
+                "operationId": "obtenerJefesDePersonal",
                 "responses": {
                     "200": {
-                        "description": "Lista de jefes obtenida correctamente"
+                        "description": "Lista de jefes obtenida correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "jefes": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "idJefe": {
+                                                        "type": "integer",
+                                                        "example": 3
+                                                    },
+                                                    "nombreCompleto": {
+                                                        "type": "string",
+                                                        "example": "Juan Pérez"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "500": {
-                        "description": "Error al obtener jefes de personal"
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error al obtener jefes de personal"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Detalles del error"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 500
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -3041,7 +3164,12 @@
                     "200": {
                         "description": "Lista de vacaciones obtenida exitosamente"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -3101,7 +3229,12 @@
                     "500": {
                         "description": "Error al crear la solicitud"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/vacaciones/{id}": {
@@ -3131,7 +3264,12 @@
                     "404": {
                         "description": "Vacación no encontrada"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -3201,7 +3339,12 @@
                     "404": {
                         "description": "Vacación no encontrada"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -3229,7 +3372,12 @@
                     "404": {
                         "description": "Vacación no encontrada"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "patch": {
                 "tags": [
@@ -3294,7 +3442,12 @@
                     "404": {
                         "description": "Vacación no encontrada"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/vacaciones/{id}/estado": {
@@ -3346,7 +3499,232 @@
                     "404": {
                         "description": "Vacación no encontrada"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/vacantes": {
+            "get": {
+                "tags": [
+                    "Vacantes"
+                ],
+                "summary": "Obtener todas las vacantes",
+                "description": "Devuelve un listado de todas las vacantes disponibles.",
+                "operationId": "7af5572ac6ddee25da014dd504779df8",
+                "responses": {
+                    "200": {
+                        "description": "Lista de vacantes obtenida correctamente"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Vacantes"
+                ],
+                "summary": "Crear una nueva vacante",
+                "description": "Crea una nueva vacante con los datos proporcionados.",
+                "operationId": "c5f6af5f7708678a308f93990a7cda64",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nomVacante"
+                                ],
+                                "properties": {
+                                    "nomVacante": {
+                                        "type": "string",
+                                        "example": "Desarrollador Backend"
+                                    },
+                                    "descripVacante": {
+                                        "type": "string",
+                                        "example": "Responsable del desarrollo de APIs."
+                                    },
+                                    "salario": {
+                                        "type": "number",
+                                        "example": 4000000
+                                    },
+                                    "expMinima": {
+                                        "type": "string",
+                                        "example": "2 años"
+                                    },
+                                    "cargoVacante": {
+                                        "type": "string",
+                                        "example": "Programador"
+                                    },
+                                    "catVacId": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Vacante creada correctamente"
+                    },
+                    "400": {
+                        "description": "Error de validación"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/vacantes/{id}": {
+            "get": {
+                "tags": [
+                    "Vacantes"
+                ],
+                "summary": "Obtener una vacante por ID",
+                "description": "Devuelve la información de una vacante específica.",
+                "operationId": "a8f91e2fb5a7f0e2ab1259078d028874",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la vacante",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Vacante encontrada correctamente"
+                    },
+                    "404": {
+                        "description": "Vacante no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Vacantes"
+                ],
+                "summary": "Actualizar vacante",
+                "description": "Actualiza una vacante existente con los datos proporcionados.",
+                "operationId": "d93646eb086449b1793f1879774fd50c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la vacante",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 2
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nomVacante"
+                                ],
+                                "properties": {
+                                    "nomVacante": {
+                                        "type": "string",
+                                        "example": "Analista de Datos"
+                                    },
+                                    "descripVacante": {
+                                        "type": "string",
+                                        "example": "Análisis y procesamiento de datos."
+                                    },
+                                    "salario": {
+                                        "type": "number",
+                                        "example": 3500000
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Vacante actualizada correctamente"
+                    },
+                    "400": {
+                        "description": "Error de validación"
+                    },
+                    "404": {
+                        "description": "Vacante no encontrada"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Vacantes"
+                ],
+                "summary": "Eliminar una vacante",
+                "description": "Elimina una vacante existente por su ID.",
+                "operationId": "ed0fe7ef9b560c4e14668056233b3f9c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la vacante",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 3
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Vacante eliminada correctamente"
+                    },
+                    "404": {
+                        "description": "Vacante no encontrada"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         }
     },
@@ -3361,10 +3739,6 @@
         }
     },
     "tags": [
-        {
-            "name": "Horas Extra",
-            "description": "Gestión de horas extra por parte de usuarios autenticados"
-        },
         {
             "name": "Área",
             "description": "Operaciones relacionadas con Áreas"
@@ -3398,6 +3772,14 @@
             "description": "Perfil"
         },
         {
+            "name": "Jefes de Personal",
+            "description": "Jefes de Personal"
+        },
+        {
+            "name": "Horas Extra",
+            "description": "Horas Extra"
+        },
+        {
             "name": "Incapacidades",
             "description": "Incapacidades"
         },
@@ -3416,6 +3798,10 @@
         {
             "name": "Vacaciones",
             "description": "Vacaciones"
+        },
+        {
+            "name": "Vacantes",
+            "description": "Vacantes"
         }
     ]
 }

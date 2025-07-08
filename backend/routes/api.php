@@ -92,6 +92,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/area-nombre/{id}', [areaController::class, 'showNombre']);
     Route::patch('/area/{id}', [areaController::class, 'updatePartial']);
     Route::delete('/area/{id}', [areaController::class, 'destroy']);
+    Route::get('/jefepersonal/all', [areaController::class, 'obtenerJefes']);
     // Rutas de GÉNERO
     Route::get('/genero', [generoController::class, 'index']);
     Route::post('/genero', [generoController::class, 'store']);
