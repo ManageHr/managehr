@@ -24,7 +24,7 @@ class VacacionesJefeController extends Controller
 {
     /**
      * @OA\Get(
-     *     path="/api/jefe/vacaciones/solicitudes",
+     *     path="/api/solicitudes-vacaciones-jefe",
      *     summary="Obtener todas las solicitudes de vacaciones del área del jefe",
      *     tags={"Vacaciones Jefe"},
      *     security={{"bearerAuth":{}}},
@@ -132,7 +132,7 @@ class VacacionesJefeController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/jefe/vacaciones/solicitudes/{id}",
+     *     path="/api/solicitudes-vacaciones-jefe/{id}",
      *     summary="Obtener una solicitud específica de vacaciones",
      *     tags={"Vacaciones Jefe"},
      *     security={{"bearerAuth":{}}},
@@ -226,7 +226,7 @@ class VacacionesJefeController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/jefe/vacaciones/solicitudes/{id}/aprobar",
+     *     path="/api/solicitudes-vacaciones-jefe/{id}/aprobar",
      *     summary="Aprobar una solicitud de vacaciones",
      *     tags={"Vacaciones Jefe"},
      *     security={{"bearerAuth":{}}},
@@ -304,7 +304,7 @@ class VacacionesJefeController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/jefe/vacaciones/solicitudes/{id}/rechazar",
+     *     path="/api/solicitudes-vacaciones-jefe/{id}/rechazar",
      *     summary="Rechazar una solicitud de vacaciones",
      *     tags={"Vacaciones Jefe"},
      *     security={{"bearerAuth":{}}},
@@ -382,7 +382,7 @@ class VacacionesJefeController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/jefe/vacaciones/estadisticas",
+     *     path="/api/solicitudes-vacaciones-jefe/estadisticas",
      *     summary="Obtener estadísticas de solicitudes de vacaciones",
      *     tags={"Vacaciones Jefe"},
      *     security={{"bearerAuth":{}}},
