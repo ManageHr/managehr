@@ -163,7 +163,7 @@ class vacantesHasPostulacionesController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/vacantes-has-postulaciones/{id}",
+     *     path="/api/vacanteshaspostulaciones/{id}",
      *     summary="Obtener postulaciones de una vacante específica",
      *     tags={"Vacantes Postulaciones"},
      *     security={{"bearerAuth":{}}},
@@ -211,7 +211,7 @@ class vacantesHasPostulacionesController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/api/vacantes-has-postulaciones/{id}",
+     *     path="/api/vacanteshaspostulaciones/{id}",
      *     summary="Eliminar relación vacante-postulación",
      *     tags={"Vacantes Postulaciones"},
      *     security={{"bearerAuth":{}}},
@@ -265,7 +265,7 @@ class vacantesHasPostulacionesController extends Controller
     }
     /**
      * @OA\Put(
-     *     path="/api/vacantes-has-postulaciones/{id}",
+     *     path="/api/vacanteshaspostulaciones/{id}",
      *     summary="Actualizar relación vacante-postulación",
      *     tags={"Vacantes Postulaciones"},
      *     security={{"bearerAuth":{}}},
@@ -366,7 +366,7 @@ class vacantesHasPostulacionesController extends Controller
     }
     /**
      * @OA\Patch(
-     *     path="/api/vacantes-has-postulaciones/{id}",
+     *     path="/api/vacanteshaspostulaciones/{id}",
      *     summary="Actualizar parcialmente relación vacante-postulación",
      *     tags={"Vacantes Postulaciones"},
      *     security={{"bearerAuth":{}}},
