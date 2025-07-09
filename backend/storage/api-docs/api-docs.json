@@ -1971,13 +1971,13 @@
                 ]
             }
         },
-        "/api/jefe/vacaciones/solicitudes": {
+        "/api/solicitudes-vacaciones-jefe": {
             "get": {
                 "tags": [
                     "Vacaciones Jefe"
                 ],
                 "summary": "Obtener todas las solicitudes de vacaciones del área del jefe",
-                "operationId": "762a8ea760ceb15d562ace28446a82d3",
+                "operationId": "6a3f94701e080d3124edaeb036faaa03",
                 "responses": {
                     "200": {
                         "description": "Lista de solicitudes obtenida correctamente",
@@ -2063,13 +2063,13 @@
                 ]
             }
         },
-        "/api/jefe/vacaciones/solicitudes/{id}": {
+        "/api/solicitudes-vacaciones-jefe/{id}": {
             "get": {
                 "tags": [
                     "Vacaciones Jefe"
                 ],
                 "summary": "Obtener una solicitud específica de vacaciones",
-                "operationId": "ee9df86d74d22c9325a479a857343b46",
+                "operationId": "c567f55eef9a9b255ba6c78ce00bd21d",
                 "parameters": [
                     {
                         "name": "id",
@@ -2161,13 +2161,13 @@
                 ]
             }
         },
-        "/api/jefe/vacaciones/solicitudes/{id}/aprobar": {
+        "/api/solicitudes-vacaciones-jefe/{id}/aprobar": {
             "post": {
                 "tags": [
                     "Vacaciones Jefe"
                 ],
                 "summary": "Aprobar una solicitud de vacaciones",
-                "operationId": "72e6302073ef0b89b72e62bcc9f35371",
+                "operationId": "f11bc406b96abc56dfe48aa54eda055b",
                 "parameters": [
                     {
                         "name": "id",
@@ -2234,13 +2234,13 @@
                 ]
             }
         },
-        "/api/jefe/vacaciones/solicitudes/{id}/rechazar": {
+        "/api/solicitudes-vacaciones-jefe/{id}/rechazar": {
             "post": {
                 "tags": [
                     "Vacaciones Jefe"
                 ],
                 "summary": "Rechazar una solicitud de vacaciones",
-                "operationId": "1ba9e6bad026a2fc6216fa5aac7f6c2a",
+                "operationId": "e7ecefa4945c94b1c8ab0bed0e551238",
                 "parameters": [
                     {
                         "name": "id",
@@ -2307,13 +2307,13 @@
                 ]
             }
         },
-        "/api/jefe/vacaciones/estadisticas": {
+        "/api/solicitudes-vacaciones-jefe/estadisticas": {
             "get": {
                 "tags": [
                     "Vacaciones Jefe"
                 ],
                 "summary": "Obtener estadísticas de solicitudes de vacaciones",
-                "operationId": "322e1fab2a5b45850d969864188550c7",
+                "operationId": "22029535342cd47ed02e983032c070e6",
                 "responses": {
                     "200": {
                         "description": "Estadísticas obtenidas correctamente",
@@ -2360,13 +2360,13 @@
                 ]
             }
         },
-        "/api/areas": {
+        "/api/area": {
             "get": {
                 "tags": [
                     "Área"
                 ],
                 "summary": "Listar todas las áreas",
-                "operationId": "b6c8972794178dbda72ae425617ac9c5",
+                "operationId": "1973f0c62301a7190ee5be204f9ab9d9",
                 "responses": {
                     "200": {
                         "description": "Listado de áreas exitoso"
@@ -2383,7 +2383,7 @@
                     "Área"
                 ],
                 "summary": "Crear nueva área",
-                "operationId": "a7578f388e27f49d38a899e0ec54cdd2",
+                "operationId": "3f4912fe386e1f388f491ec867c81b0e",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -2436,13 +2436,13 @@
                 ]
             }
         },
-        "/api/areas/{id}": {
+        "/api/area/{id}": {
             "get": {
                 "tags": [
                     "Área"
                 ],
                 "summary": "Obtener área por ID",
-                "operationId": "e9269d450b915be79714e3f2ada9df8b",
+                "operationId": "dcf5ce4ca4221b6dbe98a29fae23163d",
                 "parameters": [
                     {
                         "name": "id",
@@ -2473,7 +2473,7 @@
                     "Área"
                 ],
                 "summary": "Actualizar área completamente",
-                "operationId": "24bb42c8b3e6deccce450d7235f570c2",
+                "operationId": "e078af0a5a9e1101d48a75fb3adde841",
                 "parameters": [
                     {
                         "name": "id",
@@ -2542,7 +2542,7 @@
                 ],
                 "summary": "Eliminar un área",
                 "description": "Eliminar un área por su ID",
-                "operationId": "e5b60d0654e8cd9ec1e096ff1d2c154e",
+                "operationId": "3b002629be9c6e7e4d62d76328c28e2b",
                 "parameters": [
                     {
                         "name": "id",
@@ -2573,7 +2573,7 @@
                     "Área"
                 ],
                 "summary": "Actualizar parcialmente un área",
-                "operationId": "9e13590cda3f3be0018c7b7c692c3fd5",
+                "operationId": "90731e5d9cbba3b20657dbc9fca5e75e",
                 "parameters": [
                     {
                         "name": "id",
@@ -2630,13 +2630,13 @@
                 ]
             }
         },
-        "/api/areas/nombre/{nombre}": {
+        "/api/area/nombre/{nombre}": {
             "get": {
                 "tags": [
                     "Área"
                 ],
                 "summary": "Buscar área por nombre",
-                "operationId": "b88c63ccf6174d82f0bd0dfe92b48fd6",
+                "operationId": "91721748a79922879d9a3b5ec05e97cd",
                 "parameters": [
                     {
                         "name": "nombre",

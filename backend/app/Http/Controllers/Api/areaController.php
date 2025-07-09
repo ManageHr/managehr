@@ -18,7 +18,7 @@ class areaController extends Controller
 {
     /**
      * @OA\Get(
-     *     path="/api/areas",
+     *     path="/api/area",
      *     tags={"Área"},
      *     summary="Listar todas las áreas",
      *     security={{"bearerAuth":{}}},
@@ -35,7 +35,7 @@ class areaController extends Controller
     }
     /**
      * @OA\Post(
-     *     path="/api/areas",
+     *     path="/api/area",
      *     tags={"Área"},
      *     summary="Crear nueva área",
      *     security={{"bearerAuth":{}}},
@@ -88,7 +88,7 @@ class areaController extends Controller
     }
     /**
      * @OA\Get(
-     *     path="/api/areas/{id}",
+     *     path="/api/area/{id}",
      *     tags={"Área"},
      *     summary="Obtener área por ID",
      *     security={{"bearerAuth":{}}},
@@ -116,7 +116,7 @@ class areaController extends Controller
     }
     /**
      * @OA\Get(
-     *     path="/api/areas/nombre/{nombre}",
+     *     path="/api/area/nombre/{nombre}",
      *     tags={"Área"},
      *     summary="Buscar área por nombre",
      *     security={{"bearerAuth":{}}},
@@ -145,7 +145,7 @@ class areaController extends Controller
     }
     /**
      * @OA\Put(
-     *     path="/api/areas/{id}",
+     *     path="/api/area/{id}",
      *     tags={"Área"},
      *     summary="Actualizar área completamente",
      *     security={{"bearerAuth":{}}},
@@ -210,7 +210,7 @@ class areaController extends Controller
     }
     /**
      * @OA\Delete(
-     *     path="/api/areas/{id}",
+     *     path="/api/area/{id}",
      *     tags={"Área"},
      *     summary="Eliminar un área",
      *     security={{"bearerAuth":{}}},
@@ -244,7 +244,7 @@ class areaController extends Controller
     }
     /**
      * @OA\Patch(
-     *     path="/api/areas/{id}",
+     *     path="/api/area/{id}",
      *     tags={"Área"},
      *     summary="Actualizar parcialmente un área",
      *     security={{"bearerAuth":{}}},
