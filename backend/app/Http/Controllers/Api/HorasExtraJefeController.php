@@ -22,7 +22,7 @@ class HorasExtraJefeController extends Controller
 {
     /**
      * @OA\Get(
-     *     path="/api/jefe/horas-extra/solicitudes",
+     *     path="/api/solicitudes-horasextra-jefe/solicitudes",
      *     summary="Obtener todas las solicitudes de horas extra del área del jefe",
      *     tags={"Horas Extra Jefe"},
      *     security={{"bearerAuth":{}}},
@@ -124,7 +124,7 @@ class HorasExtraJefeController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/jefe/horas-extra/solicitudes/{id}",
+     *     path="/api/solicitudes-horasextra-jefe/{id}",
      *     summary="Obtener una solicitud específica de horas extra",
      *     tags={"Horas Extra Jefe"},
      *     security={{"bearerAuth":{}}},
@@ -217,7 +217,7 @@ class HorasExtraJefeController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/jefe/horas-extra/solicitudes/{id}/aprobar",
+     *     path="/api/solicitudes-horasextra-jefe/{id}/aprobar",
      *     summary="Aprobar una solicitud de horas extra",
      *     tags={"Horas Extra Jefe"},
      *     security={{"bearerAuth":{}}},
@@ -286,7 +286,7 @@ class HorasExtraJefeController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/jefe/horas-extra/solicitudes/{id}/rechazar",
+     *     path="/api/solicitudes-horasextra-jefe/{id}/rechazar",
      *     summary="Rechazar una solicitud de horas extra",
      *     tags={"Horas Extra Jefe"},
      *     security={{"bearerAuth":{}}},
@@ -355,7 +355,7 @@ class HorasExtraJefeController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/jefe/horas-extra/estadisticas",
+     *     path="/api/solicitudes-horasextra-jefe/estadisticas",
      *     summary="Obtener estadísticas de solicitudes de horas extra",
      *     tags={"Horas Extra Jefe"},
      *     security={{"bearerAuth":{}}},
@@ -415,7 +415,7 @@ class HorasExtraJefeController extends Controller
 
     /**
      * @OA\Put(
-     *     path="/api/jefe/horas-extra/solicitudes/{id}/estado",
+     *     path="/api/solicitudes-horasextra-jefe/{id}/estado",
      *     summary="Actualizar el estado de una solicitud de horas extra",
      *     tags={"Horas Extra Jefe"},
      *     security={{"bearerAuth":{}}},

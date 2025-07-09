@@ -1396,13 +1396,13 @@
                 ]
             }
         },
-        "/api/jefe/incapacidades/solicitudes": {
+        "/api/solicitudes-incapacidades-jefe": {
             "get": {
                 "tags": [
                     "Incapacidades Jefe"
                 ],
                 "summary": "Obtener todas las solicitudes de incapacidades del área del jefe",
-                "operationId": "4003d22cbf69ea6ca49888176984acce",
+                "operationId": "afdbbb68d95176d549cffc23e3c6f449",
                 "responses": {
                     "200": {
                         "description": "Lista de solicitudes obtenida correctamente",
@@ -1484,13 +1484,13 @@
                 ]
             }
         },
-        "/api/jefe/incapacidades/solicitudes/{id}": {
+        "/api/solicitudes-incapacidades-jefe/{id}": {
             "get": {
                 "tags": [
                     "Incapacidades Jefe"
                 ],
                 "summary": "Obtener una solicitud específica de incapacidad",
-                "operationId": "42e1d55055380d4126968d7ee46f4179",
+                "operationId": "5309a410cfda8c73ab785efbdb9ab0d7",
                 "parameters": [
                     {
                         "name": "id",
@@ -1578,13 +1578,13 @@
                 ]
             }
         },
-        "/api/jefe/incapacidades/solicitudes/{id}/aprobar": {
+        "/api/solicitudes-incapacidades-jefe/{id}/aprobar": {
             "post": {
                 "tags": [
                     "Incapacidades Jefe"
                 ],
                 "summary": "Aprobar una solicitud de incapacidad",
-                "operationId": "a03ba64e66543ab8cb25de530cba7e25",
+                "operationId": "e05479f831bebb49e9974d89d0d42ceb",
                 "parameters": [
                     {
                         "name": "id",
@@ -1651,13 +1651,13 @@
                 ]
             }
         },
-        "/api/jefe/incapacidades/solicitudes/{id}/rechazar": {
+        "/api/solicitudes-incapacidades-jefe/{id}/rechazar": {
             "post": {
                 "tags": [
                     "Incapacidades Jefe"
                 ],
                 "summary": "Rechazar una solicitud de incapacidad",
-                "operationId": "9c471ae6565b07c899519b8d5d52a897",
+                "operationId": "2f8b392ff2892986b09d7fc0f97d7bac",
                 "parameters": [
                     {
                         "name": "id",
@@ -1724,13 +1724,13 @@
                 ]
             }
         },
-        "/api/jefe/incapacidades/estadisticas": {
+        "/api/solicitudes-incapacidades-jefe/estadisticas": {
             "get": {
                 "tags": [
                     "Incapacidades Jefe"
                 ],
                 "summary": "Obtener estadísticas de solicitudes de incapacidades",
-                "operationId": "9414509ba851bdd6f80d549c93748636",
+                "operationId": "9cf6193b99dab719dfdd2fb7715ef24c",
                 "responses": {
                     "200": {
                         "description": "Estadísticas obtenidas correctamente",
@@ -1777,13 +1777,13 @@
                 ]
             }
         },
-        "/api/jefe/incapacidades/solicitudes/{id}/estado": {
+        "/api/solicitudes-incapacidades-jefe/{id}/estado": {
             "put": {
                 "tags": [
                     "Incapacidades Jefe"
                 ],
                 "summary": "Actualizar el estado de una solicitud de incapacidad",
-                "operationId": "f91d161a0747c020e7410c0fb2bb9bc6",
+                "operationId": "93c7537578e9556a92d3cf15915a27db",
                 "parameters": [
                     {
                         "name": "id",
@@ -2854,13 +2854,13 @@
                 ]
             }
         },
-        "/api/categoria-has-usuario": {
+        "/api/categoriaHasUsuario": {
             "get": {
                 "tags": [
                     "Categorías Usuario"
                 ],
                 "summary": "Obtener todas las categorías asignadas a usuarios",
-                "operationId": "f0585f649950efa899eb340614cb1973",
+                "operationId": "33c0480cc30f59a3c6b13f19f1c436e4",
                 "responses": {
                     "200": {
                         "description": "Lista de categorías de usuarios obtenida exitosamente",
@@ -2938,7 +2938,7 @@
                     "Categorías Usuario"
                 ],
                 "summary": "Asignar una categoría a un usuario",
-                "operationId": "cf947bccead8edf0f13b5ac884ebf4b8",
+                "operationId": "077892d3c67090772b7669a8cff1804e",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -3043,13 +3043,13 @@
                 ]
             }
         },
-        "/api/categoria-has-usuario/{id}": {
+        "/api/categoriaHasUsuario/{id}": {
             "get": {
                 "tags": [
                     "Categorías Usuario"
                 ],
                 "summary": "Obtener categorías asignadas a un usuario específico",
-                "operationId": "7d1e4715c04e80ed90c55f9303e94178",
+                "operationId": "6cd36121ed0ca7f9c4edd8952dcde762",
                 "parameters": [
                     {
                         "name": "id",
@@ -3117,7 +3117,7 @@
                     "Categorías Usuario"
                 ],
                 "summary": "Actualizar categoría asignada a un usuario",
-                "operationId": "c0b3e7d878e9a4d2e332f651c0d48ace",
+                "operationId": "4dbecee94d2e8a57dcd3b00de66d037b",
                 "parameters": [
                     {
                         "name": "id",
@@ -3252,7 +3252,7 @@
                     "Categorías Usuario"
                 ],
                 "summary": "Eliminar categoría asignada a un usuario",
-                "operationId": "c0c2a7d7976875eae8f73ee4941136e0",
+                "operationId": "2ccf9f29cd3b50d73938578a5b81c778",
                 "parameters": [
                     {
                         "name": "id",
@@ -3318,7 +3318,7 @@
                     "Categorías Usuario"
                 ],
                 "summary": "Actualizar parcialmente categoría asignada a un usuario",
-                "operationId": "22c1e512aa4e91c68902525dc419579f",
+                "operationId": "b0275fee5ffb7638b7012329d9ed7738",
                 "parameters": [
                     {
                         "name": "id",
@@ -6229,13 +6229,13 @@
                 ]
             }
         },
-        "/api/jefe/personal/empleados/{jefeId}": {
+        "/api/jefe-personal/empleados/{jefeId}": {
             "get": {
                 "tags": [
                     "Jefe Personal"
                 ],
                 "summary": "Obtener empleados bajo la supervisión de un jefe de personal",
-                "operationId": "39f9d423d87fd41971f77c6b3b37fdf0",
+                "operationId": "990aeae661c1ff69cb5f80d82f7d115a",
                 "parameters": [
                     {
                         "name": "jefeId",
@@ -6385,13 +6385,13 @@
                 ]
             }
         },
-        "/api/jefe/personal": {
+        "/api/jefe-personal": {
             "get": {
                 "tags": [
                     "Jefe Personal"
                 ],
                 "summary": "Listar jefes de personal",
-                "operationId": "1eaf09122849f82f688db4eb1a190eb4",
+                "operationId": "82bbc6e31f262b329972651adc52bb33",
                 "responses": {
                     "200": {
                         "description": "Lista de jefes de personal obtenida correctamente",
@@ -6446,7 +6446,7 @@
                     "Jefe Personal"
                 ],
                 "summary": "Crear nuevo jefe de personal",
-                "operationId": "599fc14f0a0187ca6c6e56122cefee3f",
+                "operationId": "6fcafd89d183ae930153ef8c0ee6520a",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -6503,13 +6503,13 @@
                 ]
             }
         },
-        "/api/jefe/personal/{id}": {
+        "/api/jefe-personal/{id}": {
             "get": {
                 "tags": [
                     "Jefe Personal"
                 ],
                 "summary": "Obtener jefe de personal específico",
-                "operationId": "17be179ba6fa2a602031e58c8076e644",
+                "operationId": "8cfe2e9a51aab30e08c58890d61667ab",
                 "parameters": [
                     {
                         "name": "id",
@@ -6573,7 +6573,7 @@
                     "Jefe Personal"
                 ],
                 "summary": "Actualizar jefe de personal",
-                "operationId": "dc050e7e118696fdd9ee0c708834f2ff",
+                "operationId": "efa4bffa5343423be777a9a627369fb0",
                 "parameters": [
                     {
                         "name": "id",
@@ -6641,7 +6641,7 @@
                     "Jefe Personal"
                 ],
                 "summary": "Eliminar jefe de personal",
-                "operationId": "9ef7449ba8340adfe5b22aa662ad8978",
+                "operationId": "8fecd4b3d6fa7ecdda78e8fca24407b8",
                 "parameters": [
                     {
                         "name": "id",
