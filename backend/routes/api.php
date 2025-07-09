@@ -414,7 +414,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/', [HorasExtraJefeController::class, 'obtenerSolicitudesHorasExtra']);
         Route::get('/estadisticas', [HorasExtraJefeController::class, 'obtenerEstadisticas']);
         Route::get('/{id}', [HorasExtraJefeController::class, 'obtenerSolicitud']);
-        Route::put('/{id}/aprobar', [HorasExtraJefeController::class, 'aprobarSolicitud']);
+        Route::put('/{id}/aprobar', [HorasExtraJefeController::class, 'aprobarSolicitud']); 
         Route::put('/{id}/rechazar', [HorasExtraJefeController::class, 'rechazarSolicitud']);
         Route::put('/{id}/estado', [HorasExtraJefeController::class, 'actualizarEstado']);
     });

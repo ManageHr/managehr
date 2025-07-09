@@ -24,7 +24,7 @@ class IncapacidadesJefeController extends Controller
 {
     /**
      * @OA\Get(
-     *     path="/api/jefe/incapacidades/solicitudes",
+     *     path="/api/solicitudes-incapacidades-jefe",
      *     summary="Obtener todas las solicitudes de incapacidades del área del jefe",
      *     tags={"Incapacidades Jefe"},
      *     security={{"bearerAuth":{}}},
@@ -132,7 +132,7 @@ class IncapacidadesJefeController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/jefe/incapacidades/solicitudes/{id}",
+     *     path="/api/solicitudes-incapacidades-jefe/{id}",
      *     summary="Obtener una solicitud específica de incapacidad",
      *     tags={"Incapacidades Jefe"},
      *     security={{"bearerAuth":{}}},
@@ -227,7 +227,7 @@ class IncapacidadesJefeController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/jefe/incapacidades/solicitudes/{id}/aprobar",
+     *     path="/api/solicitudes-incapacidades-jefe/{id}/aprobar",
      *     summary="Aprobar una solicitud de incapacidad",
      *     tags={"Incapacidades Jefe"},
      *     security={{"bearerAuth":{}}},
@@ -302,7 +302,7 @@ class IncapacidadesJefeController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/jefe/incapacidades/solicitudes/{id}/rechazar",
+     *     path="/api/solicitudes-incapacidades-jefe/{id}/rechazar",
      *     summary="Rechazar una solicitud de incapacidad",
      *     tags={"Incapacidades Jefe"},
      *     security={{"bearerAuth":{}}},
@@ -377,7 +377,7 @@ class IncapacidadesJefeController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/jefe/incapacidades/estadisticas",
+     *     path="/api/solicitudes-incapacidades-jefe/estadisticas",
      *     summary="Obtener estadísticas de solicitudes de incapacidades",
      *     tags={"Incapacidades Jefe"},
      *     security={{"bearerAuth":{}}},
@@ -466,7 +466,7 @@ class IncapacidadesJefeController extends Controller
 
     /**
      * @OA\Put(
-     *     path="/api/jefe/incapacidades/solicitudes/{id}/estado",
+     *     path="/api/solicitudes-incapacidades-jefe/{id}/estado",
      *     summary="Actualizar el estado de una solicitud de incapacidad",
      *     tags={"Incapacidades Jefe"},
      *     security={{"bearerAuth":{}}},

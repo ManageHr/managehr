@@ -23,7 +23,7 @@ class jefePersonalController extends Controller
 {
     /**
      * @OA\Get(
-     *     path="/api/jefe/personal/empleados/{jefeId}",
+     *     path="/api/jefe-personal/empleados/{jefeId}",
      *     summary="Obtener empleados bajo la supervisión de un jefe de personal",
      *     tags={"Jefe Personal"},
      *     security={{"bearerAuth":{}}},
@@ -128,7 +128,7 @@ class jefePersonalController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/jefe/personal",
+     *     path="/api/jefe-personal",
      *     summary="Listar jefes de personal",
      *     tags={"Jefe Personal"},
      *     security={{"bearerAuth":{}}},
@@ -178,7 +178,7 @@ class jefePersonalController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/jefe/personal",
+     *     path="/api/jefe-personal",
      *     summary="Crear nuevo jefe de personal",
      *     tags={"Jefe Personal"},
      *     security={{"bearerAuth":{}}},
@@ -240,7 +240,7 @@ class jefePersonalController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/jefe/personal/{id}",
+     *     path="/api/jefe-personal/{id}",
      *     summary="Obtener jefe de personal específico",
      *     tags={"Jefe Personal"},
      *     security={{"bearerAuth":{}}},
@@ -297,7 +297,7 @@ class jefePersonalController extends Controller
 
     /**
      * @OA\Put(
-     *     path="/api/jefe/personal/{id}",
+     *     path="/api/jefe-personal/{id}",
      *     summary="Actualizar jefe de personal",
      *     tags={"Jefe Personal"},
      *     security={{"bearerAuth":{}}},
@@ -370,7 +370,7 @@ class jefePersonalController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/api/jefe/personal/{id}",
+     *     path="/api/jefe-personal/{id}",
      *     summary="Eliminar jefe de personal",
      *     tags={"Jefe Personal"},
      *     security={{"bearerAuth":{}}},

@@ -17,7 +17,7 @@ class categoriaHasUsuarioController extends Controller
 {
     /**
      * @OA\Get(
-     *     path="/api/categoria-has-usuario",
+     *     path="/api/categoriaHasUsuario",
      *     summary="Obtener todas las categorías asignadas a usuarios",
      *     tags={"Categorías Usuario"},
      *     security={{"bearerAuth":{}}},
@@ -77,7 +77,7 @@ class categoriaHasUsuarioController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/categoria-has-usuario",
+     *     path="/api/categoriaHasUsuario",
      *     summary="Asignar una categoría a un usuario",
      *     tags={"Categorías Usuario"},
      *     security={{"bearerAuth":{}}},
@@ -163,7 +163,7 @@ class categoriaHasUsuarioController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/categoria-has-usuario/{id}",
+     *     path="/api/categoriaHasUsuario/{id}",
      *     summary="Obtener categorías asignadas a un usuario específico",
      *     tags={"Categorías Usuario"},
      *     security={{"bearerAuth":{}}},
@@ -211,7 +211,7 @@ class categoriaHasUsuarioController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/api/categoria-has-usuario/{id}",
+     *     path="/api/categoriaHasUsuario/{id}",
      *     summary="Eliminar categoría asignada a un usuario",
      *     tags={"Categorías Usuario"},
      *     security={{"bearerAuth":{}}},
@@ -261,7 +261,7 @@ class categoriaHasUsuarioController extends Controller
 
     /**
      * @OA\Put(
-     *     path="/api/categoria-has-usuario/{id}",
+     *     path="/api/categoriaHasUsuario/{id}",
      *     summary="Actualizar categoría asignada a un usuario",
      *     tags={"Categorías Usuario"},
      *     security={{"bearerAuth":{}}},
@@ -360,7 +360,7 @@ class categoriaHasUsuarioController extends Controller
     }
         /**
      * @OA\Patch(
-     *     path="/api/categoria-has-usuario/{id}",
+     *     path="/api/categoriaHasUsuario/{id}",
      *     summary="Actualizar parcialmente categoría asignada a un usuario",
      *     tags={"Categorías Usuario"},
      *     security={{"bearerAuth":{}}},
