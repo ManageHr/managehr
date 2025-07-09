@@ -14,8 +14,8 @@ use Illuminate\Support\Facades\Auth;
 
 /**
  * @OA\Tag(
- *     name="Incapacidades",
- *     description="Gestión de solicitudes de incapacidades"
+ *     name="Incapacidades Empleado",
+ *     description="Solicitudes de incapacidades realizadas por empleados internos. Permite registrar y consultar solicitudes propias de incapacidad."
  * )
  */
 
@@ -25,7 +25,7 @@ class formincapacidadController extends Controller
      * @OA\Post(
      *     path="/api/solicitudes-incapacidades",
      *     summary="Registrar una nueva solicitud de incapacidad",
-     *     tags={"Incapacidades"},
+     *     tags={"Incapacidades Empleado"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
@@ -156,7 +156,7 @@ class formincapacidadController extends Controller
      * @OA\Get(
      *     path="/api/solicitudes-incapacidades",
      *     summary="Obtener solicitudes de incapacidad del usuario autenticado",
-     *     tags={"Incapacidades"},
+     *     tags={"Incapacidades Empleado"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Response(
      *         response=200,

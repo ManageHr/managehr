@@ -7,6 +7,12 @@ use Illuminate\Http\Request;
 use App\Models\Horasextra;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * @OA\Tag(
+ *     name="Horas Extra",
+ *     description="Solicitudes de horas extra. Permite registrar, consultar, actualizar y eliminar solicitudes propias de horas extra."
+ * )
+ */
 class HorasextraController extends Controller
 {
 

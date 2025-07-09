@@ -14,7 +14,7 @@ use App\Models\Horasextra;
 /**
  * @OA\Tag(
  *     name="Horas Extra Jefe",
- *     description="Gestión de solicitudes de horas extra por parte del jefe de personal. Este módulo permite al jefe de personal gestionar las solicitudes de horas extra de los empleados de su área, incluyendo aprobar, rechazar y consultar solicitudes."
+ *     description="Gestión y aprobación de solicitudes de horas extra por parte del jefe de personal. Permite consultar, aprobar o rechazar solicitudes de su área."
  * )
  */
 

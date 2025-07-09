@@ -15,7 +15,7 @@
         "/api/horas-extra": {
             "get": {
                 "tags": [
-                    "HorasExtra"
+                    "Horas Extra Empleado"
                 ],
                 "summary": "Obtener solicitudes de horas extra del usuario autenticado",
                 "description": "Retorna todas las solicitudes de horas extra asociadas al contrato del usuario autenticado.",
@@ -62,7 +62,7 @@
             },
             "post": {
                 "tags": [
-                    "HorasExtra"
+                    "Horas Extra Empleado"
                 ],
                 "summary": "Registrar una nueva solicitud de horas extra",
                 "description": "Permite a un usuario autenticado registrar una solicitud de horas extra asociada a su contrato actual.",
@@ -1858,6 +1858,128 @@
                 ]
             }
         },
+        "/api/mis-postulaciones": {
+            "get": {
+                "tags": [
+                    "Mis Postulaciones"
+                ],
+                "summary": "Obtener mis postulaciones",
+                "description": "Obtiene todas las postulaciones del usuario autenticado a diferentes vacantes",
+                "operationId": "ae4c328250661c7b80991190875d49d9",
+                "responses": {
+                    "200": {
+                        "description": "Lista de postulaciones obtenida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "numdocumento": {
+                                                        "type": "string",
+                                                        "example": "12345678"
+                                                    },
+                                                    "vacante_id": {
+                                                        "type": "integer",
+                                                        "example": 5
+                                                    },
+                                                    "estado": {
+                                                        "type": "string",
+                                                        "example": "Pendiente"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "vacante": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 5
+                                                            },
+                                                            "titulo": {
+                                                                "type": "string",
+                                                                "example": "Desarrollador Full Stack"
+                                                            },
+                                                            "descripcion": {
+                                                                "type": "string",
+                                                                "example": "Descripción de la vacante"
+                                                            },
+                                                            "salario": {
+                                                                "type": "number",
+                                                                "example": 3000000
+                                                            },
+                                                            "estado": {
+                                                                "type": "string",
+                                                                "example": "Activa"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Usuario no autenticado o sin número de documento",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Usuario no autenticado o sin número de documento."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ocurrió un error al obtener tus postulaciones."
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Error detallado del servidor"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/nacionalidades": {
             "get": {
                 "tags": [
@@ -2723,6 +2845,572 @@
                     },
                     "500": {
                         "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/categoria-has-usuario": {
+            "get": {
+                "tags": [
+                    "Categorías Usuario"
+                ],
+                "summary": "Obtener todas las categorías asignadas a usuarios",
+                "operationId": "f0585f649950efa899eb340614cb1973",
+                "responses": {
+                    "200": {
+                        "description": "Lista de categorías de usuarios obtenida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "cathasusu": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "categoriaVacantesId": {
+                                                        "type": "integer",
+                                                        "example": 3
+                                                    },
+                                                    "usuarioNumDocumento": {
+                                                        "type": "integer",
+                                                        "example": 12345678
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error en la base de datos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "No retorna por error en DB"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 400
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Categorías Usuario"
+                ],
+                "summary": "Asignar una categoría a un usuario",
+                "operationId": "cf947bccead8edf0f13b5ac884ebf4b8",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "categoriaVacantesId",
+                                    "usuarioNumDocumento"
+                                ],
+                                "properties": {
+                                    "categoriaVacantesId": {
+                                        "description": "ID de la categoría de vacantes",
+                                        "type": "integer",
+                                        "example": 3
+                                    },
+                                    "usuarioNumDocumento": {
+                                        "description": "Número de documento del usuario",
+                                        "type": "integer",
+                                        "example": 12345678
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Categoría asignada al usuario correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Categoria has usuario no se ha creado correctamente"
+                                        },
+                                        "cathasusu": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 201
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error en la validación de datos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Error en la validación de datos de categoriahasusuario"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 400
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error al crear la asignación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Error al crear el categoriahasusuario"
+                                        },
+                                        "error": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 500
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/categoria-has-usuario/{id}": {
+            "get": {
+                "tags": [
+                    "Categorías Usuario"
+                ],
+                "summary": "Obtener categorías asignadas a un usuario específico",
+                "operationId": "7d1e4715c04e80ed90c55f9303e94178",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Número de documento del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 12345678
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Categorías del usuario obtenidas exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "cathasusu": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Usuario no existe",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "El usuario no existe"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 400
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Categorías Usuario"
+                ],
+                "summary": "Actualizar categoría asignada a un usuario",
+                "operationId": "c0b3e7d878e9a4d2e332f651c0d48ace",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Número de documento del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 12345678
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "categoriaVacantesId",
+                                    "usuarioNumDocumento"
+                                ],
+                                "properties": {
+                                    "categoriaVacantesId": {
+                                        "type": "integer",
+                                        "example": 3
+                                    },
+                                    "usuarioNumDocumento": {
+                                        "type": "integer",
+                                        "example": 12345678
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Categoría actualizada correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Categoría actualizada correctamente"
+                                        },
+                                        "cathasusu": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error en la validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 400
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Categoría no encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "No se encontró la categoría asociada al usuario"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 404
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error al modificar la categoría",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Error al modificar la categoría del usuario"
+                                        },
+                                        "error": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 500
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Categorías Usuario"
+                ],
+                "summary": "Eliminar categoría asignada a un usuario",
+                "operationId": "c0c2a7d7976875eae8f73ee4941136e0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Número de documento del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 12345678
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Registro eliminado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Registro eliminado correctamente"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Categoría no encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "No se encontró la categoría asignada al usuario"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 404
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Categorías Usuario"
+                ],
+                "summary": "Actualizar parcialmente categoría asignada a un usuario",
+                "operationId": "22c1e512aa4e91c68902525dc419579f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Número de documento del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 12345678
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "categoriaVacantesId": {
+                                        "type": "integer"
+                                    },
+                                    "usuarioNumDocumento": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Categoría actualizada parcialmente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "cathasusu": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error en la validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mesaje": {
+                                            "type": "string",
+                                            "example": "Error al validar categoria has usuario"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 400
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Categoría no encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensage": {
+                                            "type": "string",
+                                            "example": "No se encontro la categoria has usuario"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 404
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -4136,7 +4824,7 @@
         "/api/solicitudes-incapacidades": {
             "get": {
                 "tags": [
-                    "Incapacidades"
+                    "Incapacidades Empleado"
                 ],
                 "summary": "Obtener solicitudes de incapacidad del usuario autenticado",
                 "operationId": "e4fa03a260f935a05387d40f1e006352",
@@ -4166,7 +4854,7 @@
             },
             "post": {
                 "tags": [
-                    "Incapacidades"
+                    "Incapacidades Empleado"
                 ],
                 "summary": "Registrar una nueva solicitud de incapacidad",
                 "operationId": "3b421660674ba8f68d9156529523a711",
@@ -4242,7 +4930,7 @@
         "/api/solicitudes-vacaciones-con-archivo": {
             "get": {
                 "tags": [
-                    "Vacaciones"
+                    "Vacaciones Empleado"
                 ],
                 "summary": "Obtener solicitudes de vacaciones del usuario autenticado",
                 "operationId": "d32949f50d0e4656d4177d6fe5f318f3",
@@ -4275,7 +4963,7 @@
             },
             "post": {
                 "tags": [
-                    "Vacaciones"
+                    "Vacaciones Empleado"
                 ],
                 "summary": "Registrar una nueva solicitud de vacaciones",
                 "operationId": "faa79c614fe8311edd65e005e9bc8c75",
@@ -5134,6 +5822,349 @@
                     },
                     "404": {
                         "description": "Solicitud no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/incapacidad": {
+            "get": {
+                "tags": [
+                    "Incapacidades"
+                ],
+                "summary": "Obtener todas las incapacidades",
+                "operationId": "897531ba5a76e6cf3639fc1f8c98e857",
+                "responses": {
+                    "200": {
+                        "description": "Lista de incapacidades obtenida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error al obtener incapacidades"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Incapacidades"
+                ],
+                "summary": "Registrar una nueva incapacidad",
+                "operationId": "99f3918c4c50276f4bb5ec7de504509f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "descrip",
+                                    "fechaInicio",
+                                    "fechaFinal",
+                                    "contratoId"
+                                ],
+                                "properties": {
+                                    "descrip": {
+                                        "type": "string",
+                                        "example": "Incapacidad por enfermedad"
+                                    },
+                                    "archivo": {
+                                        "description": "Archivo adjunto",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "fechaInicio": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2024-07-01"
+                                    },
+                                    "fechaFinal": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2024-07-10"
+                                    },
+                                    "contratoId": {
+                                        "type": "integer",
+                                        "example": 5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Incapacidad creada correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "incapacidad creado correctamente"
+                                        },
+                                        "incapacidad": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 201
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error en la validación de datos de la incapacidad"
+                    },
+                    "500": {
+                        "description": "Error al crear el incapacidad"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/incapacidad/{id}": {
+            "get": {
+                "tags": [
+                    "Incapacidades"
+                ],
+                "summary": "Obtener una incapacidad por ID",
+                "operationId": "9933b0220371527ac9c2f377677443bb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la incapacidad",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Incapacidad encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "incapacidad": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Incapacidad no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Incapacidades"
+                ],
+                "summary": "Actualizar una incapacidad",
+                "operationId": "dc0d06df70e66669b0f9bc9825536a55",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la incapacidad",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "descrip",
+                                    "fechaInicio",
+                                    "fechaFinal",
+                                    "contratoId"
+                                ],
+                                "properties": {
+                                    "descrip": {
+                                        "type": "string",
+                                        "example": "Actualización de incapacidad"
+                                    },
+                                    "archivo": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "fechaInicio": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2024-07-01"
+                                    },
+                                    "fechaFinal": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2024-07-10"
+                                    },
+                                    "contratoId": {
+                                        "type": "integer",
+                                        "example": 5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Incapacidad actualizada correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "incapacidad": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error en la validación"
+                    },
+                    "404": {
+                        "description": "Incapacidad no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Incapacidades"
+                ],
+                "summary": "Actualizar parcialmente una incapacidad",
+                "operationId": "1bd745ddd186375a92bbb5e7704d83e0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la incapacidad",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "descrip": {
+                                        "type": "string"
+                                    },
+                                    "archivo": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "fechaInicio": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "fechaFinal": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "contratoId": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Incapacidad actualizada parcialmente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "incapacidad": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error en la validación"
+                    },
+                    "404": {
+                        "description": "Incapacidad no encontrada"
                     }
                 },
                 "security": [
@@ -8162,6 +9193,580 @@
                 }
             }
         },
+        "/api/usuarios-has-rol": {
+            "get": {
+                "tags": [
+                    "Usuarios Roles"
+                ],
+                "summary": "Obtener todas las asignaciones de roles a usuarios",
+                "operationId": "c10fcf67dc8fc4bf4276a725bcd62c1e",
+                "responses": {
+                    "200": {
+                        "description": "Lista de asignaciones de roles obtenida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "usuarioshasrol": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "estado": {
+                                                        "type": "string",
+                                                        "example": "Activo"
+                                                    },
+                                                    "usuarioNumDocumento": {
+                                                        "type": "integer",
+                                                        "example": 12345678
+                                                    },
+                                                    "rolId": {
+                                                        "type": "integer",
+                                                        "example": 2
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error en la base de datos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "No retorna por error en DB"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 400
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Usuarios Roles"
+                ],
+                "summary": "Asignar un rol a un usuario",
+                "operationId": "bb816cea5af4f1615f9e0d9b22b5218d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "estado",
+                                    "usuarioNumDocumento",
+                                    "rolId"
+                                ],
+                                "properties": {
+                                    "estado": {
+                                        "description": "Estado del rol (Activo/Inactivo)",
+                                        "type": "string",
+                                        "example": "Activo"
+                                    },
+                                    "usuarioNumDocumento": {
+                                        "description": "Número de documento del usuario",
+                                        "type": "integer",
+                                        "example": 12345678
+                                    },
+                                    "rolId": {
+                                        "description": "ID del rol a asignar",
+                                        "type": "integer",
+                                        "example": 2
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Rol asignado al usuario correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "usuariohasrol creado correctamente"
+                                        },
+                                        "usuarioshasrol": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 201
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error en la validación de datos o usuario ya registrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Error en la validación de datos de usuariohasrol"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 400
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Usuario ya registrado o error al crear",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "El usuario ya esta registrado"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 400
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/usuarios-has-rol/{id}": {
+            "get": {
+                "tags": [
+                    "Usuarios Roles"
+                ],
+                "summary": "Obtener rol asignado a un usuario específico",
+                "operationId": "7a2e7d967a96100e25740bdf68b4243f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Número de documento del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 12345678
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rol del usuario obtenido exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "usuarioshasrol": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Usuario no existe",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "El usuario no existe"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 400
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Usuarios Roles"
+                ],
+                "summary": "Actualizar rol asignado a un usuario",
+                "operationId": "e606e505deb99d73f46be823aba1c153",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Número de documento del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 12345678
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "estado",
+                                    "usuarioNumDocumento",
+                                    "rolId"
+                                ],
+                                "properties": {
+                                    "estado": {
+                                        "type": "string",
+                                        "example": "Activo"
+                                    },
+                                    "usuarioNumDocumento": {
+                                        "type": "integer",
+                                        "example": 12345678
+                                    },
+                                    "rolId": {
+                                        "type": "integer",
+                                        "example": 2
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Rol actualizado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "usuarioshasrol": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error en la validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 400
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Usuario no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensage": {
+                                            "type": "string",
+                                            "example": "No se encontro usuarioshasrol"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 404
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error al modificar el rol",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Error al modificar el usuario has rol"
+                                        },
+                                        "error": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 500
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Usuarios Roles"
+                ],
+                "summary": "Eliminar rol asignado a un usuario",
+                "operationId": "2d1c76f330a4b738e573f263a2e039de",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Número de documento del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 12345678
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rol eliminado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "usuarioshasrol": {
+                                            "type": "string",
+                                            "example": "usuariohasrol eliminado"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Usuario no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensage": {
+                                            "type": "string",
+                                            "example": "No se encontro usuarioshasrol"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 404
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Usuarios Roles"
+                ],
+                "summary": "Actualizar parcialmente rol asignado a un usuario",
+                "operationId": "63564603cf26c91f0d6efeedec9b7f73",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Número de documento del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 12345678
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "estado": {
+                                        "type": "string"
+                                    },
+                                    "usuarioNumDocumento": {
+                                        "type": "integer"
+                                    },
+                                    "rolId": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Rol actualizado parcialmente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "usuarioshasrol": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error en la validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mesaje": {
+                                            "type": "string",
+                                            "example": "Error al validar usuariohasrol"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 400
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Usuario no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensage": {
+                                            "type": "string",
+                                            "example": "No se encontro usuarioshasrol"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 404
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/vacaciones": {
             "get": {
                 "tags": [
@@ -8853,6 +10458,571 @@
                     }
                 ]
             }
+        },
+        "/api/vacantes-has-postulaciones": {
+            "get": {
+                "tags": [
+                    "Vacantes Postulaciones"
+                ],
+                "summary": "Obtener todas las relaciones vacantes-postulaciones",
+                "operationId": "35fc51f469b4860ac5fa1a66f042ee79",
+                "responses": {
+                    "200": {
+                        "description": "Lista de relaciones vacantes-postulaciones obtenida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "vachaspos": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "vacantesid": {
+                                                        "type": "integer",
+                                                        "example": 5
+                                                    },
+                                                    "postulacionesid": {
+                                                        "type": "integer",
+                                                        "example": 10
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error en la base de datos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "No retorna por error en DB"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 400
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Vacantes Postulaciones"
+                ],
+                "summary": "Crear relación entre vacante y postulación",
+                "operationId": "2387d9e7bba9a1221b3b586d4b1fa7a3",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "vacantesid",
+                                    "postulacionesid"
+                                ],
+                                "properties": {
+                                    "vacantesid": {
+                                        "description": "ID de la vacante",
+                                        "type": "integer",
+                                        "example": 5
+                                    },
+                                    "postulacionesid": {
+                                        "description": "ID de la postulación",
+                                        "type": "integer",
+                                        "example": 10
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Relación vacante-postulación creada correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Vacante has postulacion no se ha creado correctamente"
+                                        },
+                                        "vachaspos": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 201
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error en la validación de datos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Error en la validación de datos de vacanteshaspostulaciones"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 400
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error al crear la relación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Error al crear el vacantehaspostulacion"
+                                        },
+                                        "error": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 500
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/vacantes-has-postulaciones/{id}": {
+            "get": {
+                "tags": [
+                    "Vacantes Postulaciones"
+                ],
+                "summary": "Obtener postulaciones de una vacante específica",
+                "operationId": "5f7864ba4d80586ec0ee3c6832a562d9",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la vacante",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 5
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Postulaciones de la vacante obtenidas exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "usuarioshasrol": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Vacante no existe",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "La vacante no existe"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 400
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Vacantes Postulaciones"
+                ],
+                "summary": "Actualizar relación vacante-postulación",
+                "operationId": "89ae67fe12096f04d8726a2ba9c52024",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la vacante",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 5
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "vacantesid",
+                                    "postulacionesid"
+                                ],
+                                "properties": {
+                                    "vacantesid": {
+                                        "type": "integer",
+                                        "example": 5
+                                    },
+                                    "postulacionesid": {
+                                        "type": "integer",
+                                        "example": 10
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Relación actualizada correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "usuarioshasrol": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error en la validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 400
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Relación no encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensage": {
+                                            "type": "string",
+                                            "example": "No se encontro la vacante has postulacion"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 404
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error al modificar la relación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Error al modificar el vacantes has postulaciones"
+                                        },
+                                        "error": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 500
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Vacantes Postulaciones"
+                ],
+                "summary": "Eliminar relación vacante-postulación",
+                "operationId": "b886c6765fc25238100fe2f8f3b1d94c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Número de documento del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 12345678
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Relación eliminada correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "vachaspos": {
+                                            "type": "string",
+                                            "example": "Vacante has postulacion eliminado"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Relación no encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensage": {
+                                            "type": "string",
+                                            "example": "No se encontro usuarioshasrol"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 404
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Vacantes Postulaciones"
+                ],
+                "summary": "Actualizar parcialmente relación vacante-postulación",
+                "operationId": "545e93234ad79d44cd58605b4aa59d55",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la vacante",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 5
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "vacantesid": {
+                                        "type": "integer"
+                                    },
+                                    "postulacionesid": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Relación actualizada parcialmente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "vachaspos": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error en la validación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mesaje": {
+                                            "type": "string",
+                                            "example": "Error al validar vacantes has postulacion"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 400
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Relación no encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensage": {
+                                            "type": "string",
+                                            "example": "No se encontro la vacantes has postulaciones"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 404
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -8867,6 +11037,10 @@
     },
     "tags": [
         {
+            "name": "Horas Extra Empleado",
+            "description": "Solicitudes de horas extra realizadas por empleados internos. Permite registrar y consultar solicitudes propias de horas extra."
+        },
+        {
             "name": "HojasVidaHasEstudios",
             "description": "Gestión de estudios en hojas de vida"
         },
@@ -8876,11 +11050,15 @@
         },
         {
             "name": "Horas Extra Jefe",
-            "description": "Gestión de solicitudes de horas extra por parte del jefe de personal. Este módulo permite al jefe de personal gestionar las solicitudes de horas extra de los empleados de su área, incluyendo aprobar, rechazar y consultar solicitudes."
+            "description": "Gestión y aprobación de solicitudes de horas extra por parte del jefe de personal. Permite consultar, aprobar o rechazar solicitudes de su área."
         },
         {
             "name": "Incapacidades Jefe",
             "description": "Gestión de solicitudes de incapacidades por parte del jefe de personal. Este módulo permite al jefe de personal gestionar las solicitudes de incapacidades de los empleados de su área, incluyendo aprobar, rechazar y consultar solicitudes."
+        },
+        {
+            "name": "Mis Postulaciones",
+            "description": "Gestión de postulaciones del usuario autenticado. Permite a los usuarios externos consultar sus propias postulaciones a vacantes."
         },
         {
             "name": "Roles y Permisos",
@@ -8893,6 +11071,10 @@
         {
             "name": "Área",
             "description": "Operaciones relacionadas con Áreas"
+        },
+        {
+            "name": "Categorías Usuario",
+            "description": "Gestión de la relación entre categorías de vacantes y usuarios. Permite asignar categorías específicas a usuarios para filtrar vacantes por área de interés."
         },
         {
             "name": "Categorías de Vacantes",
@@ -8919,8 +11101,12 @@
             "description": "Gestión de las experiencias laborales registradas de los empleados "
         },
         {
-            "name": "Incapacidades",
-            "description": "Gestión de solicitudes de incapacidades"
+            "name": "Incapacidades Empleado",
+            "description": "Solicitudes de incapacidades realizadas por empleados internos. Permite registrar y consultar solicitudes propias de incapacidad."
+        },
+        {
+            "name": "Vacaciones Empleado",
+            "description": "Solicitudes de vacaciones realizadas por empleados internos. Permite registrar y consultar solicitudes propias de vacaciones."
         },
         {
             "name": "Género",
@@ -8929,6 +11115,14 @@
         {
             "name": "Hojas de Vida",
             "description": "Gestión de hojas de vida de los empleados y personal externo loguados"
+        },
+        {
+            "name": "Horas Extra",
+            "description": "Solicitudes de horas extra. Permite registrar, consultar, actualizar y eliminar solicitudes propias de horas extra."
+        },
+        {
+            "name": "Incapacidades",
+            "description": "Gestión general de incapacidades. Permite a administradores y personal autorizado registrar, consultar, actualizar y eliminar incapacidades de cualquier empleado."
         },
         {
             "name": "Jefe Personal",
@@ -8959,12 +11153,16 @@
             "description": "Gestión de Tipos de Horas Extra"
         },
         {
+            "name": "Usuarios Roles",
+            "description": "Gestión de la asignación de roles a usuarios. Permite administrar qué roles tiene cada usuario en el sistema y su estado de activación."
+        },
+        {
             "name": "Vacaciones",
             "description": "Gestión de solicitudes de vacaciones. Permite crear, consultar, actualizar, eliminar y cambiar el estado de las solicitudes de vacaciones de los empleados."
         },
         {
-            "name": "HorasExtra",
-            "description": "HorasExtra"
+            "name": "Vacantes Postulaciones",
+            "description": "Gestión de la relación entre vacantes y postulaciones. Permite vincular postulaciones específicas a vacantes y administrar estas relaciones."
         },
         {
             "name": "Perfil",
@@ -8977,10 +11175,6 @@
         {
             "name": "Jefes de Personal",
             "description": "Jefes de Personal"
-        },
-        {
-            "name": "Horas Extra",
-            "description": "Horas Extra"
         },
         {
             "name": "Pensiones",

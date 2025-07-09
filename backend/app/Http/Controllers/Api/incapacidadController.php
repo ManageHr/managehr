@@ -8,8 +8,33 @@ use App\Models\Incapacidad;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * @OA\Tag(
+ *     name="Incapacidades",
+ *     description="Gestión general de incapacidades. Permite a administradores y personal autorizado registrar, consultar, actualizar y eliminar incapacidades de cualquier empleado."
+ * )
+ */
 class incapacidadController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/api/incapacidad",
+     *     summary="Obtener todas las incapacidades",
+     *     tags={"Incapacidades"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de incapacidades obtenida exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(type="object"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error al obtener incapacidades"
+     *     )
+     * )
+     */
     public function index(Request $request)
     {
         try {
@@ -42,7 +67,40 @@ class incapacidadController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/api/incapacidad",
+     *     summary="Registrar una nueva incapacidad",
+     *     tags={"Incapacidades"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"descrip", "fechaInicio", "fechaFinal", "contratoId"},
+     *             @OA\Property(property="descrip", type="string", example="Incapacidad por enfermedad"),
+     *             @OA\Property(property="archivo", type="string", format="binary", description="Archivo adjunto"),
+     *             @OA\Property(property="fechaInicio", type="string", format="date", example="2024-07-01"),
+     *             @OA\Property(property="fechaFinal", type="string", format="date", example="2024-07-10"),
+     *             @OA\Property(property="contratoId", type="integer", example=5)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Incapacidad creada correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="mensaje", type="string", example="incapacidad creado correctamente"),
+     *             @OA\Property(property="incapacidad", type="object"),
+     *             @OA\Property(property="status", type="integer", example=201)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Error en la validación de datos de la incapacidad"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error al crear el incapacidad"
+     *     )
+     * )
      */
     public function store(Request $request)
     {
@@ -99,7 +157,31 @@ class incapacidadController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/api/incapacidad/{id}",
+     *     summary="Obtener una incapacidad por ID",
+     *     tags={"Incapacidades"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la incapacidad",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Incapacidad encontrada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="incapacidad", type="object"),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Incapacidad no encontrada"
+     *     )
+     * )
      */
     public function show($id)
     {
@@ -131,6 +213,48 @@ class incapacidadController extends Controller
         ];
         return response()->json([$data], 200);
     }
+    /**
+     * @OA\Put(
+     *     path="/api/incapacidad/{id}",
+     *     summary="Actualizar una incapacidad",
+     *     tags={"Incapacidades"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la incapacidad",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"descrip", "fechaInicio", "fechaFinal", "contratoId"},
+     *             @OA\Property(property="descrip", type="string", example="Actualización de incapacidad"),
+     *             @OA\Property(property="archivo", type="string", format="binary"),
+     *             @OA\Property(property="fechaInicio", type="string", format="date", example="2024-07-01"),
+     *             @OA\Property(property="fechaFinal", type="string", format="date", example="2024-07-10"),
+     *             @OA\Property(property="contratoId", type="integer", example=5)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Incapacidad actualizada correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="incapacidad", type="object"),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Error en la validación"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Incapacidad no encontrada"
+     *     )
+     * )
+     */
     public function update(Request $request, $id)
     {
         $incapacidad = Incapacidad::find($id);
@@ -191,6 +315,47 @@ class incapacidadController extends Controller
             ], 500);
         }
     }
+    /**
+     * @OA\Patch(
+     *     path="/api/incapacidad/{id}",
+     *     summary="Actualizar parcialmente una incapacidad",
+     *     tags={"Incapacidades"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la incapacidad",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=false,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="descrip", type="string"),
+     *             @OA\Property(property="archivo", type="string", format="binary"),
+     *             @OA\Property(property="fechaInicio", type="string", format="date"),
+     *             @OA\Property(property="fechaFinal", type="string", format="date"),
+     *             @OA\Property(property="contratoId", type="integer")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Incapacidad actualizada parcialmente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="incapacidad", type="object"),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Error en la validación"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Incapacidad no encontrada"
+     *     )
+     * )
+     */
     public function updatePartial(Request $request, $id)
     {
         $incapacidad = Incapacidad::find($id);

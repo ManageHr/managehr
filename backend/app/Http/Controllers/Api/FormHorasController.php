@@ -14,8 +14,9 @@ use Illuminate\Support\Facades\Validator;
 
 /**
  * @OA\Tag(
- *     name="Horas-Extra",
- *     description="Gestión de solicitudes de horas extra")
+ *     name="Horas Extra Empleado",
+ *     description="Solicitudes de horas extra realizadas por empleados internos. Permite registrar y consultar solicitudes propias de horas extra."
+ * )
  */
 
 class FormHorasController extends Controller
@@ -25,7 +26,7 @@ class FormHorasController extends Controller
      *     path="/api/horas-extra",
      *     summary="Registrar una nueva solicitud de horas extra",
      *     description="Permite a un usuario autenticado registrar una solicitud de horas extra asociada a su contrato actual.",
-     *     tags={"HorasExtra"},
+     *     tags={"Horas Extra Empleado"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
@@ -125,7 +126,7 @@ class FormHorasController extends Controller
      *     path="/api/horas-extra",
      *     summary="Obtener solicitudes de horas extra del usuario autenticado",
      *     description="Retorna todas las solicitudes de horas extra asociadas al contrato del usuario autenticado.",
-     *     tags={"HorasExtra"},
+     *     tags={"Horas Extra Empleado"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Response(
      *         response=200,

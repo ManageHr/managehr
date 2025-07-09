@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 /**
  * @OA\Tag(
- *     name="Vacaciones-Form",
- *     description="Gestión de solicitudes de vacaciones"
+ *     name="Vacaciones Empleado",
+ *     description="Solicitudes de vacaciones realizadas por empleados internos. Permite registrar y consultar solicitudes propias de vacaciones."
  * )
  */
 
@@ -28,7 +28,7 @@ class formvacationController extends Controller
      * @OA\Get(
      *     path="/api/solicitudes-vacaciones-con-archivo",
      *     summary="Obtener solicitudes de vacaciones del usuario autenticado",
-     *     tags={"Vacaciones"},
+     *     tags={"Vacaciones Empleado"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Response(
      *         response=200,
@@ -83,7 +83,7 @@ class formvacationController extends Controller
      * @OA\Post(
      *     path="/api/solicitudes-vacaciones-con-archivo",
      *     summary="Registrar una nueva solicitud de vacaciones",
-     *     tags={"Vacaciones"},
+     *     tags={"Vacaciones Empleado"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
