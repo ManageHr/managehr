@@ -928,6 +928,936 @@
                 ]
             }
         },
+        "/api/jefe/horas-extra/solicitudes": {
+            "get": {
+                "tags": [
+                    "Horas Extra Jefe"
+                ],
+                "summary": "Obtener todas las solicitudes de horas extra del área del jefe",
+                "operationId": "5d17ddef4521f08bf36fc7c0f3583e6f",
+                "responses": {
+                    "200": {
+                        "description": "Lista de solicitudes obtenida correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "idHorasExtra": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "descripcion": {
+                                                "type": "string",
+                                                "example": "Trabajo adicional en proyecto urgente"
+                                            },
+                                            "fecha": {
+                                                "type": "string",
+                                                "format": "date",
+                                                "example": "2024-01-15"
+                                            },
+                                            "tipoHorasId": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "nHorasExtra": {
+                                                "type": "integer",
+                                                "example": 4
+                                            },
+                                            "contratoId": {
+                                                "type": "integer",
+                                                "example": 123
+                                            },
+                                            "estado": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "pendiente",
+                                                    "aprobado",
+                                                    "rechazado"
+                                                ],
+                                                "example": "pendiente"
+                                            },
+                                            "empleado": {
+                                                "properties": {
+                                                    "numDocumento": {
+                                                        "type": "string",
+                                                        "example": "12345678"
+                                                    },
+                                                    "nombre": {
+                                                        "type": "string",
+                                                        "example": "Juan Carlos"
+                                                    },
+                                                    "apellido": {
+                                                        "type": "string",
+                                                        "example": "Pérez García"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Usuario no autenticado"
+                    },
+                    "404": {
+                        "description": "No se encontró área asignada"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/jefe/horas-extra/solicitudes/{id}": {
+            "get": {
+                "tags": [
+                    "Horas Extra Jefe"
+                ],
+                "summary": "Obtener una solicitud específica de horas extra",
+                "operationId": "bce6b82973cb32da38b611bfbf473546",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la solicitud de horas extra",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Solicitud obtenida correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "idHorasExtra": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "descripcion": {
+                                            "type": "string",
+                                            "example": "Trabajo adicional en proyecto urgente"
+                                        },
+                                        "fecha": {
+                                            "type": "string",
+                                            "format": "date",
+                                            "example": "2024-01-15"
+                                        },
+                                        "tipoHorasId": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "nHorasExtra": {
+                                            "type": "integer",
+                                            "example": 4
+                                        },
+                                        "contratoId": {
+                                            "type": "integer",
+                                            "example": 123
+                                        },
+                                        "estado": {
+                                            "type": "string",
+                                            "enum": [
+                                                "pendiente",
+                                                "aprobado",
+                                                "rechazado"
+                                            ],
+                                            "example": "pendiente"
+                                        },
+                                        "empleado": {
+                                            "properties": {
+                                                "numDocumento": {
+                                                    "type": "string",
+                                                    "example": "12345678"
+                                                },
+                                                "nombre": {
+                                                    "type": "string",
+                                                    "example": "Juan Carlos"
+                                                },
+                                                "apellido": {
+                                                    "type": "string",
+                                                    "example": "Pérez García"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Solicitud no encontrada"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/jefe/horas-extra/solicitudes/{id}/aprobar": {
+            "post": {
+                "tags": [
+                    "Horas Extra Jefe"
+                ],
+                "summary": "Aprobar una solicitud de horas extra",
+                "operationId": "a7855b6a60a378fbfbc6e04ebd6214b4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la solicitud de horas extra",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "comentario": {
+                                        "type": "string",
+                                        "maxLength": 500,
+                                        "example": "Solicitud aprobada por cumplir con los requisitos"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Solicitud aprobada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Solicitud aprobada exitosamente"
+                                        },
+                                        "solicitud": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "No tiene permisos para gestionar esta solicitud"
+                    },
+                    "404": {
+                        "description": "Solicitud no encontrada"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/jefe/horas-extra/solicitudes/{id}/rechazar": {
+            "post": {
+                "tags": [
+                    "Horas Extra Jefe"
+                ],
+                "summary": "Rechazar una solicitud de horas extra",
+                "operationId": "17fd9c64a9becc70b4858331d3a3567d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la solicitud de horas extra",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "comentario": {
+                                        "type": "string",
+                                        "maxLength": 500,
+                                        "example": "Solicitud rechazada por no cumplir con los requisitos"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Solicitud rechazada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Solicitud rechazada exitosamente"
+                                        },
+                                        "solicitud": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "No tiene permisos para gestionar esta solicitud"
+                    },
+                    "404": {
+                        "description": "Solicitud no encontrada"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/jefe/horas-extra/estadisticas": {
+            "get": {
+                "tags": [
+                    "Horas Extra Jefe"
+                ],
+                "summary": "Obtener estadísticas de solicitudes de horas extra",
+                "operationId": "9913791dee6726a3cdaf8cbd975ca8a3",
+                "responses": {
+                    "200": {
+                        "description": "Estadísticas obtenidas correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "total": {
+                                            "type": "integer",
+                                            "example": 25
+                                        },
+                                        "pendientes": {
+                                            "type": "integer",
+                                            "example": 10
+                                        },
+                                        "aprobadas": {
+                                            "type": "integer",
+                                            "example": 12
+                                        },
+                                        "rechazadas": {
+                                            "type": "integer",
+                                            "example": 3
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Usuario no autenticado"
+                    },
+                    "404": {
+                        "description": "No se encontró área asignada"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/jefe/horas-extra/solicitudes/{id}/estado": {
+            "put": {
+                "tags": [
+                    "Horas Extra Jefe"
+                ],
+                "summary": "Actualizar el estado de una solicitud de horas extra",
+                "operationId": "a1f6dab3a2ba05b2b3d9b786e5bc6df5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la solicitud de horas extra",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "estado": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Pendiente",
+                                            "Aprobado",
+                                            "Rechazado"
+                                        ],
+                                        "example": "Aprobado"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Estado actualizado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Estado actualizado correctamente"
+                                        },
+                                        "solicitud": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "No tiene permisos para gestionar esta solicitud"
+                    },
+                    "404": {
+                        "description": "Solicitud no encontrada"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/jefe/incapacidades/solicitudes": {
+            "get": {
+                "tags": [
+                    "Incapacidades Jefe"
+                ],
+                "summary": "Obtener todas las solicitudes de incapacidades del área del jefe",
+                "operationId": "4003d22cbf69ea6ca49888176984acce",
+                "responses": {
+                    "200": {
+                        "description": "Lista de solicitudes obtenida correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "idIncapacidad": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "archivo": {
+                                                "type": "string",
+                                                "example": "incapacidad_2024_001.pdf"
+                                            },
+                                            "fechaInicio": {
+                                                "type": "string",
+                                                "format": "date",
+                                                "example": "2024-01-15"
+                                            },
+                                            "fechaFinal": {
+                                                "type": "string",
+                                                "format": "date",
+                                                "example": "2024-01-20"
+                                            },
+                                            "contratoId": {
+                                                "type": "integer",
+                                                "example": 123
+                                            },
+                                            "estado": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "pendiente",
+                                                    "aprobado",
+                                                    "rechazado"
+                                                ],
+                                                "example": "pendiente"
+                                            },
+                                            "empleado": {
+                                                "properties": {
+                                                    "numDocumento": {
+                                                        "type": "string",
+                                                        "example": "12345678"
+                                                    },
+                                                    "nombre": {
+                                                        "type": "string",
+                                                        "example": "María José"
+                                                    },
+                                                    "apellido": {
+                                                        "type": "string",
+                                                        "example": "Rodríguez López"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Usuario no autenticado"
+                    },
+                    "404": {
+                        "description": "No se encontró área asignada"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/jefe/incapacidades/solicitudes/{id}": {
+            "get": {
+                "tags": [
+                    "Incapacidades Jefe"
+                ],
+                "summary": "Obtener una solicitud específica de incapacidad",
+                "operationId": "42e1d55055380d4126968d7ee46f4179",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la solicitud de incapacidad",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Solicitud obtenida correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "idIncapacidad": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "archivo": {
+                                            "type": "string",
+                                            "example": "incapacidad_2024_001.pdf"
+                                        },
+                                        "fechaInicio": {
+                                            "type": "string",
+                                            "format": "date",
+                                            "example": "2024-01-15"
+                                        },
+                                        "fechaFinal": {
+                                            "type": "string",
+                                            "format": "date",
+                                            "example": "2024-01-20"
+                                        },
+                                        "contratoId": {
+                                            "type": "integer",
+                                            "example": 123
+                                        },
+                                        "estado": {
+                                            "type": "string",
+                                            "enum": [
+                                                "pendiente",
+                                                "aprobado",
+                                                "rechazado"
+                                            ],
+                                            "example": "pendiente"
+                                        },
+                                        "empleado": {
+                                            "properties": {
+                                                "numDocumento": {
+                                                    "type": "string",
+                                                    "example": "12345678"
+                                                },
+                                                "nombre": {
+                                                    "type": "string",
+                                                    "example": "María José"
+                                                },
+                                                "apellido": {
+                                                    "type": "string",
+                                                    "example": "Rodríguez López"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Solicitud no encontrada"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/jefe/incapacidades/solicitudes/{id}/aprobar": {
+            "post": {
+                "tags": [
+                    "Incapacidades Jefe"
+                ],
+                "summary": "Aprobar una solicitud de incapacidad",
+                "operationId": "a03ba64e66543ab8cb25de530cba7e25",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la solicitud de incapacidad",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "comentario": {
+                                        "type": "string",
+                                        "maxLength": 500,
+                                        "example": "Incapacidad aprobada con documentación completa"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Solicitud aprobada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Solicitud aprobada exitosamente"
+                                        },
+                                        "solicitud": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "No tiene permisos para gestionar esta solicitud"
+                    },
+                    "404": {
+                        "description": "Solicitud no encontrada"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/jefe/incapacidades/solicitudes/{id}/rechazar": {
+            "post": {
+                "tags": [
+                    "Incapacidades Jefe"
+                ],
+                "summary": "Rechazar una solicitud de incapacidad",
+                "operationId": "9c471ae6565b07c899519b8d5d52a897",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la solicitud de incapacidad",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "comentario": {
+                                        "type": "string",
+                                        "maxLength": 500,
+                                        "example": "Incapacidad rechazada por documentación incompleta"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Solicitud rechazada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Solicitud rechazada exitosamente"
+                                        },
+                                        "solicitud": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "No tiene permisos para gestionar esta solicitud"
+                    },
+                    "404": {
+                        "description": "Solicitud no encontrada"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/jefe/incapacidades/estadisticas": {
+            "get": {
+                "tags": [
+                    "Incapacidades Jefe"
+                ],
+                "summary": "Obtener estadísticas de solicitudes de incapacidades",
+                "operationId": "9414509ba851bdd6f80d549c93748636",
+                "responses": {
+                    "200": {
+                        "description": "Estadísticas obtenidas correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "total": {
+                                            "type": "integer",
+                                            "example": 15
+                                        },
+                                        "pendientes": {
+                                            "type": "integer",
+                                            "example": 8
+                                        },
+                                        "aprobadas": {
+                                            "type": "integer",
+                                            "example": 6
+                                        },
+                                        "rechazadas": {
+                                            "type": "integer",
+                                            "example": 1
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Usuario no autenticado"
+                    },
+                    "404": {
+                        "description": "No se encontró área asignada"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/jefe/incapacidades/solicitudes/{id}/estado": {
+            "put": {
+                "tags": [
+                    "Incapacidades Jefe"
+                ],
+                "summary": "Actualizar el estado de una solicitud de incapacidad",
+                "operationId": "f91d161a0747c020e7410c0fb2bb9bc6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la solicitud de incapacidad",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "estado": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Pendiente",
+                                            "Aprobado",
+                                            "Rechazado"
+                                        ],
+                                        "example": "Aprobado"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Estado actualizado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Estado actualizado correctamente"
+                                        },
+                                        "solicitud": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "No tiene permisos para gestionar esta solicitud"
+                    },
+                    "404": {
+                        "description": "Solicitud no encontrada"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/nacionalidades": {
             "get": {
                 "tags": [
@@ -1032,6 +1962,395 @@
                     },
                     "404": {
                         "description": "Rol no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/jefe/vacaciones/solicitudes": {
+            "get": {
+                "tags": [
+                    "Vacaciones Jefe"
+                ],
+                "summary": "Obtener todas las solicitudes de vacaciones del área del jefe",
+                "operationId": "762a8ea760ceb15d562ace28446a82d3",
+                "responses": {
+                    "200": {
+                        "description": "Lista de solicitudes obtenida correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "idVacaciones": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "motivo": {
+                                                "type": "string",
+                                                "example": "Vacaciones familiares"
+                                            },
+                                            "fechaInicio": {
+                                                "type": "string",
+                                                "format": "date",
+                                                "example": "2024-07-15"
+                                            },
+                                            "fechaFinal": {
+                                                "type": "string",
+                                                "format": "date",
+                                                "example": "2024-07-25"
+                                            },
+                                            "dias": {
+                                                "type": "integer",
+                                                "example": 10
+                                            },
+                                            "contratoId": {
+                                                "type": "integer",
+                                                "example": 123
+                                            },
+                                            "estado": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "pendiente",
+                                                    "aprobado",
+                                                    "rechazado"
+                                                ],
+                                                "example": "pendiente"
+                                            },
+                                            "empleado": {
+                                                "properties": {
+                                                    "numDocumento": {
+                                                        "type": "string",
+                                                        "example": "12345678"
+                                                    },
+                                                    "nombre": {
+                                                        "type": "string",
+                                                        "example": "Carlos Andrés"
+                                                    },
+                                                    "apellido": {
+                                                        "type": "string",
+                                                        "example": "González Silva"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Usuario no autenticado"
+                    },
+                    "404": {
+                        "description": "No se encontró área asignada"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/jefe/vacaciones/solicitudes/{id}": {
+            "get": {
+                "tags": [
+                    "Vacaciones Jefe"
+                ],
+                "summary": "Obtener una solicitud específica de vacaciones",
+                "operationId": "ee9df86d74d22c9325a479a857343b46",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la solicitud de vacaciones",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Solicitud obtenida correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "idVacaciones": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "motivo": {
+                                            "type": "string",
+                                            "example": "Vacaciones familiares"
+                                        },
+                                        "fechaInicio": {
+                                            "type": "string",
+                                            "format": "date",
+                                            "example": "2024-07-15"
+                                        },
+                                        "fechaFinal": {
+                                            "type": "string",
+                                            "format": "date",
+                                            "example": "2024-07-25"
+                                        },
+                                        "dias": {
+                                            "type": "integer",
+                                            "example": 10
+                                        },
+                                        "contratoId": {
+                                            "type": "integer",
+                                            "example": 123
+                                        },
+                                        "estado": {
+                                            "type": "string",
+                                            "enum": [
+                                                "pendiente",
+                                                "aprobado",
+                                                "rechazado"
+                                            ],
+                                            "example": "pendiente"
+                                        },
+                                        "empleado": {
+                                            "properties": {
+                                                "numDocumento": {
+                                                    "type": "string",
+                                                    "example": "12345678"
+                                                },
+                                                "nombre": {
+                                                    "type": "string",
+                                                    "example": "Carlos Andrés"
+                                                },
+                                                "apellido": {
+                                                    "type": "string",
+                                                    "example": "González Silva"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Solicitud no encontrada"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/jefe/vacaciones/solicitudes/{id}/aprobar": {
+            "post": {
+                "tags": [
+                    "Vacaciones Jefe"
+                ],
+                "summary": "Aprobar una solicitud de vacaciones",
+                "operationId": "72e6302073ef0b89b72e62bcc9f35371",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la solicitud de vacaciones",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "comentario": {
+                                        "type": "string",
+                                        "maxLength": 500,
+                                        "example": "Vacaciones aprobadas según calendario laboral"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Solicitud aprobada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Solicitud aprobada exitosamente"
+                                        },
+                                        "solicitud": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "No tiene permisos para gestionar esta solicitud"
+                    },
+                    "404": {
+                        "description": "Solicitud no encontrada"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/jefe/vacaciones/solicitudes/{id}/rechazar": {
+            "post": {
+                "tags": [
+                    "Vacaciones Jefe"
+                ],
+                "summary": "Rechazar una solicitud de vacaciones",
+                "operationId": "1ba9e6bad026a2fc6216fa5aac7f6c2a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la solicitud de vacaciones",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "comentario": {
+                                        "type": "string",
+                                        "maxLength": 500,
+                                        "example": "Vacaciones rechazadas por alta carga laboral"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Solicitud rechazada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Solicitud rechazada exitosamente"
+                                        },
+                                        "solicitud": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "No tiene permisos para gestionar esta solicitud"
+                    },
+                    "404": {
+                        "description": "Solicitud no encontrada"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/jefe/vacaciones/estadisticas": {
+            "get": {
+                "tags": [
+                    "Vacaciones Jefe"
+                ],
+                "summary": "Obtener estadísticas de solicitudes de vacaciones",
+                "operationId": "322e1fab2a5b45850d969864188550c7",
+                "responses": {
+                    "200": {
+                        "description": "Estadísticas obtenidas correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "total": {
+                                            "type": "integer",
+                                            "example": 30
+                                        },
+                                        "pendientes": {
+                                            "type": "integer",
+                                            "example": 12
+                                        },
+                                        "aprobadas": {
+                                            "type": "integer",
+                                            "example": 15
+                                        },
+                                        "rechazadas": {
+                                            "type": "integer",
+                                            "example": 3
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Usuario no autenticado"
+                    },
+                    "404": {
+                        "description": "No se encontró área asignada"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
                     }
                 },
                 "security": [
@@ -3879,6 +5198,462 @@
                 ]
             }
         },
+        "/api/jefe/personal/empleados/{jefeId}": {
+            "get": {
+                "tags": [
+                    "Jefe Personal"
+                ],
+                "summary": "Obtener empleados bajo la supervisión de un jefe de personal",
+                "operationId": "39f9d423d87fd41971f77c6b3b37fdf0",
+                "parameters": [
+                    {
+                        "name": "jefeId",
+                        "in": "path",
+                        "description": "ID del jefe de personal",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Empleados obtenidos correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "empleados": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "juan.perez@empresa.com"
+                                                    },
+                                                    "email": {
+                                                        "type": "string",
+                                                        "example": "juan.perez@empresa.com"
+                                                    },
+                                                    "email_verified_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-01-15T10:30:00Z"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-01-15T10:30:00Z"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-01-15T10:30:00Z"
+                                                    },
+                                                    "perfil": {
+                                                        "properties": {
+                                                            "numDocumento": {
+                                                                "type": "string",
+                                                                "example": "12345678"
+                                                            },
+                                                            "primerNombre": {
+                                                                "type": "string",
+                                                                "example": "Juan Carlos"
+                                                            },
+                                                            "segundoNombre": {
+                                                                "type": "string",
+                                                                "example": "Andrés"
+                                                            },
+                                                            "primerApellido": {
+                                                                "type": "string",
+                                                                "example": "Pérez"
+                                                            },
+                                                            "segundoApellido": {
+                                                                "type": "string",
+                                                                "example": "García"
+                                                            },
+                                                            "fechaNacimiento": {
+                                                                "type": "string",
+                                                                "format": "date",
+                                                                "example": "1990-05-15"
+                                                            },
+                                                            "genero": {
+                                                                "type": "string",
+                                                                "example": "Masculino"
+                                                            },
+                                                            "telefono": {
+                                                                "type": "string",
+                                                                "example": "3001234567"
+                                                            },
+                                                            "direccion": {
+                                                                "type": "string",
+                                                                "example": "Calle 123 #45-67"
+                                                            },
+                                                            "ciudad": {
+                                                                "type": "string",
+                                                                "example": "Bogotá"
+                                                            },
+                                                            "usersId": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "area": {
+                                            "type": "string",
+                                            "example": "Recursos Humanos"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Empleados obtenidos correctamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No se encontró área asignada para este jefe de personal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No se encontró área asignada para este jefe de personal"
+                                        },
+                                        "empleados": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/jefe/personal": {
+            "get": {
+                "tags": [
+                    "Jefe Personal"
+                ],
+                "summary": "Listar jefes de personal",
+                "operationId": "1eaf09122849f82f688db4eb1a190eb4",
+                "responses": {
+                    "200": {
+                        "description": "Lista de jefes de personal obtenida correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "idArea": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "nombreArea": {
+                                                "type": "string",
+                                                "example": "Recursos Humanos"
+                                            },
+                                            "idJefe": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "created_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "updated_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Usuario no autenticado"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Jefe Personal"
+                ],
+                "summary": "Crear nuevo jefe de personal",
+                "operationId": "599fc14f0a0187ca6c6e56122cefee3f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "areaId": {
+                                        "description": "ID del área",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "jefeId": {
+                                        "description": "ID del usuario que será jefe",
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Jefe de personal creado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Jefe de personal asignado correctamente"
+                                        },
+                                        "area": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error de validación"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/jefe/personal/{id}": {
+            "get": {
+                "tags": [
+                    "Jefe Personal"
+                ],
+                "summary": "Obtener jefe de personal específico",
+                "operationId": "17be179ba6fa2a602031e58c8076e644",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del área del jefe de personal",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Jefe de personal obtenido correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "idArea": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "nombreArea": {
+                                            "type": "string",
+                                            "example": "Recursos Humanos"
+                                        },
+                                        "idJefe": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Jefe de personal no encontrado"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Jefe Personal"
+                ],
+                "summary": "Actualizar jefe de personal",
+                "operationId": "dc050e7e118696fdd9ee0c708834f2ff",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del área del jefe de personal",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "jefeId": {
+                                        "description": "ID del nuevo jefe",
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Jefe de personal actualizado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Jefe de personal actualizado correctamente"
+                                        },
+                                        "area": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Jefe de personal no encontrado"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Jefe Personal"
+                ],
+                "summary": "Eliminar jefe de personal",
+                "operationId": "9ef7449ba8340adfe5b22aa662ad8978",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del área del jefe de personal",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Jefe de personal eliminado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Jefe de personal eliminado correctamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Jefe de personal no encontrado"
+                    },
+                    "500": {
+                        "description": "Error interno del servidor"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/pensiones": {
             "get": {
                 "tags": [
@@ -6453,8 +8228,20 @@
             "description": "Operaciones relacionadas con la experiencia laboral del usuario"
         },
         {
+            "name": "Horas Extra Jefe",
+            "description": "Gestión de solicitudes de horas extra por parte del jefe de personal. Este módulo permite al jefe de personal gestionar las solicitudes de horas extra de los empleados de su área, incluyendo aprobar, rechazar y consultar solicitudes."
+        },
+        {
+            "name": "Incapacidades Jefe",
+            "description": "Gestión de solicitudes de incapacidades por parte del jefe de personal. Este módulo permite al jefe de personal gestionar las solicitudes de incapacidades de los empleados de su área, incluyendo aprobar, rechazar y consultar solicitudes."
+        },
+        {
             "name": "Roles y Permisos",
             "description": "Gestión de asignación de permisos a roles"
+        },
+        {
+            "name": "Vacaciones Jefe",
+            "description": "Gestión de solicitudes de vacaciones por parte del jefe de personal. Este módulo permite al jefe de personal gestionar las solicitudes de vacaciones de los empleados de su área, incluyendo aprobar, rechazar y consultar solicitudes."
         },
         {
             "name": "Área",
@@ -6495,6 +8282,10 @@
         {
             "name": "Hojas de Vida",
             "description": "Gestión de hojas de vida de los empleados y personal externo loguados"
+        },
+        {
+            "name": "Jefe Personal",
+            "description": "Gestión general del jefe de personal. Este módulo permite al jefe de personal gestionar información general de su área, incluyendo la consulta de empleados bajo su supervisión."
         },
         {
             "name": "Postulaciones",

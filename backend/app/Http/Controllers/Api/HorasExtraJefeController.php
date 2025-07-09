@@ -11,8 +11,58 @@ use App\Models\Area;
 use App\Models\Contrato;
 use App\Models\Horasextra;
 
+/**
+ * @OA\Tag(
+ *     name="Horas Extra Jefe",
+ *     description="Gestión de solicitudes de horas extra por parte del jefe de personal. Este módulo permite al jefe de personal gestionar las solicitudes de horas extra de los empleados de su área, incluyendo aprobar, rechazar y consultar solicitudes."
+ * )
+ */
+
 class HorasExtraJefeController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/api/jefe/horas-extra/solicitudes",
+     *     summary="Obtener todas las solicitudes de horas extra del área del jefe",
+     *     tags={"Horas Extra Jefe"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de solicitudes obtenida correctamente",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 @OA\Property(property="idHorasExtra", type="integer", example=1),
+     *                 @OA\Property(property="descripcion", type="string", example="Trabajo adicional en proyecto urgente"),
+     *                 @OA\Property(property="fecha", type="string", format="date", example="2024-01-15"),
+     *                 @OA\Property(property="tipoHorasId", type="integer", example=1),
+     *                 @OA\Property(property="nHorasExtra", type="integer", example=4),
+     *                 @OA\Property(property="contratoId", type="integer", example=123),
+     *                 @OA\Property(property="estado", type="string", example="pendiente", enum={"pendiente", "aprobado", "rechazado"}),
+     *                 @OA\Property(
+     *                     property="empleado",
+     *                     type="object",
+     *                     @OA\Property(property="numDocumento", type="string", example="12345678"),
+     *                     @OA\Property(property="nombre", type="string", example="Juan Carlos"),
+     *                     @OA\Property(property="apellido", type="string", example="Pérez García")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Usuario no autenticado"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No se encontró área asignada"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor"
+     *     )
+     * )
+     */
     public function obtenerSolicitudesHorasExtra(Request $request): JsonResponse
     {
         try {
@@ -72,6 +122,49 @@ class HorasExtraJefeController extends Controller
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/jefe/horas-extra/solicitudes/{id}",
+     *     summary="Obtener una solicitud específica de horas extra",
+     *     tags={"Horas Extra Jefe"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la solicitud de horas extra",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Solicitud obtenida correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="idHorasExtra", type="integer", example=1),
+     *             @OA\Property(property="descripcion", type="string", example="Trabajo adicional en proyecto urgente"),
+     *             @OA\Property(property="fecha", type="string", format="date", example="2024-01-15"),
+     *             @OA\Property(property="tipoHorasId", type="integer", example=1),
+     *             @OA\Property(property="nHorasExtra", type="integer", example=4),
+     *             @OA\Property(property="contratoId", type="integer", example=123),
+     *             @OA\Property(property="estado", type="string", example="pendiente", enum={"pendiente", "aprobado", "rechazado"}),
+     *             @OA\Property(
+     *                 property="empleado",
+     *                 type="object",
+     *                 @OA\Property(property="numDocumento", type="string", example="12345678"),
+     *                 @OA\Property(property="nombre", type="string", example="Juan Carlos"),
+     *                 @OA\Property(property="apellido", type="string", example="Pérez García")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Solicitud no encontrada"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor"
+     *     )
+     * )
+     */
     public function obtenerSolicitud($id): JsonResponse
     {
         try {
@@ -122,6 +215,47 @@ class HorasExtraJefeController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/jefe/horas-extra/solicitudes/{id}/aprobar",
+     *     summary="Aprobar una solicitud de horas extra",
+     *     tags={"Horas Extra Jefe"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la solicitud de horas extra",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=false,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="comentario", type="string", example="Solicitud aprobada por cumplir con los requisitos", maxLength=500)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Solicitud aprobada exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Solicitud aprobada exitosamente"),
+     *             @OA\Property(property="solicitud", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="No tiene permisos para gestionar esta solicitud"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Solicitud no encontrada"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor"
+     *     )
+     * )
+     */
     public function aprobarSolicitud(Request $request, $id): JsonResponse
     {
         try {
@@ -150,6 +284,47 @@ class HorasExtraJefeController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/jefe/horas-extra/solicitudes/{id}/rechazar",
+     *     summary="Rechazar una solicitud de horas extra",
+     *     tags={"Horas Extra Jefe"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la solicitud de horas extra",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=false,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="comentario", type="string", example="Solicitud rechazada por no cumplir con los requisitos", maxLength=500)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Solicitud rechazada exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Solicitud rechazada exitosamente"),
+     *             @OA\Property(property="solicitud", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="No tiene permisos para gestionar esta solicitud"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Solicitud no encontrada"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor"
+     *     )
+     * )
+     */
     public function rechazarSolicitud(Request $request, $id): JsonResponse
     {
         try {
@@ -178,6 +353,36 @@ class HorasExtraJefeController extends Controller
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/jefe/horas-extra/estadisticas",
+     *     summary="Obtener estadísticas de solicitudes de horas extra",
+     *     tags={"Horas Extra Jefe"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Estadísticas obtenidas correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="total", type="integer", example=25),
+     *             @OA\Property(property="pendientes", type="integer", example=10),
+     *             @OA\Property(property="aprobadas", type="integer", example=12),
+     *             @OA\Property(property="rechazadas", type="integer", example=3)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Usuario no autenticado"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No se encontró área asignada"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor"
+     *     )
+     * )
+     */
     public function obtenerEstadisticas(): JsonResponse
     {
         try {
@@ -208,6 +413,48 @@ class HorasExtraJefeController extends Controller
         }
     }
 
+    /**
+     * @OA\Put(
+     *     path="/api/jefe/horas-extra/solicitudes/{id}/estado",
+     *     summary="Actualizar el estado de una solicitud de horas extra",
+     *     tags={"Horas Extra Jefe"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la solicitud de horas extra",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="estado", type="string", example="Aprobado", enum={"Pendiente", "Aprobado", "Rechazado"})
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Estado actualizado correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="mensaje", type="string", example="Estado actualizado correctamente"),
+     *             @OA\Property(property="solicitud", type="object"),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="No tiene permisos para gestionar esta solicitud"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Solicitud no encontrada"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor"
+     *     )
+     * )
+     */
     public function actualizarEstado(Request $request, $id): JsonResponse
     {
         try {

@@ -13,10 +13,56 @@ use App\Models\Hojasvida;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * @OA\Tag(
+ *     name="Incapacidades Jefe",
+ *     description="Gestión de solicitudes de incapacidades por parte del jefe de personal. Este módulo permite al jefe de personal gestionar las solicitudes de incapacidades de los empleados de su área, incluyendo aprobar, rechazar y consultar solicitudes."
+ * )
+ */
+
 class IncapacidadesJefeController extends Controller
 {
     /**
-     * Obtener todas las solicitudes de incapacidades de empleados del área del jefe
+     * @OA\Get(
+     *     path="/api/jefe/incapacidades/solicitudes",
+     *     summary="Obtener todas las solicitudes de incapacidades del área del jefe",
+     *     tags={"Incapacidades Jefe"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de solicitudes obtenida correctamente",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 @OA\Property(property="idIncapacidad", type="integer", example=1),
+     *                 @OA\Property(property="archivo", type="string", example="incapacidad_2024_001.pdf"),
+     *                 @OA\Property(property="fechaInicio", type="string", format="date", example="2024-01-15"),
+     *                 @OA\Property(property="fechaFinal", type="string", format="date", example="2024-01-20"),
+     *                 @OA\Property(property="contratoId", type="integer", example=123),
+     *                 @OA\Property(property="estado", type="string", example="pendiente", enum={"pendiente", "aprobado", "rechazado"}),
+     *                 @OA\Property(
+     *                     property="empleado",
+     *                     type="object",
+     *                     @OA\Property(property="numDocumento", type="string", example="12345678"),
+     *                     @OA\Property(property="nombre", type="string", example="María José"),
+     *                     @OA\Property(property="apellido", type="string", example="Rodríguez López")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Usuario no autenticado"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No se encontró área asignada"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor"
+     *     )
+     * )
      */
     public function obtenerSolicitudesIncapacidades(Request $request): JsonResponse
     {
@@ -85,7 +131,46 @@ class IncapacidadesJefeController extends Controller
     }
 
     /**
-     * Obtener una solicitud específica
+     * @OA\Get(
+     *     path="/api/jefe/incapacidades/solicitudes/{id}",
+     *     summary="Obtener una solicitud específica de incapacidad",
+     *     tags={"Incapacidades Jefe"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la solicitud de incapacidad",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Solicitud obtenida correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="idIncapacidad", type="integer", example=1),
+     *             @OA\Property(property="archivo", type="string", example="incapacidad_2024_001.pdf"),
+     *             @OA\Property(property="fechaInicio", type="string", format="date", example="2024-01-15"),
+     *             @OA\Property(property="fechaFinal", type="string", format="date", example="2024-01-20"),
+     *             @OA\Property(property="contratoId", type="integer", example=123),
+     *             @OA\Property(property="estado", type="string", example="pendiente", enum={"pendiente", "aprobado", "rechazado"}),
+     *             @OA\Property(
+     *                 property="empleado",
+     *                 type="object",
+     *                 @OA\Property(property="numDocumento", type="string", example="12345678"),
+     *                 @OA\Property(property="nombre", type="string", example="María José"),
+     *                 @OA\Property(property="apellido", type="string", example="Rodríguez López")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Solicitud no encontrada"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor"
+     *     )
+     * )
      */
     public function obtenerSolicitud($id): JsonResponse
     {
@@ -141,7 +226,45 @@ class IncapacidadesJefeController extends Controller
     }
 
     /**
-     * Aprobar una solicitud de incapacidad
+     * @OA\Post(
+     *     path="/api/jefe/incapacidades/solicitudes/{id}/aprobar",
+     *     summary="Aprobar una solicitud de incapacidad",
+     *     tags={"Incapacidades Jefe"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la solicitud de incapacidad",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=false,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="comentario", type="string", example="Incapacidad aprobada con documentación completa", maxLength=500)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Solicitud aprobada exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Solicitud aprobada exitosamente"),
+     *             @OA\Property(property="solicitud", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="No tiene permisos para gestionar esta solicitud"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Solicitud no encontrada"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor"
+     *     )
+     * )
      */
     public function aprobarSolicitud(Request $request, $id): JsonResponse
     {
@@ -178,7 +301,45 @@ class IncapacidadesJefeController extends Controller
     }
 
     /**
-     * Rechazar una solicitud de incapacidad
+     * @OA\Post(
+     *     path="/api/jefe/incapacidades/solicitudes/{id}/rechazar",
+     *     summary="Rechazar una solicitud de incapacidad",
+     *     tags={"Incapacidades Jefe"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la solicitud de incapacidad",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=false,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="comentario", type="string", example="Incapacidad rechazada por documentación incompleta", maxLength=500)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Solicitud rechazada exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Solicitud rechazada exitosamente"),
+     *             @OA\Property(property="solicitud", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="No tiene permisos para gestionar esta solicitud"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Solicitud no encontrada"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor"
+     *     )
+     * )
      */
     public function rechazarSolicitud(Request $request, $id): JsonResponse
     {
@@ -215,7 +376,34 @@ class IncapacidadesJefeController extends Controller
     }
 
     /**
-     * Obtener estadísticas de solicitudes
+     * @OA\Get(
+     *     path="/api/jefe/incapacidades/estadisticas",
+     *     summary="Obtener estadísticas de solicitudes de incapacidades",
+     *     tags={"Incapacidades Jefe"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Estadísticas obtenidas correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="total", type="integer", example=15),
+     *             @OA\Property(property="pendientes", type="integer", example=8),
+     *             @OA\Property(property="aprobadas", type="integer", example=6),
+     *             @OA\Property(property="rechazadas", type="integer", example=1)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Usuario no autenticado"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No se encontró área asignada"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor"
+     *     )
+     * )
      */
     public function obtenerEstadisticas(): JsonResponse
     {
@@ -276,6 +464,48 @@ class IncapacidadesJefeController extends Controller
         }
     }
 
+    /**
+     * @OA\Put(
+     *     path="/api/jefe/incapacidades/solicitudes/{id}/estado",
+     *     summary="Actualizar el estado de una solicitud de incapacidad",
+     *     tags={"Incapacidades Jefe"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la solicitud de incapacidad",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="estado", type="string", example="Aprobado", enum={"Pendiente", "Aprobado", "Rechazado"})
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Estado actualizado correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="mensaje", type="string", example="Estado actualizado correctamente"),
+     *             @OA\Property(property="solicitud", type="object"),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="No tiene permisos para gestionar esta solicitud"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Solicitud no encontrada"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor"
+     *     )
+     * )
+     */
     public function actualizarEstado(Request $request, $id): JsonResponse
     {
         try {

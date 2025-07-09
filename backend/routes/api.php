@@ -380,7 +380,15 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/descargar/{id}', [HojasvidahasexperienciaController::class, 'descargarArchivo']);
     });
 
-    Route::get('jefe-personal/empleados/{jefeId}', [JefePersonalController::class, 'empleadosPorJefe']);
+    // Rutas para Jefe de Personal
+    Route::prefix('jefe-personal')->group(function () {
+        Route::get('/empleados/{jefeId}', [JefePersonalController::class, 'empleadosPorJefe']);
+        Route::get('/', [JefePersonalController::class, 'index']);
+        Route::post('/', [JefePersonalController::class, 'store']);
+        Route::get('/{id}', [JefePersonalController::class, 'show']);
+        Route::put('/{id}', [JefePersonalController::class, 'update']);
+        Route::delete('/{id}', [JefePersonalController::class, 'destroy']);
+    });
 
     // Rutas para Vacaciones del Jefe de Personal
     Route::prefix('solicitudes-vacaciones-jefe')->group(function () {

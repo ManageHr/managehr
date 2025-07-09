@@ -13,10 +13,57 @@ use App\Models\Hojasvida;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * @OA\Tag(
+ *     name="Vacaciones Jefe",
+ *     description="Gestión de solicitudes de vacaciones por parte del jefe de personal. Este módulo permite al jefe de personal gestionar las solicitudes de vacaciones de los empleados de su área, incluyendo aprobar, rechazar y consultar solicitudes."
+ * )
+ */
+
 class VacacionesJefeController extends Controller
 {
     /**
-     * Obtener todas las solicitudes de vacaciones de empleados del área del jefe
+     * @OA\Get(
+     *     path="/api/jefe/vacaciones/solicitudes",
+     *     summary="Obtener todas las solicitudes de vacaciones del área del jefe",
+     *     tags={"Vacaciones Jefe"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de solicitudes obtenida correctamente",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 @OA\Property(property="idVacaciones", type="integer", example=1),
+     *                 @OA\Property(property="motivo", type="string", example="Vacaciones familiares"),
+     *                 @OA\Property(property="fechaInicio", type="string", format="date", example="2024-07-15"),
+     *                 @OA\Property(property="fechaFinal", type="string", format="date", example="2024-07-25"),
+     *                 @OA\Property(property="dias", type="integer", example=10),
+     *                 @OA\Property(property="contratoId", type="integer", example=123),
+     *                 @OA\Property(property="estado", type="string", example="pendiente", enum={"pendiente", "aprobado", "rechazado"}),
+     *                 @OA\Property(
+     *                     property="empleado",
+     *                     type="object",
+     *                     @OA\Property(property="numDocumento", type="string", example="12345678"),
+     *                     @OA\Property(property="nombre", type="string", example="Carlos Andrés"),
+     *                     @OA\Property(property="apellido", type="string", example="González Silva")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Usuario no autenticado"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No se encontró área asignada"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor"
+     *     )
+     * )
      */
     public function obtenerSolicitudesVacaciones(Request $request): JsonResponse
     {
@@ -84,7 +131,47 @@ class VacacionesJefeController extends Controller
     }
 
     /**
-     * Obtener una solicitud específica
+     * @OA\Get(
+     *     path="/api/jefe/vacaciones/solicitudes/{id}",
+     *     summary="Obtener una solicitud específica de vacaciones",
+     *     tags={"Vacaciones Jefe"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la solicitud de vacaciones",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Solicitud obtenida correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="idVacaciones", type="integer", example=1),
+     *             @OA\Property(property="motivo", type="string", example="Vacaciones familiares"),
+     *             @OA\Property(property="fechaInicio", type="string", format="date", example="2024-07-15"),
+     *             @OA\Property(property="fechaFinal", type="string", format="date", example="2024-07-25"),
+     *             @OA\Property(property="dias", type="integer", example=10),
+     *             @OA\Property(property="contratoId", type="integer", example=123),
+     *             @OA\Property(property="estado", type="string", example="pendiente", enum={"pendiente", "aprobado", "rechazado"}),
+     *             @OA\Property(
+     *                 property="empleado",
+     *                 type="object",
+     *                 @OA\Property(property="numDocumento", type="string", example="12345678"),
+     *                 @OA\Property(property="nombre", type="string", example="Carlos Andrés"),
+     *                 @OA\Property(property="apellido", type="string", example="González Silva")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Solicitud no encontrada"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor"
+     *     )
+     * )
      */
     public function obtenerSolicitud($id): JsonResponse
     {
@@ -138,7 +225,45 @@ class VacacionesJefeController extends Controller
     }
 
     /**
-     * Aprobar una solicitud de vacaciones
+     * @OA\Post(
+     *     path="/api/jefe/vacaciones/solicitudes/{id}/aprobar",
+     *     summary="Aprobar una solicitud de vacaciones",
+     *     tags={"Vacaciones Jefe"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la solicitud de vacaciones",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=false,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="comentario", type="string", example="Vacaciones aprobadas según calendario laboral", maxLength=500)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Solicitud aprobada exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Solicitud aprobada exitosamente"),
+     *             @OA\Property(property="solicitud", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="No tiene permisos para gestionar esta solicitud"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Solicitud no encontrada"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor"
+     *     )
+     * )
      */
     public function aprobarSolicitud(Request $request, $id): JsonResponse
     {
@@ -178,7 +303,45 @@ class VacacionesJefeController extends Controller
     }
 
     /**
-     * Rechazar una solicitud de vacaciones
+     * @OA\Post(
+     *     path="/api/jefe/vacaciones/solicitudes/{id}/rechazar",
+     *     summary="Rechazar una solicitud de vacaciones",
+     *     tags={"Vacaciones Jefe"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la solicitud de vacaciones",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=false,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="comentario", type="string", example="Vacaciones rechazadas por alta carga laboral", maxLength=500)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Solicitud rechazada exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Solicitud rechazada exitosamente"),
+     *             @OA\Property(property="solicitud", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="No tiene permisos para gestionar esta solicitud"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Solicitud no encontrada"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor"
+     *     )
+     * )
      */
     public function rechazarSolicitud(Request $request, $id): JsonResponse
     {
@@ -218,7 +381,34 @@ class VacacionesJefeController extends Controller
     }
 
     /**
-     * Obtener estadísticas de solicitudes
+     * @OA\Get(
+     *     path="/api/jefe/vacaciones/estadisticas",
+     *     summary="Obtener estadísticas de solicitudes de vacaciones",
+     *     tags={"Vacaciones Jefe"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Estadísticas obtenidas correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="total", type="integer", example=30),
+     *             @OA\Property(property="pendientes", type="integer", example=12),
+     *             @OA\Property(property="aprobadas", type="integer", example=15),
+     *             @OA\Property(property="rechazadas", type="integer", example=3)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Usuario no autenticado"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No se encontró área asignada"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor"
+     *     )
+     * )
      */
     public function obtenerEstadisticas(): JsonResponse
     {
