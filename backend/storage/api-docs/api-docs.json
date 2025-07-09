@@ -10648,13 +10648,13 @@
                 ]
             }
         },
-        "/api/vacantes-has-postulaciones/{id}": {
+        "/api/vacanteshaspostulaciones/{id}": {
             "get": {
                 "tags": [
                     "Vacantes Postulaciones"
                 ],
                 "summary": "Obtener postulaciones de una vacante específica",
-                "operationId": "5f7864ba4d80586ec0ee3c6832a562d9",
+                "operationId": "221c4ab1a6dcb0069308477d46b30e86",
                 "parameters": [
                     {
                         "name": "id",
@@ -10722,7 +10722,7 @@
                     "Vacantes Postulaciones"
                 ],
                 "summary": "Actualizar relación vacante-postulación",
-                "operationId": "89ae67fe12096f04d8726a2ba9c52024",
+                "operationId": "d5551050d64bdc5deab9c4cc78814a75",
                 "parameters": [
                     {
                         "name": "id",
@@ -10856,7 +10856,7 @@
                     "Vacantes Postulaciones"
                 ],
                 "summary": "Eliminar relación vacante-postulación",
-                "operationId": "b886c6765fc25238100fe2f8f3b1d94c",
+                "operationId": "43ddfe936fc9088a19d9da05ef66ae77",
                 "parameters": [
                     {
                         "name": "id",
@@ -10922,7 +10922,7 @@
                     "Vacantes Postulaciones"
                 ],
                 "summary": "Actualizar parcialmente relación vacante-postulación",
-                "operationId": "545e93234ad79d44cd58605b4aa59d55",
+                "operationId": "6f649d5fb559e72ad61930a3d9352a9a",
                 "parameters": [
                     {
                         "name": "id",
