@@ -20,7 +20,7 @@ class experienciaLaboralController extends Controller
 {
     /**
      * @OA\Get(
-     *     path="/api/experienciaLaboral",
+     *     path="/api/explaboral",
      *     summary="Listar todas las experiencias laborales",
      *     tags={"Experiencia Laboral"},
      *     security={{"bearerAuth":{}}},
@@ -41,7 +41,7 @@ class experienciaLaboralController extends Controller
     }
     /**
      * @OA\Post(
-     *     path="/api/experienciaLaboral",
+     *     path="/api/experiencialaboral",
      *     summary="Crear nueva experiencia laboral",
      *     tags={"Experiencia Laboral"},
      *     security={{"bearerAuth":{}}},
@@ -189,7 +189,7 @@ class experienciaLaboralController extends Controller
     }
     /**
      * @OA\Get(
-     *     path="/api/experienciaLaboral/{id}",
+     *     path="/api/explaboral/{id}",
      *     summary="Obtener una experiencia laboral por ID",
      *     tags={"Experiencia Laboral"},
      *     security={{"bearerAuth":{}}},
@@ -222,7 +222,7 @@ class experienciaLaboralController extends Controller
     }
     /**
      * @OA\Put(
-     *     path="/api/experienciaLaboral/{id}",
+     *     path="/api/explaboral/{id}",
      *     summary="Actualizar una experiencia laboral",
      *     tags={"Experiencia Laboral"},
      *     security={{"bearerAuth":{}}},
@@ -290,7 +290,7 @@ class experienciaLaboralController extends Controller
     }
     /**
      * @OA\Delete(
-     *     path="/api/experienciaLaboral/{id}",
+     *     path="/api/explaboral/{id}",
      *     summary="Eliminar una experiencia laboral",
      *     tags={"Experiencia Laboral"},
      *     security={{"bearerAuth":{}}},
@@ -325,7 +325,7 @@ class experienciaLaboralController extends Controller
     }
     /**
      * @OA\Patch(
-     *     path="/api/experienciaLaboral/{id}",
+     *     path="/api/explaboral/{id}",
      *     summary="Actualizar parcialmente una experiencia laboral",
      *     tags={"Experiencia Laboral"},
      *     security={{"bearerAuth":{}}},

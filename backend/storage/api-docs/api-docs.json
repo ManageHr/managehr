@@ -2732,572 +2732,6 @@
                 ]
             }
         },
-        "/api/categoriaHasUsuario": {
-            "get": {
-                "tags": [
-                    "Categorías Usuario"
-                ],
-                "summary": "Obtener todas las categorías asignadas a usuarios",
-                "operationId": "33c0480cc30f59a3c6b13f19f1c436e4",
-                "responses": {
-                    "200": {
-                        "description": "Lista de categorías de usuarios obtenida exitosamente",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "cathasusu": {
-                                            "type": "array",
-                                            "items": {
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "integer",
-                                                        "example": 1
-                                                    },
-                                                    "categoriaVacantesId": {
-                                                        "type": "integer",
-                                                        "example": 3
-                                                    },
-                                                    "usuarioNumDocumento": {
-                                                        "type": "integer",
-                                                        "example": 12345678
-                                                    },
-                                                    "created_at": {
-                                                        "type": "string",
-                                                        "format": "date-time"
-                                                    },
-                                                    "updated_at": {
-                                                        "type": "string",
-                                                        "format": "date-time"
-                                                    }
-                                                },
-                                                "type": "object"
-                                            }
-                                        },
-                                        "status": {
-                                            "type": "integer",
-                                            "example": 200
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Error en la base de datos",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "mensaje": {
-                                            "type": "string",
-                                            "example": "No retorna por error en DB"
-                                        },
-                                        "status": {
-                                            "type": "integer",
-                                            "example": 400
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            },
-            "post": {
-                "tags": [
-                    "Categorías Usuario"
-                ],
-                "summary": "Asignar una categoría a un usuario",
-                "operationId": "077892d3c67090772b7669a8cff1804e",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "categoriaVacantesId",
-                                    "usuarioNumDocumento"
-                                ],
-                                "properties": {
-                                    "categoriaVacantesId": {
-                                        "description": "ID de la categoría de vacantes",
-                                        "type": "integer",
-                                        "example": 3
-                                    },
-                                    "usuarioNumDocumento": {
-                                        "description": "Número de documento del usuario",
-                                        "type": "integer",
-                                        "example": 12345678
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Categoría asignada al usuario correctamente",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "mensaje": {
-                                            "type": "string",
-                                            "example": "Categoria has usuario no se ha creado correctamente"
-                                        },
-                                        "cathasusu": {
-                                            "type": "object"
-                                        },
-                                        "status": {
-                                            "type": "integer",
-                                            "example": 201
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Error en la validación de datos",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "mensaje": {
-                                            "type": "string",
-                                            "example": "Error en la validación de datos de categoriahasusuario"
-                                        },
-                                        "errors": {
-                                            "type": "object"
-                                        },
-                                        "status": {
-                                            "type": "integer",
-                                            "example": 400
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error al crear la asignación",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "mensaje": {
-                                            "type": "string",
-                                            "example": "Error al crear el categoriahasusuario"
-                                        },
-                                        "error": {
-                                            "type": "string"
-                                        },
-                                        "status": {
-                                            "type": "integer",
-                                            "example": 500
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/api/categoriaHasUsuario/{id}": {
-            "get": {
-                "tags": [
-                    "Categorías Usuario"
-                ],
-                "summary": "Obtener categorías asignadas a un usuario específico",
-                "operationId": "6cd36121ed0ca7f9c4edd8952dcde762",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Número de documento del usuario",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "example": 12345678
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Categorías del usuario obtenidas exitosamente",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "cathasusu": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object"
-                                            }
-                                        },
-                                        "status": {
-                                            "type": "integer",
-                                            "example": 200
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Usuario no existe",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "mensaje": {
-                                            "type": "string",
-                                            "example": "El usuario no existe"
-                                        },
-                                        "status": {
-                                            "type": "integer",
-                                            "example": 400
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            },
-            "put": {
-                "tags": [
-                    "Categorías Usuario"
-                ],
-                "summary": "Actualizar categoría asignada a un usuario",
-                "operationId": "4dbecee94d2e8a57dcd3b00de66d037b",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Número de documento del usuario",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "example": 12345678
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "categoriaVacantesId",
-                                    "usuarioNumDocumento"
-                                ],
-                                "properties": {
-                                    "categoriaVacantesId": {
-                                        "type": "integer",
-                                        "example": 3
-                                    },
-                                    "usuarioNumDocumento": {
-                                        "type": "integer",
-                                        "example": 12345678
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Categoría actualizada correctamente",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "mensaje": {
-                                            "type": "string",
-                                            "example": "Categoría actualizada correctamente"
-                                        },
-                                        "cathasusu": {
-                                            "type": "object"
-                                        },
-                                        "status": {
-                                            "type": "integer",
-                                            "example": 200
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Error en la validación",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "errors": {
-                                            "type": "object"
-                                        },
-                                        "status": {
-                                            "type": "integer",
-                                            "example": 400
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Categoría no encontrada",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "mensaje": {
-                                            "type": "string",
-                                            "example": "No se encontró la categoría asociada al usuario"
-                                        },
-                                        "status": {
-                                            "type": "integer",
-                                            "example": 404
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error al modificar la categoría",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "mensaje": {
-                                            "type": "string",
-                                            "example": "Error al modificar la categoría del usuario"
-                                        },
-                                        "error": {
-                                            "type": "string"
-                                        },
-                                        "status": {
-                                            "type": "integer",
-                                            "example": 500
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            },
-            "delete": {
-                "tags": [
-                    "Categorías Usuario"
-                ],
-                "summary": "Eliminar categoría asignada a un usuario",
-                "operationId": "2ccf9f29cd3b50d73938578a5b81c778",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Número de documento del usuario",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "example": 12345678
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Registro eliminado correctamente",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "mensaje": {
-                                            "type": "string",
-                                            "example": "Registro eliminado correctamente"
-                                        },
-                                        "status": {
-                                            "type": "integer",
-                                            "example": 200
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Categoría no encontrada",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "mensaje": {
-                                            "type": "string",
-                                            "example": "No se encontró la categoría asignada al usuario"
-                                        },
-                                        "status": {
-                                            "type": "integer",
-                                            "example": 404
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            },
-            "patch": {
-                "tags": [
-                    "Categorías Usuario"
-                ],
-                "summary": "Actualizar parcialmente categoría asignada a un usuario",
-                "operationId": "b0275fee5ffb7638b7012329d9ed7738",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Número de documento del usuario",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "example": 12345678
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": false,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "categoriaVacantesId": {
-                                        "type": "integer"
-                                    },
-                                    "usuarioNumDocumento": {
-                                        "type": "integer"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Categoría actualizada parcialmente",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "cathasusu": {
-                                            "type": "object"
-                                        },
-                                        "status": {
-                                            "type": "integer",
-                                            "example": 200
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Error en la validación",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "mesaje": {
-                                            "type": "string",
-                                            "example": "Error al validar categoria has usuario"
-                                        },
-                                        "errors": {
-                                            "type": "object"
-                                        },
-                                        "status": {
-                                            "type": "integer",
-                                            "example": 400
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Categoría no encontrada",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "mensage": {
-                                            "type": "string",
-                                            "example": "No se encontro la categoria has usuario"
-                                        },
-                                        "status": {
-                                            "type": "integer",
-                                            "example": 404
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
         "/api/categoriavacantes": {
             "get": {
                 "tags": [
@@ -4335,13 +3769,13 @@
                 ]
             }
         },
-        "/api/experienciaLaboral": {
+        "/api/explaboral": {
             "get": {
                 "tags": [
                     "Experiencia Laboral"
                 ],
                 "summary": "Listar todas las experiencias laborales",
-                "operationId": "02606ee955d45e8a3122b15846fca9f8",
+                "operationId": "668a51a48e6f7d6acadd8358abace82e",
                 "responses": {
                     "200": {
                         "description": "Listado de experiencias laborales de los empleados "
@@ -4352,13 +3786,15 @@
                         "bearerAuth": []
                     }
                 ]
-            },
+            }
+        },
+        "/api/experiencialaboral": {
             "post": {
                 "tags": [
                     "Experiencia Laboral"
                 ],
                 "summary": "Crear nueva experiencia laboral",
-                "operationId": "275fc232e00ebdb1b8f72d53872505fc",
+                "operationId": "38366a40f4315514720b9da03c055e0a",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -4494,13 +3930,13 @@
                 ]
             }
         },
-        "/api/experienciaLaboral/{id}": {
+        "/api/explaboral/{id}": {
             "get": {
                 "tags": [
                     "Experiencia Laboral"
                 ],
                 "summary": "Obtener una experiencia laboral por ID",
-                "operationId": "0868f668bc856bfdba657a3f3e761ad8",
+                "operationId": "613110b02af3460f87b081cf6a07307f",
                 "parameters": [
                     {
                         "name": "id",
@@ -4531,7 +3967,7 @@
                     "Experiencia Laboral"
                 ],
                 "summary": "Actualizar una experiencia laboral",
-                "operationId": "e45e0c6e1f0462777451bcf00c57e137",
+                "operationId": "8572dc2389685481ae095781203c868c",
                 "parameters": [
                     {
                         "name": "id",
@@ -4606,7 +4042,7 @@
                     "Experiencia Laboral"
                 ],
                 "summary": "Eliminar una experiencia laboral",
-                "operationId": "b566b727c5325d032dde81cd3f4aba20",
+                "operationId": "78eda5bc0b344a12bc61c081922346cd",
                 "parameters": [
                     {
                         "name": "id",
@@ -4637,7 +4073,7 @@
                     "Experiencia Laboral"
                 ],
                 "summary": "Actualizar parcialmente una experiencia laboral",
-                "operationId": "c4e5bfea141f3ebd00f41be7771f8078",
+                "operationId": "0a938e6311ccdb71950f7db9f90783ff",
                 "parameters": [
                     {
                         "name": "id",
@@ -10945,10 +10381,6 @@
         {
             "name": "Área",
             "description": "Operaciones relacionadas con Áreas"
-        },
-        {
-            "name": "Categorías Usuario",
-            "description": "Gestión de la relación entre categorías de vacantes y usuarios. Permite asignar categorías específicas a usuarios para filtrar vacantes por área de interés."
         },
         {
             "name": "Categorías de Vacantes",
