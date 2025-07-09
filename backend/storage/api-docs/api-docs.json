@@ -5654,6 +5654,536 @@
                 ]
             }
         },
+        "/api/notificaciones": {
+            "get": {
+                "tags": [
+                    "Notificaciones"
+                ],
+                "summary": "Obtener todas las notificaciones",
+                "operationId": "6edd3ef3574b4d6e15bd269856f471a2",
+                "responses": {
+                    "200": {
+                        "description": "Lista de notificaciones obtenida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "Notificaciones": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Notificaciones"
+                ],
+                "summary": "Crear una nueva notificación",
+                "operationId": "8db40ed9d8d43424d8a539ee4517f178",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "tipo",
+                                    "accion",
+                                    "usuarioId",
+                                    "referenciaId"
+                                ],
+                                "properties": {
+                                    "tipo": {
+                                        "type": "string",
+                                        "enum": [
+                                            "HorasExtra",
+                                            "Vacaciones",
+                                            "Permiso",
+                                            "Postulacion",
+                                            "Rol"
+                                        ],
+                                        "example": "Vacaciones"
+                                    },
+                                    "accion": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Creado",
+                                            "Modificado",
+                                            "Eliminado",
+                                            "EstadoAceptado"
+                                        ],
+                                        "example": "Creado"
+                                    },
+                                    "fecha": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2024-06-01"
+                                    },
+                                    "detalle": {
+                                        "type": "string",
+                                        "example": "Detalle de la notificación"
+                                    },
+                                    "usuarioId": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "areaId": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "referenciaId": {
+                                        "type": "integer",
+                                        "example": 10
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Notificación creada correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Notificacion creada correctamente"
+                                        },
+                                        "Notificaciones": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 201
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error en la validación de datos de notificaciones"
+                    },
+                    "500": {
+                        "description": "Error al crear Notificacion"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/notificaciones/{id}/estado": {
+            "put": {
+                "tags": [
+                    "Notificaciones"
+                ],
+                "summary": "Actualizar el estado de una notificación",
+                "operationId": "c1a05f295d09a44216c7f8786e00560e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la notificación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "estado": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Estado actualizado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Estado actualizado correctamente"
+                                        },
+                                        "Notificacion": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error en la validación"
+                    },
+                    "404": {
+                        "description": "Notificacion no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/notificaciones/{id}": {
+            "get": {
+                "tags": [
+                    "Notificaciones"
+                ],
+                "summary": "Obtener una notificación por ID",
+                "operationId": "cc60bbc28117f5eee3d1242684958585",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la notificación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Notificación encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "Notificacion": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Notificacion no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Notificaciones"
+                ],
+                "summary": "Actualizar una notificación",
+                "operationId": "ecdd69703acf1dd8e721d01860e7319a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la notificación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "tipo",
+                                    "accion",
+                                    "usuarioId",
+                                    "referenciaId"
+                                ],
+                                "properties": {
+                                    "tipo": {
+                                        "type": "string",
+                                        "enum": [
+                                            "HorasExtra",
+                                            "Vacaciones",
+                                            "Permiso",
+                                            "Postulacion",
+                                            "Rol"
+                                        ],
+                                        "example": "Vacaciones"
+                                    },
+                                    "accion": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Creado",
+                                            "Modificado",
+                                            "Eliminado",
+                                            "EstadoAceptado"
+                                        ],
+                                        "example": "Modificado"
+                                    },
+                                    "fecha": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2024-06-01"
+                                    },
+                                    "detalle": {
+                                        "type": "string",
+                                        "example": "Detalle actualizado"
+                                    },
+                                    "usuarioId": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "areaId": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "referenciaId": {
+                                        "type": "integer",
+                                        "example": 10
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Notificación actualizada correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Notificacion actualizada correctamente"
+                                        },
+                                        "Notificaciones": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error en la validación"
+                    },
+                    "404": {
+                        "description": "Notificacion no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Notificaciones"
+                ],
+                "summary": "Eliminar una notificación",
+                "operationId": "ca2181310e1c0ee9278b42cd78dc180b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la notificación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Notificación eliminada correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Notificación eliminada correctamente"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Notificacion no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Notificaciones"
+                ],
+                "summary": "Actualizar parcialmente una notificación",
+                "operationId": "f87c43330105876d2afb89aa8b1ddce8",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la notificación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "tipo": {
+                                        "type": "string",
+                                        "enum": [
+                                            "HorasExtra",
+                                            "Vacaciones",
+                                            "Permiso",
+                                            "Postulacion",
+                                            "Rol"
+                                        ]
+                                    },
+                                    "accion": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Creado",
+                                            "Modificado",
+                                            "Eliminado",
+                                            "EstadoAceptado"
+                                        ]
+                                    },
+                                    "fecha": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "detalle": {
+                                        "type": "string"
+                                    },
+                                    "usuarioId": {
+                                        "type": "integer"
+                                    },
+                                    "areaId": {
+                                        "type": "integer"
+                                    },
+                                    "referenciaId": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Notificación actualizada parcialmente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Notificacion actualizada parcialmente"
+                                        },
+                                        "Notificaciones": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error en la validación"
+                    },
+                    "404": {
+                        "description": "Notificacion no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/pensiones": {
             "get": {
                 "tags": [
@@ -8403,6 +8933,10 @@
         {
             "name": "Jefe Personal",
             "description": "Gestión general del jefe de personal. Este módulo permite al jefe de personal gestionar información general de su área, incluyendo la consulta de empleados bajo su supervisión."
+        },
+        {
+            "name": "Notificaciones",
+            "description": "Gestión de notificaciones del sistema. Permite crear, consultar, actualizar, eliminar y cambiar el estado de las notificaciones."
         },
         {
             "name": "Postulaciones",
