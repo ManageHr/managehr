@@ -7637,12 +7637,30 @@
                 "tags": [
                     "Vacaciones"
                 ],
-                "summary": "Obtener todas las vacaciones",
-                "description": "Retorna todas las solicitudes de vacaciones con la información relacionada del contrato, área y usuario.",
+                "summary": "Obtener todas las solicitudes de vacaciones",
                 "operationId": "817f618607d705f38dd206737fbbd106",
                 "responses": {
                     "200": {
-                        "description": "Lista de vacaciones obtenida exitosamente"
+                        "description": "Lista de vacaciones obtenida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "vacaciones": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -7656,7 +7674,6 @@
                     "Vacaciones"
                 ],
                 "summary": "Registrar una nueva solicitud de vacaciones",
-                "description": "Crea una nueva solicitud de vacaciones para un contrato específico.",
                 "operationId": "a85b7484b2b0d2e3612322926c29a9f4",
                 "requestBody": {
                     "required": true,
@@ -7701,7 +7718,27 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Solicitud creada correctamente"
+                        "description": "Solicitud creada correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Vacación creada correctamente"
+                                        },
+                                        "vacaciones": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 201
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "400": {
                         "description": "Error de validación"
@@ -7723,7 +7760,6 @@
                     "Vacaciones"
                 ],
                 "summary": "Obtener una solicitud de vacaciones",
-                "description": "Devuelve los detalles de una solicitud de vacaciones incluyendo el contrato y la información del usuario.",
                 "operationId": "960936854c259a9023e3bfb2942d24dc",
                 "parameters": [
                     {
@@ -7739,7 +7775,23 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Vacación encontrada exitosamente"
+                        "description": "Vacación encontrada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "vacaciones": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "404": {
                         "description": "Vacación no encontrada"
@@ -7756,7 +7808,6 @@
                     "Vacaciones"
                 ],
                 "summary": "Actualizar una solicitud de vacaciones",
-                "description": "Actualiza completamente la información de una solicitud de vacaciones.",
                 "operationId": "b78423d9d06704ccf9fe1e02923ef004",
                 "parameters": [
                     {
@@ -7811,7 +7862,23 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Vacación actualizada correctamente"
+                        "description": "Vacación actualizada correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "vacaciones": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "400": {
                         "description": "Datos inválidos"
@@ -7831,7 +7898,6 @@
                     "Vacaciones"
                 ],
                 "summary": "Eliminar una solicitud de vacaciones",
-                "description": "Elimina una solicitud de vacaciones por su ID.",
                 "operationId": "502e4e6802942819c06e31e7336b8102",
                 "parameters": [
                     {
@@ -7847,7 +7913,24 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Vacación eliminada correctamente"
+                        "description": "Vacación eliminada correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Vacación eliminada"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "404": {
                         "description": "Vacación no encontrada"
@@ -7864,7 +7947,6 @@
                     "Vacaciones"
                 ],
                 "summary": "Actualizar parcialmente una solicitud de vacaciones",
-                "description": "Permite modificar solo algunos campos de una solicitud de vacaciones.",
                 "operationId": "f6c65516c3843f05a23283b649c7df8d",
                 "parameters": [
                     {
@@ -7914,7 +7996,23 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Vacación actualizada parcialmente"
+                        "description": "Vacación actualizada parcialmente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "vacaciones": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "400": {
                         "description": "Error de validación"
@@ -7936,7 +8034,6 @@
                     "Vacaciones"
                 ],
                 "summary": "Actualizar estado de la vacación",
-                "description": "Permite cambiar el estado de la solicitud de vacaciones (Pendiente, Aprobado, Rechazado).",
                 "operationId": "e359d0baebdf0ce28b1e6ed81024a52d",
                 "parameters": [
                     {
@@ -7971,7 +8068,27 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Estado actualizado correctamente"
+                        "description": "Estado actualizado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string",
+                                            "example": "Estado actualizado correctamente"
+                                        },
+                                        "vacacion": {
+                                            "type": "object"
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "400": {
                         "description": "Estado inválido o no permitido"
@@ -8308,6 +8425,10 @@
             "description": "Gestión de Tipos de Horas Extra"
         },
         {
+            "name": "Vacaciones",
+            "description": "Gestión de solicitudes de vacaciones. Permite crear, consultar, actualizar, eliminar y cambiar el estado de las solicitudes de vacaciones de los empleados."
+        },
+        {
             "name": "HorasExtra",
             "description": "HorasExtra"
         },
@@ -8322,10 +8443,6 @@
         {
             "name": "Jefes de Personal",
             "description": "Jefes de Personal"
-        },
-        {
-            "name": "Vacaciones",
-            "description": "Vacaciones"
         },
         {
             "name": "Horas Extra",

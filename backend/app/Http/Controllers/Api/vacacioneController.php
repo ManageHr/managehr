@@ -7,24 +7,30 @@ use Illuminate\Http\Request;
 use App\Models\Vacaciones;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * @OA\Tag(
+ *     name="Vacaciones",
+ *     description="Gestión de solicitudes de vacaciones. Permite crear, consultar, actualizar, eliminar y cambiar el estado de las solicitudes de vacaciones de los empleados."
+ * )
+ */
 class vacacioneController extends Controller
 {
-
-
-        /**
+    /**
      * @OA\Get(
      *     path="/api/vacaciones",
-     *     summary="Obtener todas las vacaciones",
-     *     description="Retorna todas las solicitudes de vacaciones con la información relacionada del contrato, área y usuario.",
+     *     summary="Obtener todas las solicitudes de vacaciones",
      *     tags={"Vacaciones"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Response(
      *         response=200,
-     *         description="Lista de vacaciones obtenida exitosamente"
+     *         description="Lista de vacaciones obtenida exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="vacaciones", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
      *     )
      * )
      */
-
     public function index()
     {
         $vacaciones = Vacaciones::with([
@@ -39,13 +45,12 @@ class vacacioneController extends Controller
         ]);
     }
 
-        /**
+    /**
      * @OA\Post(
      *     path="/api/vacaciones",
      *     summary="Registrar una nueva solicitud de vacaciones",
-     *     description="Crea una nueva solicitud de vacaciones para un contrato específico.",
      *     tags={"Vacaciones"},
-     * security={{"bearerAuth":{}}},
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -59,7 +64,12 @@ class vacacioneController extends Controller
      *     ),
      *     @OA\Response(
      *         response=201,
-     *         description="Solicitud creada correctamente"
+     *         description="Solicitud creada correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="mensaje", type="string", example="Vacación creada correctamente"),
+     *             @OA\Property(property="vacaciones", type="object"),
+     *             @OA\Property(property="status", type="integer", example=201)
+     *         )
      *     ),
      *     @OA\Response(
      *         response=400,
@@ -114,11 +124,10 @@ class vacacioneController extends Controller
         }
     }
 
-        /**
+    /**
      * @OA\Get(
      *     path="/api/vacaciones/{id}",
      *     summary="Obtener una solicitud de vacaciones",
-     *     description="Devuelve los detalles de una solicitud de vacaciones incluyendo el contrato y la información del usuario.",
      *     tags={"Vacaciones"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
@@ -130,7 +139,11 @@ class vacacioneController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Vacación encontrada exitosamente"
+     *         description="Vacación encontrada exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="vacaciones", type="object"),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
      *     ),
      *     @OA\Response(
      *         response=404,
@@ -138,7 +151,6 @@ class vacacioneController extends Controller
      *     )
      * )
      */
-
     public function show($id)
     {
         $vacaciones = Vacaciones::with([
@@ -160,11 +172,10 @@ class vacacioneController extends Controller
         ]);
     }
 
-        /**
+    /**
      * @OA\Put(
      *     path="/api/vacaciones/{id}",
      *     summary="Actualizar una solicitud de vacaciones",
-     *     description="Actualiza completamente la información de una solicitud de vacaciones.",
      *     tags={"Vacaciones"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
@@ -187,7 +198,11 @@ class vacacioneController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Vacación actualizada correctamente"
+     *         description="Vacación actualizada correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="vacaciones", type="object"),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
      *     ),
      *     @OA\Response(
      *         response=400,
@@ -199,7 +214,6 @@ class vacacioneController extends Controller
      *     )
      * )
      */
-
     public function update(Request $request, $id)
     {
         $vacaciones = Vacaciones::find($id);
@@ -239,11 +253,10 @@ class vacacioneController extends Controller
         ]);
     }
 
-        /**
+    /**
      * @OA\Patch(
      *     path="/api/vacaciones/{id}",
      *     summary="Actualizar parcialmente una solicitud de vacaciones",
-     *     description="Permite modificar solo algunos campos de una solicitud de vacaciones.",
      *     tags={"Vacaciones"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
@@ -265,7 +278,11 @@ class vacacioneController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Vacación actualizada parcialmente"
+     *         description="Vacación actualizada parcialmente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="vacaciones", type="object"),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
      *     ),
      *     @OA\Response(
      *         response=400,
@@ -277,7 +294,6 @@ class vacacioneController extends Controller
      *     )
      * )
      */
-
     public function updatePartial(Request $request, $id)
     {
         $vacaciones = Vacaciones::find($id);
@@ -318,11 +334,10 @@ class vacacioneController extends Controller
         ]);
     }
 
-        /**
+    /**
      * @OA\Delete(
      *     path="/api/vacaciones/{id}",
      *     summary="Eliminar una solicitud de vacaciones",
-     *     description="Elimina una solicitud de vacaciones por su ID.",
      *     tags={"Vacaciones"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
@@ -334,7 +349,11 @@ class vacacioneController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Vacación eliminada correctamente"
+     *         description="Vacación eliminada correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="mensaje", type="string", example="Vacación eliminada"),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
      *     ),
      *     @OA\Response(
      *         response=404,
@@ -342,7 +361,6 @@ class vacacioneController extends Controller
      *     )
      * )
      */
-
     public function destroy($id)
     {
         $vacaciones = Vacaciones::find($id);
@@ -360,12 +378,11 @@ class vacacioneController extends Controller
             "status" => 200
         ]);
     }
-    
-        /**
+
+    /**
      * @OA\Patch(
      *     path="/api/vacaciones/{id}/estado",
      *     summary="Actualizar estado de la vacación",
-     *     description="Permite cambiar el estado de la solicitud de vacaciones (Pendiente, Aprobado, Rechazado).",
      *     tags={"Vacaciones"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
@@ -384,7 +401,12 @@ class vacacioneController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Estado actualizado correctamente"
+     *         description="Estado actualizado correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="mensaje", type="string", example="Estado actualizado correctamente"),
+     *             @OA\Property(property="vacacion", type="object"),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
      *     ),
      *     @OA\Response(
      *         response=400,
@@ -396,7 +418,6 @@ class vacacioneController extends Controller
      *     )
      * )
      */
-
     public function actualizarEstado(Request $request, $id)
     {
         $estado = ucfirst(strtolower(trim($request->estado))); // <-- limpia el input
@@ -420,5 +441,4 @@ class vacacioneController extends Controller
             'status' => 200
         ]);
     }
-   
 }
