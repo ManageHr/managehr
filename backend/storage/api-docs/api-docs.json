@@ -928,13 +928,13 @@
                 ]
             }
         },
-        "/api/solicitudes-horasextra-jefe/solicitudes": {
+        "/api/solicitudes-horasextra-jefe/": {
             "get": {
                 "tags": [
                     "Horas Extra Jefe"
                 ],
                 "summary": "Obtener todas las solicitudes de horas extra del área del jefe",
-                "operationId": "b9fa6779df7ac9c48e0debda456cb76e",
+                "operationId": "ac9b18679df1a495566dbe9a76765cb8",
                 "responses": {
                     "200": {
                         "description": "Lista de solicitudes obtenida correctamente",

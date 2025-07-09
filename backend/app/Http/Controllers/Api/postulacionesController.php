@@ -112,7 +112,7 @@ class PostulacionesController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/postulaciones/vacante/{vacantesId}",
+     *     path="/api/postulaciones/buscar/vacante/{vacantesId}",
      *     summary="Buscar postulaciones por vacante",
      *     tags={"Postulaciones"},
      *     security={{"bearerAuth":{}}},
