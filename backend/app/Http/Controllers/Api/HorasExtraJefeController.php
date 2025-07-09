@@ -22,7 +22,7 @@ class HorasExtraJefeController extends Controller
 {
     /**
      * @OA\Get(
-     *     path="/api/solicitudes-horasextra-jefe/solicitudes",
+     *     path="/api/solicitudes-horasextra-jefe/",
      *     summary="Obtener todas las solicitudes de horas extra del área del jefe",
      *     tags={"Horas Extra Jefe"},
      *     security={{"bearerAuth":{}}},

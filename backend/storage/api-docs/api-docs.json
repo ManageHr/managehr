@@ -928,13 +928,13 @@
                 ]
             }
         },
-        "/api/jefe/horas-extra/solicitudes": {
+        "/api/solicitudes-horasextra-jefe/solicitudes": {
             "get": {
                 "tags": [
                     "Horas Extra Jefe"
                 ],
                 "summary": "Obtener todas las solicitudes de horas extra del área del jefe",
-                "operationId": "5d17ddef4521f08bf36fc7c0f3583e6f",
+                "operationId": "b9fa6779df7ac9c48e0debda456cb76e",
                 "responses": {
                     "200": {
                         "description": "Lista de solicitudes obtenida correctamente",
@@ -1019,13 +1019,13 @@
                 ]
             }
         },
-        "/api/jefe/horas-extra/solicitudes/{id}": {
+        "/api/solicitudes-horasextra-jefe/{id}": {
             "get": {
                 "tags": [
                     "Horas Extra Jefe"
                 ],
                 "summary": "Obtener una solicitud específica de horas extra",
-                "operationId": "bce6b82973cb32da38b611bfbf473546",
+                "operationId": "b75a7a583cac4de2e98569a8b427c428",
                 "parameters": [
                     {
                         "name": "id",
@@ -1116,13 +1116,13 @@
                 ]
             }
         },
-        "/api/jefe/horas-extra/solicitudes/{id}/aprobar": {
+        "/api/solicitudes-horasextra-jefe/{id}/aprobar": {
             "post": {
                 "tags": [
                     "Horas Extra Jefe"
                 ],
                 "summary": "Aprobar una solicitud de horas extra",
-                "operationId": "a7855b6a60a378fbfbc6e04ebd6214b4",
+                "operationId": "d2b0b9cc257934a31120749f85834457",
                 "parameters": [
                     {
                         "name": "id",
@@ -1189,13 +1189,13 @@
                 ]
             }
         },
-        "/api/jefe/horas-extra/solicitudes/{id}/rechazar": {
+        "/api/solicitudes-horasextra-jefe/{id}/rechazar": {
             "post": {
                 "tags": [
                     "Horas Extra Jefe"
                 ],
                 "summary": "Rechazar una solicitud de horas extra",
-                "operationId": "17fd9c64a9becc70b4858331d3a3567d",
+                "operationId": "755dad94ce45789c732ca531a1fccf87",
                 "parameters": [
                     {
                         "name": "id",
@@ -1262,13 +1262,13 @@
                 ]
             }
         },
-        "/api/jefe/horas-extra/estadisticas": {
+        "/api/solicitudes-horasextra-jefe/estadisticas": {
             "get": {
                 "tags": [
                     "Horas Extra Jefe"
                 ],
                 "summary": "Obtener estadísticas de solicitudes de horas extra",
-                "operationId": "9913791dee6726a3cdaf8cbd975ca8a3",
+                "operationId": "015acbbf7729be4b0e9e1fae4c4f2249",
                 "responses": {
                     "200": {
                         "description": "Estadísticas obtenidas correctamente",
@@ -1315,13 +1315,13 @@
                 ]
             }
         },
-        "/api/jefe/horas-extra/solicitudes/{id}/estado": {
+        "/api/solicitudes-horasextra-jefe/{id}/estado": {
             "put": {
                 "tags": [
                     "Horas Extra Jefe"
                 ],
                 "summary": "Actualizar el estado de una solicitud de horas extra",
-                "operationId": "a1f6dab3a2ba05b2b3d9b786e5bc6df5",
+                "operationId": "06f86d1d5de16eee1d04dfea7b2ca03c",
                 "parameters": [
                     {
                         "name": "id",
