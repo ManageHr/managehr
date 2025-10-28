@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="vacSinRegis.css">
+    <link rel="shortcut icon"  style="border-radius: 15px;"  href="../Resources/Images/logo.png">
+    <title>ManageHR</title>
+  </head>
+  <body>
+    <input type="checkbox" id="chequed1">
+    <input type="checkbox" id="chequedalerta">
+    <div class="registro1">
+      <header class="header-registro">
+        <h1 class="h1header">Registro</h1>
+        <a href="./vacantesSinRegistro.html"><img src="./Resources/Images/Icons/circle.svg" alt="" class="circle"></a>
+      </header>
+      <form action="" class="frm1" enctype="multipart/form-data">
+        <div class="formularios">
+          <article id="formulario1">
+            <font>Nombres completos</font>
+            <input type="text" id="nombres" name="nombres" placeholder="Nombres completos">
+            <font>Apellidos completos</font>
+            <input type="text" id="apellidos" name="apellidos"  placeholder="Apellidos completos">
+            <font>Tipo documento</font>
+            <select name="tipodocumento" id="tipodocumento">
+              <option value="0">Seleccione una opcion</option>
+              <option value="1">C.C</option>
+              <option value="2">T.I</option>
+              <option value="3">C.E</option>
+            </select>
+            <font>Numero de documento</font>
+            <input type="text" id="numero-documento" name="numero-documento" placeholder="Numero de documento">
+            <font>Direccion residencia</font>
+            <input type="text" id="direccion-residencia" name="direccion-residencia" placeholder="Direccion de recidencia" >
+            <font>Numero Telefono celular</font>
+            <input type="number" id="telefono" name="telefono" placeholder="Numero de telefonocelular">
+          </article>
+          <article id="formulario2">
+            <font>Tipo de sangre</font>
+            <select name="gruposanguineo" id="gruposanguineo">
+              <option value="0">Seleccione una opcion</option>
+              <option value="1">A+</option>
+              <option value="2">A-</option>
+              <option value="3">B+</option>
+              <option value="4">B-</option>
+              <option value="4">AB+</option>
+              <option value="4">AB-</option>
+              <option value="4">O+</option>
+              <option value="4">O-</option>
+            </select>
+            <font>Edad</font>
+            <input type="number" id="edad" name="edad"  placeholder="Edad actual en numeros">
+            <font>Estado Civil</font>
+            <select name="estadocivil" id="estadocivil">
+              <option value="0">Seleccione una opcion</option>
+              <option value="1">Casado</option>
+              <option value="2">Soltero</option>
+              <option value="3">Divorciado</option>
+              <option value="4">Union libre</option>
+            </select>
+            <font>Estudios</font>
+            <input type="text" id="estudios" name="estudios" placeholder="Numero de documento">
+            <font>Referencia Laboral</font>
+            <input type="text" id="referencialaboral" name="referencialaboral" placeholder="Direccion de recidencia" >
+            <font>Certificado ref. laboral</font>
+            <div class="file-container">
+              <input type="file" id="btn-archivo" name="archivo"  >
+              <label for="btn-archivo" class="custom-file-upload">Subir Archivo</label>
+            </div>        
+            </article>
+        </div>
+        <article id="botones">
+          <label for="chequedalerta"><img src="../Resources/img/siguiente1.png" alt="">Enviar</label>      
+        </article>
+      </form>
+    </div>
+    <div class="alerta">
+      <img src="./Resources/Images/Icons/check.svg" alt="">
+      <h1>Postulacion Exitosa!</h1>
+      <a href="./Externo/perfil.html">Ok</a>
+    </div>
+    <div class="container">
+      <section class="left">
+        <article class="article-busqueda">
+          <input type="text" placeholder="Buscar vacante" />
+          <input type="submit" value="Buscar" />
+        </article>
+        <article class="article-categorias">
+          <select class="select" name="categoria" id="categoria">
+            <option value="0">Seleccione una Vacante</option>
+            <option value="1">Ingenierias</option>
+            <option value="2">Call Center</option>
+            <option value="3">Software</option>
+            <option value="4">Recursos Humanos</option>
+            <option value="5">Tecnicos</option>
+          </select>
+          <select name="especialidad" id="especialidad">
+            <option value="0">Seleccione una Especialidad</option>
+            <option value="1">Industrial</option>
+            <option value="2">Mecanica</option>
+            <option value="3">Sisatemas</option>
+            <option value="4">Civil</option>
+            <option value="5">Petroleos</option>
+          </select>
+          <select name="salario" id="salario">
+            <option value="0">Seleccione una Salario</option>
+            <option value="1">$ 1.600.000</option>
+            <option value="2">$ 1.800.000</option>
+            <option value="3">$ 1.900.000</option>
+            <option value="4">$ 2.000.000</option>
+            <option value="5">$ 2.100.000</option>
+            <option value="6">$ 2.200.000</option>
+            <option value="7">$ 2.300.000</option>
+            <option value="8">$ 2.400.000</option>
+            <option value="9">$ 2.500.000</option>
+            <option value="10">$ 2.600.000</option>
+            <option value="11">$ 3.000.000</option>
+          </select>
+        </article>
+        <article class="article-vacantes">
+          <aside class="vacante">
+            <h3>Estudiantes de Ingeniería Civil / Arquitectura</h3>
+            <h4>ACTIVOS S.A.S.</h4>
+            <h5>Bogotá, D.C.</h5>
+            <h6>$ 1.400.000,00 (Mensual)</h6>
+        </aside>
+        <aside class="vacante">
+            <h3>Analista de Sistemas</h3>
+            <h4>TechCorp Ltda.</h4>
+            <h5>Bogotá, D.C.</h5>
+            <h6>$ 1.800.000,00 (Mensual)</h6>
+        </aside>
+        <aside class="vacante">
+            <h3>Asistente de Recursos Humanos</h3>
+            <h4>HumanSolutions</h4>
+            <h5>Bogotá, D.C.</h5>
+            <h6>$ 1.600.000,00 (Mensual)</h6>
+        </aside>
+        <aside class="vacante">
+            <h3>Consultor Técnico</h3>
+            <h4>TechConsult</h4>
+            <h5>Bogotá, D.C.</h5>
+            <h6>$ 2.000.000,00 (Mensual)</h6>
+        </aside>
+        <aside class="vacante">
+            <h3>Desarrollador de Software</h3>
+            <h4>SoftDev Inc.</h4>
+            <h5>Bogotá, D.C.</h5>
+            <h6>$ 2.200.000,00 (Mensual)</h6>
+        </aside>
+        <aside class="vacante">
+            <h3>Asesor Comercial</h3>
+            <h4>SalesPro</h4>
+            <h5>Bogotá, D.C.</h5>
+            <h6>$ 1.700.000,00 (Mensual)</h6>
+        </aside>
+        <aside class="vacante">
+            <h3>Ingeniero de Proyecto</h3>
+            <h4>Ingenieros Unidos</h4>
+            <h5>Bogotá, D.C.</h5>
+            <h6>$ 2.500.000,00 (Mensual)</h6>
+        </aside>
+        <aside class="vacante">
+            <h3>Especialista en Seguridad Informática</h3>
+            <h4>SecureTech</h4>
+            <h5>Bogotá, D.C.</h5>
+            <h6>$ 2.800.000,00 (Mensual)</h6>
+        </aside>
+        <aside class="vacante">
+            <h3>Ingeniero Electrónico</h3>
+            <h4>ElectroSystems</h4>
+            <h5>Bogotá, D.C.</h5>
+            <h6>$ 2.400.000,00 (Mensual)</h6>
+        </aside>
+        <aside class="vacante">
+            <h3>Coordinador de Proyectos</h3>
+            <h4>ProjectMasters</h4>
+            <h5>Bogotá, D.C.</h5>
+            <h6>$ 3.000.000,00 (Mensual)</h6>
+        </aside>
+        <aside class="vacante">
+            <h3>Gestor de Talento Humano</h3>
+            <h4>HRPlus</h4>
+            <h5>Bogotá, D.C.</h5>
+            <h6>$ 1.900.000,00 (Mensual)</h6>
+        </aside>
+        </article>
+      </section>
+      <section class="right">
+        <header>
+            <h4>Estudiantes de Ingeniería Civil</h4>
+        </header>
+            <article>
+                <aside id="aside-header"> 
+                  <h1>Estudiantes de Ingeniería Civil / Arquitectura</h1>
+                  <h4>ACTIVOS S A S</h4>
+                  <h5>Bogotá, D.C., Bogotá, D.C.</h5>
+                  <h6>$ 1.400.000,00 (Mensual)</h6>
+                    
+                </aside>
+                
+                <aside>
+                    <h3>$ 1.400.000,00 (Mensual)</h3>
+                    <h3>Contrato de Obra o labor</h3>
+                    <h3>Tiempo Completo</h3>
+                    <h3>Presencial</h3>
+                    <h4><p>Importante compañía aseguradora requiere Estudiantes de Ingeniería civil o Ingeniería industrial, deseable experiencia en actividades relacionadas con servicio al cliente a través del teléfono y/o presencial, manejo de proveedores, mantenimiento. Su principal función será acoger al cliente a través de la línea de atención telefónica, escuchar sus necesidades e inquietudes y coordinar toda la operación necesaria para lograr cumplir con la promesa de servicio</p></h4>
+                    <h4><p>Indispensable contar con habilidades de buena comunicación, persuasión, creatividad, recursividad, solución de problemas y contar con documentación al día.</p></h4>
+                    <h4><p>Horario de trabajo Domingo a Domingo turnos 7 horas rorativos mañana tarde noche
+                        Salario 1.400.000 + prestaciones de ley + recargos</p></h4>
+                    <h3><div class="titulo-requerimientos">Requerimientos</div></h3>
+                    <h4><p><ul>
+                        <li>Educación mínima: Universidad / Carrera técnica</li>
+                    </ul></p></h6>
+                    <div class="botones">
+                      <label for="chequed1">Postularme</label>
+                    </div>
+                    
+                </aside>
+            </article>
+      </section>
+    </div>
+  </body>
+</html>

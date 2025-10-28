@@ -1,0 +1,358 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horas Extra</title>
+    <link rel="stylesheet" href="../Resources/css/horasextra.css">
+
+</head>
+<body>
+    <input type="checkbox" id="chec1">
+    <input type="checkbox" id="chec2">
+    <input type="checkbox" id="chec3">
+    <input type="checkbox" id="chec4">
+    <input type="checkbox" id="chec5">
+    <input type="checkbox" id="chec6">
+    
+    <div class="formulario1">
+        <a href="horasextra.html"><img src="../Resources/Images/Icons/circle.svg" alt=""></a>
+        <header id="header">
+            <h1>Crear horas extras</h1>
+        </header>
+        <form action="">
+            <font>Empleado </font>
+            <input type="text" placeholder="Nobre del empleado" id="empleado">
+            <font>Fecha de horas extra </font>
+            <input type="date" placeholder="fecha" id="fecha">
+            <font>Hora Inicio</font>
+            <input type="time" placeholder="Hora Inicio" id="horaInicio">
+            <font>Hora Final</font>
+            <input type="time" placeholder="Hora final" id="horaFin">
+            <div id="botones">
+                
+                <label id="labelChec" for="chec2">Crear</label>
+            </div>
+        </form>
+    </div>
+    <div class="formulario2">
+        <a href="horasextra.html"><img src="../Resources/Images/Icons/circle.svg" alt=""></a>
+        <header id="header">
+            <h1>Editar horas extras</h1>
+        </header>
+        <form action="">
+            <font>Fecha de horas extra </font>
+            <input type="date" placeholder="fecha" value="2024-09-14" id="fecha">
+            <font>Hora Inicio</font>
+            <input type="time" placeholder="Hora Inicio" value="15:03" id="horaInicio">
+            <font>Hora Final</font>
+            <input type="time" placeholder="Hora final" value="20:03" id="horaFin">
+            <div id="botones">
+                <label  id="labelChec" for="chec4">Modificar</label>
+            </div>
+        </form>
+    </div>
+
+        <div class="alerta1">
+            <img src="../Resources/Images/Icons/check-white.svg" alt="" />
+            <h1>Se Creo con exito !</h1>
+            <a href="horasextra.html">Ok</a>
+        </div>
+        <div class="alerta2">
+            <img src="../Resources/Images/Icons/check-white.svg" alt="" />
+            <h1>Se actualizo con exito!</h1>
+            <a href="horasextra.html">Ok</a>
+        </div>
+        <div class="alerta3">
+
+            <img src="../Resources/Images/Icons/bell-solid.svg" alt="" />
+            <h1>Seguro que quiere eliminar la hora extra de John Michael </h1>
+            <div class="col">
+                
+                <a href="horasextra.html">Cancelar</a>
+                <label for="chec6">Eliminar</label>
+            </div>
+        </div>
+        <div class="alerta4">
+            <img src="../Resources/Images/Icons/check-white.svg" alt="" />
+            <h1>Se elimino con exito!</h1>
+            <a href="horasextra.html">Ok</a>
+        </div>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logito">
+            <img src="../Resources/Images/logo.png" alt="">
+            </div>
+            <ul class="menu">
+                <li><a href="./directorio.html"><img src="../Resources/Images/Icons/clipboard-regular.svg" alt="Icono Directorio"> Directorio</a></li>
+                <li><a href="./vacantes.html"><img src="../Resources/Images/Icons/briefcase-solid.svg" alt="Icono Vacantes"> Vacantes</a></li>
+                <li><a href="./vacaciones.html"><img src="../Resources/Images/Icons/suitcase-solid.svg" alt="Icono Vacaciones"> Vacaciones</a></li>
+                <li><a href="./Incapacidades.html"><img src="../Resources/Images/Icons/book-medical-solid.svg" alt="Icono Incapacidades"> Incapacidades</a></li>
+                <li><a href="./horasextra.html"><img src="../Resources/Images/Icons/calendar-plus-solid.svg" alt="Icono Horas Extra"> Horas extra</a></li>
+                <li><a href="./pazysalvo.html"><img src="../Resources/Images/Icons/check-to-slot-solid.svg" alt="Icono Paz y Salvos"> Paz y Salvos</a></li>
+                <li><a href="./notificaciones.html"><img src="../Resources/Images/Icons/bell-solid.svg" alt="Icono Notificaciones"> Notificaciones</a></li>
+            </ul>
+            <div class="logout">
+            <a href="../index.html"><button class="logout-button">Cerrar Sesión</button></a>
+            </div>
+        </aside>
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search">
+                </div>
+                <div class="user-info">
+                    <div class="noti">
+                        <input type="checkbox" id="toggle-menu" class="toggle-menu">
+                        <label for="toggle-menu" class="noti-icon">
+                            <img src="../Resources/Images/Icons/notificaciones.png">
+                        </label>
+                        <ul class="sub-noti">
+                            <div class="mini">
+                                Carlos Hernandez ha enviado una solicitud de Vacaciones
+                            </div>
+                            <div class="mini">
+                                Marcela Reyes ha enviado una solicitud de Horas extra
+                            </div>
+                            <div class="mini">
+                                Carolina Carrillo ha enviado una solicitud de Horas extra
+                            </div>
+                            <div class="mini">
+                                Julian Rozo ha enviado una solicitud de Horas extra
+                            </div>
+                            
+                        </ul>
+                    </div>
+                    <div class="user-profile">
+                        <img src="../Resources/Images/1.jpg" alt="User Avatar" class="avatar">
+                        <div class="user-details">
+                            <span class="user-name">Juan Joven</span>
+                            <span class="user-email">Administrador</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="checkbox" id="chequed1">
+            <div class="cuadro-blanco1">
+                <a href="./vacaciones.html">
+                    <img src="../Resources/Images/Icons/circle.svg" id="circle">
+                </a>
+                <form class="search-form" action="#" method="get">
+                    <div class="form-group">
+                        <label for="start-date" class="form-label">Fecha Inicio:</label>
+                        <input type="date" id="start-date" name="start-date">
+                    </div>
+                
+                    <div class="form-group">
+                        <label for="end-date" class="form-label">Fecha Final:</label>
+                        <input type="date" id="end-date" name="end-date">
+                    </div>
+                
+                    <div class="form-group">
+                        <label for="cargo" class="form-label">Cargo:</label>
+                        <select id="cargo" name="cargo">
+                            <option value="">Seleccionar Cargo</option>
+                            <option value="Asesor">Asesor</option>
+                            <option value="Programador">Programador</option>
+                            <option value="Manager">Manager</option>
+                            <option value="Director">Director</option>
+                            <option value="Desarrollador">Desarrollador</option>
+                        </select>
+                    </div>
+                
+                    
+                </form>
+                <img src="../Resources/Images/grafica.jpg">
+                
+                <button class="descargar">Descargar</button>
+            </div>
+            <section class="dashboard">
+                
+                <label class="agregar" for="chec1">
+                    <img src="../Resources/Images/Icons/plus.svg"><h6>Agregar</h6>
+                </label>
+
+                <div class="titulo">
+                    <h1 class="letra">Horas Extra</h1>
+                </div>
+               
+
+
+                <div class="horas">
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Cargo</th>
+                                    <th>Estado</th>
+                                    <th>Fecha</th>
+                                    <th>Accion</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>John Michael</td>
+                                    <td>Asesor</td>
+                                    <td><span class="status complete">Aprobado</span></td>
+                                    <td>15/07/24</td>
+                                    <td class="actions">
+                                        <label class="editar" for="chec3">
+                                            <img src="../Resources/Images/Icons/edit.svg"><h6>Editar</h6>
+                                        </label>
+                                 
+                                        <label class="eliminar" for="chec5">
+                                            <img src="../Resources/Images/Icons/trash.svg"><h6>Eliminar</h6>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Alexa Liras</td>
+                                    <td>Desarrollador</td>
+                                    <td><span class="status complete">Aprobado</span></td>
+                                    <td>16/07/24</td>
+                                    <td class="actions">
+                                        <label class="editar" for="chec3">
+                                            <img src="../Resources/Images/Icons/edit.svg"><h6>Editar</h6>
+                                        </label>
+                                 
+                                        <label class="eliminar" for="chec5">
+                                            <img src="../Resources/Images/Icons/trash.svg"><h6>Eliminar</h6>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Laurent Perrier</td>
+                                    <td>Programador</td>
+                                    <td><span class="status rechazado">Rechazado</span></td>
+                                    <td>17/07/24</td>
+                                    <td class="actions">
+                                        <label class="editar" for="chec3">
+                                            <img src="../Resources/Images/Icons/edit.svg"><h6>Editar</h6>
+                                        </label>
+                                 
+                                        <label class="eliminar" for="chec5">
+                                            <img src="../Resources/Images/Icons/trash.svg"><h6>Eliminar</h6>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Michael Clark</td>
+                                    <td>Manager</td>
+                                    <td><span class="status complete">Aprobado</span></td>
+                                    <td>18/07/24</td>
+                                    <td class="actions">
+                                        <label class="editar" for="chec3">
+                                            <img src="../Resources/Images/Icons/edit.svg"><h6>Editar</h6>
+                                        </label>
+                                 
+                                        <label class="eliminar" for="chec5">
+                                            <img src="../Resources/Images/Icons/trash.svg"><h6>Eliminar</h6>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Richard Owens</td>
+                                    <td>Director</td>
+                                    <td><span class="status pending">Pendiente</span></td>
+                                    <td>19/07/24</td>
+                                    <td class="actions">
+                                        <label class="editar" for="chec3">
+                                            <img src="../Resources/Images/Icons/edit.svg"><h6>Editar</h6>
+                                        </label>
+                                 
+                                        <label class="eliminar" for="chec5">
+                                            <img src="../Resources/Images/Icons/trash.svg"><h6>Eliminar</h6>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>John Michael</td>
+                                    <td>Asesor</td>
+                                    <td><span class="status complete">Aprobado</span></td>
+                                    <td>15/07/24</td>
+                                    <td class="actions">
+                                        <label class="editar" for="chec3">
+                                            <img src="../Resources/Images/Icons/edit.svg"><h6>Editar</h6>
+                                        </label>
+                                 
+                                        <label class="eliminar" for="chec5">
+                                            <img src="../Resources/Images/Icons/trash.svg"><h6>Eliminar</h6>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Alexa Liras</td>
+                                    <td>Desarrollador</td>
+                                    <td><span class="status complete">Aprobado</span></td>
+                                    <td>16/07/24</td>
+                                    <td class="actions">
+                                        <label class="editar" for="chec3">
+                                            <img src="../Resources/Images/Icons/edit.svg"><h6>Editar</h6>
+                                        </label>
+                                 
+                                        <label class="eliminar" for="chec5">
+                                            <img src="../Resources/Images/Icons/trash.svg"><h6>Eliminar</h6>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Laurent Perrier</td>
+                                    <td>Programador</td>
+                                    <td><span class="status rechazado">Rechazado</span></td>
+                                    <td>17/07/24</td>
+                                    <td class="actions">
+                                        <label class="editar" for="chec3">
+                                            <img src="../Resources/Images/Icons/edit.svg"><h6>Editar</h6>
+                                        </label>
+                                 
+                                        <label class="eliminar" for="chec5">
+                                            <img src="../Resources/Images/Icons/trash.svg"><h6>Eliminar</h6>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Michael Clark</td>
+                                    <td>Manager</td>
+                                    <td><span class="status complete">Aprobado</span></td>
+                                    <td>18/07/24</td>
+                                    <td class="actions">
+                                        <label class="editar" for="chec3">
+                                            <img src="../Resources/Images/Icons/edit.svg"><h6>Editar</h6>
+                                        </label>
+                                 
+                                        <label class="eliminar" for="chec5">
+                                            <img src="../Resources/Images/Icons/trash.svg"><h6>Eliminar</h6>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Richard Owens</td>
+                                    <td>Director</td>
+                                    <td><span class="status pending">Pendiente</span></td>
+                                    <td>19/07/24</td>
+                                    <td class="actions">
+                                        <label class="editar" for="chec3">
+                                            <img src="../Resources/Images/Icons/edit.svg"><h6>Editar</h6>
+                                        </label>
+                                 
+                                        <label class="eliminar" for="chec5">
+                                            <img src="../Resources/Images/Icons/trash.svg"><h6>Eliminar</h6>
+                                        </label>
+                                    </td>
+                                </tr>
+                                
+                            </tbody>
+                        </table>
+                        <div class="reporte">
+                            <label for="chequed1">
+                                <h4>Generar Reporte</h4>
+                            </label>
+                    </div>
+                </div>
+            
+             </section>
+        </main>
+        
+    </div>
+</body>
+</html>

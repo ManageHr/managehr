@@ -25,4 +25,10 @@ class Vacantes extends Model
         'cargoVacante',
         'catVacId',
     ];
+
+    public function postulaciones()
+{
+    return $this->hasMany(\App\Models\Postulaciones::class, 'vacantesId', 'idVacantes');
+}
+
 }

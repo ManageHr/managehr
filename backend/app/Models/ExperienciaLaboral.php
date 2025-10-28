@@ -13,12 +13,11 @@ class ExperienciaLaboral extends Model
     protected $primaryKey = 'idExperiencia';
     protected $fillable = [
         "nomEmpresa",
-        'nombJefe',
+        'nomJefe',
         'telefono',
         'cargo',
         'actividades',
-        'certificado',
         'fechaInicio',
-        'fechaFin',
+        'fechaFinalizacion',
     ];
 }

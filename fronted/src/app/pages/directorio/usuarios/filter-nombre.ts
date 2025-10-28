@@ -3,17 +3,32 @@ import { Usuarios } from '../../../services/usuarios.service';
 
 @Pipe({
   name: 'filterNombre',
-  standalone: true
+  standalone: true,
+  pure: false
 })
 export class FilterNombre implements PipeTransform {
-  transform(usuarios: Usuarios[], termino: string): Usuarios[] {
-    if (!usuarios || !termino) return usuarios;
+  transform(usuarios: Usuarios[], filtro: string): Usuarios[] {
+    if (!usuarios || !filtro) return usuarios;
 
-    const lowerFiltro = termino.toLowerCase();
-    return usuarios.filter(usuario =>
-      `${usuario.primerNombre} ${usuario.segundoNombre} ${usuario.primerApellido} ${usuario.segundoApellido} ${usuario.numDocumento}`
+    const normalizar = (texto: string) =>
+      texto
         .toLowerCase()
-        .includes(lowerFiltro)
-    );
+        .normalize('NFD') // Quita tildes
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/\s+/g, ' ') // reemplaza múltiples espacios por uno solo
+        .trim();
+
+    const filtroNormalizado = normalizar(filtro);
+
+    return usuarios.filter((u) => {
+      const nombreCompleto = `${u.primerNombre} ${u.segundoNombre || ''} ${u.primerApellido} ${u.segundoApellido || ''}`;
+      const nombreNormalizado = normalizar(nombreCompleto);
+      const documento = String(u.numDocumento);
+
+      return (
+        nombreNormalizado.includes(filtroNormalizado) ||
+        documento.includes(filtroNormalizado)
+      );
+    });
   }
 }

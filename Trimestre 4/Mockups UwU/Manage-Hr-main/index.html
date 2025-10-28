@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./Resources/css/styles.css">
+    <title>Manage-Hr</title>
+</head>
+<body>
+    <header class="header">
+    </header>
+    <div class="container">
+        <section class="left">
+            <header>
+                <img src="./Resources/Images/logo.blanco.png" alt="logo">
+            </header>
+            <div class="left-content">
+                <h1>¡Bienvenido!</h1>
+                <p class="parrafo1">Impulsa tu potencial, <br> construye tu futuro con nosotros.</p>
+                <p class="parrafo2"><span>¿Estas interesado en trabajar con nosotros?</span></p>
+                <button> <a href="./vacantesSinRegistro.html">Ver ofertas laborales</a></button>
+            </div>
+        </section>
+        <section class="right">
+            <h2>Iniciar sesión</h2>
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="email">Usuario</label>
+                    <input type="text" id="email" placeholder="User_name" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" placeholder="********" required>
+                </div>
+                <div class="keep-logged-in">
+                    <input type="checkbox" id="keep-logged-in">
+                    <label for="keep-logged-in">Recordar Usuario</label>
+                    <a href="#" class="forgot-password">Olvidaste tu contraseña</a>
+                </div>
+                <button type="submit" class="signin-btn">Sign In</button>
+            </form>
+            <div class="social-signin">
+                <p>Redes sociales</p>
+            </div>
+            <div class="social-icons">
+                <img class="face" src="./Resources/Images/facebook.png" alt="facebook">
+                <img class="gmail" src="./Resources/Images/gmail.png" alt="Google">
+                <img class="linke" src="./Resources/Images/linkedlin.png" alt="LinkedIn">
+            </div>
+        </section>
+    </div>
+</body>
+<script>
+    document.getElementById("loginForm").addEventListener("submit", function(event){
+        event.preventDefault(); // Prevenir el envío del formulario
+
+        var user = document.getElementById("email").value;
+        var pass = document.getElementById("password").value;
+
+        if (user === "admin" && pass === "1234") {
+            // Redirigir a la página del directorio de administrador
+            window.location.href = "Administrador/directorio.html"; 
+        } 
+        else if (user === "empleado" && pass === "123456") {
+            // Redirigir a la página del perfil del empleado
+            window.location.href = "Empleado/perfil.html";
+        }else if(user === "externo" && pass === "123") {
+            window.location.href = "Externo/perfil.html";
+        }else if(user === "jefe" && pass === "123") {
+            window.location.href = "Jefe-Personal/perfil.html";
+        } else {
+            alert("Usuario o contraseña incorrectos");
+        }
+    });
+</script>
+</html>

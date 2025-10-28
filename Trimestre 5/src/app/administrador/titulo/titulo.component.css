@@ -1,0 +1,17 @@
+.titulo-container {
+  width: 100%; /* Ancho del contenedor */
+  background-color: var(--color-principal); /* Fondo del contenedor */
+  color: white; /* Color del texto */
+  text-align: center; /* Texto centrado */
+  justify-content: center; /* Centrado de contenido (para Flexbox) */
+  align-items: center; /* Centrado de contenido (para Flexbox) */
+  padding: 10px 0; /* Espaciado superior e inferior */
+  font-size: 1.5rem; /* Tamaño del texto */
+  font-weight: bold; /* Texto en negrita */
+  position: relative; /* Posición relativa para ajustes */
+  margin-top: 2%; /* Margen superior */
+  height: 6%; /* Altura del contenedor */
+  border-radius: 12px 12px 0 0; 
+}
+
+  

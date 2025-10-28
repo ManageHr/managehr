@@ -7,8 +7,33 @@ use Illuminate\Http\Request;
 use App\Models\Genero;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * @OA\Tag(
+ *     name="Género",
+ *     description="Gestión de géneros (masculino, femenino, etc.)"
+ * )
+ */
+
 class generoController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/api/genero",
+     *     summary="Obtener todos los géneros",
+     *     tags={"Género"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de géneros",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="genero", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
+     *     )
+     * )
+     */
+
     public function index()
     {
         $generos = Genero::all();
@@ -53,6 +78,33 @@ class generoController extends Controller
             ], 500);
         }
     }
+    /**
+     * @OA\Get(
+     *     path="/api/genero/{id}",
+     *     summary="Mostrar un género específico",
+     *     tags={"Género"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID del género",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Género encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="genero", type="object"),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="No se encontró el género"
+     *     )
+     * )
+     */
 
     public function show($id)
     {
@@ -123,7 +175,6 @@ class generoController extends Controller
                 "error" => $e->getMessage(),
                 "status" => 500
             ], 500);
-            
         }
     }
     public function updatePartial(Request $request, $id)

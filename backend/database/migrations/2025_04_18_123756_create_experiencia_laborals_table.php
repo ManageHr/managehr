@@ -18,9 +18,8 @@ return new class extends Migration
             $table->integer('telefono'); // puedes cambiarlo a string si usas indicativos o caracteres especiales
             $table->string('cargo', 20);
             $table->text('actividades');
-            $table->string('certificado', 100); // nombre del archivo o ruta
             $table->date('fechaInicio');
-            $table->date('fechaFin');
+            $table->date('fechaFinalizacion');
         });
     }
 

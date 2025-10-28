@@ -19,16 +19,19 @@ class Postulaciones extends Model
         'estado',
         'vacantesId',
         'usuarioId',
+        'numdocumento',
     ];
 
     protected $casts = [
         'estado' => 'integer',
         'vacantesId' => 'integer',
         'usuarioId' => 'integer',
+        'numdocumento' => 'string',
     ];
 
-    // Esto hace que el atributo aparezca en el JSON
     protected $appends = ['fecha_formateada'];
+
+    protected $with = ['vacante'];
 
     public function getFechaFormateadaAttribute()
     {
@@ -37,5 +40,14 @@ class Postulaciones extends Model
         }
 
         return Carbon::parse($this->fechaPostulacion)->format('d/m/Y');
+    }
+
+    public function vacante()
+    {
+        return $this->belongsTo(\App\Models\Vacantes::class, 'vacantesId', 'idVacantes');
+    }
+    public function usuario()
+    {
+        return $this->belongsTo(Usuarios::class, 'numDocumento','numDocumento');
     }
 }

@@ -16,6 +16,12 @@ class Incapacidad extends Model
         'archivo',
         'fechaInicio',
         'fechaFinal',
-        'contratoId'
+        'contratoId',
+        'estado'
     ];
+
+    public function contrato()
+    {
+        return $this->belongsTo(Contrato::class, 'contratoId','idContrato');
+    }
 }

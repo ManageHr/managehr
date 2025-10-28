@@ -24,26 +24,7 @@ export class IncapacidadesComponent implements OnInit {
 
   ngOnInit(): void {
     // Simulamos datos iniciales (puedes reemplazar con datos reales)
-    this.incapacidades = [
-      {
-        id: 1,
-        nombre: 'Juan Pérez',
-        cargo: 'Desarrollador',
-        estado: 'Pendiente',
-        totalDias: 5,
-        fechaInicio: new Date('2024-04-10'),
-        fechaFinal: new Date('2024-04-15')
-      },
-      {
-        id: 2,
-        nombre: 'María Gómez',
-        cargo: 'Diseñadora',
-        estado: 'Aprobado',
-        totalDias: 3,
-        fechaInicio: new Date('2024-04-05'),
-        fechaFinal: new Date('2024-04-08')
-      }
-    ];
+    
 
     // Agregamos isExpanded a cada incapacidad
     this.incapacidades = this.incapacidades.map(incapacidad => ({

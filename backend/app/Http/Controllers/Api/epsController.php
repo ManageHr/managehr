@@ -7,8 +7,38 @@ use Illuminate\Http\Request;
 use App\Models\Eps;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * @OA\Tag(
+ *     name="EPS",
+ *     description="Gestión de EPS este módulo permite la gestión de las EPS solo consulta ya que de base de datos \n no se puede modificar registros ni eliminar solo los administradores de base de datos pueden hacerlo."
+ * )
+ */
+
 class epsController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/api/epss",
+     *     summary="Listar todas las EPS",
+     *     tags={"EPS"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de EPS obtenida correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=200),
+     *             @OA\Property(
+     *                 property="eps",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     @OA\Property(property="codigoEps", type="integer", example=1),
+     *                     @OA\Property(property="nombreEps", type="string", example="Salud Total EPS")
+     *                 )
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function index()
     {
     
@@ -23,6 +53,28 @@ class epsController extends Controller
         //return "Obteniendo lista de epss del contepsador";
 
     }
+    /**
+ * @OA\Post(
+ *     path="/api/epss",
+ *     summary="Crear nueva EPS",
+ *     tags={"EPS"},
+ *      security={{"bearerAuth":{}}},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             @OA\Property(property="nombreEps", type="string", example="Nueva EPS")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=201,
+ *         description="EPS creada correctamente"
+ *     ),
+ *     @OA\Response(
+ *         response=400,
+ *         description="Error de validación"
+ *     )
+ * )
+ */
     public function store(Request $request)
     {
         $data = [
@@ -31,6 +83,36 @@ class epsController extends Controller
         ];
         return response()->json([$data], 400);
     }
+    /**
+     * @OA\Get(
+     *     path="/api/epss/{codigoEps}",
+     *     summary="Obtener EPS por código de campo string",
+     *     tags={"EPS"},
+     *     security={{ "bearerAuth": {} }},
+     *     @OA\Parameter(
+     *         name="codigoEps",
+     *         in="path",
+     *         required=true,
+     *         description="Código único de la EPS",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="EPS encontrada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=200),
+     *             @OA\Property(property="eps", type="object",
+     *                 @OA\Property(property="codigoEps", type="integer", example=1),
+     *                 @OA\Property(property="nombreEps", type="string", example="Nueva EPS")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="EPS no encontrada"
+     *     )
+     * )
+     */
     public function show($id)
     {
         $eps = Eps::where('codigoEps', $id)->first();

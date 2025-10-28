@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
 export interface Usuarios {
+  id: number;
   numDocumento: number;
   primerNombre: string;
   segundoNombre: string;
@@ -12,16 +13,32 @@ export interface Usuarios {
   email: string;
   email_confirmation: string;
   direccion: string;
-  password:string;
-  password_confirmation: string,
+  password: string;
+  password_confirmation: string;
   nacionalidadId?: number;
   epsCodigo?: string;
   generoId?: number;
   tipoDocumentoId?: number;
-  estadoCivilId?: number ;
+  estadoCivilId?: number;
   pensionesCodigo?: string;
   rol: number;
   usersId: number;
+  fechaNacimiento: string;
+
+  user?: {
+    id: number;
+    name: string;
+    email: string;
+    rol: number;
+  };
+  nombreRol?: string;
+
+  tipoDocumento?: { nombreTipoDocumento: string };
+  genero?: { abreviacionGenero: string };
+  estadoCivil?: { nombreEstado: string };
+  eps?: { nombreEps: string };
+  pensiones?: { nombrePensiones: string };
+  nacionalidad?: { nombre: string };
 
 }
 
@@ -31,18 +48,18 @@ export interface Usuarios {
 export class UsuariosService {
   private apiUrl = 'http://localhost:8000/api/usuarios';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   obtenerUsuarios(): Observable<any> {
     return this.http.get<any>(this.apiUrl).pipe(
       map(res => {
-        console.log('Respuesta del backend:', res); 
+        
         return res.usuario;
       })
     );
   }
   agregarUsuario(usuario: any) {
-    console.log('Usuario que se enviará a Laravel:', usuario);
+    
 
     return this.http.post<any>('http://localhost:8000/api/usuarios', usuario);
   }
@@ -51,51 +68,62 @@ export class UsuariosService {
   }
   obtenerRol(id: number): Observable<any> {
     return this.http.get<any>(`http://localhost:8000/api/rols/${id}`);
-  } 
+  }
   obtenerNacionalidades(): Observable<any[]> {
     return this.http.get<any>('http://localhost:8000/api/nacionalidad').pipe(
-      map(res => res.Nacionalidad) 
+      map(res => res.Nacionalidad)
     );
   }
+  obtenerUsuarioPorDocumento(numDocumento: string) {
+    return this.http.get<any>(`http://localhost:8000/api/usuarios/documento/${numDocumento}`);
+  }
+
   actualizarUsuarioParcial(id: number, datos: Partial<Usuarios>): Observable<any> {
     return this.http.patch<any>(`http://localhost:8000/api/usuarios/${id}`, datos);
   }
-  
+
   eliminarUsuario(id: number): Observable<any> {
     return this.http.delete<any>(`http://localhost:8000/api/usuarios/${id}`);
   }
   eliminarUser(id: number): Observable<any> {
     return this.http.delete<any>(`http://localhost:8000/api/login/${id}`);
   }
-  
+
   obtenerUsuario(id: number): Observable<any> {
     return this.http.get<any>(`http://localhost:8000/api/usuarios/${id}`);
   }
-  
+
   obtenerGeneros(): Observable<any[]> {
     return this.http.get<any>('http://localhost:8000/api/genero').pipe(
-      map(res => res.genero) 
+      map(res => res.genero)
     );
   }
-  
+  obtenerUsuariosConRelaciones(): Observable<any[]> {
+    return this.http.get<any>('http://localhost:8000/api/usuarios-con-relaciones').pipe(
+      map(res => res.usuarios)
+    );
+  }
+
+
+
   obtenerTiposDocumento(): Observable<any[]> {
     return this.http.get<any>('http://localhost:8000/api/tipodocumento').pipe(
-      map(res => res.tipodocumento) 
+      map(res => res.tipodocumento)
     );
   }
-  
+
   obtenerEstadosCiviles(): Observable<any[]> {
     return this.http.get<any>('http://localhost:8000/api/estadocivil').pipe(
-      map(res => res.estadocivil) 
+      map(res => res.estadocivil)
     );
   }
-  
+
   obtenerEps(): Observable<any[]> {
     return this.http.get<any>('http://localhost:8000/api/epss').pipe(
-      map(res => res.eps) 
+      map(res => res.eps)
     );
   }
-  
+
   obtenerPensiones(): Observable<any[]> {
     return this.http.get<any>('http://localhost:8000/api/pensiones').pipe(
       map(res => res.pensiones)
@@ -103,7 +131,7 @@ export class UsuariosService {
   }
   obtenerRoles(): Observable<any[]> {
     return this.http.get<any>('http://localhost:8000/api/rols').pipe(
-      map(res => res.rol) 
+      map(res => res.rol)
     );
   }
   obtenerRolId(id: number): Observable<any> {
@@ -116,19 +144,47 @@ export class UsuariosService {
       map(res => res.existe)
     );
   }
-  actualizarRol(userId: number, nuevoRol: number,correo:string): Observable<any> {
-    return this.http.patch(`http://localhost:8000/api/auth/rol/${userId}`, { rol: nuevoRol,email:correo });
+  actualizarRol(userId: number, nuevoRol: number, correo: string): Observable<any> {
+    return this.http.patch(`http://localhost:8000/api/auth/rol/${userId}`, { rol: nuevoRol, email: correo });
   }
   actualizarRolId(userId: number, nuevoRol: number): Observable<any> {
     return this.http.patch(`http://localhost:8000/api/auth/rol/${userId}`, { rol: nuevoRol });
   }
+
+
+  getUsuariosRolCinco(): Observable<any[]> {
+    return this.http.get<any>('http://localhost:8000/api/auth/rolcinco').pipe(
+      map(res => res.usuarios)
+    );
+  }
+  obtenerHojaVida(numDocumento: number): Observable<any> {
+    return this.http.get<any>(`http://localhost:8000/api/hojasvida/${numDocumento}`);
+  }
+
+  obtenerExperiencia(numDocumento: number): Observable<any> {
+    return this.http.get<any>(`http://localhost:8000/api/experiencias/${numDocumento}`);
+  }
+
+  obtenerEstudios(numDocumento: number): Observable<any> {
+    return this.http.get<any>(`http://localhost:8000/api/estudios/${numDocumento}`);
+  }
+  obtenerHasEstudios(numDocumento: number) {
+    return this.http.get<any>(`http://localhost:8000/api/hojasvidahasestudios/documento/${numDocumento}`);
+  }
+
+  obtenerHojadevida(numDocumento: number): Observable<any> {
+    return this.http.get<any>(`http://localhost:8000/api/hojasvida/documento/${numDocumento}`);
+  }
   
-  
-  
-  
-    
-  
-  
-  
+  obtenerExperienciaLaboral(numDocumento: number) {
+    return this.http.get<any>(`http://localhost:8000/api/hojasvidahasexperiencias/documento/${numDocumento}`);
+  }
+  getUsuariosConRoles(): Observable<any> {
+    return this.http.get<any>('http://localhost:8000/api/usuarios/reporte/all');
+  }
+
+
+
+
 }
 

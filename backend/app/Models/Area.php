@@ -16,6 +16,7 @@ class Area extends Model
     protected $fillable = [
         'nombreArea',
         'jefePersonal',
+        'idJefe',
         'estado'
         
     ];

@@ -1,85 +1,175 @@
 import { Component, OnInit } from '@angular/core';
-import { MenuComponent } from "../menu/menu.component";
-import { FormsModule, NgForm } from '@angular/forms';
+import { MenuComponent } from '../menu/menu.component';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
-import { SolicitudesVacacionesService } from '../../services/solicitudes-vacaciones.service'; // Importamos el nuevo servicio
+import { HttpClient, HttpHeaders, HttpClientModule } from '@angular/common/http';
+import Swal from 'sweetalert2';
 
-interface SolicitudVacacionesDisplay {
-    idVacaciones?: number;
-    motivo: string;  // 🔹 Se cambió `descrip` por `motivo`
-    fechaInicio: string;
-    fechaFinal: string;
-    dias: number;
-    estado: 'pendiente' | 'rechazado' | 'aprobado';  // 🔹 Eliminamos `"desconocido"`
-    contratoId?: number;
-}
+import {
+  SolicitudesVacacionesService,
+  SolicitudVacaciones
+} from '../../services/solicitudes-vacaciones.service';
 
 @Component({
   selector: 'app-formvacaciones',
   standalone: true,
-  imports: [MenuComponent, FormsModule, CommonModule, HttpClientModule],
+  imports: [
+    MenuComponent,
+    FormsModule,
+    CommonModule,
+    HttpClientModule
+  ],
   templateUrl: './formvacaciones.component.html',
-  styleUrls: ['./formvacaciones.component.scss'] 
+  styleUrls: ['./formvacaciones.component.scss']
 })
 export class FormvacacionesComponent implements OnInit {
-  motivo: string = ''; // 🔹 Se cambió `descrip` por `motivo`
-  fechaInicio: string = '';
-  fechaFinal: string = '';
-  dias: number = 0;
-  estado: 'pendiente' = 'pendiente';
-  contratoId: number | null = 1; // Simulación, modificar según lógica real
+  motivo       = '';
+  fechaInicio  = '';
+  fechaFinal   = '';
+  dias         = 0;
+  contratoId: number | null = null;
 
-  solicitudesVacaciones: SolicitudVacacionesDisplay[] = [];
+  // Aquí se almacenarán solo las solicitudes de este usuario
+  solicitudesVacaciones: SolicitudVacaciones[] = [];
 
-  constructor(private solicitudesVacacionesService: SolicitudesVacacionesService) {} // 🔹 Cambio de servicio
+  constructor(
+    private http: HttpClient,
+    private solicitudesVacacionesService: SolicitudesVacacionesService
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // Primero cargamos el contrato
+    this.obtenerContratoId();
+    // Luego cargamos las solicitudes que ya existan
+    this.cargarMisSolicitudes();
+  }
 
-  // Método para calcular días entre fechas
+  obtenerContratoId(): void {
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    console.log('Usuario cargado:', usuario);
+
+    const numDocumento =
+      usuario.perfil?.usuarioNumDocumento ??
+      usuario.perfil?.numDocumento ??
+      usuario.numDocumento;
+
+    if (!numDocumento) {
+      Swal.fire('Error', 'No se pudo identificar al usuario.', 'error');
+      return;
+    }
+
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+
+    this.http
+      .get<{ contrato: { idContrato: number } }>(
+        `http://127.0.0.1:8000/api/contrato-usuario/${numDocumento}`,
+        { headers }
+      )
+      .subscribe({
+        next: (res) => {
+          console.log('Respuesta del backend al buscar contrato:', res);
+          this.contratoId = res.contrato?.idContrato ?? null;
+
+          if (!this.contratoId) {
+            Swal.fire('Error', 'No se encontró contrato válido para el usuario.', 'error');
+          }
+        },
+        error: (err) => {
+          console.error('Error al obtener contrato:', err);
+          Swal.fire('Error', 'No se encontró contrato para el usuario.', 'error');
+        }
+      });
+  }
+
+  /** Trae solo las solicitudes previamente enviadas por este usuario */
+  cargarMisSolicitudes(): void {
+    this.solicitudesVacacionesService.obtenerSolicitudesUsuario()
+      .subscribe({
+        next: (data) => {
+          console.log('Solicitudes recibidas:', data);
+          this.solicitudesVacaciones = data;
+        },
+        error: (err) => {
+          console.error('Error al cargar solicitudes de usuario:', err);
+          // No interrumpimos el flujo si falla; solo mostramos en consola.
+        }
+      });
+  }
+
+  /** Calcula los días incluyendo ambos extremos */
   calcularDias(): void {
     if (this.fechaInicio && this.fechaFinal) {
       const inicio = new Date(this.fechaInicio);
-      const final = new Date(this.fechaFinal);
-      this.dias = Math.max(Math.ceil((final.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24)), 0);
+      const fin    = new Date(this.fechaFinal);
+      const diffMs = fin.getTime() - inicio.getTime();
+      this.dias = Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1;
     } else {
       this.dias = 0;
     }
   }
 
   enviarSolicitud(): void {
-    if (!this.contratoId) {
-        alert("Error: No se pudo obtener la información del contrato.");
-        return;
+    this.calcularDias();
+
+    if (
+      !this.motivo.trim() ||
+      !this.fechaInicio ||
+      !this.fechaFinal ||
+      this.dias <= 0 ||
+      this.contratoId === null
+    ) {
+      Swal.fire('Error', 'Todos los campos deben estar completos y válidos.', 'error');
+      return;
     }
 
-    const solicitud: SolicitudVacacionesDisplay = {
-      motivo: this.motivo,  // 🔹 Se cambió `descrip` por `motivo`
+    const solicitud: SolicitudVacaciones = {
+      motivo: this.motivo,
       fechaInicio: this.fechaInicio,
       fechaFinal: this.fechaFinal,
       dias: this.dias,
-      estado: 'pendiente',
       contratoId: this.contratoId
     };
 
-    this.solicitudesVacacionesService.enviarSolicitud(solicitud).subscribe(
-      (response: SolicitudVacacionesDisplay) => {  // 🔹 Se define el tipo explícitamente
-        console.log('Solicitud enviada con éxito:', response);
-        this.solicitudesVacaciones.push(response);
-        alert('Solicitud de vacaciones enviada.');
+    console.log('Datos enviados:', solicitud);
+
+    this.solicitudesVacacionesService.enviarSolicitud(solicitud).subscribe({
+      next: (response) => {
+        // Añadimos la nueva solicitud al listado que ya teníamos
+        this.solicitudesVacaciones.unshift(response);
+        Swal.fire('Éxito', 'Solicitud de vacaciones enviada correctamente.', 'success');
         this.limpiarFormulario();
       },
-      (error: any) => {  // 🔹 Se tipifica correctamente `error`
-        console.error('Error al enviar la solicitud:', error);
-        alert('Hubo un error al enviar la solicitud.');
+      error: (error) => {
+        console.error('Error al enviar solicitud:', error);
+        Swal.fire(
+          'Error',
+          error.status === 422
+            ? 'Verifica los campos del formulario.'
+            : 'Ocurrió un error al enviar la solicitud.',
+          'error'
+        );
       }
-    );
+    });
   }
 
   limpiarFormulario(): void {
-    this.motivo = ''; // 🔹 Se cambió `descrip` por `motivo`
+    this.motivo      = '';
     this.fechaInicio = '';
-    this.fechaFinal = '';
-    this.dias = 0;
+    this.fechaFinal  = '';
+    this.dias        = 0;
+  }
+
+  /** Determina si el botón debe estar habilitado */
+  get puedeEnviar(): boolean {
+    return (
+      this.motivo.trim().length > 0 &&
+      this.fechaInicio !== '' &&
+      this.fechaFinal !== '' &&
+      this.dias > 0 &&
+      this.contratoId !== null
+    );
   }
 }

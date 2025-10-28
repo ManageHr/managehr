@@ -8,9 +8,28 @@ use Illuminate\Http\Request;
 
 class trazabilidadController extends Controller
 {
-    /**
-     * Display a listing of the resource.
+        /**
+     * @OA\Get(
+     *     path="/api/trazabilidad",
+     *     summary="Listar todas las trazabilidades",
+     *     description="Devuelve una lista completa de los registros de trazabilidad en el sistema.",
+     *     tags={"Trazabilidad"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de trazabilidades obtenida correctamente",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="tipodocumento", type="array", @OA\Items(
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="descripcion", type="string", example="Contrato firmado"),
+     *                 @OA\Property(property="fecha", type="string", format="date-time", example="2025-07-07T13:45:00Z")
+     *             )),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
+     *     )
+     * )
      */
+
     public function index()
     {
         $tipodocumento = Trazabilidad::all();
@@ -23,6 +42,20 @@ class trazabilidadController extends Controller
         //return "Obteniendo lista de epss del contepsador";
 
     }
+
+        /**
+     * @OA\Post(
+     *     path="/api/trazabilidad",
+     *     summary="Crear trazabilidad (No permitido)",
+     *     description="Este endpoint está deshabilitado. Solo el administrador de base de datos puede crear registros.",
+     *     tags={"Trazabilidad"},
+     *     @OA\Response(
+     *         response=400,
+     *         description="Operación no permitida para el usuario"
+     *     )
+     * )
+     */
+
     public function store(Request $request)
     {
         $data = [
@@ -31,6 +64,40 @@ class trazabilidadController extends Controller
         ];
         return response()->json([$data], 400);
     }
+
+        /**
+     * @OA\Get(
+     *     path="/api/trazabilidad/{id}",
+     *     summary="Obtener una trazabilidad por ID",
+     *     description="Devuelve un registro de trazabilidad específico según su identificador único.",
+     *     tags={"Trazabilidad"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del registro de trazabilidad",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Trazabilidad encontrada",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="tipodocumento", type="object",
+     *                 @OA\Property(property="id", type="integer", example=3),
+     *                 @OA\Property(property="descripcion", type="string", example="Documento entregado al usuario"),
+     *                 @OA\Property(property="fecha", type="string", format="date-time", example="2025-07-07T14:20:00Z")
+     *             ),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Trazabilidad no encontrada"
+     *     )
+     * )
+     */
+
     public function show($id)
     {
         $tipodocumento = Trazabilidad::find($id);
@@ -47,6 +114,36 @@ class trazabilidadController extends Controller
         ];
         return response()->json([$data], 200);
     }
+
+        /**
+     * @OA\Delete(
+     *     path="/api/trazabilidad/{id}",
+     *     summary="Eliminar una trazabilidad por ID",
+     *     description="Elimina un registro de trazabilidad específico por su ID. Solo accesible si el registro existe.",
+     *     tags={"Trazabilidad"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del registro de trazabilidad",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Trazabilidad eliminada exitosamente",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="permisos", type="string", example="trazabilidad eliminada"),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Trazabilidad no encontrada"
+     *     )
+     * )
+     */
+
     public function destroy($id)
     {
         $trazabilidad = Trazabilidad::find($id);
@@ -65,6 +162,26 @@ class trazabilidadController extends Controller
             return response()->json([$data], 200);
         }
     }
+        /**
+     * @OA\Put(
+     *     path="/api/trazabilidad/{id}",
+     *     summary="Actualizar trazabilidad (No permitido)",
+     *     description="Este endpoint está deshabilitado. Solo el administrador de base de datos puede modificar registros.",
+     *     tags={"Trazabilidad"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del registro de trazabilidad",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Operación no permitida para el usuario"
+     *     )
+     * )
+     */
+
     public function update(Request $request, $id)
     {
         $data = [
@@ -73,6 +190,27 @@ class trazabilidadController extends Controller
         ];
         return response()->json([$data], 400);
     }
+
+        /**
+     * @OA\Patch(
+     *     path="/api/trazabilidad/{id}",
+     *     summary="Actualizar parcialmente una trazabilidad (No permitido)",
+     *     description="Este endpoint está deshabilitado. Solo el administrador de base de datos puede actualizar registros.",
+     *     tags={"Trazabilidad"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del registro de trazabilidad",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Operación no permitida para el usuario"
+     *     )
+     * )
+     */
+
     public function updatePartial(Request $request, $id)
     {
         $data = [

@@ -2,22 +2,32 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Horasextra extends Model
+class HorasExtra extends Model
 {
-    use HasFactory;
-
     protected $table = 'horasextra';
     protected $primaryKey = 'idHorasExtra';
     public $timestamps = false;
 
     protected $fillable = [
-        'descrip',
+        'descripcion',
         'fecha',
+        'tipoHorasId',
         'nHorasExtra',
-        'tipoHorasid',
-        'contratoId'
+        'contratoId',
+        'estado'
     ];
+
+    public function tipoHoraExtra()
+    {
+        return $this->belongsTo(TipoHoras::class, 'tipoHorasId', 'idTipoHoras');
+    }
+    public function contrato()
+    {
+        return $this->belongsTo(Contrato::class, 'contratoId')->with([
+            'hojaDeVida.usuario.user.rol',
+            'area',
+        ]);
+    }
 }

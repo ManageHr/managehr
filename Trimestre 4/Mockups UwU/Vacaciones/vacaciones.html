@@ -1,0 +1,84 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vacantes</title>
+    <link rel="stylesheet" href="vacaciones.css">
+
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo">¡Bienvenido!</div>
+            <img src="logo2.png" alt="">
+            <ul class="menu">
+                <li><a href="#"><img src="Icons/directorio.png" alt="Icono Directorio"> Directorio</a></li>
+                <li>
+                    <a href="#"><img src="icons/solicitudes.png" alt="Icono Solicitudes"> Solicitudes</a>
+                    <ul class="sub-menu">
+                        <li><a href="#"><img src="icons/vacaciones.png" alt="Icono Vacaciones"> Vacaciones</a></li>
+                        <li><a href="#"><img src="icons/incapacidades.png" alt="Icono Incapacidades"> Incapacidades</a></li>
+                        <li><a href="#"><img src="icons/extra.png" alt="Icono Horas Extra"> Horas extra</a></li>
+                        <li><a href="#"><img src="icons/pazysalvo.png" alt="Icono Paz y Salvos"> Paz y Salvos</a></li>
+                    </ul>
+                </li>
+                <li><a href="#"><img src="icons/vacante.png" alt="Icono Vacantes"> Vacantes</a></li>
+                <li><a href="#"><img src="icons/hojadevida.png" alt="Icono Hojas de Vida"> Hojas de vida</a></li>
+                <li><a href="#"><img src="icons/notificaciones.png" alt="Icono Notificaciones"> Notificaciones</a></li>
+            </ul>
+            <button class="logout-button">Cerrar Sesión</button>
+        </aside>
+        <main class="main-content">
+            <section class="dashboard">
+                <h1>Vacaciones</h1>
+                    <div class="vacaciones">
+
+                            <div class="foto">
+                            <h2>Formulario <p> Solicitud de Vacaciones</h2>
+                            <img src="vacaciones.png"Icono Vacantes">
+                            </div>
+
+                            <div class="form">
+                                <form action="/enviar-solicitud" method="post">
+                                    <label for="nombre">Nombre Completo:</label>
+                                    <input type="text" id="nombre" name="nombre" required>
+                                    <br><br>
+                            
+                                    <label for="empleado-id">ID de Empleado:</label>
+                                    <input type="text" id="empleado-id" name="empleado-id" required>
+                                    <br><br>
+                            
+                            
+                                    <label for="puesto">Puesto:</label>
+                                    <input type="text" id="puesto" name="puesto" required>
+                                    <br><br>
+                            
+                                    <label for="fecha-inicio">Fecha de Inicio:</label>
+                                    <input type="date" id="fecha-inicio" name="fecha-inicio" required>
+                                    <br><br>
+                            
+                                    <label for="fecha-fin">Fecha de Fin:</label>
+                                    <input type="date" id="fecha-fin" name="fecha-fin" required>
+                                    <br><br>
+                            
+                                    <label for="dias">Número de Días:</label>
+                                    <input type="number" id="dias" name="dias" required>
+                                    <br><br>
+    
+                                    <label for="comentarios">Comentarios Adicionales:</label>
+                                    <textarea id="comentarios" name="comentarios" rows="4" cols="50"></textarea>
+                                    <br><br>
+                                    
+                                    <div class="boton">
+                                        <button type="submit">Enviar Solicitud</button>
+                                    </div>
+                                    
+                                </form>
+            
+                            </div>
+                    </div>
+             </section>
+        </main>
+    </div>
+</body>
+</html>

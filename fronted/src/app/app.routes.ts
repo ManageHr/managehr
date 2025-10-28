@@ -22,18 +22,24 @@ import { GestionComponent } from './pages/vacantes copy/gestion/gestion.componen
 import { MisPostulacionesComponent } from './pages/mis-postulaciones/mis-postulaciones.component'; 
 import { FormIncapacidadesComponent } from './pages/form-incapacidades/form-incapacidades.component';
 import { FormHorasComponent } from './pages/form-horas/form-horas.component';
-
+import { JefePersonalComponent } from './pages/jefe-personal/jefe-personal.component';
+import { HojaDeVidaComponent } from './pages/hoja-de-vida/hoja-de-vida.component';
+import { VacacionesJefeComponent } from './pages/vacaciones-jefe/vacaciones-jefe.component';
 import { AuthGuard } from './guards/auth.guard';
+import { IncapacidadesAdminComponent } from './pages/incapacidades-admin/incapacidades-admin.component';
+import { HorasextraAdminComponent } from './pages/horasextra-admin/horasextra-admin.component';
+import { IncapacidadesJefeComponent } from './pages/incapacidades-jefe/incapacidades-jefe.component';
+import { HorasExtraJefeComponent } from './pages/horasextra-jefe/horasextra-jefe.component';
 
 
 
 export const routes: Routes = [
   // Ruta para login
   { path: 'login', component: LoginComponent },
-
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   // Ruta para registro
   { path: 'register', component: RegisterComponent },
-
+  
   // Rutas protegidas por el AuthGuard
   {
     path: '',
@@ -59,15 +65,16 @@ export const routes: Routes = [
       { path: 'vacantes copy/postulaciones', component: PostulacionesComponent },
       { path: 'vacantes copy/gestion', component: GestionComponent },
       { path: 'mis-postulaciones', component: MisPostulacionesComponent },
-
+      { path: 'jefe-personal', component: JefePersonalComponent, canActivate: [AuthGuard] },
+      { path: 'hoja-de-vida',component: HojaDeVidaComponent,canActivate: [AuthGuard]},
+      { path: 'vacaciones-jefe', component: VacacionesJefeComponent, canActivate: [AuthGuard] },
+      { path: 'incapacidades-admin', component: IncapacidadesAdminComponent, canActivate: [AuthGuard] },
+      { path: 'horasextra-admin', component: HorasextraAdminComponent, canActivate: [AuthGuard] },
+      { path: 'incapacidades-jefe', component: IncapacidadesJefeComponent, canActivate: [AuthGuard] },
+      { path: 'horasextra-jefe', component: HorasExtraJefeComponent, canActivate: [AuthGuard] },
     ]
   },
 
-  // Redirección predeterminada a /login si no hay rutas coincidentes
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
-
-  // Ruta "catch-all" para redirigir a /login
-  { path: '**', redirectTo: 'login' }
 ];
 
 // Exportamos la configuración de rutas

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('idArea'); // PRIMARY KEY auto_increment
             $table->string('nombreArea', 45);
             $table->string('jefePersonal', 100);
+            $table->integer('idJefe'); 
             $table->integer('estado'); 
             
         });

@@ -7,9 +7,48 @@ use App\Models\VacantesHasPostulaciones;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * @OA\Tag(
+ *     name="Vacantes Postulaciones",
+ *     description="Gestión de la relación entre vacantes y postulaciones. Permite vincular postulaciones específicas a vacantes y administrar estas relaciones."
+ * )
+ */
 class vacantesHasPostulacionesController extends Controller
 {
- public function index()
+    /**
+     * @OA\Get(
+     *     path="/api/vacantes-has-postulaciones",
+     *     summary="Obtener todas las relaciones vacantes-postulaciones",
+     *     tags={"Vacantes Postulaciones"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de relaciones vacantes-postulaciones obtenida exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="vachaspos", type="array", 
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="vacantesid", type="integer", example=5),
+     *                     @OA\Property(property="postulacionesid", type="integer", example=10),
+     *                     @OA\Property(property="created_at", type="string", format="date-time"),
+     *                     @OA\Property(property="updated_at", type="string", format="date-time")
+     *                 )
+     *             ),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Error en la base de datos",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="mensaje", type="string", example="No retorna por error en DB"),
+     *             @OA\Property(property="status", type="integer", example=400)
+     *         )
+     *     )
+     * )
+     */
+    public function index()
     {
         $vachaspos=VacantesHasPostulaciones::all();
         if(!$vachaspos){
@@ -37,7 +76,47 @@ class vacantesHasPostulacionesController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/api/vacantes-has-postulaciones",
+     *     summary="Crear relación entre vacante y postulación",
+     *     tags={"Vacantes Postulaciones"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"vacantesid", "postulacionesid"},
+     *             @OA\Property(property="vacantesid", type="integer", example=5, description="ID de la vacante"),
+     *             @OA\Property(property="postulacionesid", type="integer", example=10, description="ID de la postulación")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Relación vacante-postulación creada correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="mensaje", type="string", example="Vacante has postulacion no se ha creado correctamente"),
+     *             @OA\Property(property="vachaspos", type="object"),
+     *             @OA\Property(property="status", type="integer", example=201)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Error en la validación de datos",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="mensaje", type="string", example="Error en la validación de datos de vacanteshaspostulaciones"),
+     *             @OA\Property(property="errors", type="object"),
+     *             @OA\Property(property="status", type="integer", example=400)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error al crear la relación",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="mensaje", type="string", example="Error al crear el vacantehaspostulacion"),
+     *             @OA\Property(property="error", type="string"),
+     *             @OA\Property(property="status", type="integer", example=500)
+     *         )
+     *     )
+     * )
      */
     public function store(Request $request)
     {
@@ -83,7 +162,35 @@ class vacantesHasPostulacionesController extends Controller
     
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/api/vacanteshaspostulaciones/{id}",
+     *     summary="Obtener postulaciones de una vacante específica",
+     *     tags={"Vacantes Postulaciones"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la vacante",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=5)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Postulaciones de la vacante obtenidas exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="usuarioshasrol", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Vacante no existe",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="mensaje", type="string", example="La vacante no existe"),
+     *             @OA\Property(property="status", type="integer", example=400)
+     *         )
+     *     )
+     * )
      */
     public function show($id)
     {
@@ -103,7 +210,35 @@ class vacantesHasPostulacionesController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * @OA\Delete(
+     *     path="/api/vacanteshaspostulaciones/{id}",
+     *     summary="Eliminar relación vacante-postulación",
+     *     tags={"Vacantes Postulaciones"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Número de documento del usuario",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=12345678)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Relación eliminada correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="vachaspos", type="string", example="Vacante has postulacion eliminado"),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Relación no encontrada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="mensage", type="string", example="No se encontro usuarioshasrol"),
+     *             @OA\Property(property="status", type="integer", example=404)
+     *         )
+     *     )
+     * )
      */
     public function destroy($id)
     {
@@ -128,6 +263,62 @@ class vacantesHasPostulacionesController extends Controller
         }
         
     }
+    /**
+     * @OA\Put(
+     *     path="/api/vacanteshaspostulaciones/{id}",
+     *     summary="Actualizar relación vacante-postulación",
+     *     tags={"Vacantes Postulaciones"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la vacante",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=5)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"vacantesid", "postulacionesid"},
+     *             @OA\Property(property="vacantesid", type="integer", example=5),
+     *             @OA\Property(property="postulacionesid", type="integer", example=10)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Relación actualizada correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="usuarioshasrol", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Error en la validación",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="errors", type="object"),
+     *             @OA\Property(property="status", type="integer", example=400)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Relación no encontrada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="mensage", type="string", example="No se encontro la vacante has postulacion"),
+     *             @OA\Property(property="status", type="integer", example=404)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error al modificar la relación",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="mensaje", type="string", example="Error al modificar el vacantes has postulaciones"),
+     *             @OA\Property(property="error", type="string"),
+     *             @OA\Property(property="status", type="integer", example=500)
+     *         )
+     *     )
+     * )
+     */
     public function update(Request $request, $id)
     {
         $vachaspos = VacantesHasPostulaciones::where("vacantesid", $id)->get()->toArray();
@@ -173,6 +364,53 @@ class vacantesHasPostulacionesController extends Controller
             }
         }
     }
+    /**
+     * @OA\Patch(
+     *     path="/api/vacanteshaspostulaciones/{id}",
+     *     summary="Actualizar parcialmente relación vacante-postulación",
+     *     tags={"Vacantes Postulaciones"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la vacante",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=5)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=false,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="vacantesid", type="integer"),
+     *             @OA\Property(property="postulacionesid", type="integer")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Relación actualizada parcialmente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="vachaspos", type="object"),
+     *             @OA\Property(property="status", type="integer", example=200)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Error en la validación",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="mesaje", type="string", example="Error al validar vacantes has postulacion"),
+     *             @OA\Property(property="errors", type="object"),
+     *             @OA\Property(property="status", type="integer", example=400)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Relación no encontrada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="mensage", type="string", example="No se encontro la vacantes has postulaciones"),
+     *             @OA\Property(property="status", type="integer", example=404)
+     *         )
+     *     )
+     * )
+     */
     public function updatePartial(Request $request, $id)
     {
         $vachaspos = VacantesHasPostulaciones::where("vacantesid", $id)->get()->toArray();

@@ -297,6 +297,29 @@
     width: 100px;        // ajustalo según lo que necesites
     text-align: center;
   }
-  
+  @media (max-width: 768px) {
+  .table-responsive {
+    display: none !important;
+  }
+}
+#tituloTargetas1 {
+  background-color: #0d6efd;
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+#tituloTargetas1 button {
+  height: 40px;
+  width: 200px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+  select{
+    cursor: pointer;
+  }
   
   

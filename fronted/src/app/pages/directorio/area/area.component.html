@@ -2,17 +2,26 @@
 
 <div class="layout">
   <div class="contenido-principal">
-    <div class="header-horas d-flex justify-content-between align-items-center">
-      <h3>Gestión de Áreas</h3>
-      <button
-        class="btn btn-light btn-sm agregar-btn"
-        data-bs-toggle="modal"
-        data-bs-target="#agregarAreaModal"
-        *ngIf="[1, 4].includes(usuario?.rol)"
-        (click)="abrirModalAgregar()"
+    <div
+      id="tituloTargetas1"
+      class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center flex-wrap gap-2 mb-3"
+    >
+      <h3 class="mb-2 mb-md-0">Gestión de Áreas</h3>
+
+      <div
+        class="d-flex flex-wrap gap-2 justify-content-start justify-content-md-end"
       >
-        <i class="fas fa-plus-circle"></i> Agregar
-      </button>
+        <!-- Botón: Agregar área -->
+        <button
+          class="btn btn-success btn-sm d-flex align-items-center"
+          data-bs-toggle="modal"
+          data-bs-target="#agregarAreaModal"
+          *ngIf="[1, 4].includes(usuario?.rol)"
+          (click)="abrirModalAgregar()"
+        >
+          <i class="fas fa-plus-circle me-2"></i> Agregar
+        </button>
+      </div>
     </div>
 
     <div *ngIf="[1, 4].includes(usuario?.rol); else sinPermiso">
@@ -21,11 +30,13 @@
           type="text"
           class="form-control"
           placeholder="Buscar por nombre de área..."
-          [(ngModel)]="filtroNombre" style="
-          background-color: #1d2233;
-          color: white;
-          border: 1px solid #7a86a1;
-        "
+          [(ngModel)]="filtroNombre"
+          (ngModelChange)="calcularTotalPages()"
+          style="
+            background-color: #1d2233;
+            color: white;
+            border: 1px solid #7a86a1;
+          "
         />
       </div>
 
@@ -41,11 +52,10 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let area of areas
-            | filterNombre : filtroNombre
-            | paginate
-              : { itemsPerPage: itemsPerPage, currentPage: currentPage };
-          let i = index">
+            <tr
+              *ngFor="let area of (areas | filterNombre:filtroNombre) | paginate: { itemsPerPage: itemsPerPage, currentPage: currentPage }"
+
+            >
               <td>{{ area.nombreArea }}</td>
               <td>{{ area.jefePersonal }}</td>
               <td>
@@ -65,7 +75,6 @@
                 <button
                   class="btn btn-outline-danger btn-sm"
                   (click)="confirmDelete(area.idArea)"
-
                 >
                   <i class="fas fa-trash-alt"></i>
                 </button>
@@ -73,8 +82,9 @@
             </tr>
           </tbody>
         </table>
+        <!-- Paginación centrada con puntos suspensivos -->
         <nav class="mt-3 d-flex justify-content-center">
-          <ul class="pagination">
+          <ul class="pagination justify-content-center">
             <li class="page-item" [class.disabled]="currentPage === 1">
               <button
                 class="page-link"
@@ -115,7 +125,11 @@
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title">Agregar Área</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
             </div>
             <form (ngSubmit)="agregarArea()" #formAgregar="ngForm">
               <div class="modal-body">
@@ -130,12 +144,21 @@
                 </div>
                 <div class="mb-3">
                   <label class="form-label">Jefe de Personal</label>
-                  <input
+                  <select
                     class="form-control"
-                    [(ngModel)]="areaSeleccionada.jefePersonal"
-                    name="jefePersonal"
+                    [(ngModel)]="areaSeleccionada.idJefe"
+                    name="idJefe"
                     required
-                  />
+                  >
+                    <option value="0">Seleccione un jefe</option>
+                    <option
+                      *ngFor="let jefe of jefesPersonal"
+                      [value]="jefe.id"
+                    >
+                      {{ jefe.perfil?.primerNombre }}
+                      {{ jefe.perfil?.primerApellido }}
+                    </option>
+                  </select>
                 </div>
                 <div class="mb-3">
                   <label class="form-label">Estado</label>
@@ -151,21 +174,111 @@
                 </div>
               </div>
               <div class="modal-footer">
-                <button class="btn btn-primary" [disabled]="formAgregar.invalid">Guardar</button>
-                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
+                <button
+                  class="btn btn-primary"
+                  [disabled]="formAgregar.invalid"
+                >
+                  Guardar
+                </button>
+                <button
+                  class="btn btn-secondary"
+                  type="button"
+                  data-bs-dismiss="modal"
+                >
+                  Cancelar
+                </button>
               </div>
             </form>
           </div>
         </div>
       </div>
+      <!-- Tarjetas para pantallas pequeñas -->
+      <div class="d-md-none">
+        <div
+          class="card mb-3"
+          *ngFor="
+            let area of areas
+              | filterNombre : filtroNombre
+              | paginate
+                : { itemsPerPage: itemsPerPage, currentPage: currentPage }
+          "
+        >
+          <div class="card-body">
+            <h5 class="card-title">{{ area.nombreArea }}</h5>
+            <p class="card-text">
+              <strong>Jefe:</strong> {{ area.jefePersonal }}
+            </p>
+            <p class="card-text">
+              <strong>Estado:</strong>
+              <span [ngClass]="getClaseEstado(area.estado)">
+                {{ getNombreEstado(area.estado) }}
+              </span>
+            </p>
+          </div>
+          <div class="card-footer">
+            <button
+              class="btn btn-outline-primary btn-sm me-2"
+              data-bs-toggle="modal"
+              data-bs-target="#editarAreaModal"
+              (click)="editarArea(area)"
+            >
+              <i class="fas fa-edit"></i> Editar
+            </button>
+            <button
+              class="btn btn-outline-danger btn-sm"
+              (click)="confirmDelete(area.idArea)"
+            >
+              <i class="fas fa-trash-alt"></i> Eliminar
+            </button>
+          </div>
+        </div>
+        <nav class="mt-3 d-flex justify-content-center">
+          <ul class="pagination justify-content-center">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <button
+                class="page-link"
+                (click)="cambiarPagina(currentPage - 1)"
+              >
+                Anterior
+              </button>
+            </li>
+            <li
+              class="page-item"
+              *ngFor="let page of [].constructor(totalPages); let i = index"
+              [class.active]="currentPage === i + 1"
+            >
+              <button class="page-link" (click)="cambiarPagina(i + 1)">
+                {{ i + 1 }}
+              </button>
+            </li>
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+              <button
+                class="page-link"
+                (click)="cambiarPagina(currentPage + 1)"
+              >
+                Siguiente
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
 
       <!-- Modal Editar Área -->
-      <div class="modal fade" id="editarAreaModal" tabindex="-1" aria-hidden="true">
+      <div
+        class="modal fade"
+        id="editarAreaModal"
+        tabindex="-1"
+        aria-hidden="true"
+      >
         <div class="modal-dialog modal-dialog-scrollable">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title">Editar Área</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
             </div>
             <form (ngSubmit)="actualizarArea()" #formEditar="ngForm">
               <div class="modal-body">
@@ -180,12 +293,22 @@
                 </div>
                 <div class="mb-3">
                   <label class="form-label">Jefe de Personal</label>
-                  <input
+                  <select
                     class="form-control"
-                    [(ngModel)]="areaSeleccionada.jefePersonal"
-                    name="jefePersonal"
+                    [(ngModel)]="areaSeleccionada.idJefe"
+                    name="idJefe"
                     required
-                  />
+                    (change)="actualizarNombreJefe()"
+                  >
+                    <option value="" disabled>Seleccione un jefe</option>
+                    <option
+                      *ngFor="let jefe of jefesPersonal"
+                      [value]="jefe.id"
+                    >
+                      {{ jefe.perfil?.primerNombre }}
+                      {{ jefe.perfil?.primerApellido }}
+                    </option>
+                  </select>
                 </div>
                 <div class="mb-3">
                   <label class="form-label">Estado</label>
@@ -202,18 +325,24 @@
               </div>
               <div class="modal-footer">
                 <button class="btn btn-primary">Guardar Cambios</button>
-                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
+                <button
+                  class="btn btn-secondary"
+                  type="button"
+                  data-bs-dismiss="modal"
+                >
+                  Cancelar
+                </button>
               </div>
             </form>
           </div>
         </div>
       </div>
-
     </div>
 
     <ng-template #sinPermiso>
-      <div class="alert alert-warning">No tienes permiso para ver esta información.</div>
+      <div class="alert alert-warning">
+        No tienes permiso para ver esta información.
+      </div>
     </ng-template>
   </div>
 </div>
-
