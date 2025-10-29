@@ -17,8 +17,8 @@ export interface Vacante {
   providedIn: 'root'
 })
 export class VacantesService {
-  private apiUrl = 'http://localhost:8000/api/vacantesExternos';
-
+  private apiUrl = 'https://www.evensoft21.com/managehr/api/public/api/vacantesExternos';
+  
   constructor(private http: HttpClient) {}
 
   getVacantes(): Observable<Vacante[]> {

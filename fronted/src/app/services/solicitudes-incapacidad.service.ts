@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class SolicitudesIncapacidadService {
-  private apiUrl = 'http://localhost:8000/api/solicitudes-incapacidades';
+  private apiUrl = 'https://www.evensoft21.com/managehr/api/public/api/solicitudes-incapacidades';
 
   constructor(private http: HttpClient) { }
 
@@ -24,7 +24,7 @@ obtenerSolicitudesIncapacidadUsuario(): Observable<any[]> {
   const headers = new HttpHeaders({
     'Authorization': `Bearer ${token}`
   });
-  return this.http.get<any[]>(`http://localhost:8000/api/solicitudes-incapacidades`, { headers });
+  return this.http.get<any[]>(`https://www.evensoft21.com/managehr/api/public/api/solicitudes-incapacidades`, { headers });
 
 }
 }

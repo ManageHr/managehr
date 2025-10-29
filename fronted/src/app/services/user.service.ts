@@ -6,8 +6,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'http://127.0.0.1:8000/api/profile';
-  private updateUrl = 'http://127.0.0.1:8000/api/profile/update';
+  private apiUrl = 'https://www.evensoft21.com/managehr/api/public/api/profile';
+  private updateUrl = 'http://localhost:8000//api/profile/update';
 
   constructor(private http: HttpClient) {}
 

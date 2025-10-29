@@ -46,12 +46,12 @@ export interface Vacante {
 export class VacanteService { // <-- EL NOMBRE DE LA CLASE DEL SERVICIO
 
   // *** URL BASE DE TU API PARA VACANTES (EXISTENTE) ***
-  // Esta URL se mantiene exactamente como la tienes: http://localhost:8000/api/vacantes
-  private apiUrlVacantes = 'http://localhost:8000/api/vacantes'; // <-- Tu URL original para Vacantes
+  // Esta URL se mantiene exactamente como la tienes: https://www.evensoft21.com/managehr/api/public/api/vacantes
+  private apiUrlVacantes = 'https://www.evensoft21.com/managehr/api/public/api/vacantes'; // <-- Tu URL original para Vacantes
 
   // *** NUEVA URL BASE DE TU API PARA CATEGORÍAS (CORREGIDA) ***
   // Apunta a la ruta GET que definiste en Laravel (EL NOMBRE DE LA RUTA ERA PLURAL)
-  private apiUrlCategorias = 'http://localhost:8000/api/categoriavacantes'; // <--- *** CORREGIDA A RUTA PLURAL /categoriavacantes ***
+  private apiUrlCategorias = 'https://www.evensoft21.com/managehr/api/public/api/categoriavacantes'; // <--- *** CORREGIDA A RUTA PLURAL /categoriavacantes ***
 
 
   constructor(private http: HttpClient) { }

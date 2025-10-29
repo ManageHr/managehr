@@ -89,7 +89,7 @@ export interface Incapacidad {
   providedIn: 'root',
 })
 export class IncapacidadService {
-  private apiUrl = 'http://localhost:8000/api/incapacidad'; // Ajusta si usas otra ruta
+  private apiUrl = 'https://www.evensoft21.com/managehr/api/public/api/incapacidad'; // Ajusta si usas otra ruta
 
   constructor(private http: HttpClient) {}
 

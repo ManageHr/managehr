@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ExperienciaService {
-  private baseUrl = 'http://localhost:8000/api';
+  private baseUrl = 'https://www.evensoft21.com/managehr/api/public/api';
   private experienciaUrl = `${this.baseUrl}/experiencia`;
   private relacionUrl = `${this.baseUrl}/hojasvidahasexperiencia`;
 

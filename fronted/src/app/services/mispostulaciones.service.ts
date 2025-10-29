@@ -7,7 +7,7 @@ import { map } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class MisPostulacionesService {
-  private apiUrl = 'http://127.0.0.1:8000/api/postulaciones';
+  private apiUrl = 'https://www.evensoft21.com/managehr/api/public/api/postulaciones';
 
   constructor(private http: HttpClient) {}
 

@@ -43,7 +43,7 @@ export interface Postulacion {
   providedIn: 'root'
 })
 export class PostulacionesadminService {
-   private apiUrl = 'http://localhost:8000/api/postulaciones';
+   private apiUrl = 'https://www.evensoft21.com/managehr/api/public/api/postulaciones';
   constructor(private http: HttpClient) { }
 
 
@@ -64,13 +64,13 @@ export class PostulacionesadminService {
     }
   }
   getReportePorVacante(): Observable<any> {
-    return this.http.get('http://localhost:8000/api/postulaciones/reporte/vacante');
+    return this.http.get('https://www.evensoft21.com/managehr/api/public/api/postulaciones/reporte/vacante');
   }
   getReportePorEstado(): Observable<any> {
-    return this.http.get('http://localhost:8000/api/postulaciones/reporte/estado');
+    return this.http.get('https://www.evensoft21.com/managehr/api/public/api/postulaciones/reporte/estado');
   }
   getReporteInternos(): Observable<any> {
-    return this.http.get('http://localhost:8000/api/postulaciones/reporte/internos');
+    return this.http.get('https://www.evensoft21.com/managehr/api/public/api/postulaciones/reporte/internos');
   }
   actualizarEstado(id: number,estado : number): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/${id}`, { estado });

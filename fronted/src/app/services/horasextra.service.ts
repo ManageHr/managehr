@@ -112,7 +112,7 @@ export interface Horasextra {
 }
 @Injectable({ providedIn: 'root' })
 export class HorasextraService {
-  private apiUrl = 'http://localhost:8000/api/horasextra';  // Asegúrate de que esta URL sea correcta
+  private apiUrl = 'https://www.evensoft21.com/managehr/api/public/api/horasextra';  // Asegúrate de que esta URL sea correcta
 
   constructor(private http: HttpClient) {}
 

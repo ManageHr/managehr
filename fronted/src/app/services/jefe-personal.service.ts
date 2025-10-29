@@ -11,7 +11,7 @@ interface EmpleadosResponse {
 
 @Injectable({ providedIn: 'root' })
 export class JefePersonalService {
-  private apiUrl = 'http://localhost:8000/api';
+  private apiUrl = 'https://www.evensoft21.com/managehr/api/public/api';
 
   constructor(private http: HttpClient) {}
 

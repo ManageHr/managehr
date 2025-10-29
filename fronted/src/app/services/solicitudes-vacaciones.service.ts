@@ -14,7 +14,7 @@ export interface SolicitudVacaciones {
 
 @Injectable({ providedIn: 'root' })
 export class SolicitudesVacacionesService {
-  private apiUrl = 'http://127.0.0.1:8000/api/solicitudes-vacaciones-con-archivo';
+  private apiUrl = 'https://www.evensoft21.com/managehr/api/public/api/solicitudes-vacaciones-con-archivo';
 
   constructor(private http: HttpClient) {}
 
@@ -43,7 +43,7 @@ export class SolicitudesVacacionesService {
   // GET contrato
   obtenerContratoDelUsuario(numDocumento: string): Observable<any> {
     return this.http.get(
-      `http://127.0.0.1:8000/api/contrato-usuario/${numDocumento}`,
+      `https://www.evensoft21.com/managehr/api/public/api/contrato-usuario/${numDocumento}`,
       { headers: this.getHeaders() }
     );
   }

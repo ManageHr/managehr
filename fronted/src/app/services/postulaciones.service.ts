@@ -21,8 +21,8 @@ export class PostulacionesService {
 
 
   // ⚠️ CORREGIDAS: se usa 127.0.0.1 en lugar de localhost
-  private apiUrl = 'http://127.0.0.1:8000/api/postulaciones';
-  private searchApiUrl = 'http://127.0.0.1:8000/api/postulaciones/buscar/vacante';
+  private apiUrl = 'https://www.evensoft21.com/managehr/api/public/api/postulaciones';
+  private searchApiUrl = 'https://www.evensoft21.com/managehr/api/public/api/postulaciones/buscar/vacante';
 
   constructor(private http: HttpClient) {}
 
@@ -110,7 +110,7 @@ export class PostulacionesService {
     }
   }
   obtenertodos():Observable<any>{
-    return this.http.get<any>('http://localhost:8000/api/postulaciones').pipe(
+    return this.http.get<any>('https://www.evensoft21.com/managehr/api/public/api/postulaciones').pipe(
       map(res => res.Postulaciones) 
     );
   } 

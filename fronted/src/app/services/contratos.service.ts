@@ -46,7 +46,7 @@ export interface Usuario {
 })
 export class ContratosService {
   
-  private apiUrl = 'http://localhost:8000/api/contrato';
+  private apiUrl = 'https://www.evensoft21.com/managehr/api/public/api/contrato';
 
   constructor(private http: HttpClient) {}
   
@@ -64,7 +64,7 @@ export class ContratosService {
     'Authorization': `Bearer ${token}`
   };
 
-  return this.http.get<any>(`http://localhost:8000/api/contrato-usuario/${numDocumento}`, { headers })
+  return this.http.get<any>(`https://www.evensoft21.com/managehr/api/public/api/contrato-usuario/${numDocumento}`, { headers })
     .pipe(
       map(res => res.contrato) // 
     );
@@ -72,36 +72,36 @@ export class ContratosService {
 
 
   agregarContrato(contrato: any) {
-    return this.http.post<Contratos>('http://localhost:8000/api/contrato', contrato);
+    return this.http.post<Contratos>('https://www.evensoft21.com/managehr/api/public/api/contrato', contrato);
   }
   obtenerTiposContrato(): Observable<any[]> {
-    return this.http.get<any>('http://localhost:8000/api/tipocontrato').pipe(
+    return this.http.get<any>('https://www.evensoft21.com/managehr/api/public/api/tipocontrato').pipe(
       map(res => res.tipocontrato) 
     );
   }
   
   obtenerAreas():Observable<any[]>{
-    return this.http.get<any>('http://localhost:8000/api/area').pipe(
+    return this.http.get<any>('https://www.evensoft21.com/managehr/api/public/api/area').pipe(
       map(res => res.areas)
     );
   }
   obtenerNacionalidades(): Observable<any[]> {
-    return this.http.get<any>('http://localhost:8000/api/nacionalidad').pipe(
+    return this.http.get<any>('https://www.evensoft21.com/managehr/api/public/api/nacionalidad').pipe(
       map(res => res.Nacionalidad) 
     );
   }
  
 actualizarContratoParcial(id: number, formData: FormData) {
   
-  return this.http.post(`http://localhost:8000/api/contrato/${id}/actualizar`, formData);
+  return this.http.post(`https://www.evensoft21.com/managehr/api/public/api/contrato/${id}/actualizar`, formData);
 }
  obtenerHojadevida(id:number):Observable<any[]>{
-  return this.http.get<any>(`http://localhost:8000/api/hojasvida/${id}`).pipe(
+  return this.http.get<any>(`https://www.evensoft21.com/managehr/api/public/api/hojasvida/${id}`).pipe(
     map(res => res.hojadevida) 
   );
  }
  obtenerNumDocumento(id:number):Observable<any[]>{
-  return this.http.get<any>(`http://localhost:8000/api/contrato-usuario/${id}`).pipe(
+  return this.http.get<any>(`https://www.evensoft21.com/managehr/api/public/api/contrato-usuario/${id}`).pipe(
     map(res => res.contrato) 
   );
  }
@@ -109,46 +109,46 @@ actualizarContratoParcial(id: number, formData: FormData) {
   
   
   obtenerEps(): Observable<any[]> {
-    return this.http.get<any>('http://localhost:8000/api/epss').pipe(
+    return this.http.get<any>('https://www.evensoft21.com/managehr/api/public/api/epss').pipe(
       map(res => res.Eps) 
     );
   }
   eliminarContrato(id: number): Observable<any> {
-    return this.http.delete<any>(`http://localhost:8000/api/contrato/${id}`);
+    return this.http.delete<any>(`https://www.evensoft21.com/managehr/api/public/api/contrato/${id}`);
   }
   obtenerUsuarioPorDocumento(documento: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${documento}`);
   }
   
   obtenerContrato(id: number): Observable<any> {
-    return this.http.get<any>(`http://localhost:8000/api/contrato/${id}`);
+    return this.http.get<any>(`https://www.evensoft21.com/managehr/api/public/api/contrato/${id}`);
   }
   
   obtenerGeneros(): Observable<any[]> {
-    return this.http.get<any>('http://localhost:8000/api/genero').pipe(
+    return this.http.get<any>('https://www.evensoft21.com/managehr/api/public/api/genero').pipe(
       map(res => res.Genero) 
     );
   }
   
   obtenerTiposDocumento(): Observable<any[]> {
-    return this.http.get<any>('http://localhost:8000/api/tipodocumento').pipe(
+    return this.http.get<any>('https://www.evensoft21.com/managehr/api/public/api/tipodocumento').pipe(
       map(res => res.TipoDocumento) 
     );
   }
   
   obtenerEstadosCiviles(): Observable<any[]> {
-    return this.http.get<any>('http://localhost:8000/api/estadocivil').pipe(
+    return this.http.get<any>('https://www.evensoft21.com/managehr/api/public/api/estadocivil').pipe(
       map(res => res.EstadoCivil) 
     );
   }
   
   obtenerPensiones(): Observable<any[]> {
-    return this.http.get<any>('http://localhost:8000/api/pensiones').pipe(
+    return this.http.get<any>('https://www.evensoft21.com/managehr/api/public/api/pensiones').pipe(
       map(res => res.Pensiones) 
     );
   }
   obtenerContratosCompletos(): Observable<{ mensaje: string, data: any[] }> {
-    return this.http.get<{ mensaje: string, data: any[] }>(`http://localhost:8000/api/contrato/reporte/area`);
+    return this.http.get<{ mensaje: string, data: any[] }>(`https://www.evensoft21.com/managehr/api/public/api/contrato/reporte/area`);
   }
 
 }

@@ -5,7 +5,7 @@ import { Observable, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private apiUrl = 'http://localhost:8000/api';
+  private apiUrl = 'https://www.evensoft21.com/managehr/api/public/api';
 
   constructor(private http: HttpClient) {}
 
@@ -43,14 +43,14 @@ export class AuthService {
     this.http.post(`${this.apiUrl}/logout`, {}).subscribe(); // Notifica al backend si es necesario
   }
   eliminarUser(id: number): Observable<any> {
-    return this.http.delete<any>(`http://localhost:8000/api/login/${id}`);
+    return this.http.delete<any>(`https://www.evensoft21.com/managehr/api/public/api/login/${id}`);
   }
   isAuthenticated(): boolean {
     const token = localStorage.getItem('token');
     return !!token; // si no hay token, devuelve false
   }
   verificarExistenciaUsuario(email: string): Observable<boolean> {
-      return this.http.get<any>(`http://localhost:8000/api/verificar-user`, {
+      return this.http.get<any>(`https://www.evensoft21.com/managehr/api/public/api/verificar-user`, {
         params: { email }
       }).pipe(
         tap(res => res)
@@ -65,13 +65,13 @@ export class AuthService {
     });
   }
   verificarNumDocYUsuario(numDocumento: string, usuario: string): Observable<any> {
-    return this.http.get<any>('http://localhost:8000/api/verificar-numdoc-usuario', {
+    return this.http.get<any>('https://www.evensoft21.com/managehr/api/public/api/verificar-numdoc-usuario', {
       params: { numDocumento, usuario }
     });
     
   }
   crearUsuario(data: any): Observable<any> {
-    return this.http.post('http://localhost:8000/api/usuarios', data);
+    return this.http.post('https://www.evensoft21.com/managehr/api/public/api/usuarios', data);
   }
 
   

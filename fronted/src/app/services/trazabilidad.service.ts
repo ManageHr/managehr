@@ -17,7 +17,7 @@ export interface Trazabilidad {
   providedIn: 'root'
 })
 export class TrazabilidadService {
-  private apiUrl = 'http://localhost:8000/api/trazabilidad';
+  private apiUrl = 'https://www.evensoft21.com/managehr/api/public/api/trazabilidad';
 
   constructor(private http: HttpClient) {}
 
@@ -32,7 +32,7 @@ export class TrazabilidadService {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
   obtenerTrazas(): Observable<Trazabilidad[]> {
-    return this.http.get<any>('http://localhost:8000/api/trazabilidad').pipe(
+    return this.http.get<any>('https://www.evensoft21.com/managehr/api/public/api/trazabilidad').pipe(
       map(res => res.tipodocumento));
   }
 }

@@ -54,7 +54,7 @@ export interface Notificacion {
   providedIn: 'root'
 })
 export class NotificacionesService {
- private apiUrl = 'http://localhost:8000/api/notificaciones';
+ private apiUrl = 'https://www.evensoft21.com/managehr/api/public/api/notificaciones';
   constructor(private http: HttpClient) { }
   getAll(): Observable<{ Notificaciones: Notificacion[] }> {
     return this.http.get<{ Notificaciones: Notificacion[] }>(this.apiUrl);

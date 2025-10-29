@@ -7,7 +7,7 @@ import { SolicitudVacacionesJefe, RespuestaSolicitud } from '../models/solicitud
   providedIn: 'root'
 })
 export class VacacionesJefeService {
-  private apiUrl = 'http://127.0.0.1:8000/api';
+  private apiUrl = 'https://www.evensoft21.com/managehr/api/public/api';
 
   constructor(private http: HttpClient) {}
 

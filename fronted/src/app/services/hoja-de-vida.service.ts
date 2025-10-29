@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class HojaDeVidaService {
-  private apiUrl = 'http://localhost:8000/api';
+  private apiUrl = 'https://www.evensoft21.com/managehr/api/public/api';
 
   constructor(private http: HttpClient) {}
 

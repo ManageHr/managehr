@@ -7,7 +7,7 @@ import { SolicitudIncapacidadJefe, RespuestaSolicitudIncapacidad } from '../mode
   providedIn: 'root'
 })
 export class IncapacidadesJefeService {
-  private apiUrl = 'http://127.0.0.1:8000/api';
+  private apiUrl = 'https://www.evensoft21.com/managehr/api/public/api';
 
   constructor(private http: HttpClient) {}
 

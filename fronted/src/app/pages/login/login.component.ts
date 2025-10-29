@@ -30,30 +30,33 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   login(): void {
-    const data = { email: this.email, password: this.password };
+  const data = { email: this.email, password: this.password };
 
-    this.http.post<any>('http://localhost:8000/api/login', data).subscribe({
-      next: (res) => {
-        if (res.token) {
-          localStorage.setItem('token', res.token);
-          if (res.user) {
-            localStorage.setItem('usuario', JSON.stringify(res.user));
-          }
-          if (res.user.rol == 1 || res.user.rol == 4 || res.user.rol == 6) {
-            this.router.navigate(['/directorio/usuarios']);
-          } else {
-            this.router.navigate(['/home']);
-          }
-          this.errorMessage = '';
-        } else {
-          this.errorMessage = 'Respuesta inválida del servidor.';
+  this.http.post<any>('https://www.evensoft21.com/managehr/api/public/api/login', data).subscribe({
+    next: (res) => {
+      if (res.token) {
+        localStorage.setItem('token', res.token);
+        if (res.user) {
+          // Convertir rol a número
+          res.user.rol = parseInt(res.user.rol, 10);
+          localStorage.setItem('usuario', JSON.stringify(res.user));
         }
-      },
-      error: (err) => {
-        this.errorMessage = 'Correo o contraseña incorrectos.';
+        // Comparar como números
+        if (res.user.rol === 1 || res.user.rol === 4 || res.user.rol === 6) {
+          this.router.navigate(['/directorio/usuarios']);
+        } else {
+          this.router.navigate(['/home']);
+        }
+        this.errorMessage = '';
+      } else {
+        this.errorMessage = 'Respuesta inválida del servidor.';
       }
-    });
-  }
+    },
+    error: (err) => {
+      this.errorMessage = 'Correo o contraseña incorrectos.';
+    }
+  });
+}
 
   mostrarAlerta(): void {
     Swal.fire({

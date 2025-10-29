@@ -15,7 +15,7 @@ export interface Areas {
   providedIn: 'root'
 })
 export class AreaService {
-  private apiUrl = 'http://localhost:8000/api/area';
+  private apiUrl = 'https://www.evensoft21.com/managehr/api/public/api/area';
   constructor(private http:HttpClient) { }
   obtenerAreas(): Observable<any> {
     return this.http.get<any>(this.apiUrl).pipe(
@@ -27,29 +27,29 @@ export class AreaService {
     );
   }
   getJefesDePersonal(): Observable<any> {
-    return this.http.get('http://localhost:8000/api/jefepersonal/all');
+    return this.http.get('https://www.evensoft21.com/managehr/api/public/api/jefepersonal/all');
   }
 
   obtenerAreaId(id:number){
-    return this.http.get<any>(`http://localhost:8000/api/area/${id}`);
+    return this.http.get<any>(`https://www.evensoft21.com/managehr/api/public/api/area/${id}`);
   }
   eliminarAreaId(id:number){
-    return this.http.delete<any>(`http://localhost:8000/api/area/${id}`);
+    return this.http.delete<any>(`https://www.evensoft21.com/managehr/api/public/api/area/${id}`);
   }
   agregarArea(area: any) {
-    return this.http.post<any>('http://localhost:8000/api/area', area);
+    return this.http.post<any>('https://www.evensoft21.com/managehr/api/public/api/area', area);
 
   }
   
   obtenerNombre(nombre: string): Observable<any> {
-    return this.http.get(`http://localhost:8000/api/area-nombre/${nombre}`);
+    return this.http.get(`https://www.evensoft21.com/managehr/api/public/api/area-nombre/${nombre}`);
   }
   
   actualizarArea(id: number, datos: any) {
-    return this.http.put(`http://localhost:8000/api/area/${id}`, datos);
+    return this.http.put(`https://www.evensoft21.com/managehr/api/public/api/area/${id}`, datos);
   }
   verificarCorreoExistente(email: string): Observable<any> {
-  return this.http.get(`http://localhost:8000/api/verificar-user`, {
+  return this.http.get(`https://www.evensoft21.com/managehr/api/public/api/verificar-user`, {
     params: { email }
   });
 }

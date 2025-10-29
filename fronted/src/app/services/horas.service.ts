@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class HorasService {
-  private apiUrl = 'http://localhost:8000/api/horas-extra';
+  private apiUrl = 'https://www.evensoft21.com/managehr/api/public/api/horas-extra';
 
   constructor(private http: HttpClient) {}
 

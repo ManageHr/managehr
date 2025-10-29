@@ -13,7 +13,7 @@ export interface Categoria {
 })
 export class CategoriaService {
 
-  private categoriasEndpointUrl = 'http://localhost:8000/api/categoriavacantes';
+  private categoriasEndpointUrl = 'https://www.evensoft21.com/managehr/api/public/api/categoriavacantes';
 
   constructor(private http: HttpClient) { }
 

@@ -58,7 +58,7 @@ export interface Vacacion {
 })
 export class VacacionesService {
 
-  private apiUrl = 'http://localhost:8000/api/vacaciones'; // Asegúrate que tu backend use prefix /api
+  private apiUrl = 'https://www.evensoft21.com/managehr/api/public/api/vacaciones'; // Asegúrate que tu backend use prefix /api
 
   constructor(private http: HttpClient) {}
 

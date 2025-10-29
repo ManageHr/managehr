@@ -4,8 +4,8 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class EstudiosService {
-  private estudiosUrl = 'http://localhost:8000/api/estudios';
-  private relacionesUrl = 'http://localhost:8000/api/hojasvidahasestudios';
+  private estudiosUrl = 'https://www.evensoft21.com/managehr/api/public/api/estudios';
+  private relacionesUrl = 'https://www.evensoft21.com/managehr/api/public/api/hojasvidahasestudios';
 
   constructor(private http: HttpClient) {}
 
@@ -18,14 +18,14 @@ export class EstudiosService {
   }
 
   delete(idRelacion: number): Observable<any> {
-  return this.http.delete(`http://localhost:8000/api/hojasvidahasestudios/${idRelacion}`);
+  return this.http.delete(`https://www.evensoft21.com/managehr/api/public/api/hojasvidahasestudios/${idRelacion}`);
 }
 
   createRelacionEstudio(payload: any): Observable<any> {
     return this.http.post<any>(this.relacionesUrl, payload);
   }
   agregarEstudio(formData: FormData): Observable<any> {
-    return this.http.post(`http://localhost:8000/api/hojasvidahasestudios`, formData);
+    return this.http.post(`https://www.evensoft21.com/managehr/api/public/api/hojasvidahasestudios`, formData);
   }
   buscarEstudioPorNombre(data: any): Observable<any> {
     return this.http.post(`${this.estudiosUrl}/buscar`, data);
