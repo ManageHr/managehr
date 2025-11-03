@@ -280,7 +280,7 @@ export class ContratosComponent implements OnInit {
       return;
     }
 
-    this.imagenSeleccionada = 'http://localhost:8000/' + url;
+    this.imagenSeleccionada = 'http://www.evensoft21.com/managehr/api/public/' + url;
     setTimeout(() => {
       const modalElement = document.getElementById('modalImagen');
       if (modalElement) {

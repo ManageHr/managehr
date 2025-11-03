@@ -101,7 +101,6 @@ export class IncapacidadesAdminComponent implements OnInit {
       contratoId: ['', Validators.required],
     });
     this.cargarIncapacidades();
-   
   }
   get incapacidadesFiltradas() {
     const filtroLower = this.filtroNombre.toLowerCase();
@@ -143,7 +142,6 @@ export class IncapacidadesAdminComponent implements OnInit {
 
     this.incapacidadService.crear(formData).subscribe({
       next: (res) => {
-        
         this.cargarIncapacidades(); // actualiza la tabla
         this.formIncapacidad.reset();
         this.archivoSeleccionado = null;
@@ -208,21 +206,22 @@ export class IncapacidadesAdminComponent implements OnInit {
   }
   dibujarGraficoPorEstado() {
     if (this.graficoEstado) {
-      this.graficoEstado.destroy(); // destruir gráfico anterior si existe
+      this.graficoEstado.destroy();
     }
 
     const conteo = { Pendiente: 0, Aceptado: 0, Rechazado: 0 };
 
     this.incapacidades.forEach((inc) => {
-      if (inc.estado === 0) conteo.Pendiente++;
-      else if (inc.estado === 1) conteo.Aceptado++;
-      else if (inc.estado === 2) conteo.Rechazado++;
+      const estadoNum = Number(inc.estado);
+      if (estadoNum === 0) conteo.Pendiente++;
+      else if (estadoNum === 1) conteo.Aceptado++;
+      else if (estadoNum === 2) conteo.Rechazado++;
     });
 
     const labels = Object.keys(conteo);
     const data = Object.values(conteo);
 
-    const backgroundColors = ['#FFD700', '#4CAF50', '#F44336']; // Amarillo, Verde, Rojo
+    const backgroundColors = ['#FFD700', '#4CAF50', '#F44336'];
 
     const ctx = (
       document.getElementById('graficoEstado') as HTMLCanvasElement
@@ -375,8 +374,9 @@ export class IncapacidadesAdminComponent implements OnInit {
   cargarIncapacidades(): void {
     this.incapacidadService.obtenerTodas().subscribe({
       next: (res: Incapacidad[]) => {
-         // debe mostrar el array
+        console.log('Datos recibidos:', res);
         this.incapacidades = res || [];
+        console.log('Array actualizado:', this.incapacidades);
       },
       error: (err) => console.error('Error al cargar incapacidades', err),
     });
@@ -466,9 +466,16 @@ export class IncapacidadesAdminComponent implements OnInit {
       const estados = ['Pendiente', 'Aceptado', 'Rechazado'];
 
       estados.forEach((estadoTexto, estadoIndex) => {
+        // CORRECCIÓN: Convertir a string para comparar con los datos de la API
         const lista = this.incapacidades.filter(
-          (i) => i.estado === estadoIndex
+          (i) => String(i.estado) === String(estadoIndex)
         );
+
+        // Si no hay registros para este estado, saltar
+        if (lista.length === 0) {
+          return;
+        }
+
         doc.setFontSize(12);
         doc.setTextColor(0);
         doc.text(`Estado: ${estadoTexto}`, 10, startY);
@@ -595,7 +602,15 @@ export class IncapacidadesAdminComponent implements OnInit {
     const estados = ['Pendiente', 'Aceptado', 'Rechazado'];
 
     estados.forEach((estadoTexto, index) => {
-      const lista = this.incapacidades.filter((i) => i.estado === index);
+      // CORRECCIÓN: Convertir a string para comparar con los datos de la API
+      const lista = this.incapacidades.filter(
+        (i) => String(i.estado) === String(index)
+      );
+
+      // Si no hay registros, saltar
+      if (lista.length === 0) {
+        return;
+      }
 
       const titulo = sheet.addRow([`Estado: ${estadoTexto}`]);
       titulo.font = { bold: true };
@@ -644,6 +659,12 @@ export class IncapacidadesAdminComponent implements OnInit {
       { key: 'fin', width: 15 },
       { key: 'archivo', width: 10 },
     ];
+
+    // Verificar si hay datos antes de generar
+    if (sheet.rowCount <= 1) {
+      Swal.fire('Info', 'No hay datos para generar el reporte.', 'info');
+      return;
+    }
 
     workbook.xlsx.writeBuffer().then((buffer) => {
       const blob = new Blob([buffer], {
@@ -959,21 +980,12 @@ export class IncapacidadesAdminComponent implements OnInit {
       saveAs(blob, `incapacidades_por_area_${numDocumento}.xlsx`);
     });
   }
-  verArchivoEnModal(ruta: string) {
-    this.archivoActual = `http://localhost:8000/${ruta}`;
-    const modal = new bootstrap.Modal(
-      document.getElementById('modalVerArchivo')
-    );
-    modal.show();
-  }
-
-  esPDF(ruta: string): boolean {
-    return ruta.toLowerCase().endsWith('.pdf');
-  }
+  // Corrige el método abrirArchivo
   abrirArchivo(archivo: string) {
     if (!archivo) return;
 
-    
+    // Usar la URL correcta de tu servidor
+    const baseUrl = 'https://www.evensoft21.com/managehr/api/public';
 
     // Si ya empieza con "http", no lo toques
     if (archivo.startsWith('http')) {
@@ -984,10 +996,10 @@ export class IncapacidadesAdminComponent implements OnInit {
         ? archivo
         : `storage/${archivo.replace(/^\/?/, '')}`;
 
-      this.archivoActual = `http://localhost:8000/${rutaNormalizada}`;
+      this.archivoActual = `${baseUrl}/${rutaNormalizada}`;
     }
 
-    
+    console.log('Archivo a abrir:', this.archivoActual);
 
     // Mostrar modal
     setTimeout(() => {
@@ -999,11 +1011,39 @@ export class IncapacidadesAdminComponent implements OnInit {
     }, 100);
   }
 
+  // También corrige el método verArchivoEnModal
+  verArchivoEnModal(ruta: string) {
+    const baseUrl = 'https://www.evensoft21.com/managehr/api/public';
+    this.archivoActual = `${baseUrl}/${ruta}`;
+
+    console.log('Archivo en modal:', this.archivoActual);
+
+    const modal = new bootstrap.Modal(
+      document.getElementById('modalVerArchivo')
+    );
+    modal.show();
+  }
+
+  // Y actualiza el método esPDF para mayor seguridad
+  esPDF(ruta: string): boolean {
+    if (!ruta) return false;
+    return ruta.toLowerCase().includes('.pdf');
+  }
+
   abrirModalEstado(incapacidad: any) {
-   
-    this.incapacidadSeleccionada = incapacidad;
+    console.log('🟡 Abriendo modal para incapacidad:', {
+      id: incapacidad.idIncapacidad,
+      estadoActual: incapacidad.estado,
+    });
+
+    this.incapacidadSeleccionada = { ...incapacidad }; // Crear copia
     this.nuevoEstado = incapacidad.estado ?? 0;
-    
+
+    console.log('🟡 Datos del modal:', {
+      seleccionada: this.incapacidadSeleccionada,
+      nuevoEstado: this.nuevoEstado,
+    });
+
     const modal = new bootstrap.Modal(
       document.getElementById('modalCambiarEstado')!
     );
@@ -1021,20 +1061,72 @@ export class IncapacidadesAdminComponent implements OnInit {
       return;
     }
 
-    this.incapacidadService.cambiarEstado(id, this.nuevoEstado).subscribe({
-      next: () => {
-        Swal.fire('Éxito', 'Estado actualizado correctamente.', 'success').then(
-          () => location.reload()
-        );
-      },
-      error: () => {
-        Swal.fire('Error', 'No se pudo actualizar el estado.', 'error');
-      },
+    console.log('🔄 Cambiando estado de incapacidad:', {
+      id: id,
+      nuevoEstado: this.nuevoEstado,
+      tipoNuevoEstado: typeof this.nuevoEstado,
     });
+
+    // Asegúrate de que el estado se envíe como número
+    this.incapacidadService
+      .cambiarEstado(id, Number(this.nuevoEstado))
+      .subscribe({
+        next: (response) => {
+          console.log('✅ Respuesta del servidor:', response);
+          this.cargarIncapacidades();
+
+          Swal.fire({
+            title: '¡Éxito!',
+            text: 'Estado actualizado correctamente.',
+            icon: 'success',
+            timer: 1500,
+            showConfirmButton: false,
+          }).then(() => {
+            const modalElement = document.getElementById('modalCambiarEstado');
+            if (modalElement) {
+              const modal = bootstrap.Modal.getInstance(modalElement);
+              modal?.hide();
+            }
+          });
+        },
+        error: (error) => {
+          console.error('❌ Error al cambiar estado:', error);
+          Swal.fire('Error', 'No se pudo actualizar el estado.', 'error');
+        },
+      });
   }
 
-  getClaseEstado(estado: number): string {
-    switch (estado) {
+  getNombreEstado(estado: any): string {
+    // Convierte a número y maneja strings
+    const estadoNum = Number(estado);
+
+    if (isNaN(estadoNum)) {
+      console.warn('Estado no es un número:', estado, 'Tipo:', typeof estado);
+      return 'Desconocido';
+    }
+
+    switch (estadoNum) {
+      case 0:
+        return 'Pendiente';
+      case 1:
+        return 'Aceptado';
+      case 2:
+        return 'Rechazado';
+      default:
+        console.warn('Estado fuera de rango:', estadoNum);
+        return 'Desconocido';
+    }
+  }
+
+  getClaseEstado(estado: any): string {
+    // Convierte a número y maneja strings
+    const estadoNum = Number(estado);
+
+    if (isNaN(estadoNum)) {
+      return 'badge bg-secondary';
+    }
+
+    switch (estadoNum) {
       case 0:
         return 'badge bg-warning text-dark';
       case 1:
@@ -1043,19 +1135,6 @@ export class IncapacidadesAdminComponent implements OnInit {
         return 'badge bg-danger';
       default:
         return 'badge bg-secondary';
-    }
-  }
-
-  getNombreEstado(estado: number): string {
-    switch (estado) {
-      case 0:
-        return 'Pendiente';
-      case 1:
-        return 'Aceptado';
-      case 2:
-        return 'Rechazado';
-      default:
-        return 'Desconocido';
     }
   }
 }

@@ -61,6 +61,7 @@ declare var bootstrap: any;
   styleUrl: './horasextra-admin.component.scss',
 })
 export class HorasextraAdminComponent {
+  private isRedirecting = false;
   graficoEstado: any;
   usuario: any = {};
   filtroNombre: string = '';
@@ -94,8 +95,19 @@ export class HorasextraAdminComponent {
       usuarioId: [''],
     });
   }
+  private handleError500(error: any): void {
+    if (error?.status === 500 && !this.isRedirecting) {
+      this.isRedirecting = true;
+      console.error('Error 500 - Redirigiendo...');
+
+      setTimeout(() => {
+        window.location.href = 'https://www.evensoft21.com/managehr/Angular';
+      }, 100);
+    }
+  }
   ngOnInit(): void {
     const userFromLocal = localStorage.getItem('usuario');
+    console.log(userFromLocal);
     if (userFromLocal) {
       this.usuario = JSON.parse(userFromLocal);
       this.tienePermiso = [1, 4].includes(this.usuario?.rol);
@@ -288,7 +300,9 @@ export class HorasextraAdminComponent {
       next: (res: Horasextra[]) => {
         this.horasextras = res || [];
       },
-      error: (err) => console.error('Error al cargar horasextras', err),
+      error: (err) => {
+        this.handleError500(err);
+      },
     });
   }
 
@@ -362,9 +376,18 @@ export class HorasextraAdminComponent {
     };
 
     this.horasextras.forEach((h) => {
-      if (h.estado === 1) conteo.Aprobado++;
-      else if (h.estado === 0) conteo.Pendiente++;
-      else if (h.estado === 2) conteo.Rechazado++;
+      const estado = h.estado;
+
+      // Manejar valores null/undefined
+      if (estado === null || estado === undefined) {
+        conteo.Pendiente++;
+      } else {
+        const estadoNum = Number(estado);
+        if (estadoNum === 1) conteo.Aprobado++;
+        else if (estadoNum === 0) conteo.Pendiente++;
+        else if (estadoNum === 2) conteo.Rechazado++;
+        else conteo.Pendiente++; // Por defecto para valores desconocidos
+      }
     });
 
     const ctx = document.getElementById('graficoEstado') as HTMLCanvasElement;
@@ -394,8 +417,148 @@ export class HorasextraAdminComponent {
       },
     });
   }
-
   descargarPDFPorUsuario() {
+    // Crear el documento PDF
+    const doc = new jsPDF();
+
+    // Configuración inicial
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    let yPosition = 20;
+
+    // Título del reporte
+    doc.setFontSize(16);
+    doc.setTextColor(40, 40, 40);
+    doc.text('Reporte de Horas Extras por Usuario', pageWidth / 2, yPosition, {
+      align: 'center',
+    });
+    yPosition += 15;
+
+    // Fecha de generación
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    const fechaGeneracion = new Date().toLocaleDateString('es-ES');
+    doc.text(`Generado el: ${fechaGeneracion}`, pageWidth / 2, yPosition, {
+      align: 'center',
+    });
+    yPosition += 20;
+
+    // Agrupar horas extras por usuario
+    const horasPorUsuario = this.agruparHorasPorUsuario();
+
+    // Generar contenido del PDF
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+
+    horasPorUsuario.forEach((usuario, index) => {
+      // Verificar si necesita nueva página
+      if (yPosition > pageHeight - 50) {
+        doc.addPage();
+        yPosition = 20;
+      }
+
+      // Nombre del usuario
+
+      doc.text(`${usuario.nombre} (${usuario.documento})`, 20, yPosition);
+      yPosition += 8;
+
+      // Información del usuario
+
+      doc.text(`Correo: ${usuario.correo}`, 20, yPosition);
+      yPosition += 6;
+      doc.text(`Área: ${usuario.area}`, 20, yPosition);
+      yPosition += 6;
+      doc.text(`Rol: ${usuario.rol}`, 20, yPosition);
+      yPosition += 10;
+
+      // Totales
+      doc.text(`Total Horas: ${usuario.totalHoras}`, 20, yPosition);
+      yPosition += 6;
+      doc.text(`Pendientes: ${usuario.pendientes}`, 20, yPosition);
+      yPosition += 6;
+      doc.text(`Aprobadas: ${usuario.aprobadas}`, 20, yPosition);
+      yPosition += 6;
+      doc.text(`Rechazadas: ${usuario.rechazadas}`, 20, yPosition);
+      yPosition += 15;
+
+      // Línea separadora
+      doc.setDrawColor(200, 200, 200);
+      doc.line(20, yPosition, pageWidth - 20, yPosition);
+      yPosition += 10;
+    });
+
+    // Pie de página
+    const totalPaginas = doc.getNumberOfPages();
+    for (let i = 1; i <= totalPaginas; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(150, 150, 150);
+      doc.text(
+        `Página ${i} de ${totalPaginas}`,
+        pageWidth / 2,
+        pageHeight - 10,
+        { align: 'center' }
+      );
+    }
+
+    // Descargar el PDF
+    doc.save(`reporte-horas-extras-usuarios-${fechaGeneracion}.pdf`);
+  }
+
+  // Función auxiliar para agrupar datos por usuario
+  agruparHorasPorUsuario() {
+    const usuariosMap = new Map();
+
+    this.horasextrasFiltradas.forEach((hora) => {
+      const usuarioKey = hora.contrato?.hoja_de_vida?.usuario?.numDocumento;
+
+      if (!usuariosMap.has(usuarioKey)) {
+        usuariosMap.set(usuarioKey, {
+          nombre: `${
+            hora.contrato?.hoja_de_vida?.usuario?.primerNombre || ''
+          } ${
+            hora.contrato?.hoja_de_vida?.usuario?.primerApellido || ''
+          }`.trim(),
+          documento:
+            hora.contrato?.hoja_de_vida?.usuario?.numDocumento || 'N/A',
+          correo: hora.contrato?.hoja_de_vida?.usuario?.email || 'N/A',
+          area: hora.contrato?.area?.nombreArea || 'N/A',
+          rol:
+            hora.contrato?.hoja_de_vida?.usuario?.user?.rol?.nombreRol || 'N/A',
+          totalHoras: 0,
+          pendientes: 0,
+          aprobadas: 0,
+          rechazadas: 0,
+          registros: [],
+        });
+      }
+
+      const usuario = usuariosMap.get(usuarioKey);
+      usuario.totalHoras += hora.nHorasExtra || 0;
+
+      switch (hora.estado) {
+        case 0:
+          usuario.pendientes += hora.nHorasExtra || 0;
+          break;
+        case 1:
+          usuario.aprobadas += hora.nHorasExtra || 0;
+          break;
+        case 2:
+          usuario.rechazadas += hora.nHorasExtra || 0;
+          break;
+      }
+
+      usuario.registros.push({
+        fecha: hora.fecha,
+        tipo: hora.tipo_hora_extra?.nombreTipoHoras,
+        horas: hora.nHorasExtra,
+        estado: this.getNombreEstado(hora.estado),
+      });
+    });
+
+    return Array.from(usuariosMap.values());
+  }
+  descargarPDFPorEstado() {
     const doc = new jsPDF();
     const imgLogo = new Image();
     imgLogo.src = 'https://i.postimg.cc/BnHG09W1/logo.png';
@@ -406,56 +569,73 @@ export class HorasextraAdminComponent {
       doc.rect(0, 0, 210, 30, 'F');
       doc.addImage(imgLogo, 'PNG', 10, 5, 20, 20);
       doc.setFontSize(16);
-      doc.setTextColor(200);
-      doc.text('ManageHR - Reporte de horasextras por Usuario', 35, 15);
+      doc.setTextColor(255);
+      doc.text('ManageHR - Reporte de Horas Extras por Estado', 35, 15);
 
       let startY = 35;
 
-      // Insertar gráfica si existe el canvas
-      const canvas: any = document.getElementById('graficoUsuario');
+      // Gráfico de barras por estado
+      const canvas: any = document.getElementById('graficoEstado');
       if (canvas) {
-        const graficoImg = canvas.toDataURL('image/png', 1.0);
-        doc.addImage(graficoImg, 'PNG', 10, startY, 180, 80);
+        const imgData = canvas.toDataURL('image/png');
+        doc.addImage(imgData, 'PNG', 10, startY, 190, 80);
         startY += 90;
       }
 
-      // Agrupar horasextras por usuario (nombre completo)
-      const agrupadoPorUsuario = this.horasextrasFiltradas.reduce(
-        (acc: any, inc: any) => {
-          const u = inc.contrato?.hoja_de_vida?.usuario || {};
-          const nombreCompleto = `${u.primerNombre || ''} ${
-            u.segundoNombre || ''
-          } ${u.primerApellido || ''} ${u.segundoApellido || ''}`.trim();
-          if (!acc[nombreCompleto]) acc[nombreCompleto] = [];
-          acc[nombreCompleto].push(inc);
-          return acc;
-        },
-        {}
-      );
+      // Mapeo de estados mejorado
+      const estadosMap: any = {
+        0: 'Pendiente',
+        1: 'Aprobado',
+        2: 'Rechazado',
+        null: 'Pendiente',
+        undefined: 'Pendiente',
+      };
 
-      // Para cada usuario generar tabla con horasextras
-      Object.entries(agrupadoPorUsuario).forEach(([usuario, lista]: any) => {
+      // Agrupar por estado
+      const agrupado = this.horasextras.reduce((acc: any, inc: any) => {
+        const estadoKey = inc.estado === null ? 'null' : inc.estado;
+        const estado = estadosMap[estadoKey] || 'Pendiente';
+        if (!acc[estado]) acc[estado] = [];
+        acc[estado].push(inc);
+        return acc;
+      }, {});
+
+      // Recorrer por estado
+      Object.entries(agrupado).forEach(([estado, registros]: any) => {
         doc.setFontSize(12);
         doc.setTextColor(0);
-        doc.text(`Usuario: ${usuario}`, 10, startY);
+        doc.text(`Estado: ${estado}`, 10, startY);
 
-        const body = lista.map((inc: any) => {
-          const area = inc.contrato?.area?.nombreArea || 'N/A';
-          const tipo = inc.tipo_hora_extra?.nombreTipoHoras || 'N/A';
+        const body = registros.map((h: any) => {
+          const u = h.contrato?.hoja_de_vida?.usuario || {};
+          const nombre = `${u.primerNombre || ''} ${
+            u.primerApellido || ''
+          }`.trim();
           return [
-            inc.contrato?.hoja_de_vida?.usuario?.numDocumento || 'N/A',
-            area,
-            tipo,
-            inc.nHorasExtra,
+            h.idHorasExtra,
+            nombre,
+            u.numDocumento || 'N/A',
+            h.fecha,
+            h.tipo_hora_extra?.nombreTipoHoras || 'N/A',
+            h.nHorasExtra,
           ];
         });
 
         autoTable(doc, {
-          head: [['Documento', 'Área', 'Tipo de Hora', 'Cantidad de Horas']],
+          head: [
+            [
+              'ID',
+              'Nombre Usuario',
+              'Documento',
+              'Fecha',
+              'Tipo de Hora',
+              'Cantidad',
+            ],
+          ],
           body,
           startY: startY + 5,
           theme: 'grid',
-          styles: { halign: 'left', fontSize: 10 },
+          styles: { fontSize: 10, halign: 'left' },
           headStyles: { fillColor: [4, 26, 43], textColor: 255 },
           didParseCell: (data) => {
             if (data.section === 'body' && data.row.index % 2 === 0) {
@@ -467,7 +647,7 @@ export class HorasextraAdminComponent {
         startY = (doc as any).lastAutoTable.finalY + 10;
       });
 
-      doc.save('horasextras_por_usuario.pdf');
+      doc.save('horasextras_por_estado.pdf');
     };
   }
 
@@ -588,89 +768,6 @@ export class HorasextraAdminComponent {
     }
     return color;
   }
-  descargarPDFPorEstado() {
-  const doc = new jsPDF();
-  const imgLogo = new Image();
-  imgLogo.src = 'https://i.postimg.cc/BnHG09W1/logo.png';
-
-  imgLogo.onload = () => {
-    // Encabezado
-    doc.setFillColor(4, 26, 43);
-    doc.rect(0, 0, 210, 30, 'F');
-    doc.addImage(imgLogo, 'PNG', 10, 5, 20, 20);
-    doc.setFontSize(16);
-    doc.setTextColor(255);
-    doc.text('ManageHR - Reporte de Horas Extras por Estado', 35, 15);
-
-    let startY = 35;
-
-    // Gráfico de barras por estado
-    const canvas: any = document.getElementById('graficoEstado');
-    if (canvas) {
-      const imgData = canvas.toDataURL('image/png');
-      doc.addImage(imgData, 'PNG', 10, startY, 190, 80);
-      startY += 90;
-    }
-
-    // Mapeo de estados
-    const estadosMap: any = {
-      0: 'Pendiente',
-      1: 'Aprobado',
-      2: 'Rechazado',
-    };
-
-    // Agrupar por estado
-    const agrupado = this.horasextras.reduce((acc: any, inc: any) => {
-      const estado = estadosMap[inc.estado] || 'Desconocido';
-      if (!acc[estado]) acc[estado] = [];
-      acc[estado].push(inc);
-      return acc;
-    }, {});
-
-    // Recorrer por estado
-    Object.entries(agrupado).forEach(([estado, registros]: any) => {
-      doc.setFontSize(12);
-      doc.setTextColor(0);
-      doc.text(`Estado: ${estado}`, 10, startY);
-
-      const body = registros.map((h: any) => {
-        const u = h.contrato?.hoja_de_vida?.usuario || {};
-        const nombre = `${u.primerNombre || ''} ${u.primerApellido || ''}`.trim();
-        return [
-          h.idHorasExtra,
-          nombre,
-          u.numDocumento || 'N/A',
-          h.fecha,
-          h.tipo_hora_extra?.nombreTipoHoras || 'N/A',
-          h.nHorasExtra,
-          
-        ];
-      });
-
-      autoTable(doc, {
-        head: [[
-          'ID', 'Nombre Usuario', 'Documento', 'Fecha',
-          'Tipo de Hora', 'Cantidad'
-        ]],
-        body,
-        startY: startY + 5,
-        theme: 'grid',
-        styles: { fontSize: 10, halign: 'left' },
-        headStyles: { fillColor: [4, 26, 43], textColor: 255 },
-        didParseCell: (data) => {
-          if (data.section === 'body' && data.row.index % 2 === 0) {
-            data.cell.styles.fillColor = [240, 240, 240];
-          }
-        },
-      });
-
-      startY = (doc as any).lastAutoTable.finalY + 10;
-    });
-
-    doc.save('horasextras_por_estado.pdf');
-  };
-}
-
 
   descargarPDFPorArea() {
     const doc = new jsPDF();
@@ -990,17 +1087,18 @@ export class HorasextraAdminComponent {
       }
     }, 100);
   }
+  // Dentro de tu clase del componente
 
-  getNombreEstado(estado: number): string {
-    switch (estado) {
-      case 0:
-        return 'Pendiente';
-      case 1:
-        return 'Aprobado';
-      case 2:
-        return 'Rechazado';
-      default:
-        return 'Desconocido';
+  getNombreEstado(estado: any): string {
+    const valor = Number(estado);
+    if (isNaN(valor) || valor === 0) {
+      return 'Pendiente';
+    } else if (valor === 1) {
+      return 'Aprobado';
+    } else if (valor === 2) {
+      return 'Rechazado';
+    } else {
+      return 'Desconocido';
     }
   }
   abrirModalCambiarEstado(id: number, estadoActual: number): void {

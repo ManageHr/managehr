@@ -70,7 +70,7 @@ export class AreaComponent {
   confirmDelete(idArea: number): void {
     this.areaService.obtenerAreaId(idArea).subscribe({
       next: (res) => {
-        const areaData = res.area; // ← correcto según tu backend
+        const areaData = res.area;
         if (!areaData) {
           Swal.fire('Error', 'No se encontró información del área.', 'error');
           return;
@@ -93,7 +93,7 @@ export class AreaComponent {
                   icon: 'success',
                   confirmButtonText: 'Aceptar',
                 }).then(() => {
-                  location.reload(); // o this.cargarAreas();
+                  location.reload();
                 });
               },
               error: (err) => {
@@ -126,7 +126,7 @@ export class AreaComponent {
     }
   }
   agregarArea(): void {
-    // Verifica primero si el usuario existe
+
     this.areaService.obtenerNombre(this.areaSeleccionada.nombreArea).subscribe({
       next: (res) => {
         const jefe = this.jefesPersonal.find(
@@ -148,7 +148,7 @@ export class AreaComponent {
 
         formData.append('idJefe', this.areaSeleccionada.idJefe.toString());
         formData.append('estado', this.areaSeleccionada.estado.toString());
-        
+
         this.areaService.agregarArea(formData).subscribe({
           next: () => {
             Swal.fire({
@@ -157,7 +157,7 @@ export class AreaComponent {
               icon: 'success',
               confirmButtonText: 'Aceptar',
             }).then(() => {
-              location.reload(); // o this.cargarareas() si no quieres recargar
+              location.reload();
             });
           },
           error: (err) => {
@@ -191,12 +191,12 @@ export class AreaComponent {
   actualizarArea(): void {
     const jefe = this.jefesPersonal.find(
       (j) => j.id == this.areaSeleccionada.idJefe
-    ); // usa == por si llega como string
+    );
     this.areaSeleccionada.jefePersonal = jefe?.perfil
       ? jefe.perfil.primerNombre + ' ' + jefe.perfil.primerApellido
       : '';
 
-    // Valida que jefePersonal no quede vacío
+
     if (!this.areaSeleccionada.jefePersonal) {
       Swal.fire(
         'Error',
@@ -283,7 +283,7 @@ export class AreaComponent {
       paginas.push(1);
 
       if (actual > 5) {
-        paginas.push(-1); // "..."
+        paginas.push(-1);
       }
 
       const start = Math.max(2, actual - 2);

@@ -10,13 +10,12 @@ export const routes: Routes = [
   {
     path: 'directorio',
     component: DirectorioComponent,
-    canActivate: [AuthGuard] // ✅ protegida
+    canActivate: [AuthGuard]
   },
   {
     path: 'vacantes',
     loadComponent: () => import('./pages/vacantes/vacantes.component').then(m => m.VacantesComponent),
-    canActivate: [AuthGuard] // ✅ protegida también
+    canActivate: [AuthGuard]
   },
-  // puedes seguir agregando más rutas protegidas
 ];
 

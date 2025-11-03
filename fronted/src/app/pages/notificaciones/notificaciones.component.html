@@ -3,68 +3,245 @@
 <div class="layout">
   <div class="contenido-principal">
     <div class="container mt-4">
-      <div class="header-horas d-flex justify-content-between align-items-center">
-        <h3 class="text-hover">Notificaciones</h3>
-        <button class="btn btn-light btn-sm agregar-btn" (click)="generarReporte()">
-          Generar Reporte
-        </button>
+
+      <!-- Verificación de permisos -->
+      <div *ngIf="!puedeVerNotificaciones()" class="alert alert-warning">
+        No tienes permisos para ver notificaciones.
       </div>
 
-      <div class="notification-list">
-        <div class="notification" *ngFor="let notification of notifications">
-          <div class="notification-content">
-            <div class="notification-info">
-              <p class="user-name fw-bold">{{ notification.name }}</p>
-              <p class="notification-text">{{ notification.description }}</p>
-            </div>
+      <!-- Contenido principal para empleado -->
+      <div *ngIf="puedeVerNotificaciones()">
 
-            <div class="notification-date">
-              {{ notification.date }}
-            </div>
+        <!-- Header -->
+        <div style="color: white" class="header-horas d-flex justify-content-between align-items-center mb-4">
+          <h1 class="text-hover">Mis Notificaciones</h1>
+          <button class="btn btn-outline-light" (click)="abrirHistorialAceptadas()">
+            <i class="fas fa-history me-2"></i>Ver Historial
+          </button>
+        </div>
 
-            <div class="notification-actions">
-              <button class="action-btn view" (click)="openDetailsModal(notification)">
-                <i class="fa fa-eye"></i>
-              </button>
-              <button class="action-btn delete" (click)="showDeleteAlert(notification)">
-                <i class="fa fa-trash"></i>
-              </button>
+        <!-- Indicador de contexto -->
+        <div class="alert alert-info">
+          <i class="fas fa-user me-2"></i>Viendo tus notificaciones personales
+        </div>
+
+        <!-- Filtro -->
+        <div class="mb-3">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Buscar por detalle o tipo..."
+            style="background-color: #1d2233; color: white; border: 1px solid #7a86a1;"
+            [(ngModel)]="filtroUsuarios"
+            (input)="paginaPendientes = 1"
+          />
+        </div>
+
+        <!-- Tabla de notificaciones PENDIENTES -->
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm table-dark">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Detalle</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let n of notificacionesPendientesFiltradas | paginate: { id: 'tablaPendientes', itemsPerPage: itemsPerPage, currentPage: paginaPendientes }">
+                <td>{{ n.fecha | date:'shortDate' }}</td>
+                <td>
+                  <span class="badge bg-primary">{{ n.tipo }}</span>
+                </td>
+                <td>{{ n.detalle }}</td>
+                <td>
+                  <span [ngClass]="getEstadoClase(n.estado)">
+                    {{ getEstadoTexto(n.estado) }}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn btn-info btn-sm" (click)="verNotificacion(n)" title="Ver detalles">
+                    <i class="fas fa-eye"></i> Ver
+                  </button>
+                </td>
+              </tr>
+
+              <!-- Mensaje cuando no hay notificaciones -->
+              <tr *ngIf="notificacionesPendientesFiltradas.length === 0">
+                <td colspan="5" class="text-center py-4">
+                  <div class="alert alert-info mb-0">
+                    {{ getMensajeSinNotificaciones() }}
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Paginación Mejorada -->
+        <div class="pagination-container" *ngIf="notificacionesPendientesFiltradas.length > 0">
+          <div class="pagination-info">
+            Mostrando {{ getDesdeItem() }} - {{ getHastaItem() }} de {{ notificacionesPendientesFiltradas.length }} notificaciones
+          </div>
+          <pagination-controls
+            id="tablaPendientes"
+            (pageChange)="paginaPendientes = $event"
+            [autoHide]="true"
+            [maxSize]="5"
+            [directionLinks]="true"
+            previousLabel="‹ Anterior"
+            nextLabel="Siguiente ›"
+            [screenReaderPaginationLabel]="'Paginación'"
+            [screenReaderPageLabel]="'página'"
+            [screenReaderCurrentLabel]="'Página actual'"
+            class="pagination-custom"
+          ></pagination-controls>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Ver Detalles - 85% del ancho -->
+<div *ngIf="mostrarModalDetalle" class="modal-backdrop show"></div>
+<div *ngIf="mostrarModalDetalle" class="modal show d-block" tabindex="-1">
+  <div class="modal-dialog custom-modal-85 modal-dialog-scrollable">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header">
+        <h5 class="modal-title">Detalle de Notificación</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="cerrarModalDetalle()" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body" *ngIf="notificacionSeleccionada">
+        <div class="row">
+          <div class="col-md-6">
+            <p><strong>Tipo:</strong> {{ notificacionSeleccionada.tipo }}</p>
+            <p><strong>Acción:</strong> {{ notificacionSeleccionada.accion }}</p>
+            <p><strong>Fecha:</strong> {{ notificacionSeleccionada.fecha | date:'medium' }}</p>
+          </div>
+          <div class="col-md-6">
+            <p><strong>Estado:</strong> <span [ngClass]="getEstadoClase(notificacionSeleccionada.estado)">{{ getEstadoTexto(notificacionSeleccionada.estado) }}</span></p>
+            <p><strong>Referencia ID:</strong> {{ notificacionSeleccionada.referenciaId }}</p>
+            <p><strong>Contrato ID:</strong> {{ notificacionSeleccionada.contratoId }}</p>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col-12">
+            <p><strong>Detalle:</strong></p>
+            <div class="border rounded p-3 bg-dark">
+              {{ notificacionSeleccionada.detalle }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Información adicional para incapacidades -->
+        <div class="row mt-3" *ngIf="notificacionSeleccionada.tipo === 'Permiso'">
+          <div class="col-12">
+            <p><strong>Información Adicional:</strong></p>
+            <div class="border rounded p-3 bg-secondary">
+              <div class="row">
+                <div class="col-md-6">
+                  <p><strong>Fecha de Inicio:</strong> {{ notificacionSeleccionada.fecha }}</p>
+                  <p><strong>Fecha de Fin:</strong> {{ calcularFechaFin(notificacionSeleccionada.fecha) }}</p>
+                </div>
+                <div class="col-md-6">
+                  <p><strong>Médico:</strong> Dr. Juan Pérez</p>
+                  <p><strong>Diagnóstico:</strong> Resfriado común</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cerrarModalDetalle()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-      <div class="modal fade" tabindex="-1" role="dialog"
-           [ngClass]="{'show': modalVisible}"
-           [ngStyle]="modalVisible ? {'display': 'block'} : {'display': 'none'}">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content custom-modal">
-            <div class="modal-header border-0">
-              <h5 class="modal-title text-primary">Detalles de la Notificación</h5>
-              <button type="button" class="btn-close btn-close-white" (click)="closeDetailsModal()"></button>
-            </div>
-            <div class="modal-body text-white">
-              <div class="mb-3">
-                <p class="fw-bold mb-0">{{ selectedNotification?.name }}</p>
-                <small>{{ selectedNotification?.date }}</small>
-              </div>
-              <p>{{ selectedNotification?.description }}</p>
-
-              <div *ngIf="selectedNotification?.extraDetails">
-                <p class="fw-bold mt-3">Detalles adicionales:</p>
-                <ul class="mb-0">
-                  <li *ngFor="let detail of selectedNotification.extraDetails">
-                    {{ detail }}
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <div class="modal-footer border-0">
-              <button type="button" class="btn btn-success" (click)="aceptarNotificacion(selectedNotification)">Aceptar</button>
-              <button type="button" class="btn btn-danger" (click)="rechazarNotificacion(selectedNotification)">Rechazar</button>
-            </div>
-          </div>
+<!-- Modal Historial Aceptadas - Nativo -->
+<div *ngIf="mostrarModalAceptadas" class="modal-backdrop show"></div>
+<div *ngIf="mostrarModalAceptadas" class="modal show d-block" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header">
+        <h5 class="modal-title">Historial de Notificaciones</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="cerrarModalAceptadas()" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-success">
+          <i class="fas fa-check-circle me-2"></i>
+          Mostrando notificaciones aceptadas
         </div>
+
+        <!-- Filtro para aceptadas -->
+        <div class="mb-3">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Buscar en historial..."
+            style="background-color: #1d2233; color: white; border: 1px solid #7a86a1;"
+            [(ngModel)]="filtroUsuarios"
+            (input)="paginaAceptadas = 1"
+          />
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm table-dark">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Detalle</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let n of notificacionesAceptadasFiltradas | paginate: { id: 'tablaAceptadas', itemsPerPage: itemsPorPaginaAceptadas, currentPage: paginaAceptadas }">
+                <td>{{ n.fecha | date:'shortDate' }}</td>
+                <td>
+                  <span class="badge bg-primary">{{ n.tipo }}</span>
+                </td>
+                <td>{{ n.detalle }}</td>
+                <td>
+                  <span [ngClass]="getEstadoClase(n.estado)">
+                    {{ getEstadoTexto(n.estado) }}
+                  </span>
+                </td>
+              </tr>
+              <tr *ngIf="notificacionesAceptadasFiltradas.length === 0">
+                <td colspan="4" class="text-center py-4">
+                  <div class="alert alert-info mb-0">
+                    No hay notificaciones en el historial
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Paginación Mejorada para Historial -->
+        <div class="pagination-container" *ngIf="notificacionesAceptadasFiltradas.length > 0">
+          <div class="pagination-info">
+            Mostrando {{ getDesdeItemAceptadas() }} - {{ getHastaItemAceptadas() }} de {{ notificacionesAceptadasFiltradas.length }} notificaciones
+          </div>
+          <pagination-controls
+            id="tablaAceptadas"
+            [autoHide]="false"
+            (pageChange)="paginaAceptadas = $event"
+            [maxSize]="5"
+            [directionLinks]="true"
+            previousLabel="‹ Anterior"
+            nextLabel="Siguiente ›"
+            class="pagination-custom"
+          ></pagination-controls>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cerrarModalAceptadas()">Cerrar</button>
       </div>
     </div>
   </div>

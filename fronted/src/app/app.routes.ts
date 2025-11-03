@@ -19,7 +19,7 @@ import { ContratosComponent } from './pages/directorio/contratos/contratos.compo
 import { CategoriaVacantesComponent } from './pages/vacantes copy/categoria-vacantes/categoria-vacantes.component';
 import { PostulacionesComponent } from './pages/vacantes copy/postulaciones/postulaciones.component';
 import { GestionComponent } from './pages/vacantes copy/gestion/gestion.component';
-import { MisPostulacionesComponent } from './pages/mis-postulaciones/mis-postulaciones.component'; 
+import { MisPostulacionesComponent } from './pages/mis-postulaciones/mis-postulaciones.component';
 import { FormIncapacidadesComponent } from './pages/form-incapacidades/form-incapacidades.component';
 import { FormHorasComponent } from './pages/form-horas/form-horas.component';
 import { JefePersonalComponent } from './pages/jefe-personal/jefe-personal.component';
@@ -27,9 +27,10 @@ import { HojaDeVidaComponent } from './pages/hoja-de-vida/hoja-de-vida.component
 import { VacacionesJefeComponent } from './pages/vacaciones-jefe/vacaciones-jefe.component';
 import { AuthGuard } from './guards/auth.guard';
 import { IncapacidadesAdminComponent } from './pages/incapacidades-admin/incapacidades-admin.component';
-import { HorasextraAdminComponent } from './pages/horasextra-admin/horasextra-admin.component';
+
 import { IncapacidadesJefeComponent } from './pages/incapacidades-jefe/incapacidades-jefe.component';
 import { HorasExtraJefeComponent } from './pages/horasextra-jefe/horasextra-jefe.component';
+import { HorasextraAdminComponent } from './pages/horasextra-admin/horasextra-admin.component';
 
 
 
@@ -39,7 +40,7 @@ export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   // Ruta para registro
   { path: 'register', component: RegisterComponent },
-  
+
   // Rutas protegidas por el AuthGuard
   {
     path: '',
@@ -72,6 +73,7 @@ export const routes: Routes = [
       { path: 'horasextra-admin', component: HorasextraAdminComponent, canActivate: [AuthGuard] },
       { path: 'incapacidades-jefe', component: IncapacidadesJefeComponent, canActivate: [AuthGuard] },
       { path: 'horasextra-jefe', component: HorasExtraJefeComponent, canActivate: [AuthGuard] },
+
     ]
   },
 

@@ -16,6 +16,8 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 import { saveAs } from 'file-saver';
+import { catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 import {
   Chart,
   BarController,
@@ -109,6 +111,12 @@ export class UsuariosComponent implements OnInit {
 
   usuario: any = {};
   nuevoUsuario: any = {};
+
+  // Agregar estas propiedades a la clase
+  archivoActual: string = '';
+  cargandoArchivo: boolean = false;
+  errorArchivo: string = '';
+
   constructor(
     private router: Router,
     private usuariosService: UsuariosService,
@@ -122,12 +130,13 @@ export class UsuariosComponent implements OnInit {
     const userFromLocal = localStorage.getItem('usuario');
 
     if (!token || !userFromLocal) {
+
       this.router.navigate(['/login']);
       return;
     }
 
     this.usuario = JSON.parse(userFromLocal);
-
+    console.log(this.usuario);
     // Iniciar carga en paralelo
     this.cargarUsuariosInicio();
     this.cargarForaneas();
@@ -274,21 +283,66 @@ export class UsuariosComponent implements OnInit {
   cambiarRol() {}
   cargarForaneas() {
     forkJoin({
-      nacionalidades: this.usuariosService.obtenerNacionalidades(),
-      generos: this.usuariosService.obtenerGeneros(),
-      tiposDocumento: this.usuariosService.obtenerTiposDocumento(),
-      estadosCiviles: this.usuariosService.obtenerEstadosCiviles(),
-      eps: this.usuariosService.obtenerEps(),
-      pensiones: this.usuariosService.obtenerPensiones(),
-      roles: this.usuariosService.obtenerRoles(),
-    }).subscribe((res) => {
-      this.nacionalidades = res.nacionalidades;
-      this.generos = res.generos;
-      this.tiposDocumento = res.tiposDocumento;
-      this.estadosCiviles = res.estadosCiviles;
-      this.eps = res.eps;
-      this.pensiones = res.pensiones;
-      this.roles = res.roles;
+      nacionalidades: this.usuariosService.obtenerNacionalidades().pipe(
+        catchError((error) => {
+          console.error('Error cargando nacionalidades:', error);
+          return of([]);
+        })
+      ),
+      generos: this.usuariosService.obtenerGeneros().pipe(
+        catchError((error) => {
+          console.error('Error cargando géneros:', error);
+          return of([]);
+        })
+      ),
+      tiposDocumento: this.usuariosService.obtenerTiposDocumento().pipe(
+        catchError((error) => {
+          console.error('Error cargando tipos documento:', error);
+          return of([]);
+        })
+      ),
+      estadosCiviles: this.usuariosService.obtenerEstadosCiviles().pipe(
+        catchError((error) => {
+          console.error('Error cargando estados civiles:', error);
+          return of([]);
+        })
+      ),
+      eps: this.usuariosService.obtenerEps().pipe(
+        catchError((error) => {
+          console.error('Error cargando EPS:', error);
+          return of([]);
+        })
+      ),
+      pensiones: this.usuariosService.obtenerPensiones().pipe(
+        catchError((error) => {
+          console.error('Error cargando pensiones:', error);
+          return of([]);
+        })
+      ),
+      roles: this.usuariosService.obtenerRoles().pipe(
+        catchError((error) => {
+          console.error('Error cargando roles:', error);
+          return of([]);
+        })
+      ),
+    }).subscribe({
+      next: (res) => {
+        this.nacionalidades = res.nacionalidades;
+        this.generos = res.generos;
+        this.tiposDocumento = res.tiposDocumento;
+        this.estadosCiviles = res.estadosCiviles;
+        this.eps = res.eps;
+        this.pensiones = res.pensiones;
+        this.roles = res.roles;
+      },
+      error: (err) => {
+        console.error('Error general cargando datos foráneos:', err);
+        Swal.fire(
+          'Error',
+          'No se pudieron cargar algunos datos del sistema',
+          'warning'
+        );
+      },
     });
   }
   mostrarHojaVida(usuario: Usuarios): void {
@@ -770,9 +824,7 @@ export class UsuariosComponent implements OnInit {
       });
   }
 
-  urlCertificado(nombreArchivo: string): string {
-    return `http://localhost:8000/storage/experiencias/${nombreArchivo}`;
-  }
+
 
   abrirModalExperiencia(): void {
     const modal = document.getElementById('modalExperiencia');
@@ -892,8 +944,24 @@ export class UsuariosComponent implements OnInit {
       console.error('No se encontró el modal de Estudios');
     }
   }
-  urlEstudio(nombreArchivo: string): string {
-    return `http://localhost:8000/${nombreArchivo}`;
+  // Reemplazar el método urlEstudio existente
+  urlEstudio(archivo: string): string {
+    if (!archivo) return '';
+
+    const baseUrl = 'https://www.evensoft21.com/managehr/api/public';
+
+    // Si ya es una URL completa, devolver tal cual
+    if (archivo.startsWith('http')) {
+      return archivo;
+    }
+
+    // Si empieza con storage/, usar directamente
+    if (archivo.startsWith('storage/')) {
+      return `${baseUrl}/${archivo}`;
+    }
+
+    // Si es una ruta relativa, agregar storage/
+    return `${baseUrl}/storage/${archivo.replace(/^\/?/, '')}`;
   }
   chart: any;
   generarGrafico(): void {
@@ -1118,5 +1186,255 @@ export class UsuariosComponent implements OnInit {
     }
 
     this.generarGrafico();
+  }
+  // Método para abrir cualquier archivo en el modal
+  // Método para abrir cualquier archivo en el modal
+  abrirArchivoModal(archivo: string): void {
+    if (!archivo) {
+      this.mostrarError('No se especificó ningún archivo');
+      return;
+    }
+
+    // Cerrar todos los modales abiertos primero
+    this.cerrarTodosLosModales();
+
+    this.cargandoArchivo = true;
+    this.errorArchivo = '';
+    this.archivoActual = this.urlEstudio(archivo);
+
+    console.log('🔗 Abriendo archivo:', this.archivoActual);
+
+    // Pequeño delay para asegurar que los modales anteriores se cierren
+    setTimeout(() => {
+      const modalEl = document.getElementById('modalVerArchivo');
+      if (modalEl) {
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+
+        // Limpiar estados cuando se cierre el modal
+        modalEl.addEventListener('hidden.bs.modal', () => {
+          this.limpiarEstadoArchivo();
+        });
+      }
+    }, 300); // Aumentamos el delay para dar tiempo a cerrar modales anteriores
+  }
+
+  // Método para cerrar todos los modales abiertos
+  cerrarTodosLosModales(): void {
+    // Cerrar todos los modales de Bootstrap
+    const modales = document.querySelectorAll('.modal');
+    modales.forEach((modal: any) => {
+      const modalInstance = bootstrap.Modal.getInstance(modal);
+      if (modalInstance) {
+        modalInstance.hide();
+      }
+    });
+
+    // Remover backdrop si existe
+    const backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop) {
+      backdrop.remove();
+    }
+
+    // Restaurar el body
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+  }
+
+  // Método cuando el archivo se carga correctamente
+  onArchivoCargado(): void {
+    this.cargandoArchivo = false;
+    this.errorArchivo = '';
+    console.log('✅ Archivo cargado correctamente');
+  }
+
+  // Método cuando hay error cargando el archivo
+  onErrorArchivo(): void {
+    this.cargandoArchivo = false;
+    this.errorArchivo =
+      'No se pudo cargar el archivo. Puede que no exista o no sea accesible.';
+    console.error('❌ Error cargando archivo:', this.archivoActual);
+  }
+
+  // Descargar archivo
+  descargarArchivo(): void {
+    if (!this.archivoActual) return;
+
+    const link = document.createElement('a');
+    link.href = this.archivoActual;
+    link.target = '_blank';
+    link.download = this.obtenerNombreArchivo(this.archivoActual);
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    this.mostrarExito('Descarga iniciada');
+  }
+
+  // Helper: Obtener extensión del archivo
+  obtenerExtensionArchivo(url: string): string {
+    return url.split('.').pop()?.toLowerCase() || 'desconocido';
+  }
+
+  // Helper: Obtener nombre del archivo
+  obtenerNombreArchivo(url: string): string {
+    return url.split('/').pop() || 'archivo';
+  }
+
+  // Verificar si es PDF
+  esPDF(url: string): boolean {
+    return this.obtenerExtensionArchivo(url) === 'pdf';
+  }
+
+  // Verificar si es imagen
+  esImagen(url: string): boolean {
+    const extensiones = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
+    return extensiones.includes(this.obtenerExtensionArchivo(url));
+  }
+
+  // Limpiar estado
+  private limpiarEstadoArchivo(): void {
+    this.archivoActual = '';
+    this.cargandoArchivo = false;
+    this.errorArchivo = '';
+  }
+
+  private mostrarError(mensaje: string): void {
+    console.error('Error:', mensaje);
+    // Puedes usar SweetAlert2 si prefieres
+    alert(mensaje);
+  }
+
+  private mostrarExito(mensaje: string): void {
+    console.log('Éxito:', mensaje);
+  }
+  // Método para descarga directa sin abrir el modal
+  descargarArchivoDirecto(archivo: string): void {
+    const url = this.urlEstudio(archivo);
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.download = this.obtenerNombreArchivo(archivo);
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    this.mostrarExito('Descarga iniciada');
+  }
+
+  // Cerrar modal específico
+  cerrarModalPorId(modalId: string): void {
+    const modalElement = document.getElementById(modalId);
+    if (modalElement) {
+      const modalInstance = bootstrap.Modal.getInstance(modalElement);
+      if (modalInstance) {
+        modalInstance.hide();
+      } else {
+        // Si no hay instancia, crear una temporal para cerrarla
+        const tempModal = new bootstrap.Modal(modalElement);
+        tempModal.hide();
+      }
+    }
+  }
+  // Método simple para abrir en nueva pestaña
+  abrirEnNuevaPestaña(): void {
+    if (!this.archivoActual) return;
+    window.open(this.archivoActual, '_blank');
+  }
+  // Método mejorado para abrir archivos desde modales
+  abrirArchivoDesdeModal(archivo: string, modalIdActual?: string): void {
+    if (!archivo) {
+      Swal.fire('Error', 'No se especificó ningún archivo', 'error');
+      return;
+    }
+
+    console.log('📁 Archivo a abrir:', archivo);
+
+    // 1. Cerrar modal actual de forma correcta
+    if (modalIdActual) {
+      this.cerrarModalCorrectamente(modalIdActual);
+    }
+
+    // 2. Esperar a que se cierre completamente el modal anterior
+    setTimeout(() => {
+      this.prepararYMostrarArchivo(archivo);
+    }, 500);
+  }
+
+  // Cerrar modal de forma correcta
+  cerrarModalCorrectamente(modalId: string): void {
+    const modalElement = document.getElementById(modalId);
+    if (modalElement) {
+      // Remover atributos problemáticos
+      modalElement.removeAttribute('aria-hidden');
+      modalElement.style.display = 'none';
+
+      // Cerrar con Bootstrap
+      const modalInstance = bootstrap.Modal.getInstance(modalElement);
+      if (modalInstance) {
+        modalInstance.hide();
+      } else {
+        const tempModal = new bootstrap.Modal(modalElement);
+        tempModal.hide();
+      }
+
+      // Limpiar backdrop
+      this.limpiarBackdrop();
+    }
+  }
+
+  // Limpiar backdrop de Bootstrap
+  limpiarBackdrop(): void {
+    const backdrops = document.querySelectorAll('.modal-backdrop');
+    backdrops.forEach((backdrop) => {
+      backdrop.remove();
+    });
+
+    // Restaurar el body
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+  }
+  // Preparar y mostrar el archivo de forma correcta
+  prepararYMostrarArchivo(archivo: string): void {
+    this.cargandoArchivo = true;
+    this.errorArchivo = '';
+    this.archivoActual = this.urlEstudio(archivo);
+
+    console.log('🔗 URL del archivo generada:', this.archivoActual);
+
+    // Pequeño delay para asegurar que todo esté listo
+    setTimeout(() => {
+      const modalEl = document.getElementById('modalVerArchivo');
+      if (modalEl) {
+        // Asegurarse de que el modal esté limpio
+        modalEl.removeAttribute('aria-hidden');
+        modalEl.style.display = 'block';
+
+        const modal = new bootstrap.Modal(modalEl, {
+          backdrop: 'static',
+          keyboard: true,
+        });
+
+        modal.show();
+
+        // Manejar eventos correctamente
+        modalEl.addEventListener('shown.bs.modal', () => {
+          console.log('✅ Modal de archivo mostrado correctamente');
+        });
+
+        modalEl.addEventListener('hidden.bs.modal', () => {
+          this.limpiarEstadoArchivo();
+          this.limpiarBackdrop();
+        });
+      } else {
+        console.error('❌ No se encontró el modal modalVerArchivo');
+        this.cargandoArchivo = false;
+        this.errorArchivo = 'No se pudo abrir el visor de archivos';
+      }
+    }, 300);
   }
 }

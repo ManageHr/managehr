@@ -89,7 +89,8 @@ export interface Incapacidad {
   providedIn: 'root',
 })
 export class IncapacidadService {
-  private apiUrl = 'https://www.evensoft21.com/managehr/api/public/api/incapacidad'; // Ajusta si usas otra ruta
+  private apiUrl =
+    'https://www.evensoft21.com/managehr/api/public/api/incapacidad'; // Ajusta si usas otra ruta
 
   constructor(private http: HttpClient) {}
 
@@ -119,10 +120,8 @@ export class IncapacidadService {
   buscarPorDocumento(documento: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/buscar/${documento}`);
   }
-  cambiarEstado(id: number,estado: number) {
-   
-    return this.http.put(`${this.apiUrl}/estado/${id}`, {
-      estado,
-    });
+  // CORREGIDO - Cambia patch por put
+  cambiarEstado(id: number, estado: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/estado/${id}`, { estado });
   }
 }

@@ -13,14 +13,14 @@
           *ngIf="[1, 4].includes(usuario?.rol)"
           (click)="abrirModalReporte()"
         >
-          📊 Reporte Usuarios
+          Reporte Usuarios
         </button>
 
         <button
           *ngIf="[1, 4].includes(usuario?.rol)"
           (click)="abrirModalAgregar()"
         >
-          ➕ Agregar Usuario
+          Agregar Usuario
         </button>
       </div>
     </div>
@@ -344,14 +344,14 @@
               *ngIf="[1, 4].includes(usuario?.rol)"
               (click)="abrirModalReporte()"
             >
-              📊 Reporte Usuarios
+              Reporte Usuarios
             </button>
 
             <button
               *ngIf="[1, 4].includes(usuario?.rol)"
               (click)="abrirModalAgregar()"
             >
-              ➕ Agregar Usuario
+              Agregar Usuario
             </button>
           </div>
         </div>
@@ -942,9 +942,7 @@
     <div
       class="modal fade"
       id="hojaDeVidaModal"
-      
       aria-labelledby="hojaDeVidaModalLabel"
-      
     >
       <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
@@ -1042,7 +1040,6 @@
               <p>No se encontró información de la hoja de vida.</p>
             </div>
           </div>
-          
         </div>
       </div>
     </div>
@@ -1096,13 +1093,16 @@
                       {{ exp.estado ? "Activo" : "Inactivo" }}
                     </span>
                   </p>
-                  <div *ngIf="exp.archivo">
+                  <div *ngIf="exp.archivo" class="btn-group" role="group">
                     <a
-                      [href]="'http://localhost:8000/storage/' + exp.archivo"
+                      class="value"
+                      [href]="
+                        'https://www.evensoft21.com/managehr/api/public/storage/' +
+                        exp.archivo
+                      "
                       target="_blank"
-                      class="btn btn-sm btn-outline-primary"
                     >
-                      <i class="fas fa-download"></i> Descargar Certificado
+                      Ver archivo
                     </a>
                   </div>
                 </div>
@@ -1178,14 +1178,15 @@
                       {{ est.estado ? "Activo" : "Inactivo" }}
                     </span>
                   </p>
-                  <div *ngIf="est.archivo">
-                    <a
-                      [href]="urlEstudio(est.archivo)"
-                      target="_blank"
-                      class="btn btn-sm btn-outline-primary"
+                  <!-- En el modal de estudios, busca este botón y reemplázalo: -->
+                  <div *ngIf="est.archivo" class="btn-group" role="group">
+                    <button
+                      (click)="descargarArchivoDirecto(est.archivo)"
+                      class="btn btn-sm btn-outline-secondary"
+                      type="button"
                     >
-                      <i class="fas fa-download"></i> Descargar Certificado
-                    </a>
+                      <i class="fas fa-download me-1"></i> Descargar
+                    </button>
                   </div>
                 </div>
               </div>
@@ -1290,6 +1291,144 @@
             {{ r.nombreRol }}
           </option>
         </select>
+      </div>
+      <!-- Modal para Visualizar Archivo -->
+      <div
+        class="modal fade"
+        id="modalVerArchivo"
+        tabindex="-1"
+        aria-labelledby="modalVerArchivoLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalVerArchivoLabel">
+                <i class="fas fa-file-alt me-2"></i>
+                Visualizar Archivo
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <!-- Controles -->
+              <div
+                class="d-flex justify-content-between align-items-center mb-3"
+              >
+                <div>
+                  <span class="badge bg-secondary" *ngIf="archivoActual">
+                    {{ obtenerExtensionArchivo(archivoActual) | uppercase }}
+                  </span>
+                </div>
+                <div>
+                  <button
+                    class="btn btn-sm btn-outline-secondary me-2"
+                    (click)="descargarArchivo()"
+                  >
+                    <i class="fas fa-download me-1"></i> Descargar
+                  </button>
+                </div>
+              </div>
+
+              <!-- Visor -->
+              <div class="visor-archivo">
+                <!-- Loading -->
+                <div *ngIf="cargandoArchivo" class="text-center py-5">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando archivo...</span>
+                  </div>
+                  <p class="mt-2 text-muted">Cargando archivo...</p>
+                </div>
+
+                <!-- Error -->
+                <div
+                  *ngIf="errorArchivo"
+                  class="alert alert-danger text-center"
+                >
+                  <i class="fas fa-exclamation-triangle me-2"></i>
+                  {{ errorArchivo }}
+                </div>
+
+                <!-- PDF -->
+                <div
+                  *ngIf="
+                    esPDF(archivoActual) && !cargandoArchivo && !errorArchivo
+                  "
+                  class="pdf-container"
+                >
+                  <iframe
+                    [src]="archivoActual"
+                    width="100%"
+                    height="600"
+                    frameborder="0"
+                    (load)="cargandoArchivo = false; errorArchivo = ''"
+                    (error)="
+                      cargandoArchivo = false;
+                      errorArchivo = 'Error al cargar el PDF'
+                    "
+                  >
+                  </iframe>
+                </div>
+
+                <!-- Imágenes -->
+                <div
+                  *ngIf="
+                    esImagen(archivoActual) && !cargandoArchivo && !errorArchivo
+                  "
+                  class="image-container text-center"
+                >
+                  <img
+                    [src]="archivoActual"
+                    [alt]="'Archivo ' + archivoActual"
+                    class="img-fluid rounded"
+                    (load)="cargandoArchivo = false; errorArchivo = ''"
+                    (error)="
+                      cargandoArchivo = false;
+                      errorArchivo = 'Error al cargar la imagen'
+                    "
+                    style="max-height: 70vh"
+                  />
+                </div>
+
+                <!-- Otros archivos -->
+                <div
+                  *ngIf="
+                    !esPDF(archivoActual) &&
+                    !esImagen(archivoActual) &&
+                    !cargandoArchivo &&
+                    !errorArchivo
+                  "
+                  class="text-center py-5"
+                >
+                  <i class="fas fa-file display-1 text-muted"></i>
+                  <h5 class="mt-3">Vista previa no disponible</h5>
+                  <p class="text-muted">
+                    Este tipo de archivo no se puede visualizar directamente.
+                  </p>
+                  <button class="btn btn-primary" (click)="descargarArchivo()">
+                    <i class="fas fa-download me-2"></i> Descargar Archivo
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <small class="text-muted me-auto" *ngIf="archivoActual">
+                {{ archivoActual }}
+              </small>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </ng-template>
   </div>

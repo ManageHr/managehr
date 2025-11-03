@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
   standalone: true,
   templateUrl: './hoja-de-vida.component.html',
   styleUrls: ['./hoja-de-vida.component.scss'],
-  imports: [CommonModule, FormsModule, MenuComponent]
+  imports: [CommonModule, FormsModule, MenuComponent],
 })
 export class HojaDeVidaComponent implements OnInit {
   hojaDeVida: any = {};
@@ -32,7 +32,7 @@ export class HojaDeVidaComponent implements OnInit {
   idHojaDeVida: number | null = null;
 
   editandoEstudio: boolean = false;
-  idRelacionEstudio: number | null = null; 
+  idRelacionEstudio: number | null = null;
 
   constructor(
     private hojaDeVidaService: HojaDeVidaService,
@@ -46,73 +46,79 @@ export class HojaDeVidaComponent implements OnInit {
       this.usuario = JSON.parse(usuarioString);
       this.cargarHojaDeVida();
     } else {
-      Swal.fire('Usuario no encontrado', 'Debes iniciar sesión nuevamente', 'warning');
+      Swal.fire(
+        'Usuario no encontrado',
+        'Debes iniciar sesión nuevamente',
+        'warning'
+      );
     }
   }
 
   cargarHojaDeVida() {
-    this.hojaDeVidaService.getHojaDeVidaPorDocumento(this.usuario?.perfil?.numDocumento).subscribe({
-      next: (res) => {
-        this.hojaDeVida = res.hojaDeVida;
-        this.idHojaDeVida = res.hojaDeVida?.idHojaDeVida;
-        this.cargarEstudios();
-        this.cargarExperiencias();
-      },
-      error: (err) => {
-        console.error('❌ Error al cargar la hoja de vida', err);
-        Swal.fire('Error', 'No se pudo cargar la hoja de vida', 'error');
-      }
-    });
+    this.hojaDeVidaService
+      .getHojaDeVidaPorDocumento(this.usuario?.perfil?.numDocumento)
+      .subscribe({
+        next: (res) => {
+          this.hojaDeVida = res.hojaDeVida;
+          this.idHojaDeVida = res.hojaDeVida?.idHojaDeVida;
+          this.cargarEstudios();
+          this.cargarExperiencias();
+        },
+        error: (err) => {
+
+          Swal.fire('Error', 'No se pudo cargar la hoja de vida', 'error');
+        },
+      });
   }
 
   cargarEstudios() {
     if (!this.idHojaDeVida) return;
     this.estudiosService.getPorHojaDeVida(this.idHojaDeVida).subscribe({
       next: (res) => {
-        console.log('🔍 ESTUDIOS recibidos desde el backend:', res);
+
         this.estudios = res.estudios.map((e: any) => {
           const datos = e.estudio || e;
           return {
             ...datos,
             abierto: false,
-            idRelacion: e.idHasestudios
+            idRelacion: e.idHasestudios,
           };
         });
-        console.log('📦 this.estudios procesado:', this.estudios);
+
       },
       error: (err) => {
-        console.error('❌ Error al cargar estudios', err);
+
         Swal.fire('Error', 'No se pudieron cargar los estudios', 'error');
-      }
-    });
-  }
-
-  cargarExperiencias() {
-    if (!this.idHojaDeVida) return;
-
-    this.experienciaService.getPorHojaDeVida(this.idHojaDeVida).subscribe({
-      next: (res) => {
-        const lista = res.data ?? [];
-
-        this.experiencias = lista.map((relacion: any) => {
-          const datos = relacion.experiencia || {};
-          return {
-            ...datos,
-            abierto: false,
-            idRelacion: relacion.idHasexperiencia ?? relacion.id,
-            archivo: relacion.archivo
-    
-          };
-        });
-
-        console.log('📦 Experiencias procesadas:', this.experiencias);
       },
-      error: (err) => {
-        console.error('❌ Error al cargar experiencias', err);
-        Swal.fire('Error', 'No se pudieron cargar las experiencias', 'error');
-      }
     });
   }
+ cargarExperiencias() {
+  if (!this.idHojaDeVida) return;
+
+  this.experienciaService.getPorHojaDeVida(this.idHojaDeVida).subscribe({
+    next: (res) => {
+      const lista = res.data ?? [];
+
+      this.experiencias = lista.map((relacion: any) => {
+        const datos = relacion.experiencia || {};
+        return {
+          ...datos,
+          abierto: false,
+          idRelacion: relacion.idHasexperiencia ?? relacion.id,
+          archivo: relacion.archivo,
+
+          archivoUrl: `https://www.evensoft21.com/managehr/api/public/storage/${relacion.archivo}`
+        };
+      });
+
+      console.log('📦 Experiencias procesadas:', this.experiencias);
+    },
+    error: (err) => {
+
+      Swal.fire('Error', 'No se pudieron cargar las experiencias', 'error');
+    }
+  });
+}
 
   abrirModalEditarLibreta() {
     this.mostrarModalEditarLibreta = true;
@@ -127,19 +133,28 @@ export class HojaDeVidaComponent implements OnInit {
     const payload = {
       claseLibretaMilitar: this.hojaDeVida.claseLibretaMilitar,
       numeroLibretaMilitar: this.hojaDeVida.numeroLibretaMilitar,
-      usuarioNumDocumento: this.hojaDeVida.usuarioNumDocumento
+      usuarioNumDocumento: this.hojaDeVida.usuarioNumDocumento,
     };
-    this.hojaDeVidaService.actualizarHojaDeVida(this.hojaDeVida.idHojaDeVida, payload).subscribe({
-      next: () => {
-        this.cerrarModalEditarLibreta();
-        Swal.fire('Actualizado', 'La libreta militar fue actualizada correctamente', 'success');
-        this.cargarHojaDeVida();
-      },
-      error: (err) => {
-        console.error('❌ Error al actualizar libreta militar', err);
-        Swal.fire('Error', 'No se pudo actualizar la libreta militar', 'error');
-      }
-    });
+    this.hojaDeVidaService
+      .actualizarHojaDeVida(this.hojaDeVida.idHojaDeVida, payload)
+      .subscribe({
+        next: () => {
+          this.cerrarModalEditarLibreta();
+          Swal.fire(
+            'Actualizado',
+            'La libreta militar fue actualizada correctamente',
+            'success'
+          );
+          this.cargarHojaDeVida();
+        },
+        error: (err) => {
+          Swal.fire(
+            'Error',
+            'No se pudo actualizar la libreta militar',
+            'error'
+          );
+        },
+      });
   }
 
   abrirModalAgregarEstudio() {
@@ -170,12 +185,14 @@ export class HojaDeVidaComponent implements OnInit {
         this.cargarEstudios();
       },
       error: (err) => {
-        console.error('❌ Error al crear relación del estudio', err);
-        Swal.fire('Error', 'No se pudo guardar la relación del estudio', 'error');
-      }
+        Swal.fire(
+          'Error',
+          'No se pudo guardar la relación del estudio',
+          'error'
+        );
+      },
     });
   }
-  
 
   guardarNuevoEstudio(): void {
     if (!this.usuario?.perfil?.numDocumento || !this.idHojaDeVida) return;
@@ -185,10 +202,10 @@ export class HojaDeVidaComponent implements OnInit {
       nomInstitucion: this.nuevoEstudio.nomInstitucion.trim(),
       tituloObtenido: this.nuevoEstudio.tituloObtenido.trim(),
       anioInicio: this.nuevoEstudio.anioInicio,
-      anioFinalizacion: this.nuevoEstudio.anioFinalizacion
+      anioFinalizacion: this.nuevoEstudio.anioFinalizacion,
     };
 
-    // Paso 1: Validar si el estudio ya existe
+
     this.estudiosService.buscarEstudioPorNombre(payloadEstudio).subscribe({
       next: (res) => {
         const idEstudios = res?.estudio?.idEstudios;
@@ -200,12 +217,16 @@ export class HojaDeVidaComponent implements OnInit {
             this.crearRelacionEstudio(idEstudios);
           }
         } else {
-          // Si no existe, crearlo primero
+
           this.estudiosService.create(payloadEstudio).subscribe({
             next: (resCreate) => {
               const nuevoId = resCreate?.estudio?.idEstudios;
               if (!nuevoId) {
-                Swal.fire('Error', 'No se recibió el ID del estudio creado', 'error');
+                Swal.fire(
+                  'Error',
+                  'No se recibió el ID del estudio creado',
+                  'error'
+                );
                 return;
               }
               if (this.editandoEstudio && this.idRelacionEstudio) {
@@ -215,16 +236,18 @@ export class HojaDeVidaComponent implements OnInit {
               }
             },
             error: (err) => {
-              console.error('❌ Error al crear estudio', err);
               Swal.fire('Error', 'No se pudo crear el estudio', 'error');
-            }
+            },
           });
         }
       },
       error: (err) => {
-        console.error('❌ Error al validar existencia del estudio', err);
-        Swal.fire('Error', 'No se pudo verificar si el estudio ya existe', 'error');
-      }
+        Swal.fire(
+          'Error',
+          'No se pudo verificar si el estudio ya existe',
+          'error'
+        );
+      },
     });
   }
 
@@ -237,18 +260,19 @@ export class HojaDeVidaComponent implements OnInit {
       formData.append('archivo', this.archivoEstudio);
     }
 
-    this.estudiosService.actualizarRelacionEstudio(idRelacion, formData).subscribe({
-      next: () => {
-        Swal.fire('Éxito', 'Estudio actualizado correctamente', 'success');
-        this.cerrarModalAgregarEstudio();
-        this.cargarEstudios();
-        this.resetFormularioEstudio();
-      },
-      error: (err) => {
-        console.error('❌ Error al actualizar estudio', err);
-        Swal.fire('Error', 'No se pudo actualizar el estudio', 'error');
-      }
-    });
+    this.estudiosService
+      .actualizarRelacionEstudio(idRelacion, formData)
+      .subscribe({
+        next: () => {
+          Swal.fire('Éxito', 'Estudio actualizado correctamente', 'success');
+          this.cerrarModalAgregarEstudio();
+          this.cargarEstudios();
+          this.resetFormularioEstudio();
+        },
+        error: (err) => {
+          Swal.fire('Error', 'No se pudo actualizar el estudio', 'error');
+        },
+      });
   }
 
   resetFormularioEstudio(): void {
@@ -259,32 +283,31 @@ export class HojaDeVidaComponent implements OnInit {
   }
 
   eliminarEstudio(index: number) {
-  Swal.fire({
-    title: '¿Estás segura?',
-    text: 'Esta acción eliminará el estudio permanentemente.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-    confirmButtonText: 'Sí, eliminar',
-    cancelButtonText: 'Cancelar'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      const idRelacion = this.estudios[index].idRelacion;
+    Swal.fire({
+      title: '¿Estás segura?',
+      text: 'Esta acción eliminará el estudio permanentemente.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const idRelacion = this.estudios[index].idRelacion;
 
-      this.estudiosService.delete(idRelacion).subscribe({
-        next: () => {
-          Swal.fire('Eliminado', 'El estudio ha sido eliminado', 'success');
-          this.cargarEstudios();
-        },
-        error: (err) => {
-          console.error('❌ Error al eliminar estudio', err);
-          Swal.fire('Error', 'No se pudo eliminar el estudio', 'error');
-        }
-      });
-    }
-  });
-}
+        this.estudiosService.delete(idRelacion).subscribe({
+          next: () => {
+            Swal.fire('Eliminado', 'El estudio ha sido eliminado', 'success');
+            this.cargarEstudios();
+          },
+          error: (err) => {
+            Swal.fire('Error', 'No se pudo eliminar el estudio', 'error');
+          },
+        });
+      }
+    });
+  }
 
   toggleEstudio(index: number) {
     this.estudios[index].abierto = !this.estudios[index].abierto;
@@ -297,18 +320,12 @@ export class HojaDeVidaComponent implements OnInit {
       nomInstitucion: estudioSeleccionado.nomInstitucion,
       tituloObtenido: estudioSeleccionado.tituloObtenido,
       anioInicio: estudioSeleccionado.anioInicio,
-      anioFinalizacion: estudioSeleccionado.anioFinalizacion
+      anioFinalizacion: estudioSeleccionado.anioFinalizacion,
     };
     this.idRelacionEstudio = estudioSeleccionado.idRelacion;
     this.editandoEstudio = true;
     this.mostrarModalAgregarEstudio = true;
   }
-
-
-
-
-
-
 
   abrirModalAgregarExperiencia() {
     this.nuevaExperiencia = {};
@@ -319,7 +336,7 @@ export class HojaDeVidaComponent implements OnInit {
   cerrarModalAgregarExperiencia() {
     this.mostrarModalAgregarExperiencia = false;
   }
-  onArchivoSeleccionadoEstudio(event: Event): void{
+  onArchivoSeleccionadoEstudio(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.archivoEstudio = input.files[0];
@@ -334,7 +351,11 @@ export class HojaDeVidaComponent implements OnInit {
 
   guardarNuevaExperiencia() {
     if (!this.idHojaDeVida || !this.archivoExperiencia) {
-      Swal.fire('Advertencia', 'Debes seleccionar un archivo para la experiencia', 'warning');
+      Swal.fire(
+        'Advertencia',
+        'Debes seleccionar un archivo para la experiencia',
+        'warning'
+      );
       return;
     }
 
@@ -345,7 +366,10 @@ export class HojaDeVidaComponent implements OnInit {
     formData.append('cargo', this.nuevaExperiencia.cargo);
     formData.append('actividades', this.nuevaExperiencia.actividades);
     formData.append('fechaInicio', this.nuevaExperiencia.fechaInicio);
-    formData.append('fechaFinalizacion', this.nuevaExperiencia.fechaFinalizacion);
+    formData.append(
+      'fechaFinalizacion',
+      this.nuevaExperiencia.fechaFinalizacion
+    );
     formData.append('archivo', this.archivoExperiencia);
     formData.append('idHojaDevida', this.idHojaDeVida.toString());
 
@@ -356,39 +380,41 @@ export class HojaDeVidaComponent implements OnInit {
         this.cargarExperiencias();
       },
       error: (err) => {
-        console.error('❌ Error al guardar experiencia', err);
         Swal.fire('Error', 'No se pudo guardar la experiencia', 'error');
-      }
+      },
     });
   }
 
   eliminarExperiencia(index: number) {
-  Swal.fire({
-    title: '¿Estás segura?',
-    text: 'Esta acción eliminará la experiencia laboral permanentemente.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-    confirmButtonText: 'Sí, eliminar',
-    cancelButtonText: 'Cancelar'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      const idRelacion = this.experiencias[index].idRelacion;
+    Swal.fire({
+      title: '¿Estás segura?',
+      text: 'Esta acción eliminará la experiencia laboral permanentemente.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const idRelacion = this.experiencias[index].idRelacion;
 
-      this.experienciaService.delete(idRelacion).subscribe({
-        next: () => {
-          Swal.fire('Eliminado', 'La experiencia ha sido eliminada', 'success');
-          this.cargarExperiencias();
-        },
-        error: (err) => {
-          console.error('❌ Error al eliminar experiencia', err);
-          Swal.fire('Error', 'No se pudo eliminar la experiencia', 'error');
-        }
-      });
-    }
-  });
-}
+        this.experienciaService.delete(idRelacion).subscribe({
+          next: () => {
+            Swal.fire(
+              'Eliminado',
+              'La experiencia ha sido eliminada',
+              'success'
+            );
+            this.cargarExperiencias();
+          },
+          error: (err) => {
+            Swal.fire('Error', 'No se pudo eliminar la experiencia', 'error');
+          },
+        });
+      }
+    });
+  }
 
   toggleExperiencia(index: number) {
     this.experiencias[index].abierto = !this.experiencias[index].abierto;
@@ -400,19 +426,18 @@ export class HojaDeVidaComponent implements OnInit {
   }
 
   soloLetras(event: KeyboardEvent) {
-  const pattern = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/;
-  const inputChar = String.fromCharCode(event.keyCode || event.which);
-  if (!pattern.test(inputChar)) {
-    event.preventDefault();
+    const pattern = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/;
+    const inputChar = String.fromCharCode(event.keyCode || event.which);
+    if (!pattern.test(inputChar)) {
+      event.preventDefault();
+    }
   }
-}
 
-soloNumeros(event: KeyboardEvent) {
-  const pattern = /^[0-9]*$/;
-  const inputChar = String.fromCharCode(event.keyCode || event.which);
-  if (!pattern.test(inputChar)) {
-    event.preventDefault();
+  soloNumeros(event: KeyboardEvent) {
+    const pattern = /^[0-9]*$/;
+    const inputChar = String.fromCharCode(event.keyCode || event.which);
+    if (!pattern.test(inputChar)) {
+      event.preventDefault();
+    }
   }
-}
-
 }

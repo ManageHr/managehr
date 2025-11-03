@@ -9,7 +9,7 @@ import { ContratosService } from 'src/app/services/contratos.service';
 
 interface IncapacidadRequestDisplay {
   idIncapacidad?: number;
-  archivo: File | null;
+  archivo: string | null;
   fechaInicio: string;
   fechaFinal: string;
   contratoId?: number | null;

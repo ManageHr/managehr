@@ -29,7 +29,7 @@ export class FormvacacionesComponent implements OnInit {
   dias         = 0;
   contratoId: number | null = null;
 
-  // Aquí se almacenarán solo las solicitudes de este usuario
+
   solicitudesVacaciones: SolicitudVacaciones[] = [];
 
   constructor(
@@ -38,9 +38,8 @@ export class FormvacacionesComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Primero cargamos el contrato
+
     this.obtenerContratoId();
-    // Luego cargamos las solicitudes que ya existan
     this.cargarMisSolicitudes();
   }
 
@@ -65,7 +64,7 @@ export class FormvacacionesComponent implements OnInit {
 
     this.http
       .get<{ contrato: { idContrato: number } }>(
-        `http://127.0.0.1:8000/api/contrato-usuario/${numDocumento}`,
+        `https://www.evensoft21.com/managehr/api/public/api/contrato-usuario/${numDocumento}`,
         { headers }
       )
       .subscribe({
@@ -84,7 +83,7 @@ export class FormvacacionesComponent implements OnInit {
       });
   }
 
-  /** Trae solo las solicitudes previamente enviadas por este usuario */
+
   cargarMisSolicitudes(): void {
     this.solicitudesVacacionesService.obtenerSolicitudesUsuario()
       .subscribe({
@@ -94,12 +93,12 @@ export class FormvacacionesComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error al cargar solicitudes de usuario:', err);
-          // No interrumpimos el flujo si falla; solo mostramos en consola.
+
         }
       });
   }
 
-  /** Calcula los días incluyendo ambos extremos */
+
   calcularDias(): void {
     if (this.fechaInicio && this.fechaFinal) {
       const inicio = new Date(this.fechaInicio);
@@ -137,10 +136,11 @@ export class FormvacacionesComponent implements OnInit {
 
     this.solicitudesVacacionesService.enviarSolicitud(solicitud).subscribe({
       next: (response) => {
-        // Añadimos la nueva solicitud al listado que ya teníamos
+
         this.solicitudesVacaciones.unshift(response);
-        Swal.fire('Éxito', 'Solicitud de vacaciones enviada correctamente.', 'success');
         this.limpiarFormulario();
+        Swal.fire('Éxito', 'Solicitud de vacaciones enviada correctamente.', 'success');
+        this.cargarMisSolicitudes();
       },
       error: (error) => {
         console.error('Error al enviar solicitud:', error);
@@ -162,7 +162,7 @@ export class FormvacacionesComponent implements OnInit {
     this.dias        = 0;
   }
 
-  /** Determina si el botón debe estar habilitado */
+ 
   get puedeEnviar(): boolean {
     return (
       this.motivo.trim().length > 0 &&
