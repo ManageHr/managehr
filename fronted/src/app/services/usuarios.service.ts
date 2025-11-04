@@ -53,13 +53,13 @@ export class UsuariosService {
   obtenerUsuarios(): Observable<any> {
     return this.http.get<any>(this.apiUrl).pipe(
       map(res => {
-        
+
         return res.usuario;
       })
     );
   }
   agregarUsuario(usuario: any) {
-    
+
 
     return this.http.post<any>('https://www.evensoft21.com/managehr/api/public/api/usuarios', usuario);
   }
@@ -173,15 +173,13 @@ export class UsuariosService {
   obtenerHojadevida(numDocumento: number): Observable<any> {
     return this.http.get<any>(`https://www.evensoft21.com/managehr/api/public/api/hojasvida/documento/${numDocumento}`);
   }
-  
+
   obtenerExperienciaLaboral(numDocumento: number) {
     return this.http.get<any>(`https://www.evensoft21.com/managehr/api/public/api/hojasvidahasexperiencias/documento/${numDocumento}`);
   }
   getUsuariosConRoles(): Observable<any> {
     return this.http.get<any>('https://www.evensoft21.com/managehr/api/public/api/usuarios/reporte/all');
   }
-
-
 
 
 }

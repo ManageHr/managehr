@@ -671,6 +671,11 @@ export class UsuariosComponent implements OnInit {
                 console.log(
                   ` Backend respondió en: ${(llegada - inicio).toFixed(2)} ms`
                 );
+
+                // CERRAR EL MODAL PRIMERO
+                this.cerrarModalAgregar();
+
+                // MOSTRAR ALERTA DESPUÉS DE CERRAR EL MODAL
                 Swal.fire({
                   title: '¡Éxito!',
                   text: 'El usuario fue creado correctamente.',
@@ -679,24 +684,10 @@ export class UsuariosComponent implements OnInit {
                   timer: 3000,
                   timerProgressBar: true,
                 });
+
                 this.nuevoUsuario = {};
                 this.cargarAmbasListasUsuarios();
-                const modalEl = document.getElementById('agregarusuariosModal');
-                if (modalEl) {
-                  const modal =
-                    Modal.getInstance(modalEl) || new Modal(modalEl);
-                  modal.hide();
-                  /*setTimeout(() => {
-                    this.abrirModalHojaVida();
 
-                    const fin = performance.now();
-                    console.log(
-                      `Total hasta abrir modal: ${(fin - inicio).toFixed(
-                        2
-                      )} ms`
-                    );
-                  }, 0);*/
-                }
                 return;
               },
               error: (err) => {
@@ -727,6 +718,20 @@ export class UsuariosComponent implements OnInit {
         });
       });
   }
+  // Método para cerrar el modal de agregar usuario
+cerrarModalAgregar(): void {
+  const modalElement = document.getElementById('agregarusuariosModal');
+  if (modalElement) {
+    const modal = bootstrap.Modal.getInstance(modalElement);
+    if (modal) {
+      modal.hide();
+    } else {
+      // Si no hay instancia, crear una temporal para cerrarla
+      const tempModal = new bootstrap.Modal(modalElement);
+      tempModal.hide();
+    }
+  }
+}
   soloLetras(event: KeyboardEvent): boolean {
     const input = event.key;
     const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/;
@@ -769,12 +774,18 @@ export class UsuariosComponent implements OnInit {
             .subscribe({
               next: (res2) => {
                 console.log('Respuesta del backend:', res2);
+
+                // CERRAR EL MODAL DE EDICIÓN
+                this.cerrarModalEditar();
+
                 Swal.fire({
                   title: '¡Actualizado!',
                   text: 'El usuario fue editado exitosamente.',
                   icon: 'success',
                   confirmButtonText: 'Aceptar',
-                }).then(() => location.reload());
+                }).then(() => {
+                  this.cargarAmbasListasUsuarios();
+                });
               },
               error: (err2) => {
                 console.error('Error al actualizar el rol del usuario:', err2);
@@ -792,6 +803,19 @@ export class UsuariosComponent implements OnInit {
         },
       });
   }
+  // Método para cerrar el modal de editar usuario
+cerrarModalEditar(): void {
+  const modalElement = document.getElementById('editarusuariosModal');
+  if (modalElement) {
+    const modal = bootstrap.Modal.getInstance(modalElement);
+    if (modal) {
+      modal.hide();
+    } else {
+      const tempModal = new bootstrap.Modal(modalElement);
+      tempModal.hide();
+    }
+  }
+}
 
   rolesPorUsuarioId: { [userId: number]: string } = {};
 

@@ -42,7 +42,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     document.body.classList.remove('login-background');
     this.eliminarModalBackdrop();
-    this.cargarVacantes(); // 👈 Asegúrate de llamarlo
+    this.cargarVacantes();
   }
 
   ngOnDestroy(): void {
@@ -56,7 +56,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
     this.registroExitoso = false;
   }
 
-  enviarFormulario(): void {
+  async enviarFormulario(): Promise<void> {
+    // Validaciones básicas
     if (this.email !== this.confirmarEmail) {
       this.mensaje = 'Los correos electrónicos no coinciden.';
       return;
@@ -72,6 +73,28 @@ export class RegisterComponent implements OnInit, OnDestroy {
       return;
     }
 
+
+    try {
+      const usuarioExiste = await this.verificarUsuarioExistente(this.email, Number(this.numDocumento));
+      if (usuarioExiste) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Usuario ya registrado',
+          text: 'Ya existe un usuario con este email o número de documento.',
+          confirmButtonText: 'Aceptar'
+        });
+        return;
+      }
+    } catch (error) {
+      console.error('Error al verificar usuario:', error);
+
+      Swal.fire({
+        icon: 'warning',
+        title: 'Advertencia',
+        text: 'No se pudo verificar los datos. Si ya está registrado, no podrá completar el proceso.',
+        confirmButtonText: 'Continuar'
+      });
+    }
     const partes = this.procesarNombreCompleto(this.nombre);
     if (!partes) return;
 
@@ -95,6 +118,13 @@ export class RegisterComponent implements OnInit, OnDestroy {
           this.crearUsuario(res.user.id);
         }
 
+        Swal.fire({
+          icon: 'success',
+          title: 'Registro exitoso',
+          text: 'Usuario registrado correctamente',
+          confirmButtonText: 'Aceptar'
+        });
+
         this.router.navigate(['/vacantes']).then(() => {
           this.eliminarModalBackdrop();
         });
@@ -111,6 +141,19 @@ export class RegisterComponent implements OnInit, OnDestroy {
         }
         this.registroExitoso = false;
       }
+    });
+  }
+
+  private verificarUsuarioExistente(email: string, documento: number): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.usuariosService.verificarExistenciaUsuario(email, documento).subscribe({
+        next: (existe: boolean) => {
+          resolve(existe);
+        },
+        error: (err) => {
+          reject(err);
+        }
+      });
     });
   }
 
