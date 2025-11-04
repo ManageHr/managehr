@@ -4,6 +4,7 @@ import { MenuComponent } from '../menu/menu.component';
 import { NotificacionesService, Notificacion, NotificacionesResponse } from '../../services/notificaciones.service';
 import { FormsModule } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 
 declare var bootstrap: any;
@@ -33,13 +34,45 @@ export class NotificacionesAdminComponent implements OnInit {
   itemsPorPaginaAceptadas: number = 5;
   paginaAceptadas: number = 1;
 
-  constructor(private notificacionesService: NotificacionesService) {}
+  constructor(
+    private router: Router,
+    private notificacionesService: NotificacionesService) {}
 
   ngOnInit(): void {
+    const token = localStorage.getItem('token');
+    const userFromLocal = localStorage.getItem('usuario');
+    if (!token || !userFromLocal) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    try {
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      const expiracion = tokenPayload.exp * 1000;
+      if (Date.now() >= expiracion) {
+        this.mostrarSesionExpirada();
+        return;
+      }
+    } catch (error) {
+      console.error('Error verificando token:', error);
+      this.mostrarSesionExpirada();
+      return;
+    }
     this.cargarUsuario();
     this.cargarNotificaciones();
   }
+  private mostrarSesionExpirada(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
 
+    Swal.fire({
+      title: 'Sesión expirada',
+      text: 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.',
+      icon: 'warning',
+      confirmButtonText: 'Ir al login',
+    }).then(() => {
+      this.router.navigate(['/login']);
+    });
+  }
   cargarUsuario(): void {
     const userFromLocal = localStorage.getItem('usuario');
     if (userFromLocal) {

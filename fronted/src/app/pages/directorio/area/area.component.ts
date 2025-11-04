@@ -7,6 +7,7 @@ import { FilterNamePipe } from 'src/app/shared/filter-name.pipe';
 import { Areas, AreaService } from 'src/app/services/area.service';
 import { AuthService } from 'src/app/services/auth.service';
 import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-area',
@@ -37,14 +38,30 @@ export class AreaComponent {
     estado: 0,
   };
   constructor(
+    private router: Router,
     private areaService: AreaService,
     private authService: AuthService
   ) {}
   ngOnInit(): void {
+    const token = localStorage.getItem('token');
     const userFromLocal = localStorage.getItem('usuario');
-    if (userFromLocal) {
-      this.usuario = JSON.parse(userFromLocal);
+    if (!token || !userFromLocal) {
+      this.router.navigate(['/login']);
+      return;
     }
+    try {
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      const expiracion = tokenPayload.exp * 1000;
+      if (Date.now() >= expiracion) {
+        this.mostrarSesionExpirada();
+        return;
+      }
+    } catch (error) {
+      console.error('Error verificando token:', error);
+      this.mostrarSesionExpirada();
+      return;
+    }
+    this.usuario = JSON.parse(userFromLocal);
     this.areaService.obtenerAreas().subscribe({
       next: (data) => {
         this.areas = data;
@@ -61,6 +78,19 @@ export class AreaComponent {
     });
     this.calcularTotalPages();
   }
+  private mostrarSesionExpirada(): void {
+      localStorage.removeItem('token');
+      localStorage.removeItem('usuario');
+
+      Swal.fire({
+        title: 'Sesión expirada',
+        text: 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.',
+        icon: 'warning',
+        confirmButtonText: 'Ir al login',
+      }).then(() => {
+        this.router.navigate(['/login']);
+      });
+    }
   calcularTotalPages(): void {
     const filtrados = this.areas.filter((a) =>
       a.nombreArea.toLowerCase().includes(this.filtroNombre.toLowerCase())

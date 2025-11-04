@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { Modal } from 'bootstrap';
 import * as bootstrap from 'bootstrap';
+import { Router } from '@angular/router';
 
 import {
   Categoria,
@@ -39,19 +40,48 @@ export class CategoriaVacantesComponent implements OnInit {
 
   constructor(
     public authService: AuthService,
-
+    private router: Router,
     private categoriaService: CategoriaService
   ) {}
 
   ngOnInit(): void {
+    const token = localStorage.getItem('token');
     const userFromLocal = localStorage.getItem('usuario');
+    if (!token || !userFromLocal) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    try {
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      const expiracion = tokenPayload.exp * 1000;
+      if (Date.now() >= expiracion) {
+        this.mostrarSesionExpirada();
+        return;
+      }
+    } catch (error) {
+      console.error('Error verificando token:', error);
+      this.mostrarSesionExpirada();
+      return;
+    }
     if (userFromLocal) {
       this.usuario = JSON.parse(userFromLocal);
     }
 
     this.cargarCategorias();
   }
+  private mostrarSesionExpirada(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
 
+    Swal.fire({
+      title: 'Sesión expirada',
+      text: 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.',
+      icon: 'warning',
+      confirmButtonText: 'Ir al login',
+    }).then(() => {
+      this.router.navigate(['/login']);
+    });
+  }
   cargarCategorias(): void {
     this.categoriaService
       .getCategorias()

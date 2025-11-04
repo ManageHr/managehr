@@ -13,9 +13,9 @@ import * as ExcelJS from 'exceljs';
 import { ChangeDetectorRef } from '@angular/core';
 import { NgxPaginationModule } from 'ngx-pagination';
 import autoTable, { CellInput, RowInput } from 'jspdf-autotable';
-
+import { Router } from '@angular/router';
 import jsPDF from 'jspdf';
-import {ChartConfiguration, ChartType, registerables } from 'chart.js';
+import { ChartConfiguration, ChartType, registerables } from 'chart.js';
 Chart.register(...registerables);
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
@@ -27,9 +27,8 @@ import {
   LinearScale,
   Title,
   Tooltip,
-  Legend
+  Legend,
 } from 'chart.js';
-
 
 Chart.register(
   BarController,
@@ -47,7 +46,7 @@ interface Vacaciones {
   id: number;
   nombre: string;
   cargo: string;
-  
+
   estado: 'Completado' | 'Rechazado' | 'Pendiente';
   fechaInicio: string;
   fechaFin: string;
@@ -56,16 +55,15 @@ interface Vacaciones {
 
 // Definimos las columnas para usar como etiquetas en el acordeón
 interface ColumnHeader {
-    key: keyof Vacaciones| 'accion';
-    label: string;
+  key: keyof Vacaciones | 'accion';
+  label: string;
 }
-
 
 @Component({
   selector: 'app-vacaciones',
   templateUrl: './vacaciones.component.html',
-  imports: [CommonModule,MenuComponent, FormsModule, NgxPaginationModule],
-  styleUrls: ['./vacaciones.component.scss']
+  imports: [CommonModule, MenuComponent, FormsModule, NgxPaginationModule],
+  styleUrls: ['./vacaciones.component.scss'],
 })
 export class VacacionesComponent implements OnInit {
   usuario: any = {};
@@ -75,7 +73,7 @@ export class VacacionesComponent implements OnInit {
     cargo: '',
     estado: 'Pendiente',
     fechaInicio: '',
-    fechaFin: ''
+    fechaFin: '',
   };
   graficoEstado: any;
   graficoUsuario: any;
@@ -85,16 +83,17 @@ export class VacacionesComponent implements OnInit {
   editando = false;
   vacacionSeleccionadaId: number | null = null;
   filtro: string = '';
-  filtroNombre= '';
+  filtroNombre = '';
   currentPage = 1;
   itemsPerPage = 5;
   vacacionesPorPagina: number = 5;
-  paginaActual: number =1;
+  paginaActual: number = 1;
   totalPages: number = 1;
   detalleVacacion: any = null;
   reporteActivo: 'estado' | 'usuario' | 'area' | null = null;
   chart: any;
   constructor(
+    private router: Router,
     private vacacionesService: VacacionesService,
     private fb: FormBuilder,
     private authService: AuthService
@@ -103,33 +102,63 @@ export class VacacionesComponent implements OnInit {
       fecha_inicio: [''],
       fecha_fin: [''],
       motivo: [''],
-      user_id: ['']
+      user_id: [''],
     });
   }
   ngOnInit(): void {
+    const token = localStorage.getItem('token');
     const userFromLocal = localStorage.getItem('usuario');
+    if (!token || !userFromLocal) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    try {
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      const expiracion = tokenPayload.exp * 1000;
+      if (Date.now() >= expiracion) {
+        this.mostrarSesionExpirada();
+        return;
+      }
+    } catch (error) {
+      console.error('Error verificando token:', error);
+      this.mostrarSesionExpirada();
+      return;
+    }
     if (userFromLocal) {
       this.usuario = JSON.parse(userFromLocal);
-      
     }
     this.cargarVacaciones();
+  }
+  private mostrarSesionExpirada(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+
+    Swal.fire({
+      title: 'Sesión expirada',
+      text: 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.',
+      icon: 'warning',
+      confirmButtonText: 'Ir al login',
+    }).then(() => {
+      this.router.navigate(['/login']);
+    });
   }
   cargarVacaciones(): void {
     this.vacacionesService.getVacaciones().subscribe({
       next: (data) => {
-        this.vacaciones = data; 
+        this.vacaciones = data;
         this.totalPages = Math.ceil(this.vacaciones.length / this.itemsPerPage);
       },
       error: (err) => {
         console.error('Error al cargar vacaciones', err);
-      }
+      },
     });
   }
 
   vacacionesFiltradas(): Vacacion[] {
     const filtro = this.filtroNombre.toLowerCase();
-    return this.vacaciones.filter(v => {
-      const nombreCompleto = `${v.contrato.hoja_de_vida.usuario.primerNombre} ${v.contrato.hoja_de_vida.usuario.primerApellido}`.toLowerCase();
+    return this.vacaciones.filter((v) => {
+      const nombreCompleto =
+        `${v.contrato.hoja_de_vida.usuario.primerNombre} ${v.contrato.hoja_de_vida.usuario.primerApellido}`.toLowerCase();
       const documento = v.contrato.hoja_de_vida.usuario.numDocumento.toString();
       const area = v.contrato.area.nombreArea.toLowerCase();
 
@@ -149,24 +178,26 @@ export class VacacionesComponent implements OnInit {
     return filtradas.slice(inicio, fin);
   }
 
+  verDetalle(vacacion: Vacacion) {
+    this.vacacionSeleccionada = { ...vacacion };
+    const modal = new bootstrap.Modal(document.getElementById('detalleModal')!);
+    modal.show();
+  }
 
-    
-    verDetalle(vacacion: Vacacion) {
-      this.vacacionSeleccionada = { ...vacacion };
-      const modal = new bootstrap.Modal(document.getElementById('detalleModal')!);
-      modal.show();
-    }
+  actualizarEstado(): void {
+    if (!this.vacacionSeleccionada) return;
 
-    actualizarEstado(): void {
-      if (!this.vacacionSeleccionada) return;
-
-      this.vacacionesService.actualizarVacacion(
+    this.vacacionesService
+      .actualizarVacacion(
         this.vacacionSeleccionada.idVacaciones,
         this.vacacionSeleccionada
-      ).subscribe({
+      )
+      .subscribe({
         next: () => {
           this.cargarVacaciones();
-          const modal = bootstrap.Modal.getInstance(document.getElementById('editarEstadoModal')!);
+          const modal = bootstrap.Modal.getInstance(
+            document.getElementById('editarEstadoModal')!
+          );
           modal?.hide();
 
           Swal.fire({
@@ -174,7 +205,7 @@ export class VacacionesComponent implements OnInit {
             title: 'Estado actualizado',
             text: 'El estado de la vacación fue actualizado correctamente.',
             timer: 2000,
-            showConfirmButton: false
+            showConfirmButton: false,
           });
         },
         error: (error) => {
@@ -184,124 +215,130 @@ export class VacacionesComponent implements OnInit {
             title: 'Error',
             text: 'No se pudo actualizar el estado. Intenta nuevamente.',
           });
-        }
-      });
-    }
-
-    
-    
-    confirmDelete(id: number): void {
-      Swal.fire({
-        title: '¿Está seguro?',
-        text: 'Esta acción no se puede deshacer.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.vacacionesService.eliminarVacacion(id).subscribe({
-            next: () => {
-              Swal.fire('Eliminado', 'Registro eliminado con éxito.', 'success');
-              this.cargarVacaciones();
-            },
-            error: () => {
-              Swal.fire('Error', 'No se pudo eliminar el registro.', 'error');
-            }
-          });
-        }
-      });
-    }
-  
-    
-    cambiarPagina(pagina: number): void {
-      if (pagina >= 1 && pagina <= this.itemsPerPage) {
-        this.currentPage = pagina;
-      }
-    }
-   
-
-    esNumero(pagina: number | string): boolean {
-      return typeof pagina === 'number';
-    }
-    cambiarPaginaSiEsNumero(pagina: number | string): void {
-      if (typeof pagina === 'number' && pagina !== this.currentPage) {
-        this.currentPage = pagina;
-      }
-    }
-
-
-
-    getPaginas(): (number | string)[] {
-      const total = this.totalPages;
-      const current = this.currentPage;
-      const pages: (number | string)[] = [];
-
-      if (total <= 5) {
-        for (let i = 1; i <= total; i++) pages.push(i);
-      } else {
-        pages.push(1);
-
-        if (current > 3) pages.push('...');
-
-        const start = Math.max(2, current - 1);
-        const end = Math.min(total - 1, current + 1);
-        for (let i = start; i <= end; i++) pages.push(i);
-
-        if (current < total - 2) pages.push('...');
-
-        pages.push(total);
-      }
-
-      return pages;
-    }
-    verDetalles(id: number): void {
-      
-      this.vacacionesService.getVacacionPorId(id).subscribe({
-        next: (resp) => {
-          this.detalleVacacion = resp.vacaciones;
-          const modal = new bootstrap.Modal(document.getElementById('verDetallesModal')!);
-          modal.show();
         },
-        error: (err) => {
-          console.error('Error al obtener detalles:', err);
-        }
       });
-    }
-    editarEstado(id: number): void {
-      this.vacacionesService.getVacacionPorId(id).subscribe({
-        next: (response) => {
-          this.vacacionSeleccionada = response.vacaciones;
+  }
 
-          // Abre el modal de edición
-          const modal = new bootstrap.Modal(document.getElementById('editarEstadoModal')!);
-          modal.show();
-        },
-        error: (err) => {
-          console.error('Error al cargar vacación', err);
-          Swal.fire('Error', 'No se pudo cargar la información de la vacación.', 'error');
-        }
-      });
+  confirmDelete(id: number): void {
+    Swal.fire({
+      title: '¿Está seguro?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.vacacionesService.eliminarVacacion(id).subscribe({
+          next: () => {
+            Swal.fire('Eliminado', 'Registro eliminado con éxito.', 'success');
+            this.cargarVacaciones();
+          },
+          error: () => {
+            Swal.fire('Error', 'No se pudo eliminar el registro.', 'error');
+          },
+        });
+      }
+    });
+  }
+
+  cambiarPagina(pagina: number): void {
+    if (pagina >= 1 && pagina <= this.itemsPerPage) {
+      this.currentPage = pagina;
+    }
+  }
+
+  esNumero(pagina: number | string): boolean {
+    return typeof pagina === 'number';
+  }
+  cambiarPaginaSiEsNumero(pagina: number | string): void {
+    if (typeof pagina === 'number' && pagina !== this.currentPage) {
+      this.currentPage = pagina;
+    }
+  }
+
+  getPaginas(): (number | string)[] {
+    const total = this.totalPages;
+    const current = this.currentPage;
+    const pages: (number | string)[] = [];
+
+    if (total <= 5) {
+      for (let i = 1; i <= total; i++) pages.push(i);
+    } else {
+      pages.push(1);
+
+      if (current > 3) pages.push('...');
+
+      const start = Math.max(2, current - 1);
+      const end = Math.min(total - 1, current + 1);
+      for (let i = start; i <= end; i++) pages.push(i);
+
+      if (current < total - 2) pages.push('...');
+
+      pages.push(total);
     }
 
-    abrirModalEstado() {
-      setTimeout(() => this.generarGraficoEstado(), 300);
-      const modal = new bootstrap.Modal(document.getElementById('modalReporteEstado')!);
-      modal.show();
-    }
+    return pages;
+  }
+  verDetalles(id: number): void {
+    this.vacacionesService.getVacacionPorId(id).subscribe({
+      next: (resp) => {
+        this.detalleVacacion = resp.vacaciones;
+        const modal = new bootstrap.Modal(
+          document.getElementById('verDetallesModal')!
+        );
+        modal.show();
+      },
+      error: (err) => {
+        console.error('Error al obtener detalles:', err);
+      },
+    });
+  }
+  editarEstado(id: number): void {
+    this.vacacionesService.getVacacionPorId(id).subscribe({
+      next: (response) => {
+        this.vacacionSeleccionada = response.vacaciones;
 
-    abrirModalUsuario() {
-      setTimeout(() => this.generarGraficoUsuario(), 300);
-      const modal = new bootstrap.Modal(document.getElementById('modalReporteUsuario')!);
-      modal.show();
-    }
+        // Abre el modal de edición
+        const modal = new bootstrap.Modal(
+          document.getElementById('editarEstadoModal')!
+        );
+        modal.show();
+      },
+      error: (err) => {
+        console.error('Error al cargar vacación', err);
+        Swal.fire(
+          'Error',
+          'No se pudo cargar la información de la vacación.',
+          'error'
+        );
+      },
+    });
+  }
 
-    abrirModalArea() {
-      setTimeout(() => this.generarGraficoArea(), 300);
-      const modal = new bootstrap.Modal(document.getElementById('modalReporteArea')!);
-      modal.show();
-    }
+  abrirModalEstado() {
+    setTimeout(() => this.generarGraficoEstado(), 300);
+    const modal = new bootstrap.Modal(
+      document.getElementById('modalReporteEstado')!
+    );
+    modal.show();
+  }
 
+  abrirModalUsuario() {
+    setTimeout(() => this.generarGraficoUsuario(), 300);
+    const modal = new bootstrap.Modal(
+      document.getElementById('modalReporteUsuario')!
+    );
+    modal.show();
+  }
+
+  abrirModalArea() {
+    setTimeout(() => this.generarGraficoArea(), 300);
+    const modal = new bootstrap.Modal(
+      document.getElementById('modalReporteArea')!
+    );
+    modal.show();
+  }
 
   obtenerDatosReporte() {
     if (this.reporteActivo === 'estado') {
@@ -311,7 +348,10 @@ export class VacacionesComponent implements OnInit {
       }, {});
     } else if (this.reporteActivo === 'usuario') {
       return this.vacaciones.reduce((acc: any, vac: any) => {
-        const nombre = vac.contrato?.hoja_de_vida?.usuario?.primerNombre + ' ' + vac.contrato?.hoja_de_vida?.usuario?.primerApellido;
+        const nombre =
+          vac.contrato?.hoja_de_vida?.usuario?.primerNombre +
+          ' ' +
+          vac.contrato?.hoja_de_vida?.usuario?.primerApellido;
         acc[nombre] = (acc[nombre] || 0) + 1;
         return acc;
       }, {});
@@ -327,7 +367,7 @@ export class VacacionesComponent implements OnInit {
 
   generarGraficoEstado(): void {
     const estadosMap = new Map<string, number>();
-    this.vacaciones.forEach(v => {
+    this.vacaciones.forEach((v) => {
       const estado = v.estado;
       estadosMap.set(estado, (estadosMap.get(estado) || 0) + 1);
     });
@@ -337,12 +377,14 @@ export class VacacionesComponent implements OnInit {
 
     // Colores personalizados por estado
     const coloresPorEstado: { [key: string]: string } = {
-      'Aprobado': '#1cc88a',   // Verde
-      'Pendiente': '#f6c23e',  // Amarillo
-      'Rechazado': '#e74a3b'   // Rojo
+      Aprobado: '#1cc88a', // Verde
+      Pendiente: '#f6c23e', // Amarillo
+      Rechazado: '#e74a3b', // Rojo
     };
 
-    const backgroundColors = labels.map(estado => coloresPorEstado[estado] || '#858796'); // Gris por defecto
+    const backgroundColors = labels.map(
+      (estado) => coloresPorEstado[estado] || '#858796'
+    ); // Gris por defecto
 
     const ctx = document.getElementById('graficoEstado') as HTMLCanvasElement;
     if (this.graficoEstado) this.graficoEstado.destroy();
@@ -351,13 +393,15 @@ export class VacacionesComponent implements OnInit {
       type: 'bar',
       data: {
         labels,
-        datasets: [{
-          label: 'Vacaciones por Estado',
-          data,
-          backgroundColor: backgroundColors,
-          borderColor: backgroundColors,
-          borderWidth: 1
-        }],
+        datasets: [
+          {
+            label: 'Vacaciones por Estado',
+            data,
+            backgroundColor: backgroundColors,
+            borderColor: backgroundColors,
+            borderWidth: 1,
+          },
+        ],
       },
       options: {
         responsive: true,
@@ -365,20 +409,19 @@ export class VacacionesComponent implements OnInit {
           legend: { display: false },
           title: {
             display: true,
-            text: 'Vacaciones por Estado'
-          }
+            text: 'Vacaciones por Estado',
+          },
         },
         scales: {
-          y: { beginAtZero: true, ticks: { stepSize: 1 } }
-        }
-      }
+          y: { beginAtZero: true, ticks: { stepSize: 1 } },
+        },
+      },
     });
   }
 
-
   generarGraficoUsuario(): void {
     const usuarioMap = new Map<string, number>();
-    this.vacaciones.forEach(v => {
+    this.vacaciones.forEach((v) => {
       const usuario = v.contrato?.hoja_de_vida?.usuario;
       if (usuario) {
         const nombre = `${usuario.primerNombre} ${usuario.primerApellido}`;
@@ -399,13 +442,15 @@ export class VacacionesComponent implements OnInit {
       type: 'bar',
       data: {
         labels,
-        datasets: [{
-          label: 'Vacaciones por Usuario',
-          data,
-          backgroundColor: backgroundColors,
-          borderColor: backgroundColors,
-          borderWidth: 1
-        }],
+        datasets: [
+          {
+            label: 'Vacaciones por Usuario',
+            data,
+            backgroundColor: backgroundColors,
+            borderColor: backgroundColors,
+            borderWidth: 1,
+          },
+        ],
       },
       options: {
         responsive: true,
@@ -413,18 +458,18 @@ export class VacacionesComponent implements OnInit {
           legend: { display: false },
           title: {
             display: true,
-            text: 'Vacaciones por Usuario'
-          }
+            text: 'Vacaciones por Usuario',
+          },
         },
         scales: {
-          y: { beginAtZero: true, ticks: { stepSize: 1 } }
-        }
-      }
+          y: { beginAtZero: true, ticks: { stepSize: 1 } },
+        },
+      },
     });
   }
   generarGraficoArea(): void {
     const areaMap = new Map<string, number>();
-    this.vacaciones.forEach(v => {
+    this.vacaciones.forEach((v) => {
       const area = v.contrato?.area?.nombreArea;
       if (area) areaMap.set(area, (areaMap.get(area) || 0) + 1);
     });
@@ -441,13 +486,15 @@ export class VacacionesComponent implements OnInit {
       type: 'bar',
       data: {
         labels,
-        datasets: [{
-          label: 'Vacaciones por Área',
-          data,
-          backgroundColor: backgroundColors,
-          borderColor: backgroundColors,
-          borderWidth: 1
-        }],
+        datasets: [
+          {
+            label: 'Vacaciones por Área',
+            data,
+            backgroundColor: backgroundColors,
+            borderColor: backgroundColors,
+            borderWidth: 1,
+          },
+        ],
       },
       options: {
         responsive: true,
@@ -455,16 +502,16 @@ export class VacacionesComponent implements OnInit {
           legend: { display: false },
           title: {
             display: true,
-            text: 'Vacaciones por Área'
-          }
+            text: 'Vacaciones por Área',
+          },
         },
         scales: {
           y: {
             beginAtZero: true,
-            ticks: { stepSize: 1 }
-          }
-        }
-      }
+            ticks: { stepSize: 1 },
+          },
+        },
+      },
     });
   }
   // Función auxiliar para generar colores aleatorios en formato HEX
@@ -492,7 +539,6 @@ export class VacacionesComponent implements OnInit {
 
       let startY = 35;
 
-     
       const canvas: any = document.getElementById('graficoEstado');
       if (canvas) {
         const graficoImg = canvas.toDataURL('image/png', 1.0);
@@ -531,7 +577,7 @@ export class VacacionesComponent implements OnInit {
             if (data.section === 'body' && data.row.index % 2 === 0) {
               data.cell.styles.fillColor = [240, 240, 240];
             }
-          }
+          },
         });
 
         startY = (doc as any).lastAutoTable.finalY + 10;
@@ -576,7 +622,11 @@ export class VacacionesComponent implements OnInit {
         const u = grupo.usuario || {};
         doc.setFontSize(12);
         doc.setTextColor(0);
-        doc.text(`Usuario: ${u.primerNombre || ''} ${u.primerApellido || ''}`, 10, startY);
+        doc.text(
+          `Usuario: ${u.primerNombre || ''} ${u.primerApellido || ''}`,
+          10,
+          startY
+        );
 
         const body = grupo.registros.map((v: any) => [
           v.fechaInicio,
@@ -593,13 +643,13 @@ export class VacacionesComponent implements OnInit {
           styles: { halign: 'left', fontSize: 10 },
           headStyles: {
             fillColor: [4, 26, 43],
-            textColor: 255
+            textColor: 255,
           },
           didParseCell: (data) => {
             if (data.section === 'body' && data.row.index % 2 === 0) {
               data.cell.styles.fillColor = [240, 240, 240];
             }
-          }
+          },
         });
 
         startY = (doc as any).lastAutoTable.finalY + 10;
@@ -659,20 +709,22 @@ export class VacacionesComponent implements OnInit {
         });
 
         autoTable(doc, {
-          head: [['Documento', 'Nombre', 'Correo', 'Fecha Inicio', 'Fecha Final']],
+          head: [
+            ['Documento', 'Nombre', 'Correo', 'Fecha Inicio', 'Fecha Final'],
+          ],
           body,
           startY: startY + 5,
           theme: 'grid',
           styles: { halign: 'left', fontSize: 10 },
           headStyles: {
             fillColor: [4, 26, 43],
-            textColor: 255
+            textColor: 255,
           },
           didParseCell: (data) => {
             if (data.section === 'body' && data.row.index % 2 === 0) {
               data.cell.styles.fillColor = [240, 240, 240];
             }
-          }
+          },
         });
 
         startY = (doc as any).lastAutoTable.finalY + 10;
@@ -681,7 +733,6 @@ export class VacacionesComponent implements OnInit {
       doc.save('vacaciones_por_area.pdf');
     };
   }
-
 
   descargarExcelPorEstado(): void {
     const workbook = new ExcelJS.Workbook();
@@ -710,7 +761,7 @@ export class VacacionesComponent implements OnInit {
         'Correo',
         'Fecha Inicio',
         'Fecha Final',
-        'Días'
+        'Días',
       ]);
 
       encabezadoRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
@@ -720,7 +771,7 @@ export class VacacionesComponent implements OnInit {
         fgColor: { argb: 'FF2E7D32' }, // Verde oscuro
       };
 
-      encabezadoRow.eachCell(cell => {
+      encabezadoRow.eachCell((cell) => {
         cell.border = {
           top: { style: 'thin' },
           bottom: { style: 'thin' },
@@ -737,7 +788,7 @@ export class VacacionesComponent implements OnInit {
           usuario?.email || 'N/A',
           v.fechaInicio,
           v.fechaFinal,
-          v.dias
+          v.dias,
         ]);
 
         // Alternar color de fondo
@@ -749,7 +800,7 @@ export class VacacionesComponent implements OnInit {
           };
         }
 
-        row.eachCell(cell => {
+        row.eachCell((cell) => {
           cell.border = {
             top: { style: 'thin' },
             bottom: { style: 'thin' },
@@ -769,7 +820,7 @@ export class VacacionesComponent implements OnInit {
       { key: 'correo', width: 30 },
       { key: 'fechaInicio', width: 15 },
       { key: 'fechaFinal', width: 15 },
-      { key: 'dias', width: 10 }
+      { key: 'dias', width: 10 },
     ];
 
     workbook.xlsx.writeBuffer().then((buffer) => {
@@ -792,8 +843,109 @@ export class VacacionesComponent implements OnInit {
       return acc;
     }, {});
 
-    Object.values(vacacionesAgrupadas).forEach(({ usuario, registros }: any) => {
-      const tituloRow = sheet.addRow([`Usuario: ${usuario?.primerNombre || 'Sin nombre'} ${usuario?.primerApellido || ''}`]);
+    Object.values(vacacionesAgrupadas).forEach(
+      ({ usuario, registros }: any) => {
+        const tituloRow = sheet.addRow([
+          `Usuario: ${usuario?.primerNombre || 'Sin nombre'} ${
+            usuario?.primerApellido || ''
+          }`,
+        ]);
+        tituloRow.font = { bold: true };
+        tituloRow.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFD9D9D9' },
+        };
+        sheet.mergeCells(`A${tituloRow.number}:F${tituloRow.number}`);
+
+        const encabezadoRow = sheet.addRow([
+          'Documento',
+          'Correo',
+          'Fecha Inicio',
+          'Fecha Final',
+          'Días',
+          'Estado',
+        ]);
+        encabezadoRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        encabezadoRow.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FF2E7D32' }, // Verde institucional
+        };
+
+        encabezadoRow.eachCell((cell) => {
+          cell.border = {
+            top: { style: 'thin' },
+            bottom: { style: 'thin' },
+            left: { style: 'thin' },
+            right: { style: 'thin' },
+          };
+        });
+
+        registros.forEach((v: any, index: number) => {
+          const row = sheet.addRow([
+            usuario?.numDocumento || 'N/A',
+            usuario?.email || 'N/A',
+            v.fechaInicio,
+            v.fechaFinal,
+            v.dias,
+            v.estado,
+          ]);
+
+          // Color alterno en filas
+          if (index % 2 === 0) {
+            row.fill = {
+              type: 'pattern',
+              pattern: 'solid',
+              fgColor: { argb: 'FFF2F2F2' },
+            };
+          }
+
+          row.eachCell((cell) => {
+            cell.border = {
+              top: { style: 'thin' },
+              bottom: { style: 'thin' },
+              left: { style: 'thin' },
+              right: { style: 'thin' },
+            };
+          });
+        });
+
+        sheet.addRow([]);
+      }
+    );
+
+    // Ajustar ancho de columnas
+    sheet.columns = [
+      { key: 'documento', width: 20 },
+      { key: 'correo', width: 30 },
+      { key: 'fechaInicio', width: 15 },
+      { key: 'fechaFinal', width: 15 },
+      { key: 'dias', width: 10 },
+      { key: 'estado', width: 15 },
+    ];
+
+    workbook.xlsx.writeBuffer().then((buffer) => {
+      const blob = new Blob([buffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      saveAs(blob, 'vacaciones_por_usuario.xlsx');
+    });
+  }
+
+  descargarExcelPorArea(): void {
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Vacaciones por Área');
+
+    const vacacionesAgrupadas = this.vacaciones.reduce((acc: any, v: any) => {
+      const area = v.contrato?.area?.nombreArea || 'Sin área';
+      if (!acc[area]) acc[area] = [];
+      acc[area].push(v);
+      return acc;
+    }, {});
+
+    Object.entries(vacacionesAgrupadas).forEach(([area, registros]: any) => {
+      const tituloRow = sheet.addRow([`Área: ${area}`]);
       tituloRow.font = { bold: true };
       tituloRow.fill = {
         type: 'pattern',
@@ -803,16 +955,21 @@ export class VacacionesComponent implements OnInit {
       sheet.mergeCells(`A${tituloRow.number}:F${tituloRow.number}`);
 
       const encabezadoRow = sheet.addRow([
-        'Documento', 'Correo', 'Fecha Inicio', 'Fecha Final', 'Días', 'Estado'
+        'Documento',
+        'Nombre',
+        'Correo',
+        'Fecha Inicio',
+        'Fecha Final',
+        'Estado',
       ]);
       encabezadoRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
       encabezadoRow.fill = {
         type: 'pattern',
         pattern: 'solid',
-        fgColor: { argb: 'FF2E7D32' }, // Verde institucional
+        fgColor: { argb: 'FF2E7D32' }, // Verde oscuro
       };
 
-      encabezadoRow.eachCell(cell => {
+      encabezadoRow.eachCell((cell) => {
         cell.border = {
           top: { style: 'thin' },
           bottom: { style: 'thin' },
@@ -822,16 +979,17 @@ export class VacacionesComponent implements OnInit {
       });
 
       registros.forEach((v: any, index: number) => {
+        const usuario = v.contrato?.hoja_de_vida?.usuario;
         const row = sheet.addRow([
           usuario?.numDocumento || 'N/A',
+          `${usuario?.primerNombre || ''} ${usuario?.primerApellido || ''}`,
           usuario?.email || 'N/A',
           v.fechaInicio,
           v.fechaFinal,
-          v.dias,
-          v.estado
+          v.estado,
         ]);
 
-        // Color alterno en filas
+        // Alternar fondo
         if (index % 2 === 0) {
           row.fill = {
             type: 'pattern',
@@ -840,7 +998,7 @@ export class VacacionesComponent implements OnInit {
           };
         }
 
-        row.eachCell(cell => {
+        row.eachCell((cell) => {
           cell.border = {
             top: { style: 'thin' },
             bottom: { style: 'thin' },
@@ -856,118 +1014,18 @@ export class VacacionesComponent implements OnInit {
     // Ajustar ancho de columnas
     sheet.columns = [
       { key: 'documento', width: 20 },
+      { key: 'nombre', width: 25 },
       { key: 'correo', width: 30 },
       { key: 'fechaInicio', width: 15 },
       { key: 'fechaFinal', width: 15 },
-      { key: 'dias', width: 10 },
-      { key: 'estado', width: 15 }
+      { key: 'estado', width: 15 },
     ];
 
     workbook.xlsx.writeBuffer().then((buffer) => {
       const blob = new Blob([buffer], {
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       });
-      saveAs(blob, 'vacaciones_por_usuario.xlsx');
+      saveAs(blob, 'vacaciones_por_area.xlsx');
     });
   }
-
-  descargarExcelPorArea(): void {
-  const workbook = new ExcelJS.Workbook();
-  const sheet = workbook.addWorksheet('Vacaciones por Área');
-
-  const vacacionesAgrupadas = this.vacaciones.reduce((acc: any, v: any) => {
-    const area = v.contrato?.area?.nombreArea || 'Sin área';
-    if (!acc[area]) acc[area] = [];
-    acc[area].push(v);
-    return acc;
-  }, {});
-
-  Object.entries(vacacionesAgrupadas).forEach(([area, registros]: any) => {
-    const tituloRow = sheet.addRow([`Área: ${area}`]);
-    tituloRow.font = { bold: true };
-    tituloRow.fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: { argb: 'FFD9D9D9' },
-    };
-    sheet.mergeCells(`A${tituloRow.number}:F${tituloRow.number}`);
-
-    const encabezadoRow = sheet.addRow([
-      'Documento', 'Nombre', 'Correo', 'Fecha Inicio', 'Fecha Final', 'Estado'
-    ]);
-    encabezadoRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-    encabezadoRow.fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: { argb: 'FF2E7D32' }, // Verde oscuro
-    };
-
-    encabezadoRow.eachCell(cell => {
-      cell.border = {
-        top: { style: 'thin' },
-        bottom: { style: 'thin' },
-        left: { style: 'thin' },
-        right: { style: 'thin' },
-      };
-    });
-
-    registros.forEach((v: any, index: number) => {
-      const usuario = v.contrato?.hoja_de_vida?.usuario;
-      const row = sheet.addRow([
-        usuario?.numDocumento || 'N/A',
-        `${usuario?.primerNombre || ''} ${usuario?.primerApellido || ''}`,
-        usuario?.email || 'N/A',
-        v.fechaInicio,
-        v.fechaFinal,
-        v.estado
-      ]);
-
-      // Alternar fondo
-      if (index % 2 === 0) {
-        row.fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: 'FFF2F2F2' },
-        };
-      }
-
-      row.eachCell(cell => {
-        cell.border = {
-          top: { style: 'thin' },
-          bottom: { style: 'thin' },
-          left: { style: 'thin' },
-          right: { style: 'thin' },
-        };
-      });
-    });
-
-    sheet.addRow([]);
-  });
-
-  // Ajustar ancho de columnas
-  sheet.columns = [
-    { key: 'documento', width: 20 },
-    { key: 'nombre', width: 25 },
-    { key: 'correo', width: 30 },
-    { key: 'fechaInicio', width: 15 },
-    { key: 'fechaFinal', width: 15 },
-    { key: 'estado', width: 15 }
-  ];
-
-  workbook.xlsx.writeBuffer().then((buffer) => {
-    const blob = new Blob([buffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    });
-    saveAs(blob, 'vacaciones_por_area.xlsx');
-  });
 }
-
-
-
-
-  
- 
-
-  
-}
-

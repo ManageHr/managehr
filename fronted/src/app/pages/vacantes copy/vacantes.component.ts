@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { MenuComponent } from '../menu/menu.component';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-vacantes',

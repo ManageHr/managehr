@@ -6,6 +6,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import Swal from 'sweetalert2';
 import { SolicitudesIncapacidadService } from '../../services/solicitudes-incapacidad.service';
 import { ContratosService } from 'src/app/services/contratos.service';
+import { Router } from '@angular/router';
 
 interface IncapacidadRequestDisplay {
   idIncapacidad?: number;
@@ -18,14 +19,9 @@ interface IncapacidadRequestDisplay {
 @Component({
   selector: 'app-form-incapacidades',
   standalone: true,
-  imports: [
-    MenuComponent,
-    FormsModule,
-    CommonModule,
-    HttpClientModule
-  ],
+  imports: [MenuComponent, FormsModule, CommonModule, HttpClientModule],
   templateUrl: './form-incapacidades.component.html',
-  styleUrls: ['./form-incapacidades.component.scss']
+  styleUrls: ['./form-incapacidades.component.scss'],
 })
 export class FormIncapacidadesComponent implements OnInit {
   archivo: File | null = null;
@@ -35,15 +31,47 @@ export class FormIncapacidadesComponent implements OnInit {
   solicitudesIncapacidades: IncapacidadRequestDisplay[] = [];
 
   constructor(
+    private router: Router,
     private http: HttpClient,
     private solicitudesIncapacidadService: SolicitudesIncapacidadService,
     private contratosService: ContratosService
   ) {}
 
   ngOnInit(): void {
+    const token = localStorage.getItem('token');
+    const userFromLocal = localStorage.getItem('usuario');
+    if (!token || !userFromLocal) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    try {
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      const expiracion = tokenPayload.exp * 1000;
+      if (Date.now() >= expiracion) {
+        this.mostrarSesionExpirada();
+        return;
+      }
+    } catch (error) {
+      console.error('Error verificando token:', error);
+      this.mostrarSesionExpirada();
+      return;
+    }
+
     this.obtenerContratoId();
   }
+  private mostrarSesionExpirada(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
 
+    Swal.fire({
+      title: 'Sesión expirada',
+      text: 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.',
+      icon: 'warning',
+      confirmButtonText: 'Ir al login',
+    }).then(() => {
+      this.router.navigate(['/login']);
+    });
+  }
   obtenerContratoId(): void {
     const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
     const numDocumento =
@@ -62,24 +90,34 @@ export class FormIncapacidadesComponent implements OnInit {
           this.contratoId = contrato.idContrato;
           this.obtenerSolicitudesIncapacidades();
         } else {
-          Swal.fire('Error', 'No se encontró contrato para el usuario.', 'error');
+          Swal.fire(
+            'Error',
+            'No se encontró contrato para el usuario.',
+            'error'
+          );
         }
       },
       error: () => {
-        Swal.fire('Error', 'No se pudo obtener el contrato del usuario.', 'error');
-      }
+        Swal.fire(
+          'Error',
+          'No se pudo obtener el contrato del usuario.',
+          'error'
+        );
+      },
     });
   }
 
   obtenerSolicitudesIncapacidades(): void {
-    this.solicitudesIncapacidadService.obtenerSolicitudesIncapacidadUsuario().subscribe({
-      next: (solicitudes) => {
-        this.solicitudesIncapacidades = solicitudes;
-      },
-      error: () => {
-        this.solicitudesIncapacidades = [];
-      }
-    });
+    this.solicitudesIncapacidadService
+      .obtenerSolicitudesIncapacidadUsuario()
+      .subscribe({
+        next: (solicitudes) => {
+          this.solicitudesIncapacidades = solicitudes;
+        },
+        error: () => {
+          this.solicitudesIncapacidades = [];
+        },
+      });
   }
 
   onFileSelected(event: Event): void {
@@ -92,7 +130,11 @@ export class FormIncapacidadesComponent implements OnInit {
 
   enviarSolicitud(): void {
     if (this.contratoId === null) {
-      Swal.fire('Error', 'No se encontró el contrato asociado al usuario.', 'error');
+      Swal.fire(
+        'Error',
+        'No se encontró el contrato asociado al usuario.',
+        'error'
+      );
       return;
     }
 
@@ -105,16 +147,26 @@ export class FormIncapacidadesComponent implements OnInit {
       formData.append('archivo', this.archivo, this.archivo.name);
     }
 
-    this.solicitudesIncapacidadService.enviarSolicitudIncapacidad(formData).subscribe({
-      next: () => {
-        Swal.fire('Éxito', 'Solicitud de incapacidad enviada con éxito.', 'success');
-        this.limpiarFormulario();
-        this.obtenerSolicitudesIncapacidades();
-      },
-      error: () => {
-        Swal.fire('Error', 'Error al enviar la solicitud de incapacidad.', 'error');
-      }
-    });
+    this.solicitudesIncapacidadService
+      .enviarSolicitudIncapacidad(formData)
+      .subscribe({
+        next: () => {
+          Swal.fire(
+            'Éxito',
+            'Solicitud de incapacidad enviada con éxito.',
+            'success'
+          );
+          this.limpiarFormulario();
+          this.obtenerSolicitudesIncapacidades();
+        },
+        error: () => {
+          Swal.fire(
+            'Error',
+            'Error al enviar la solicitud de incapacidad.',
+            'error'
+          );
+        },
+      });
   }
 
   limpiarFormulario(): void {

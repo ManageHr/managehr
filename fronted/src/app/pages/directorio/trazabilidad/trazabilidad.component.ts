@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { Router } from '@angular/router';
 import {
   TrazabilidadService,
   Trazabilidad,
@@ -28,17 +29,47 @@ export class TrazabilidadComponent implements OnInit {
   usuario: any = {};
 
   constructor(
+    private router: Router,
     private trazabilidadService: TrazabilidadService,
     private authService: AuthService
   ) {}
 
   ngOnInit(): void {
+    const token = localStorage.getItem('token');
     const userFromLocal = localStorage.getItem('usuario');
-    if (userFromLocal) {
-      this.usuario = JSON.parse(userFromLocal);
+    if (!token || !userFromLocal) {
+      this.router.navigate(['/login']);
+      return;
     }
+   try {
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      const expiracion = tokenPayload.exp * 1000;
+      if (Date.now() >= expiracion) {
+        this.mostrarSesionExpirada();
+        return;
+      }
+    } catch (error) {
+      console.error('Error verificando token:', error);
+      this.mostrarSesionExpirada();
+      return;
+    }
+    this.usuario = JSON.parse(userFromLocal);
+
     this.cargarTrazabilidad();
   }
+  private mostrarSesionExpirada(): void {
+      localStorage.removeItem('token');
+      localStorage.removeItem('usuario');
+
+      Swal.fire({
+        title: 'Sesión expirada',
+        text: 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.',
+        icon: 'warning',
+        confirmButtonText: 'Ir al login',
+      }).then(() => {
+        this.router.navigate(['/login']);
+      });
+    }
 
   // Cuando cambia el filtro, recalcula totalPages
   set filtro(valor: string) {
@@ -56,7 +87,7 @@ export class TrazabilidadComponent implements OnInit {
   cargarTrazabilidad(): void {
     this.trazabilidadService.obtenerTrazabilidad().subscribe({
       next: (data) => {
-        
+
         this.trazabilidad = data;
         this.totalPages = Math.ceil(
           this.trazabilidad.length / this.itemsPerPage

@@ -3,8 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MenuComponent } from '../menu/menu.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { HorasextraService } from '../../services/horasextra.service';  // Ruta correcta para el servicio
-
+import { HorasextraService } from '../../services/horasextra.service'; // Ruta correcta para el servicio
+import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 interface HoraExtra {
   id: number;
   nombre: string;
@@ -22,12 +23,30 @@ interface HoraExtra {
   standalone: true,
   imports: [CommonModule, FormsModule, MenuComponent, FontAwesomeModule],
   templateUrl: './horas-extra.component.html',
-  styleUrls: ['./horas-extra.component.scss']
+  styleUrls: ['./horas-extra.component.scss'],
 })
 export class HorasExtraComponent implements OnInit {
   horasExtras: HoraExtra[] = [
-    { id: 1, nombre: 'John Michael', cargo: 'Asesor', fecha: '2024-07-15', horaInicio: '17:00', horaFinal: '20:00', totalHoras: 3, estado: 'completado' },
-    { id: 2, nombre: 'Laurent Perrier', cargo: 'Programador', fecha: '2024-07-17', horaInicio: '18:00', horaFinal: '22:00', totalHoras: 4, estado: 'pendiente' }
+    {
+      id: 1,
+      nombre: 'John Michael',
+      cargo: 'Asesor',
+      fecha: '2024-07-15',
+      horaInicio: '17:00',
+      horaFinal: '20:00',
+      totalHoras: 3,
+      estado: 'completado',
+    },
+    {
+      id: 2,
+      nombre: 'Laurent Perrier',
+      cargo: 'Programador',
+      fecha: '2024-07-17',
+      horaInicio: '18:00',
+      horaFinal: '22:00',
+      totalHoras: 4,
+      estado: 'pendiente',
+    },
   ];
 
   modalVisible: boolean = false;
@@ -36,16 +55,49 @@ export class HorasExtraComponent implements OnInit {
   mostrarAgregarModalHorasExtra: boolean = false;
   isLargeScreen: boolean = true;
 
-  constructor(private horasExtraService: HorasextraService) { }  // Inyección del servicio
+  constructor(
+    private router: Router,
+    private horasExtraService: HorasextraService
+  ) {} // Inyección del servicio
 
   ngOnInit(): void {
-    this.horasExtras = this.horasExtras.map(item => ({
+    const token = localStorage.getItem('token');
+    const userFromLocal = localStorage.getItem('usuario');
+    if (!token || !userFromLocal) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    try {
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      const expiracion = tokenPayload.exp * 1000;
+      if (Date.now() >= expiracion) {
+        this.mostrarSesionExpirada();
+        return;
+      }
+    } catch (error) {
+      console.error('Error verificando token:', error);
+      this.mostrarSesionExpirada();
+      return;
+    }
+    this.horasExtras = this.horasExtras.map((item) => ({
       ...item,
-      isExpanded: false
+      isExpanded: false,
     }));
     this.onResize();
   }
+  private mostrarSesionExpirada(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
 
+    Swal.fire({
+      title: 'Sesión expirada',
+      text: 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.',
+      icon: 'warning',
+      confirmButtonText: 'Ir al login',
+    }).then(() => {
+      this.router.navigate(['/login']);
+    });
+  }
   @HostListener('window:resize', [])
   onResize() {
     this.isLargeScreen = window.innerWidth > 1045;
@@ -70,8 +122,8 @@ export class HorasExtraComponent implements OnInit {
       descrip: 'Horas extra registradas desde frontend',
       fecha: this.nuevaHoraExtra.fecha,
       nHorasExtra: this.nuevaHoraExtra.totalHoras,
-      tipoHorasid: 1,          // Cambia esto si tienes select
-      contratoId: 1            // Cambia esto si tienes usuario logueado o select
+      tipoHorasid: 1, // Cambia esto si tienes select
+      contratoId: 1, // Cambia esto si tienes usuario logueado o select
     };
 
     this.horasExtraService.create(data).subscribe({
@@ -81,7 +133,7 @@ export class HorasExtraComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al guardar:', err);
-      }
+      },
     });
   }
 
@@ -92,7 +144,7 @@ export class HorasExtraComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al cargar horas extras:', err);
-      }
+      },
     });
   }
 
@@ -106,27 +158,33 @@ export class HorasExtraComponent implements OnInit {
   }
 
   guardarEdicion(): void {
-    const index = this.horasExtras.findIndex(h => h.id === this.horaExtraEditada.id);
+    const index = this.horasExtras.findIndex(
+      (h) => h.id === this.horaExtraEditada.id
+    );
     if (index !== -1) {
       const originalIsExpanded = this.horasExtras[index].isExpanded;
       this.horasExtras[index] = {
         ...this.horaExtraEditada,
-        isExpanded: originalIsExpanded
+        isExpanded: originalIsExpanded,
       };
     }
     this.modalVisible = false;
   }
 
   eliminarHorasExtras(horaExtra: HoraExtra): void {
-    const confirmado = confirm(`¿Estás seguro de eliminar las horas extras de ${horaExtra.nombre} (${horaExtra.fecha})?`);
+    const confirmado = confirm(
+      `¿Estás seguro de eliminar las horas extras de ${horaExtra.nombre} (${horaExtra.fecha})?`
+    );
     if (confirmado) {
       this.horasExtraService.delete(horaExtra.id).subscribe({
         next: () => {
-          this.horasExtras = this.horasExtras.filter(h => h.id !== horaExtra.id);
+          this.horasExtras = this.horasExtras.filter(
+            (h) => h.id !== horaExtra.id
+          );
         },
         error: (err) => {
           console.error('Error al eliminar:', err);
-        }
+        },
       });
     }
   }

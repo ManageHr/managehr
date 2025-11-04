@@ -34,6 +34,7 @@ import {
   Legend,
   registerables,
 } from 'chart.js';
+import { Router } from '@angular/router';
 
 Chart.register(
   BarController,
@@ -82,6 +83,7 @@ export class HorasextraAdminComponent {
   archivoActual: string | null = null;
   chartEstado: any;
   constructor(
+    private router: Router,
     private horasextraService: HorasextraService,
     private formBuilder: FormBuilder,
     private fb: FormBuilder
@@ -106,7 +108,25 @@ export class HorasextraAdminComponent {
     }
   }
   ngOnInit(): void {
+    const token = localStorage.getItem('token');
     const userFromLocal = localStorage.getItem('usuario');
+    if (!token || !userFromLocal) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    try {
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      const expiracion = tokenPayload.exp * 1000;
+      if (Date.now() >= expiracion) {
+        this.mostrarSesionExpirada();
+        return;
+      }
+    } catch (error) {
+      console.error('Error verificando token:', error);
+      this.mostrarSesionExpirada();
+      return;
+    }
+
     console.log(userFromLocal);
     if (userFromLocal) {
       this.usuario = JSON.parse(userFromLocal);
@@ -119,6 +139,19 @@ export class HorasextraAdminComponent {
       contratoId: ['', Validators.required],
     });
     this.cargarhorasextras();
+  }
+  private mostrarSesionExpirada(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+
+    Swal.fire({
+      title: 'Sesión expirada',
+      text: 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.',
+      icon: 'warning',
+      confirmButtonText: 'Ir al login',
+    }).then(() => {
+      this.router.navigate(['/login']);
+    });
   }
   get horasextrasFiltradas() {
     const filtroLower = this.filtroNombre.toLowerCase();

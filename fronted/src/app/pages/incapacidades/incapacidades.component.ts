@@ -1,18 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MenuComponent } from "../menu/menu.component";
+import { MenuComponent } from '../menu/menu.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Component, OnInit, HostListener } from '@angular/core';
-
+import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-incapacidades',
   standalone: true,
   imports: [CommonModule, FormsModule, MenuComponent, FontAwesomeModule],
   templateUrl: './incapacidades.component.html',
-  styleUrls: ['./incapacidades.component.scss']
+  styleUrls: ['./incapacidades.component.scss'],
 })
 export class IncapacidadesComponent implements OnInit {
-
   incapacidades: any[] = [];
   nuevaIncapacidad: any = {};
   incapacidadEditada: any = {};
@@ -20,21 +20,47 @@ export class IncapacidadesComponent implements OnInit {
   mostrarAgregarModalIncapacidad: boolean = false;
   isLargeScreen: boolean = true;
 
-  constructor() {}
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
-    // Simulamos datos iniciales (puedes reemplazar con datos reales)
-    
-
-    // Agregamos isExpanded a cada incapacidad
-    this.incapacidades = this.incapacidades.map(incapacidad => ({
+    const token = localStorage.getItem('token');
+    const userFromLocal = localStorage.getItem('usuario');
+    if (!token || !userFromLocal) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    try {
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      const expiracion = tokenPayload.exp * 1000;
+      if (Date.now() >= expiracion) {
+        this.mostrarSesionExpirada();
+        return;
+      }
+    } catch (error) {
+      console.error('Error verificando token:', error);
+      this.mostrarSesionExpirada();
+      return;
+    }
+    this.incapacidades = this.incapacidades.map((incapacidad) => ({
       ...incapacidad,
-      isExpanded: false
+      isExpanded: false,
     }));
 
     this.onResize(); // Para detectar tamaño inicial
   }
+  private mostrarSesionExpirada(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
 
+    Swal.fire({
+      title: 'Sesión expirada',
+      text: 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.',
+      icon: 'warning',
+      confirmButtonText: 'Ir al login',
+    }).then(() => {
+      this.router.navigate(['/login']);
+    });
+  }
   @HostListener('window:resize', [])
   onResize() {
     this.isLargeScreen = window.innerWidth > 1140;
@@ -57,7 +83,7 @@ export class IncapacidadesComponent implements OnInit {
     const nueva = {
       ...this.nuevaIncapacidad,
       id: Date.now(), // ID temporal
-      isExpanded: false
+      isExpanded: false,
     };
     this.incapacidades.push(nueva);
     this.cerrarAgregarModalIncapacidad();
@@ -73,18 +99,20 @@ export class IncapacidadesComponent implements OnInit {
   }
 
   guardarIncapacidad(): void {
-    const index = this.incapacidades.findIndex(i => i.id === this.incapacidadEditada.id);
+    const index = this.incapacidades.findIndex(
+      (i) => i.id === this.incapacidadEditada.id
+    );
     if (index !== -1) {
       this.incapacidades[index] = {
         ...this.incapacidadEditada,
-        isExpanded: this.incapacidades[index].isExpanded // conservar estado del acordeón
+        isExpanded: this.incapacidades[index].isExpanded, // conservar estado del acordeón
       };
     }
     this.cancelarEdicion();
   }
 
   eliminarIncapacidad(id: number): void {
-    this.incapacidades = this.incapacidades.filter(i => i.id !== id);
+    this.incapacidades = this.incapacidades.filter((i) => i.id !== id);
   }
 
   generarReporte(): void {

@@ -34,6 +34,7 @@ import {
   Legend,
   registerables,
 } from 'chart.js';
+import { Router } from '@angular/router';
 
 Chart.register(
   BarController,
@@ -83,12 +84,30 @@ export class IncapacidadesAdminComponent implements OnInit {
   incapacidadSeleccionada: any = null;
   nuevoEstado: number = 0;
   constructor(
+    private router: Router,
     private incapacidadService: IncapacidadService,
     private fb: FormBuilder
   ) {}
 
   ngOnInit(): void {
+    const token = localStorage.getItem('token');
     const userFromLocal = localStorage.getItem('usuario');
+    if (!token || !userFromLocal) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    try {
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      const expiracion = tokenPayload.exp * 1000;
+      if (Date.now() >= expiracion) {
+        this.mostrarSesionExpirada();
+        return;
+      }
+    } catch (error) {
+      console.error('Error verificando token:', error);
+      this.mostrarSesionExpirada();
+      return;
+    }
     if (userFromLocal) {
       this.usuario = JSON.parse(userFromLocal);
       this.tienePermiso = [1, 4].includes(this.usuario?.rol);
@@ -101,6 +120,19 @@ export class IncapacidadesAdminComponent implements OnInit {
       contratoId: ['', Validators.required],
     });
     this.cargarIncapacidades();
+  }
+  private mostrarSesionExpirada(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+
+    Swal.fire({
+      title: 'Sesión expirada',
+      text: 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.',
+      icon: 'warning',
+      confirmButtonText: 'Ir al login',
+    }).then(() => {
+      this.router.navigate(['/login']);
+    });
   }
   get incapacidadesFiltradas() {
     const filtroLower = this.filtroNombre.toLowerCase();

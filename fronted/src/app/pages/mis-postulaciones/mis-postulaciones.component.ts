@@ -8,6 +8,7 @@ import { FilterMisPostulacionesPipe } from './filter-mispostulaciones';
 import Swal from 'sweetalert2';
 import { Subject, Subscription, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 interface Usuario {
   id: number;
@@ -43,12 +44,30 @@ export class MisPostulacionesComponent implements OnInit, OnDestroy {
   private searchSubscription?: Subscription;
 
   constructor(
+    private router: Router,
     public misPostulacionesService: MisPostulacionesService,
     public authService: AuthService
   ) {}
 
   ngOnInit(): void {
+    const token = localStorage.getItem('token');
     const userFromLocal = localStorage.getItem('usuario');
+    if (!token || !userFromLocal) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    try {
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      const expiracion = tokenPayload.exp * 1000;
+      if (Date.now() >= expiracion) {
+        this.mostrarSesionExpirada();
+        return;
+      }
+    } catch (error) {
+      console.error('Error verificando token:', error);
+      this.mostrarSesionExpirada();
+      return;
+    }
     if (userFromLocal) {
       this.usuario = JSON.parse(userFromLocal);
       this.usuarioCargado = true;
@@ -83,7 +102,19 @@ export class MisPostulacionesComponent implements OnInit, OnDestroy {
 
     this.cargarPostulaciones();
   }
+  private mostrarSesionExpirada(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
 
+    Swal.fire({
+      title: 'Sesión expirada',
+      text: 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.',
+      icon: 'warning',
+      confirmButtonText: 'Ir al login',
+    }).then(() => {
+      this.router.navigate(['/login']);
+    });
+  }
   ngOnDestroy(): void {
     this.searchSubscription?.unsubscribe();
   }

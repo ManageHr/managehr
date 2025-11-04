@@ -1,7 +1,10 @@
 import { Routes } from '@angular/router';
+import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient, withInterceptorsFromDi, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { DirectorioComponent } from './pages/directorio/directorio.component';
 import { LoginComponent } from './pages/login/login.component';
-// importa tu guard:
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -18,4 +21,15 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
 ];
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideRouter(routes),
+    provideHttpClient(withInterceptorsFromDi()),
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+  ]
+};
 

@@ -130,18 +130,40 @@ export class UsuariosComponent implements OnInit {
     const userFromLocal = localStorage.getItem('usuario');
 
     if (!token || !userFromLocal) {
-
       this.router.navigate(['/login']);
       return;
     }
-
+    try {
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      const expiracion = tokenPayload.exp * 1000; // Convertir a milisegundos
+      if (Date.now() >= expiracion) {
+        this.mostrarSesionExpirada();
+        return;
+      }
+    } catch (error) {
+      console.error('Error verificando token:', error);
+      this.mostrarSesionExpirada();
+      return;
+    }
     this.usuario = JSON.parse(userFromLocal);
     console.log(this.usuario);
     // Iniciar carga en paralelo
     this.cargarUsuariosInicio();
     this.cargarForaneas();
   }
+  private mostrarSesionExpirada(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
 
+    Swal.fire({
+      title: 'Sesión expirada',
+      text: 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.',
+      icon: 'warning',
+      confirmButtonText: 'Ir al login',
+    }).then(() => {
+      this.router.navigate(['/login']);
+    });
+  }
   private cargarUsuariosInicio(): void {
     const inicio = performance.now();
 
@@ -615,13 +637,13 @@ export class UsuariosComponent implements OnInit {
           password_confirmation: repetirPassword,
           rol: Number(rol),
         };
-        console.log('Datos que se envían a /register:', userData);
+
         this.authService.register(userData).subscribe({
           next: (res) => {
             const userId = res.user?.id;
 
             const usuarioFinal = {
-              numDocumento: Number(this.nuevoUsuario.numDocumento),
+              numDocumento: this.nuevoUsuario.numDocumento,
               primerNombre: this.nuevoUsuario.primerNombre,
               segundoNombre: this.nuevoUsuario.segundoNombre,
               primerApellido: this.nuevoUsuario.primerApellido,
@@ -649,11 +671,14 @@ export class UsuariosComponent implements OnInit {
                 console.log(
                   ` Backend respondió en: ${(llegada - inicio).toFixed(2)} ms`
                 );
-                Swal.fire(
-                  '¡Éxito!',
-                  'El usuario fue creado correctamente.',
-                  'success'
-                );
+                Swal.fire({
+                  title: '¡Éxito!',
+                  text: 'El usuario fue creado correctamente.',
+                  icon: 'success',
+                  confirmButtonText: 'Aceptar',
+                  timer: 3000,
+                  timerProgressBar: true,
+                });
                 this.nuevoUsuario = {};
                 this.cargarAmbasListasUsuarios();
                 const modalEl = document.getElementById('agregarusuariosModal');
@@ -661,16 +686,16 @@ export class UsuariosComponent implements OnInit {
                   const modal =
                     Modal.getInstance(modalEl) || new Modal(modalEl);
                   modal.hide();
-                  setTimeout(() => {
+                  /*setTimeout(() => {
                     this.abrirModalHojaVida();
 
                     const fin = performance.now();
                     console.log(
-                      `⏱️ Total hasta abrir modal: ${(fin - inicio).toFixed(
+                      `Total hasta abrir modal: ${(fin - inicio).toFixed(
                         2
                       )} ms`
                     );
-                  }, 0);
+                  }, 0);*/
                 }
                 return;
               },
@@ -823,8 +848,6 @@ export class UsuariosComponent implements OnInit {
         },
       });
   }
-
-
 
   abrirModalExperiencia(): void {
     const modal = document.getElementById('modalExperiencia');

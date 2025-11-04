@@ -6,6 +6,7 @@ import { HojaDeVidaService } from 'src/app/services/hoja-de-vida.service';
 import { EstudiosService } from 'src/app/services/estudios.service';
 import { ExperienciaService } from 'src/app/services/experiencia.service';
 import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-hoja-de-vida',
@@ -35,12 +36,31 @@ export class HojaDeVidaComponent implements OnInit {
   idRelacionEstudio: number | null = null;
 
   constructor(
+    private router: Router,
     private hojaDeVidaService: HojaDeVidaService,
     private estudiosService: EstudiosService,
     private experienciaService: ExperienciaService
   ) {}
 
   ngOnInit(): void {
+    const token = localStorage.getItem('token');
+    const userFromLocal = localStorage.getItem('usuario');
+    if (!token || !userFromLocal) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    try {
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      const expiracion = tokenPayload.exp * 1000;
+      if (Date.now() >= expiracion) {
+        this.mostrarSesionExpirada();
+        return;
+      }
+    } catch (error) {
+      console.error('Error verificando token:', error);
+      this.mostrarSesionExpirada();
+      return;
+    }
     const usuarioString = localStorage.getItem('usuario');
     if (usuarioString) {
       this.usuario = JSON.parse(usuarioString);
@@ -53,7 +73,19 @@ export class HojaDeVidaComponent implements OnInit {
       );
     }
   }
+  private mostrarSesionExpirada(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
 
+    Swal.fire({
+      title: 'Sesión expirada',
+      text: 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.',
+      icon: 'warning',
+      confirmButtonText: 'Ir al login',
+    }).then(() => {
+      this.router.navigate(['/login']);
+    });
+  }
   cargarHojaDeVida() {
     this.hojaDeVidaService
       .getHojaDeVidaPorDocumento(this.usuario?.perfil?.numDocumento)
@@ -65,7 +97,6 @@ export class HojaDeVidaComponent implements OnInit {
           this.cargarExperiencias();
         },
         error: (err) => {
-
           Swal.fire('Error', 'No se pudo cargar la hoja de vida', 'error');
         },
       });
@@ -75,7 +106,6 @@ export class HojaDeVidaComponent implements OnInit {
     if (!this.idHojaDeVida) return;
     this.estudiosService.getPorHojaDeVida(this.idHojaDeVida).subscribe({
       next: (res) => {
-
         this.estudios = res.estudios.map((e: any) => {
           const datos = e.estudio || e;
           return {
@@ -84,41 +114,38 @@ export class HojaDeVidaComponent implements OnInit {
             idRelacion: e.idHasestudios,
           };
         });
-
       },
       error: (err) => {
-
         Swal.fire('Error', 'No se pudieron cargar los estudios', 'error');
       },
     });
   }
- cargarExperiencias() {
-  if (!this.idHojaDeVida) return;
+  cargarExperiencias() {
+    if (!this.idHojaDeVida) return;
 
-  this.experienciaService.getPorHojaDeVida(this.idHojaDeVida).subscribe({
-    next: (res) => {
-      const lista = res.data ?? [];
+    this.experienciaService.getPorHojaDeVida(this.idHojaDeVida).subscribe({
+      next: (res) => {
+        const lista = res.data ?? [];
 
-      this.experiencias = lista.map((relacion: any) => {
-        const datos = relacion.experiencia || {};
-        return {
-          ...datos,
-          abierto: false,
-          idRelacion: relacion.idHasexperiencia ?? relacion.id,
-          archivo: relacion.archivo,
+        this.experiencias = lista.map((relacion: any) => {
+          const datos = relacion.experiencia || {};
+          return {
+            ...datos,
+            abierto: false,
+            idRelacion: relacion.idHasexperiencia ?? relacion.id,
+            archivo: relacion.archivo,
 
-          archivoUrl: `https://www.evensoft21.com/managehr/api/public/storage/${relacion.archivo}`
-        };
-      });
+            archivoUrl: `https://www.evensoft21.com/managehr/api/public/storage/${relacion.archivo}`,
+          };
+        });
 
-      console.log('📦 Experiencias procesadas:', this.experiencias);
-    },
-    error: (err) => {
-
-      Swal.fire('Error', 'No se pudieron cargar las experiencias', 'error');
-    }
-  });
-}
+        console.log('📦 Experiencias procesadas:', this.experiencias);
+      },
+      error: (err) => {
+        Swal.fire('Error', 'No se pudieron cargar las experiencias', 'error');
+      },
+    });
+  }
 
   abrirModalEditarLibreta() {
     this.mostrarModalEditarLibreta = true;
@@ -205,7 +232,6 @@ export class HojaDeVidaComponent implements OnInit {
       anioFinalizacion: this.nuevoEstudio.anioFinalizacion,
     };
 
-
     this.estudiosService.buscarEstudioPorNombre(payloadEstudio).subscribe({
       next: (res) => {
         const idEstudios = res?.estudio?.idEstudios;
@@ -217,7 +243,6 @@ export class HojaDeVidaComponent implements OnInit {
             this.crearRelacionEstudio(idEstudios);
           }
         } else {
-
           this.estudiosService.create(payloadEstudio).subscribe({
             next: (resCreate) => {
               const nuevoId = resCreate?.estudio?.idEstudios;

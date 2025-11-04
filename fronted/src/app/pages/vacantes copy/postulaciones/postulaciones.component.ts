@@ -12,6 +12,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { forkJoin } from 'rxjs';
 import * as ExcelJS from 'exceljs';
 import { ChangeDetectorRef } from '@angular/core';
+import { Router } from '@angular/router';
 
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -25,9 +26,8 @@ import {
   LinearScale,
   Title,
   Tooltip,
-  Legend
+  Legend,
 } from 'chart.js';
-
 
 Chart.register(
   BarController,
@@ -44,7 +44,7 @@ declare var bootstrap: any;
   standalone: true,
   imports: [CommonModule, FormsModule, MenuComponent],
   templateUrl: './postulaciones.component.html',
-  styleUrls: ['./postulaciones.component.scss']
+  styleUrls: ['./postulaciones.component.scss'],
 })
 export class PostulacionesComponent implements OnInit, OnDestroy {
   postulaciones: Postulacion[] = [];
@@ -52,14 +52,13 @@ export class PostulacionesComponent implements OnInit, OnDestroy {
   postulacionSeleccionada: Postulacion | null = null;
 
   filtroTerm = '';
- postulacionesPorVacante: any[] = [];
+  postulacionesPorVacante: any[] = [];
   postulacionesPorEstado: any[] = [];
   postulacionesPorEmpleado: any[] = [];
   chartVacantes: any;
   chartEstados: any;
   chartEmpleados: any;
 
-  
   filtroPostulacion: string = '';
   paginaActual: number = 1;
   postulacionesPorPagina: number = 5;
@@ -68,25 +67,54 @@ export class PostulacionesComponent implements OnInit, OnDestroy {
   private searchSubscription?: Subscription;
 
   constructor(
+    private router: Router,
     public authService: AuthService,
     private postulacionesadminService: PostulacionesadminService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    const token = localStorage.getItem('token');
     const userFromLocal = localStorage.getItem('usuario');
+    if (!token || !userFromLocal) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    try {
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      const expiracion = tokenPayload.exp * 1000;
+      if (Date.now() >= expiracion) {
+        this.mostrarSesionExpirada();
+        return;
+      }
+    } catch (error) {
+      console.error('Error verificando token:', error);
+      this.mostrarSesionExpirada();
+      return;
+    }
     if (userFromLocal) {
       this.usuario = JSON.parse(userFromLocal);
     }
 
-    this.searchSubscription = this.searchTerms.pipe(
-      debounceTime(300),
-      distinctUntilChanged()
-    ).subscribe(term => this.filtrarPostulaciones(term));
+    this.searchSubscription = this.searchTerms
+      .pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe((term) => this.filtrarPostulaciones(term));
 
     this.cargarPostulaciones();
   }
+  private mostrarSesionExpirada(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
 
+    Swal.fire({
+      title: 'Sesión expirada',
+      text: 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.',
+      icon: 'warning',
+      confirmButtonText: 'Ir al login',
+    }).then(() => {
+      this.router.navigate(['/login']);
+    });
+  }
   ngOnDestroy(): void {
     this.searchSubscription?.unsubscribe();
   }
@@ -95,19 +123,22 @@ export class PostulacionesComponent implements OnInit, OnDestroy {
     const term = (event.target as HTMLInputElement).value;
     this.searchTerms.next(term);
   }
-  
 
   cargarPostulaciones(): void {
     this.postulacionesadminService.getPostulaciones().subscribe({
       next: (data) => {
         this.postulaciones = data;
-        this.filtroPostulacion = ''; 
+        this.filtroPostulacion = '';
         this.paginaActual = 1;
         this.cdr.detectChanges();
       },
       error: () => {
-        Swal.fire('Error', 'No se pudo cargar la lista de postulaciones', 'error');
-      }
+        Swal.fire(
+          'Error',
+          'No se pudo cargar la lista de postulaciones',
+          'error'
+        );
+      },
     });
   }
 
@@ -116,7 +147,9 @@ export class PostulacionesComponent implements OnInit, OnDestroy {
       this.cargarPostulaciones();
     } else {
       const vacanteId = +term;
-      this.postulaciones = this.postulaciones.filter(p => p.vacantesId === vacanteId);
+      this.postulaciones = this.postulaciones.filter(
+        (p) => p.vacantesId === vacanteId
+      );
     }
   }
 
@@ -125,8 +158,8 @@ export class PostulacionesComponent implements OnInit, OnDestroy {
   }
 
   verDetalles(postulacion: Postulacion): void {
-      this.postulacionSeleccionada = postulacion;
-    }
+    this.postulacionSeleccionada = postulacion;
+  }
 
   guardarEstadoPostulacion(): void {
     if (!this.postulacionSeleccionada) return;
@@ -134,10 +167,17 @@ export class PostulacionesComponent implements OnInit, OnDestroy {
     const estadoNumerico = Number(this.postulacionSeleccionada.estado); // cast de seguridad
 
     this.postulacionesadminService
-      .actualizarEstado(this.postulacionSeleccionada.idPostulaciones, estadoNumerico)
+      .actualizarEstado(
+        this.postulacionSeleccionada.idPostulaciones,
+        estadoNumerico
+      )
       .subscribe({
         next: () => {
-          Swal.fire('¡Actualizado!', 'Estado actualizado correctamente', 'success');
+          Swal.fire(
+            '¡Actualizado!',
+            'Estado actualizado correctamente',
+            'success'
+          );
           this.filtroPostulacion = '';
           this.cargarPostulaciones();
           this.postulacionSeleccionada = null;
@@ -147,61 +187,67 @@ export class PostulacionesComponent implements OnInit, OnDestroy {
             const instance = bootstrap.Modal.getInstance(modal);
             instance?.hide();
 
-            
             setTimeout(() => {
               location.reload();
-            }, 2000); 
+            }, 2000);
           }
-
         },
         error: (err) => {
           console.error('Error al actualizar:', err);
           Swal.fire('Error', 'No se pudo actualizar el estado.', 'error');
-        }
+        },
       });
   }
 
-
-convertirNumeroAEstado(estado: number): string {
-  switch (estado) {
-    case 1: return 'Aceptado';
-    case 2: return 'Pendiente';
-    case 3: return 'Rechazado';
-    default: return 'Pendiente';
+  convertirNumeroAEstado(estado: number): string {
+    switch (estado) {
+      case 1:
+        return 'Aceptado';
+      case 2:
+        return 'Pendiente';
+      case 3:
+        return 'Rechazado';
+      default:
+        return 'Pendiente';
+    }
   }
-}
 
-obtenerNombreEstado(estado: number): string {
-  
-  switch (estado) {
-    case 1: return 'Aceptado';
-    case 2: return 'Pendiente';
-    case 3: return 'Rechazado';
-    default: return 'Desconocido';
+  obtenerNombreEstado(estado: number): string {
+    switch (estado) {
+      case 1:
+        return 'Aceptado';
+      case 2:
+        return 'Pendiente';
+      case 3:
+        return 'Rechazado';
+      default:
+        return 'Desconocido';
+    }
   }
-}
 
-
-
-
-  
   get postulacionesFiltradas(): Postulacion[] {
     const filtro = this.filtroPostulacion.toLowerCase();
-    return this.postulaciones.filter(p =>
-      p.numDocumento.toString().includes(filtro) ||
-      p.vacante?.nomVacante.toLowerCase().includes(filtro) ||
-      p.usuario?.primerNombre.toLowerCase().includes(filtro) ||
-      p.usuario?.primerApellido.toLowerCase().includes(filtro)
+    return this.postulaciones.filter(
+      (p) =>
+        p.numDocumento.toString().includes(filtro) ||
+        p.vacante?.nomVacante.toLowerCase().includes(filtro) ||
+        p.usuario?.primerNombre.toLowerCase().includes(filtro) ||
+        p.usuario?.primerApellido.toLowerCase().includes(filtro)
     );
   }
 
   get postulacionesFiltradasPaginadas(): Postulacion[] {
     const inicio = (this.paginaActual - 1) * this.postulacionesPorPagina;
-    return this.postulacionesFiltradas.slice(inicio, inicio + this.postulacionesPorPagina);
+    return this.postulacionesFiltradas.slice(
+      inicio,
+      inicio + this.postulacionesPorPagina
+    );
   }
 
   get totalPages(): number {
-    return Math.ceil(this.postulacionesFiltradas.length / this.postulacionesPorPagina);
+    return Math.ceil(
+      this.postulacionesFiltradas.length / this.postulacionesPorPagina
+    );
   }
 
   cambiarPagina(pagina: number): void {
@@ -235,11 +281,11 @@ obtenerNombreEstado(estado: number): string {
     this.postulacionesadminService.getReportePorVacante().subscribe((res) => {
       this.postulacionesPorVacante = res.data;
 
-      const labels = this.postulacionesPorVacante.map(p => p.nombreVacante);
-      const data = this.postulacionesPorVacante.map(p => p.totalPostulantes);
+      const labels = this.postulacionesPorVacante.map((p) => p.nombreVacante);
+      const data = this.postulacionesPorVacante.map((p) => p.totalPostulantes);
 
-      const colores = this.postulacionesPorVacante.map(() =>
-        '#' + Math.floor(Math.random() * 16777215).toString(16)
+      const colores = this.postulacionesPorVacante.map(
+        () => '#' + Math.floor(Math.random() * 16777215).toString(16)
       ); // genera colores hex aleatorios
 
       if (this.chartVacantes) this.chartVacantes.destroy();
@@ -248,25 +294,27 @@ obtenerNombreEstado(estado: number): string {
         type: 'bar',
         data: {
           labels,
-          datasets: [{
-            label: 'Postulantes por Vacante',
-            data,
-            backgroundColor: colores, // cada barra con color distinto
-            borderWidth: 1
-          }]
+          datasets: [
+            {
+              label: 'Postulantes por Vacante',
+              data,
+              backgroundColor: colores, // cada barra con color distinto
+              borderWidth: 1,
+            },
+          ],
         },
         options: {
           responsive: true,
           plugins: {
             legend: { display: false },
-            title: { display: true, text: 'Postulaciones por Vacante' }
+            title: { display: true, text: 'Postulaciones por Vacante' },
           },
           scales: {
             y: {
-              beginAtZero: true
-            }
-          }
-        }
+              beginAtZero: true,
+            },
+          },
+        },
       });
     });
   }
@@ -274,8 +322,10 @@ obtenerNombreEstado(estado: number): string {
     this.postulacionesadminService.getReportePorEstado().subscribe((res) => {
       this.postulacionesPorEstado = res.data;
 
-      const labels = this.postulacionesPorEstado.map(p => `Estado ${p.estado}`);
-      const data = this.postulacionesPorEstado.map(p => p.total);
+      const labels = this.postulacionesPorEstado.map(
+        (p) => `Estado ${p.estado}`
+      );
+      const data = this.postulacionesPorEstado.map((p) => p.total);
 
       if (this.chartEstados) this.chartEstados.destroy();
 
@@ -283,19 +333,28 @@ obtenerNombreEstado(estado: number): string {
         type: 'bar',
         data: {
           labels,
-          datasets: [{
-            label: 'Postulaciones por Estado',
-            data,
-            backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40']
-          }]
+          datasets: [
+            {
+              label: 'Postulaciones por Estado',
+              data,
+              backgroundColor: [
+                '#36A2EB',
+                '#FF6384',
+                '#FFCE56',
+                '#4BC0C0',
+                '#9966FF',
+                '#FF9F40',
+              ],
+            },
+          ],
         },
         options: {
           responsive: true,
           plugins: {
             legend: { display: false },
-            title: { display: true, text: 'Postulaciones por Estado' }
-          }
-        }
+            title: { display: true, text: 'Postulaciones por Estado' },
+          },
+        },
       });
     });
   }
@@ -316,7 +375,9 @@ obtenerNombreEstado(estado: number): string {
 
       const labels = Object.keys(conteoPorVacante);
       const data = Object.values(conteoPorVacante);
-      const colores = labels.map(() => '#' + Math.floor(Math.random() * 16777215).toString(16));
+      const colores = labels.map(
+        () => '#' + Math.floor(Math.random() * 16777215).toString(16)
+      );
 
       if (this.chartEmpleados) this.chartEmpleados.destroy();
 
@@ -324,29 +385,33 @@ obtenerNombreEstado(estado: number): string {
         type: 'bar',
         data: {
           labels,
-          datasets: [{
-            label: 'Postulantes Internos por Vacante',
-            data,
-            backgroundColor: colores,
-            borderWidth: 1
-          }]
+          datasets: [
+            {
+              label: 'Postulantes Internos por Vacante',
+              data,
+              backgroundColor: colores,
+              borderWidth: 1,
+            },
+          ],
         },
         options: {
           responsive: true,
           plugins: {
             legend: { display: false },
-            title: { display: true, text: 'Postulaciones Internas por Vacante' }
+            title: {
+              display: true,
+              text: 'Postulaciones Internas por Vacante',
+            },
           },
           scales: {
             y: {
-              beginAtZero: true
-            }
-          }
-        }
+              beginAtZero: true,
+            },
+          },
+        },
       });
     });
   }
-
 
   descargarExcelVacantes(): void {
     const workbook = new ExcelJS.Workbook();
@@ -415,7 +480,7 @@ obtenerNombreEstado(estado: number): string {
     sheet.columns = [
       { key: 'documento', width: 20 },
       { key: 'nombre', width: 30 },
-      { key: 'correo', width: 30 }
+      { key: 'correo', width: 30 },
     ];
 
     // Descargar archivo
@@ -460,11 +525,7 @@ obtenerNombreEstado(estado: number): string {
       });
 
       estadoObj.postulantes.forEach((p: any, index: number) => {
-        const dataRow = sheet.addRow([
-          p.documento,
-          p.nombre,
-          p.correo
-        ]);
+        const dataRow = sheet.addRow([p.documento, p.nombre, p.correo]);
 
         if (index % 2 === 0) {
           dataRow.fill = {
@@ -498,17 +559,14 @@ obtenerNombreEstado(estado: number): string {
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet('Postulaciones Internas por Vacante');
 
-  
     const postulantes = this.postulacionesPorEmpleado[0]?.postulantes || [];
 
-   
     const vacantesMap = new Map<string, any[]>();
     postulantes.forEach((p: any) => {
       const vacante = p.vacante || 'Sin nombre';
       if (!vacantesMap.has(vacante)) vacantesMap.set(vacante, []);
       vacantesMap.get(vacante)!.push(p);
     });
-
 
     sheet.addRow([]);
 
@@ -530,7 +588,7 @@ obtenerNombreEstado(estado: number): string {
         fgColor: { argb: 'FFB0C4DE' },
       };
 
-      encabezadoRow.eachCell(cell => {
+      encabezadoRow.eachCell((cell) => {
         cell.border = {
           top: { style: 'thin' },
           bottom: { style: 'thin' },
@@ -550,7 +608,7 @@ obtenerNombreEstado(estado: number): string {
           };
         }
 
-        row.eachCell(cell => {
+        row.eachCell((cell) => {
           cell.border = {
             top: { style: 'thin' },
             bottom: { style: 'thin' },
@@ -566,7 +624,7 @@ obtenerNombreEstado(estado: number): string {
     sheet.columns = [
       { key: 'documento', width: 20 },
       { key: 'nombre', width: 30 },
-      { key: 'correo', width: 30 }
+      { key: 'correo', width: 30 },
     ];
 
     workbook.xlsx.writeBuffer().then((buffer) => {
@@ -576,7 +634,6 @@ obtenerNombreEstado(estado: number): string {
       saveAs(blob, 'postulaciones_internas_por_vacante.xlsx');
     });
   }
-
 
   descargarPDFVacantes(): void {
     const doc = new jsPDF();
@@ -609,7 +666,9 @@ obtenerNombreEstado(estado: number): string {
         body.push([
           p.nombreVacante || 'No especificado',
           p.totalPostulantes,
-          p.postulantes.map((u: any) => `${u.nombre} (${u.documento})`).join('\n')
+          p.postulantes
+            .map((u: any) => `${u.nombre} (${u.documento})`)
+            .join('\n'),
         ]);
       });
 
@@ -620,17 +679,17 @@ obtenerNombreEstado(estado: number): string {
         theme: 'grid',
         styles: {
           fontSize: 10,
-          cellPadding: 3
+          cellPadding: 3,
         },
         headStyles: {
           fillColor: [4, 26, 43],
-          textColor: 255
+          textColor: 255,
         },
         didParseCell: (data) => {
           if (data.section === 'body' && data.row.index % 2 === 0) {
             data.cell.styles.fillColor = [245, 245, 245];
           }
-        }
+        },
       });
 
       doc.save('postulaciones_por_vacante.pdf');
@@ -676,13 +735,13 @@ obtenerNombreEstado(estado: number): string {
           theme: 'grid',
           styles: {
             halign: 'left',
-            fontSize: 10
+            fontSize: 10,
           },
           didParseCell: (data) => {
             if (data.section === 'body' && data.row.index % 2 === 0) {
               data.cell.styles.fillColor = [240, 240, 240];
             }
-          }
+          },
         });
 
         startY = (doc as any).lastAutoTable.finalY + 10;
@@ -719,11 +778,10 @@ obtenerNombreEstado(estado: number): string {
       // Agrupar por vacante
       const vacantesMap = new Map<string, any[]>();
       postulantes.forEach((p: any) => {
-      const vacante = p.vacante || 'Sin nombre';
+        const vacante = p.vacante || 'Sin nombre';
         if (!vacantesMap.has(vacante)) vacantesMap.set(vacante, []);
         vacantesMap.get(vacante)!.push(p);
       });
-
 
       // Recorrer por vacante
       vacantesMap.forEach((postulantes, vacante) => {
@@ -731,11 +789,7 @@ obtenerNombreEstado(estado: number): string {
         doc.setTextColor(0);
         doc.text(`Vacante: ${vacante}`, 10, startY);
 
-        const body = postulantes.map(p => [
-          p.documento,
-          p.nombre,
-          p.correo
-        ]);
+        const body = postulantes.map((p) => [p.documento, p.nombre, p.correo]);
 
         autoTable(doc, {
           head: [['Documento', 'Nombre', 'Correo']],
@@ -750,7 +804,7 @@ obtenerNombreEstado(estado: number): string {
             if (data.section === 'body' && data.row.index % 2 === 0) {
               data.cell.styles.fillColor = [245, 245, 245];
             }
-          }
+          },
         });
 
         startY = (doc as any).lastAutoTable.finalY + 10;
@@ -759,7 +813,6 @@ obtenerNombreEstado(estado: number): string {
       doc.save('postulaciones_internas_por_vacante.pdf');
     };
   }
-
 
   abrirModalReportePostulaciones(): void {
     const modal = document.getElementById('modalReportePostulaciones');
@@ -790,7 +843,4 @@ obtenerNombreEstado(estado: number): string {
       this.generarGraficoInternos();
     }
   }
-
-
-
 }

@@ -5,6 +5,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import Swal from 'sweetalert2';
 import { HorasService } from '../../services/horas.service';
 import { MenuComponent } from '../menu/menu.component';
+import { Router } from '@angular/router';
 
 interface TipoHora {
   idTipoHoras: number;
@@ -47,14 +48,45 @@ export class FormHorasComponent implements OnInit {
   ];
 
   constructor(
+    private router: Router,
     private http: HttpClient,
     private horasService: HorasService
   ) {}
 
   ngOnInit(): void {
+    const token = localStorage.getItem('token');
+    const userFromLocal = localStorage.getItem('usuario');
+    if (!token || !userFromLocal) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    try {
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      const expiracion = tokenPayload.exp * 1000;
+      if (Date.now() >= expiracion) {
+        this.mostrarSesionExpirada();
+        return;
+      }
+    } catch (error) {
+      console.error('Error verificando token:', error);
+      this.mostrarSesionExpirada();
+      return;
+    }
     this.obtenerSolicitudesHoras();
   }
+  private mostrarSesionExpirada(): void {
+      localStorage.removeItem('token');
+      localStorage.removeItem('usuario');
 
+      Swal.fire({
+        title: 'Sesión expirada',
+        text: 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.',
+        icon: 'warning',
+        confirmButtonText: 'Ir al login',
+      }).then(() => {
+        this.router.navigate(['/login']);
+      });
+    }
   obtenerSolicitudesHoras(): void {
     this.horasService.obtenerSolicitudesHoras().subscribe({
       next: (res: any[]) => {

@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { JefePersonalService } from '../../services/jefe-personal.service';
 import { MenuComponent } from '../menu/menu.component';
+import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 interface EmpleadosResponse {
   empleados: any[];
@@ -13,9 +15,9 @@ interface EmpleadosResponse {
 @Component({
   selector: 'app-jefe-personal',
   standalone: true,
-  imports: [CommonModule, FormsModule,  MenuComponent],
+  imports: [CommonModule, FormsModule, MenuComponent],
   templateUrl: './jefe-personal.component.html',
-  styleUrls: ['./jefe-personal.component.scss']
+  styleUrls: ['./jefe-personal.component.scss'],
 })
 export class JefePersonalComponent implements OnInit {
   empleados: any[] = [];
@@ -27,7 +29,7 @@ export class JefePersonalComponent implements OnInit {
   areaNombre: string = '';
   hojaDeVidaSeleccionada: any = null;
   mostrarModalHojaVida = false;
-  
+
   // Propiedades para estudios y experiencias
   estudios: any[] = [];
   experiencias: any[] = [];
@@ -35,11 +37,30 @@ export class JefePersonalComponent implements OnInit {
   mostrarModalExperiencias = false;
   empleadoSeleccionado: any = null;
 
-  constructor(private jefePersonalService: JefePersonalService) {}
+  constructor(
+    private router: Router,
+    private jefePersonalService: JefePersonalService
+  ) {}
 
   ngOnInit() {
+    const token = localStorage.getItem('token');
     const userFromLocal = localStorage.getItem('usuario');
-    //console.log('userFromLocal:', userFromLocal);
+    if (!token || !userFromLocal) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    try {
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      const expiracion = tokenPayload.exp * 1000;
+      if (Date.now() >= expiracion) {
+        this.mostrarSesionExpirada();
+        return;
+      }
+    } catch (error) {
+      console.error('Error verificando token:', error);
+      this.mostrarSesionExpirada();
+      return;
+    }
     if (userFromLocal) {
       const usuario = JSON.parse(userFromLocal);
       const jefeId = usuario.id || usuario.idUsuario;
@@ -60,19 +81,36 @@ export class JefePersonalComponent implements OnInit {
       console.error('No se encontró el usuario en localStorage');
     }
   }
+  private mostrarSesionExpirada(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
 
+    Swal.fire({
+      title: 'Sesión expirada',
+      text: 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.',
+      icon: 'warning',
+      confirmButtonText: 'Ir al login',
+    }).then(() => {
+      this.router.navigate(['/login']);
+    });
+  }
   filtrarEmpleados(): void {
     if (this.filtroNombre.trim() === '') {
       this.empleadosFiltrados = this.empleados;
     } else {
       const filtro = this.filtroNombre.toLowerCase();
-      this.empleadosFiltrados = this.empleados.filter(emp =>
-        (emp.name && emp.name.toLowerCase().includes(filtro)) ||
-        (emp.perfil?.primerApellido && emp.perfil.primerApellido.toLowerCase().includes(filtro)) ||
-        (emp.perfil?.primerNombre && emp.perfil.primerNombre.toLowerCase().includes(filtro))
+      this.empleadosFiltrados = this.empleados.filter(
+        (emp) =>
+          (emp.name && emp.name.toLowerCase().includes(filtro)) ||
+          (emp.perfil?.primerApellido &&
+            emp.perfil.primerApellido.toLowerCase().includes(filtro)) ||
+          (emp.perfil?.primerNombre &&
+            emp.perfil.primerNombre.toLowerCase().includes(filtro))
       );
     }
-    this.totalPages = Math.ceil(this.empleadosFiltrados.length / this.itemsPerPage);
+    this.totalPages = Math.ceil(
+      this.empleadosFiltrados.length / this.itemsPerPage
+    );
     this.currentPage = 1;
   }
 
@@ -82,11 +120,15 @@ export class JefePersonalComponent implements OnInit {
   }
 
   verEmpleado(empleado: any) {
-    alert('Ver detalles de: ' + (empleado.name || empleado.perfil?.primerNombre));
+    alert(
+      'Ver detalles de: ' + (empleado.name || empleado.perfil?.primerNombre)
+    );
   }
 
   editarEmpleado(empleado: any) {
-    alert('Editar empleado: ' + (empleado.name || empleado.perfil?.primerNombre));
+    alert(
+      'Editar empleado: ' + (empleado.name || empleado.perfil?.primerNombre)
+    );
   }
 
   cambiarPagina(pagina: number) {
@@ -112,7 +154,7 @@ export class JefePersonalComponent implements OnInit {
     const numDocumento = empleado.perfil?.numDocumento;
     console.log('Mostrando estudios para empleado:', empleado);
     console.log('Número de documento:', numDocumento);
-    
+
     // Primero obtener la hoja de vida para obtener el ID
     this.jefePersonalService.getHojaDeVidaPorDocumento(numDocumento).subscribe(
       (data) => {
@@ -149,7 +191,7 @@ export class JefePersonalComponent implements OnInit {
     const numDocumento = empleado.perfil?.numDocumento;
     console.log('Mostrando experiencias para empleado:', empleado);
     console.log('Número de documento:', numDocumento);
-    
+
     // Primero obtener la hoja de vida para obtener el ID
     this.jefePersonalService.getHojaDeVidaPorDocumento(numDocumento).subscribe(
       (data) => {
@@ -158,17 +200,19 @@ export class JefePersonalComponent implements OnInit {
         console.log('ID Hoja de Vida:', idHojaDeVida);
         if (idHojaDeVida) {
           // Luego obtener las experiencias
-          this.jefePersonalService.getExperienciaPorHoja(idHojaDeVida).subscribe(
-            (experienciasData) => {
-              console.log('Datos de experiencias:', experienciasData);
-              this.experiencias = experienciasData.data || [];
-              this.mostrarModalExperiencias = true;
-            },
-            (error) => {
-              console.error('Error al obtener experiencias:', error);
-              alert('No se pudieron cargar las experiencias laborales');
-            }
-          );
+          this.jefePersonalService
+            .getExperienciaPorHoja(idHojaDeVida)
+            .subscribe(
+              (experienciasData) => {
+                console.log('Datos de experiencias:', experienciasData);
+                this.experiencias = experienciasData.data || [];
+                this.mostrarModalExperiencias = true;
+              },
+              (error) => {
+                console.error('Error al obtener experiencias:', error);
+                alert('No se pudieron cargar las experiencias laborales');
+              }
+            );
         } else {
           alert('No se encontró la hoja de vida del empleado');
         }

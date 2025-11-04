@@ -3,6 +3,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service'; // Asegúrate de que este servicio sea necesario y esté importado correctamente si lo usas en otro lugar
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-menu',
@@ -21,9 +22,26 @@ export class MenuComponent implements OnInit {
   constructor(private router: Router) {} // Si AuthService no se usa en este componente, puedes quitarlo del constructor
 
   ngOnInit(): void {
-    const usuarioGuardado = localStorage.getItem('usuario');
-    if (usuarioGuardado) {
-      this.usuario = JSON.parse(usuarioGuardado);
+    const token = localStorage.getItem('token');
+    const userFromLocal = localStorage.getItem('usuario');
+    if (!token || !userFromLocal) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    try {
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      const expiracion = tokenPayload.exp * 1000;
+      if (Date.now() >= expiracion) {
+        this.mostrarSesionExpirada();
+        return;
+      }
+    } catch (error) {
+      console.error('Error verificando token:', error);
+      this.mostrarSesionExpirada();
+      return;
+    }
+    if (userFromLocal) {
+      this.usuario = JSON.parse(userFromLocal);
     }
 
     // Recuperar ruta actual
@@ -38,7 +56,19 @@ export class MenuComponent implements OnInit {
       this.isSubmenuOpen = true;
     }
   }
+  private mostrarSesionExpirada(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
 
+    Swal.fire({
+      title: 'Sesión expirada',
+      text: 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.',
+      icon: 'warning',
+      confirmButtonText: 'Ir al login',
+    }).then(() => {
+      this.router.navigate(['/login']);
+    });
+  }
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('usuario');

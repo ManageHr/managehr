@@ -1,12 +1,20 @@
 import { CommonModule } from '@angular/common';
 import { MenuComponent } from '../menu/menu.component';
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { VacantesService, Vacante } from '../../services/vacantes.service';
 import { PostulacionesService } from '../../services/postulaciones.service';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 declare var bootstrap: any;
 
@@ -15,7 +23,7 @@ declare var bootstrap: any;
   standalone: true,
   imports: [CommonModule, MenuComponent, FormsModule],
   templateUrl: './vacantes.component.html',
-  styleUrls: ['./vacantes.component.scss']
+  styleUrls: ['./vacantes.component.scss'],
 })
 export class VacantesComponent implements OnInit, AfterViewInit {
   vacantes: Vacante[] = [];
@@ -26,24 +34,58 @@ export class VacantesComponent implements OnInit, AfterViewInit {
   private confirmacionModal: any;
 
   constructor(
+    private router: Router,
     private vacantesService: VacantesService,
     private postulacionesService: PostulacionesService
   ) {}
 
   ngOnInit(): void {
+    const token = localStorage.getItem('token');
+    const userFromLocal = localStorage.getItem('usuario');
+    if (!token || !userFromLocal) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    try {
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      const expiracion = tokenPayload.exp * 1000;
+      if (Date.now() >= expiracion) {
+        this.mostrarSesionExpirada();
+        return;
+      }
+    } catch (error) {
+      console.error('Error verificando token:', error);
+      this.mostrarSesionExpirada();
+      return;
+    }
     this.cargarVacantes();
   }
+  private mostrarSesionExpirada(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
 
+    Swal.fire({
+      title: 'Sesión expirada',
+      text: 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.',
+      icon: 'warning',
+      confirmButtonText: 'Ir al login',
+    }).then(() => {
+      this.router.navigate(['/login']);
+    });
+  }
   ngAfterViewInit(): void {
     if (this.confirmacionModalElement) {
-      this.confirmacionModal = new bootstrap.Modal(this.confirmacionModalElement.nativeElement);
+      this.confirmacionModal = new bootstrap.Modal(
+        this.confirmacionModalElement.nativeElement
+      );
     }
   }
 
   cargarVacantes(): void {
-    this.vacantesService.getVacantes()
+    this.vacantesService
+      .getVacantes()
       .pipe(
-        catchError(error => {
+        catchError((error) => {
           console.error('Error al cargar las vacantes:', error);
           this.errorCargandoVacantes = true;
           return of([]);
@@ -51,7 +93,8 @@ export class VacantesComponent implements OnInit, AfterViewInit {
       )
       .subscribe((data: Vacante[]) => {
         this.vacantes = data;
-        this.vacanteSeleccionada = this.vacantes.length > 0 ? this.vacantes[0] : {};
+        this.vacanteSeleccionada =
+          this.vacantes.length > 0 ? this.vacantes[0] : {};
         this.errorCargandoVacantes = false;
       });
   }
@@ -64,7 +107,7 @@ export class VacantesComponent implements OnInit, AfterViewInit {
     if (this.vacanteSeleccionada && this.vacanteSeleccionada.idVacantes) {
       this.confirmacionModal?.show();
     } else {
-      alert("Por favor, selecciona una vacante antes de postularte.");
+      alert('Por favor, selecciona una vacante antes de postularte.');
     }
   }
 
@@ -74,18 +117,24 @@ export class VacantesComponent implements OnInit, AfterViewInit {
     }
 
     const postulacionData = {
-      vacantesId: this.vacanteSeleccionada.idVacantes
+      vacantesId: this.vacanteSeleccionada.idVacantes,
     };
 
     this.postulacionesService.crearPostulacion(postulacionData).subscribe({
       next: (response) => {
-        alert('✅ ¡Te has postulado con éxito a la vacante: ' + this.vacanteSeleccionada.nomVacante + '!');
+        alert(
+          '✅ ¡Te has postulado con éxito a la vacante: ' +
+            this.vacanteSeleccionada.nomVacante +
+            '!'
+        );
       },
       error: (error) => {
         if (error.status === 409 && error.error?.message) {
           alert('⚠️ ' + error.error.message);
         } else if (error.status === 401) {
-          alert('❌ No tienes permisos para postularte. Inicia sesión correctamente.');
+          alert(
+            '❌ No tienes permisos para postularte. Inicia sesión correctamente.'
+          );
         } else if (error.status === 422 && error.error?.errors) {
           let validationErrors = 'Errores de validación:\n';
           for (const key in error.error.errors) {
@@ -93,9 +142,11 @@ export class VacantesComponent implements OnInit, AfterViewInit {
           }
           alert('❌ Error al enviar la postulación:\n' + validationErrors);
         } else {
-          alert('❌ Ocurrió un error al postularte. Por favor, inténtalo de nuevo.');
+          alert(
+            '❌ Ocurrió un error al postularte. Por favor, inténtalo de nuevo.'
+          );
         }
-      }
+      },
     });
   }
 

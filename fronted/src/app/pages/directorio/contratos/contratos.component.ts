@@ -9,7 +9,7 @@ import { UsuariosService, Usuarios } from '../../../services/usuarios.service';
 import { AuthService } from '../../../services/auth.service';
 import { MenuComponent } from '../../menu/menu.component';
 import Swal from 'sweetalert2';
-import { Route } from '@angular/router';
+import { Route, Router } from '@angular/router';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { FilterNombre } from './filter-nombre';
 import Chart from 'chart.js/auto';
@@ -83,15 +83,31 @@ export class ContratosComponent implements OnInit {
   nuevocontrato: any = {};
 
   constructor(
+    private router: Router,
     private contratosService: ContratosService,
     private usuariosService: UsuariosService
   ) {}
 
   ngOnInit(): void {
+    const token = localStorage.getItem('token');
     const userFromLocal = localStorage.getItem('usuario');
-    if (userFromLocal) {
-      this.usuario = JSON.parse(userFromLocal);
+    if (!token || !userFromLocal) {
+      this.router.navigate(['/login']);
+      return;
     }
+    try {
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      const expiracion = tokenPayload.exp * 1000;
+      if (Date.now() >= expiracion) {
+        this.mostrarSesionExpirada();
+        return;
+      }
+    } catch (error) {
+      console.error('Error verificando token:', error);
+      this.mostrarSesionExpirada();
+      return;
+    }
+    this.usuario = JSON.parse(userFromLocal);
 
     this.contratosService.obtenerContratos().subscribe({
       next: (data) => {
@@ -111,6 +127,19 @@ export class ContratosComponent implements OnInit {
     });
 
     this.obtenerTiposContrato();
+  }
+  private mostrarSesionExpirada(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+
+    Swal.fire({
+      title: 'Sesión expirada',
+      text: 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.',
+      icon: 'warning',
+      confirmButtonText: 'Ir al login',
+    }).then(() => {
+      this.router.navigate(['/login']);
+    });
   }
   get totalItemsFiltrados(): number {
     return this.filtroNombre.length;
@@ -280,7 +309,8 @@ export class ContratosComponent implements OnInit {
       return;
     }
 
-    this.imagenSeleccionada = 'http://www.evensoft21.com/managehr/api/public/' + url;
+    this.imagenSeleccionada =
+      'http://www.evensoft21.com/managehr/api/public/' + url;
     setTimeout(() => {
       const modalElement = document.getElementById('modalImagen');
       if (modalElement) {
