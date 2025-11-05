@@ -181,6 +181,14 @@ export class UsuariosService {
     return this.http.get<any>('https://www.evensoft21.com/managehr/api/public/api/usuarios/reporte/all');
   }
 
+  verificarExistenciaUsuarioExterno(email: string, documento: number): Observable<boolean> {
+    return this.http.get<{ existe: boolean }>('https://www.evensoft21.com/managehr/api/public/api/verificar-usuario-externo', {
+      params: { email, documento }
+    }).pipe(
+      map(res => res.existe)
+    );
+  }
+
 
 }
 

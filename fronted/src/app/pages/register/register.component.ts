@@ -146,7 +146,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   private verificarUsuarioExistente(email: string, documento: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      this.usuariosService.verificarExistenciaUsuario(email, documento).subscribe({
+      this.usuariosService.verificarExistenciaUsuarioExterno(email, documento).subscribe({
         next: (existe: boolean) => {
           resolve(existe);
         },
