@@ -32,7 +32,7 @@ export class JefePersonalService {
   }
   
   getEstudiosPorHoja(idHojaDeVida: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/hojasvidahasestudios/por-hoja/${idHojaDeVida}`);
+    return this.http.get(`${this.apiUrl}/estudios/hoja/${idHojaDeVida}`);
   }
   
   getExperienciaPorHoja(idHojaDeVida: number): Observable<any> {

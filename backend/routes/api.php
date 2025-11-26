@@ -359,15 +359,16 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/contrato-usuario/{numDocumento}', [ContratoController::class, 'buscarPorDocumento']);
 
     // hojasvidahasestudios
-    Route::get('/hojasvidahasestudios', [HojasvidahasestudiosController::class, 'index']);
-    Route::post('/hojasvidahasestudios', [HojasvidahasestudiosController::class, 'store']);
-    Route::post('/hojasvidahasestudios/{id}', [HojasvidahasestudiosController::class, 'update']);
-    Route::get('/hojasvidahasestudios/{id}', [HojasvidahasestudiosController::class, 'show']);
-    Route::delete('/hojasvidahasestudios/{id}', [HojasvidahasestudiosController::class, 'destroy']);
-    Route::get('/hojasvidahasestudios/por-hoja/{idHojaDeVida}', [HojasvidahasestudiosController::class, 'buscarPorHojaDeVida']);
-    Route::get('hojasvidahasestudios/documento/{numDocumento}', [HojasvidahasestudiosController::class, 'buscarPorDocumento']);
-    Route::get('/hojasvidahasestudios/descargar/{id}', [HojasvidahasestudiosController::class, 'descargarArchivo']);
-
+        Route::prefix('hojasvidahasestudios')->group(function () {
+     Route::get('/', [HojasvidahasestudiosController::class, 'index']);
+    Route::post('/', [HojasvidahasestudiosController::class, 'store']);
+    Route::post('/{id}', [HojasvidahasestudiosController::class, 'update']);
+    Route::get('/{id}', [HojasvidahasestudiosController::class, 'show']);
+    Route::delete('/{id}', [HojasvidahasestudiosController::class, 'destroy']);
+    Route::get('/por-hoja/{idHojaDeVida}', [HojasvidahasestudiosController::class, 'buscarPorHojaDeVida']);
+    Route::get('/documento/{numDocumento}', [HojasvidahasestudiosController::class, 'buscarPorDocumento']);
+    Route::get('/descargar/{id}', [HojasvidahasestudiosController::class, 'descargarArchivo']);
+        });
     // hojasvidahasexperiencia
     Route::prefix('hojasvidahasexperiencias')->group(function () {
         Route::get('/', [HojasvidahasexperienciaController::class, 'index']);

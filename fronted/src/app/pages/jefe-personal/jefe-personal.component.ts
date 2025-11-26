@@ -29,11 +29,12 @@ export class JefePersonalComponent implements OnInit {
   areaNombre: string = '';
   hojaDeVidaSeleccionada: any = null;
   mostrarModalHojaVida = false;
+  mostrarModalVer = false;
 
   // Propiedades para estudios y experiencias
   estudios: any[] = [];
   experiencias: any[] = [];
-  mostrarModalEstudios = false;
+ mostrarModalEstudios = false;
   mostrarModalExperiencias = false;
   empleadoSeleccionado: any = null;
 
@@ -119,10 +120,13 @@ export class JefePersonalComponent implements OnInit {
     return this.empleadosFiltrados.slice(start, start + this.itemsPerPage);
   }
 
-  verEmpleado(empleado: any) {
-    alert(
-      'Ver detalles de: ' + (empleado.name || empleado.perfil?.primerNombre)
-    );
+  verEmpleado(empleado: any): void {
+    this.empleadoSeleccionado = empleado;
+    this.mostrarModalVer = true;
+  }
+      cerrarModalVer(): void {
+    this.mostrarModalVer = false;
+    this.empleadoSeleccionado = null;
   }
 
   editarEmpleado(empleado: any) {
@@ -143,18 +147,23 @@ export class JefePersonalComponent implements OnInit {
         this.mostrarModalHojaVida = true;
       },
       (error) => {
-        alert('No se pudo cargar la hoja de vida');
+        console.error('Error al obtener hoja de vida:', error);
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudo cargar la hoja de vida. Por favor, intenta de nuevo.',
+          icon: 'error',
+          confirmButtonText: 'Cerrar'
+        });
       }
     );
   }
 
-  // Método para mostrar estudios
   mostrarEstudios(empleado: any) {
     this.empleadoSeleccionado = empleado;
     const numDocumento = empleado.perfil?.numDocumento;
     console.log('Mostrando estudios para empleado:', empleado);
     console.log('Número de documento:', numDocumento);
-
+    
     // Primero obtener la hoja de vida para obtener el ID
     this.jefePersonalService.getHojaDeVidaPorDocumento(numDocumento).subscribe(
       (data) => {
@@ -166,21 +175,39 @@ export class JefePersonalComponent implements OnInit {
           this.jefePersonalService.getEstudiosPorHoja(idHojaDeVida).subscribe(
             (estudiosData) => {
               console.log('Datos de estudios:', estudiosData);
-              this.estudios = estudiosData.estudios || [];
+              this.estudios = estudiosData.estudios || estudiosData || [];
               this.mostrarModalEstudios = true;
             },
             (error) => {
               console.error('Error al obtener estudios:', error);
-              alert('No se pudieron cargar los estudios');
+              Swal.fire({
+                title: 'Error',
+                text: 'No se pudieron cargar los estudios. Por favor, intenta de nuevo.',
+                icon: 'error',
+                confirmButtonText: 'Cerrar'
+              });
+              this.empleadoSeleccionado = null;
             }
           );
         } else {
-          alert('No se encontró la hoja de vida del empleado');
+          Swal.fire({
+            title: 'Información no disponible',
+            text: 'No se encontró la hoja de vida del empleado.',
+            icon: 'warning',
+            confirmButtonText: 'Cerrar'
+          });
+          this.empleadoSeleccionado = null;
         }
       },
       (error) => {
         console.error('Error al obtener hoja de vida:', error);
-        alert('No se pudo cargar la hoja de vida');
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudo cargar la hoja de vida. Por favor, intenta de nuevo.',
+          icon: 'error',
+          confirmButtonText: 'Cerrar'
+        });
+        this.empleadoSeleccionado = null;
       }
     );
   }
@@ -210,21 +237,38 @@ export class JefePersonalComponent implements OnInit {
               },
               (error) => {
                 console.error('Error al obtener experiencias:', error);
-                alert('No se pudieron cargar las experiencias laborales');
+                Swal.fire({
+                  title: 'Error',
+                  text: 'No se pudieron cargar las experiencias laborales. Por favor, intenta de nuevo.',
+                  icon: 'error',
+                  confirmButtonText: 'Cerrar'
+                });
+                this.empleadoSeleccionado = null;
               }
             );
         } else {
-          alert('No se encontró la hoja de vida del empleado');
+          Swal.fire({
+            title: 'Información no disponible',
+            text: 'No se encontró la hoja de vida del empleado.',
+            icon: 'warning',
+            confirmButtonText: 'Cerrar'
+          });
+          this.empleadoSeleccionado = null;
         }
       },
       (error) => {
         console.error('Error al obtener hoja de vida:', error);
-        alert('No se pudo cargar la hoja de vida');
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudo cargar la hoja de vida. Por favor, intenta de nuevo.',
+          icon: 'error',
+          confirmButtonText: 'Cerrar'
+        });
+        this.empleadoSeleccionado = null;
       }
     );
   }
 
-  // Métodos para cerrar modales
   cerrarModalEstudios() {
     this.mostrarModalEstudios = false;
     this.estudios = [];

@@ -126,6 +126,7 @@ class jefePersonalController extends Controller
         }
     }
 
+
     /**
      * @OA\Get(
      *     path="/api/jefe-personal",

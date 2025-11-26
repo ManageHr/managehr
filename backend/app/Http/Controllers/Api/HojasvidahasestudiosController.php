@@ -63,7 +63,7 @@ class HojasvidahasestudiosController extends Controller
      *     @OA\Response(response=404, description="Hoja de vida o estudio no encontrado")
      * )
      */
-    public function store(Request $request)
+ public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'numDocumento' => 'required|integer',
